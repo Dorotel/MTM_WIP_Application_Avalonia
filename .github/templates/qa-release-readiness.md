@@ -1,6 +1,6 @@
 ---
 name: Release Readiness
-description: 'Quality assurance checklist for MTM release readiness validation and manufacturing deployment preparation'
+description: 'Comprehensive quality assurance checklist ensuring complete MTM (Manufacturing Tracking & Management) application releases meet manufacturing-grade quality standards, operational requirements, and deployment readiness before production release. This critical quality gate validates code quality, testing coverage, manufacturing domain compliance, performance benchmarks, security requirements, documentation completeness, and deployment procedures for mission-critical manufacturing inventory management systems.'
 applies_to: 'release/*'
 manufacturing_context: true
 review_type: 'release'
@@ -10,6 +10,7 @@ quality_gate: 'critical'
 # Release Readiness - Quality Assurance Checklist
 
 ## Context
+
 - **Component Type**: Release Validation (Complete MTM Application Release)
 - **Manufacturing Domain**: Manufacturing-grade software release for inventory management systems
 - **Quality Gate**: Critical pre-release validation for manufacturing environment deployment
@@ -17,6 +18,7 @@ quality_gate: 'critical'
 ## Code Quality Validation
 
 ### Compilation and Build Validation
+
 - [ ] **Clean Build**: Application builds cleanly without warnings or errors
 - [ ] **All Platforms**: Build succeeds on all target platforms (Windows, macOS, Linux)
 - [ ] **Dependencies**: All dependencies resolved and compatible
@@ -24,6 +26,7 @@ quality_gate: 'critical'
 - [ ] **Resource Compilation**: All XAML and resource files compile correctly
 
 ### Code Review Completeness
+
 - [ ] **ViewModel Reviews**: All ViewModels pass quality gate reviews
 - [ ] **Service Reviews**: All Services pass quality gate reviews  
 - [ ] **UI Component Reviews**: All UI Components pass quality gate reviews
@@ -31,6 +34,7 @@ quality_gate: 'critical'
 - [ ] **Integration Reviews**: All Integration points pass quality gate reviews
 
 ### Technology Stack Compliance
+
 - [ ] **.NET 8 Compliance**: All code uses .NET 8 features appropriately
 - [ ] **Avalonia UI Compliance**: All UI code follows Avalonia UI 11.3.4 patterns
 - [ ] **MVVM Toolkit Compliance**: All MVVM code uses Community Toolkit 8.3.2 patterns
@@ -40,6 +44,7 @@ quality_gate: 'critical'
 ## Testing Validation
 
 ### Unit Test Coverage and Quality
+
 - [ ] **Coverage Requirements**: Unit test coverage meets manufacturing standards (95%+)
 - [ ] **ViewModel Testing**: All ViewModels have comprehensive unit tests
 - [ ] **Service Testing**: All Services have comprehensive unit tests
@@ -47,6 +52,7 @@ quality_gate: 'critical'
 - [ ] **Test Quality**: All unit tests pass quality gate validation
 
 ### Integration Test Coverage
+
 - [ ] **Cross-Service Integration**: All service interactions tested
 - [ ] **Database Integration**: All 45+ stored procedures integration tested
 - [ ] **UI Integration**: All ViewModel-View binding integration tested
@@ -54,6 +60,7 @@ quality_gate: 'critical'
 - [ ] **Performance Integration**: All performance requirements integration tested
 
 ### UI Automation Test Coverage
+
 - [ ] **Manufacturing Workflows**: All manufacturing operator workflows UI tested
 - [ ] **Cross-Platform UI**: UI tested on all target platforms
 - [ ] **Theme Validation**: UI tested with all MTM themes
@@ -61,6 +68,7 @@ quality_gate: 'critical'
 - [ ] **Error Scenarios**: UI error handling scenarios tested
 
 ### Manufacturing Domain Testing
+
 - [ ] **Inventory Operations**: All inventory management operations tested
 - [ ] **Transaction Processing**: All manufacturing transaction types tested
 - [ ] **Workflow Testing**: Complete manufacturing workflows tested end-to-end
@@ -70,6 +78,7 @@ quality_gate: 'critical'
 ## Manufacturing Deployment Readiness
 
 ### Manufacturing Environment Compatibility
+
 - [ ] **Hardware Compatibility**: Application tested on manufacturing hardware
 - [ ] **Network Requirements**: Network connectivity requirements validated
 - [ ] **Database Requirements**: MySQL database requirements validated
@@ -77,6 +86,7 @@ quality_gate: 'critical'
 - [ ] **Security Requirements**: Manufacturing security requirements validated
 
 ### Manufacturing Operator Readiness
+
 - [ ] **User Interface Validation**: UI validated for manufacturing operator efficiency
 - [ ] **Workflow Efficiency**: Manufacturing workflows optimized for operator productivity
 - [ ] **Error Handling**: Error handling appropriate for manufacturing environment
@@ -84,6 +94,7 @@ quality_gate: 'critical'
 - [ ] **Support Documentation**: Manufacturing support documentation complete
 
 ### Manufacturing Data Validation
+
 - [ ] **Data Migration**: Manufacturing data migration procedures validated
 - [ ] **Backup Procedures**: Manufacturing data backup procedures tested
 - [ ] **Recovery Procedures**: Manufacturing data recovery procedures tested
@@ -91,6 +102,7 @@ quality_gate: 'critical'
 - [ ] **Data Security**: Manufacturing data security requirements validated
 
 ### Manufacturing Performance Validation
+
 - [ ] **Response Time**: Manufacturing response time requirements validated
 - [ ] **Throughput**: Manufacturing throughput requirements validated
 - [ ] **Concurrency**: Multi-operator concurrent usage validated
@@ -100,6 +112,7 @@ quality_gate: 'critical'
 ## Security and Compliance Validation
 
 ### Security Requirements
+
 - [ ] **Data Protection**: Manufacturing data protection requirements validated
 - [ ] **Access Control**: Manufacturing access control requirements validated
 - [ ] **Authentication**: Authentication mechanisms validated for manufacturing
@@ -107,6 +120,7 @@ quality_gate: 'critical'
 - [ ] **Audit Logging**: Security audit logging validated
 
 ### Manufacturing Compliance
+
 - [ ] **Industry Standards**: Manufacturing industry standards compliance validated
 - [ ] **Regulatory Requirements**: Manufacturing regulatory requirements validated
 - [ ] **Quality Standards**: Manufacturing quality standards compliance validated
@@ -114,6 +128,7 @@ quality_gate: 'critical'
 - [ ] **Traceability Requirements**: Manufacturing traceability requirements validated
 
 ### Data Governance
+
 - [ ] **Data Accuracy**: Manufacturing data accuracy requirements validated
 - [ ] **Data Integrity**: Manufacturing data integrity requirements validated
 - [ ] **Data Retention**: Manufacturing data retention policies implemented
@@ -123,6 +138,7 @@ quality_gate: 'critical'
 ## Performance and Scalability Validation
 
 ### Performance Benchmarks
+
 - [ ] **Database Performance**: Database operations meet manufacturing performance benchmarks
 - [ ] **UI Responsiveness**: UI responsiveness meets manufacturing requirements
 - [ ] **Memory Usage**: Memory usage within manufacturing environment limits
@@ -130,6 +146,7 @@ quality_gate: 'critical'
 - [ ] **Network Usage**: Network usage optimized for manufacturing networks
 
 ### Scalability Requirements
+
 - [ ] **User Scalability**: Application scales to required number of manufacturing users
 - [ ] **Data Scalability**: Application handles required manufacturing data volumes
 - [ ] **Transaction Scalability**: Application handles required manufacturing transaction volumes
@@ -137,6 +154,7 @@ quality_gate: 'critical'
 - [ ] **Time Scalability**: Application supports extended manufacturing operations
 
 ### Load Testing
+
 - [ ] **Peak Load**: Application handles peak manufacturing load
 - [ ] **Sustained Load**: Application handles sustained manufacturing operations
 - [ ] **Stress Testing**: Application gracefully handles manufacturing stress conditions
@@ -146,6 +164,7 @@ quality_gate: 'critical'
 ## Documentation and Support Readiness
 
 ### User Documentation
+
 - [ ] **Installation Guide**: Manufacturing installation guide complete and validated
 - [ ] **User Manual**: Manufacturing operator manual complete and validated
 - [ ] **Administrator Guide**: Manufacturing administrator guide complete and validated
@@ -153,6 +172,7 @@ quality_gate: 'critical'
 - [ ] **FAQ**: Manufacturing FAQ complete and validated
 
 ### Technical Documentation
+
 - [ ] **Architecture Documentation**: Technical architecture documentation complete
 - [ ] **API Documentation**: Database stored procedure documentation complete
 - [ ] **Configuration Documentation**: Configuration documentation complete
@@ -160,6 +180,7 @@ quality_gate: 'critical'
 - [ ] **Maintenance Documentation**: Maintenance procedures documentation complete
 
 ### Support Readiness
+
 - [ ] **Support Procedures**: Manufacturing support procedures documented
 - [ ] **Escalation Procedures**: Manufacturing issue escalation procedures documented
 - [ ] **Knowledge Base**: Manufacturing knowledge base prepared
@@ -169,6 +190,7 @@ quality_gate: 'critical'
 ## Deployment Validation
 
 ### Deployment Procedures
+
 - [ ] **Deployment Scripts**: Manufacturing deployment scripts tested and validated
 - [ ] **Rollback Procedures**: Manufacturing rollback procedures tested and validated
 - [ ] **Configuration Management**: Manufacturing configuration management validated
@@ -176,6 +198,7 @@ quality_gate: 'critical'
 - [ ] **Service Deployment**: Manufacturing service deployment procedures validated
 
 ### Environment Validation
+
 - [ ] **Development Environment**: Development environment validated
 - [ ] **Testing Environment**: Testing environment validated
 - [ ] **Staging Environment**: Staging environment validated
@@ -183,6 +206,7 @@ quality_gate: 'critical'
 - [ ] **Disaster Recovery**: Disaster recovery environment prepared and validated
 
 ### Monitoring and Alerting
+
 - [ ] **System Monitoring**: Manufacturing system monitoring configured
 - [ ] **Performance Monitoring**: Manufacturing performance monitoring configured
 - [ ] **Error Monitoring**: Manufacturing error monitoring configured
@@ -192,6 +216,7 @@ quality_gate: 'critical'
 ## Risk Assessment and Mitigation
 
 ### Technical Risks
+
 - [ ] **Performance Risks**: Manufacturing performance risks assessed and mitigated
 - [ ] **Scalability Risks**: Manufacturing scalability risks assessed and mitigated
 - [ ] **Integration Risks**: Manufacturing integration risks assessed and mitigated
@@ -199,6 +224,7 @@ quality_gate: 'critical'
 - [ ] **Security Risks**: Manufacturing security risks assessed and mitigated
 
 ### Business Risks
+
 - [ ] **Operational Risks**: Manufacturing operational risks assessed and mitigated
 - [ ] **Compliance Risks**: Manufacturing compliance risks assessed and mitigated
 - [ ] **User Adoption Risks**: Manufacturing user adoption risks assessed and mitigated
@@ -206,6 +232,7 @@ quality_gate: 'critical'
 - [ ] **Continuity Risks**: Manufacturing business continuity risks assessed and mitigated
 
 ### Contingency Planning
+
 - [ ] **Rollback Plan**: Manufacturing rollback plan prepared and validated
 - [ ] **Recovery Plan**: Manufacturing recovery plan prepared and validated
 - [ ] **Communication Plan**: Manufacturing communication plan prepared
@@ -215,6 +242,7 @@ quality_gate: 'critical'
 ## Final Release Validation
 
 ### Release Approval
+
 - [ ] **Technical Approval**: Technical team approval for manufacturing release
 - [ ] **Business Approval**: Business team approval for manufacturing release
 - [ ] **Quality Approval**: Quality team approval for manufacturing release
@@ -222,6 +250,7 @@ quality_gate: 'critical'
 - [ ] **Manufacturing Approval**: Manufacturing team approval for release
 
 ### Release Coordination
+
 - [ ] **Release Schedule**: Manufacturing release schedule coordinated and approved
 - [ ] **Resource Allocation**: Manufacturing release resources allocated
 - [ ] **Communication Plan**: Manufacturing release communication plan executed
@@ -229,6 +258,7 @@ quality_gate: 'critical'
 - [ ] **Support Schedule**: Manufacturing support schedule coordinated
 
 ### Post-Release Monitoring
+
 - [ ] **Monitoring Plan**: Post-release manufacturing monitoring plan prepared
 - [ ] **Success Criteria**: Manufacturing release success criteria defined
 - [ ] **Evaluation Plan**: Manufacturing release evaluation plan prepared
@@ -244,6 +274,7 @@ quality_gate: 'critical'
 - [ ] **Release Manager**: [Name] - [Date]
 
 ## Notes
+
 [Space for release notes, known issues, post-release improvement plans, and manufacturing deployment considerations]
 
 ---

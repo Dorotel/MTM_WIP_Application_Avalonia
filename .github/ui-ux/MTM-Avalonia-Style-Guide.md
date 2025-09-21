@@ -9,6 +9,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ### **Color Palette**
 
 #### **Primary Colors**
+
 ```xml
 <!-- MTM Brand Colors -->
 <Color x:Key="MTM_Primary">#0078D4</Color>           <!-- Windows 11 Blue -->
@@ -24,6 +25,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 #### **Neutral Colors**
+
 ```xml
 <!-- Background Colors -->
 <Color x:Key="MTM_Background">#FFFFFF</Color>        <!-- Pure white -->
@@ -44,6 +46,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 #### **Theme Colors**
+
 ```xml
 <!-- MTM Theme Variations -->
 <Color x:Key="MTM_Blue">#0078D4</Color>
@@ -57,6 +60,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ### **Typography System**
 
 #### **Font Specifications**
+
 ```xml
 <!-- Primary Font Family -->
 <FontFamily x:Key="MTM_FontFamily">Segoe UI, Arial, sans-serif</FontFamily>
@@ -71,6 +75,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 #### **Font Sizes and Line Heights**
+
 ```xml
 <!-- Heading Styles -->
 <x:Double x:Key="MTM_FontSize_H1">32</x:Double>      <!-- Page titles -->
@@ -95,6 +100,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ### **Spacing System**
 
 #### **Standard Spacing Scale**
+
 ```xml
 <!-- Base spacing unit: 4px -->
 <Thickness x:Key="MTM_Spacing_XS">2</Thickness>     <!-- 2px - Very tight -->
@@ -121,6 +127,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ### **Button Styles**
 
 #### **Primary Button**
+
 ```xml
 <Style x:Key="MTM_Button_Primary" TargetType="Button">
     <Setter Property="Background" Value="{DynamicResource MTM_Primary}" />
@@ -156,6 +163,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 #### **Secondary Button**
+
 ```xml
 <Style x:Key="MTM_Button_Secondary" TargetType="Button">
     <Setter Property="Background" Value="Transparent" />
@@ -182,6 +190,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ### **Input Control Styles**
 
 #### **TextBox Style**
+
 ```xml
 <Style x:Key="MTM_TextBox_Standard" TargetType="TextBox">
     <Setter Property="Background" Value="{DynamicResource MTM_Surface}" />
@@ -212,6 +221,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 #### **ComboBox Style**
+
 ```xml
 <Style x:Key="MTM_ComboBox_Standard" TargetType="ComboBox">
     <Setter Property="Background" Value="{DynamicResource MTM_Surface}" />
@@ -230,6 +240,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ### **Card and Panel Styles**
 
 #### **Standard Card**
+
 ```xml
 <Style x:Key="MTM_Card_Standard" TargetType="Border">
     <Setter Property="Background" Value="{DynamicResource MTM_Surface}" />
@@ -249,6 +260,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 #### **Header Card**
+
 ```xml
 <Style x:Key="MTM_Card_Header" TargetType="Border">
     <Setter Property="Background" Value="{DynamicResource MTM_Primary}" />
@@ -261,6 +273,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ### **Data Display Styles**
 
 #### **DataGrid Style**
+
 ```xml
 <Style x:Key="MTM_DataGrid_Standard" TargetType="DataGrid">
     <Setter Property="Background" Value="{DynamicResource MTM_Surface}" />
@@ -303,6 +316,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ## 🏭 **Manufacturing-Specific UI Patterns**
 
 ### **Inventory Status Indicators**
+
 ```xml
 <!-- Status Badge Styles -->
 <Style x:Key="MTM_Status_Available" TargetType="Border">
@@ -352,6 +366,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 ### **Operation Progress Indicators**
+
 ```xml
 <Style x:Key="MTM_ProgressBar_Operation" TargetType="ProgressBar">
     <Setter Property="Height" Value="8" />
@@ -397,6 +412,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 ### **Part Information Display**
+
 ```xml
 <!-- Part ID Display -->
 <Style x:Key="MTM_PartId_Display" TargetType="TextBlock">
@@ -434,6 +450,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ## 🎯 **Layout Patterns**
 
 ### **Main Application Layout**
+
 ```xml
 <!-- Standard Application Layout -->
 <Grid x:Name="MainApplicationGrid">
@@ -467,6 +484,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 ### **Card-Based Layout**
+
 ```xml
 <!-- Standard Card Layout for Manufacturing Workflows -->
 <Border Style="{DynamicResource MTM_Card_Standard}" Margin="8">
@@ -504,6 +522,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 ### **Form Layout**
+
 ```xml
 <!-- Standard Form Layout -->
 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -571,6 +590,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ## 🔧 **Animation and Transitions**
 
 ### **Standard Animations**
+
 ```xml
 <!-- Fade In Animation -->
 <Storyboard x:Key="MTM_FadeIn">
@@ -603,6 +623,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ## 📱 **Responsive Design Guidelines**
 
 ### **Screen Size Breakpoints**
+
 ```xml
 <!-- Responsive breakpoints for manufacturing workstations -->
 <x:Double x:Key="MTM_Breakpoint_Small">1024</x:Double>   <!-- Small workstations -->
@@ -612,6 +633,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 ### **Adaptive Layouts**
+
 ```xml
 <!-- Responsive Grid Columns -->
 <Style x:Key="MTM_ResponsiveGrid" TargetType="Grid">
@@ -661,6 +683,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ## ♿ **Accessibility Standards**
 
 ### **Keyboard Navigation**
+
 ```xml
 <!-- Focus Visual Styles -->
 <Style x:Key="MTM_FocusVisual" TargetType="Control">
@@ -678,6 +701,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ```
 
 ### **High Contrast Support**
+
 ```xml
 <!-- High Contrast Theme Overrides -->
 <Style x:Key="MTM_HighContrast_Button" TargetType="Button">
@@ -695,6 +719,7 @@ This comprehensive style guide defines the visual design system and UI patterns 
 ## 🎨 **Icon System**
 
 ### **Standard Icons**
+
 ```xml
 <!-- Material Design Icons for Manufacturing -->
 <Style x:Key="MTM_Icon_Inventory" TargetType="Path">

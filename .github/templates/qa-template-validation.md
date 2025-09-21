@@ -10,6 +10,7 @@ quality_gate: 'important'
 # Template Validation - Quality Assurance Checklist
 
 ## Context
+
 - **Component Type**: Template Files (Issues, PRs, Code Review, Testing, Architecture)
 - **Manufacturing Domain**: MTM development process templates and manufacturing workflow templates
 - **Quality Gate**: Pre-merge validation for consistent development processes
@@ -17,6 +18,7 @@ quality_gate: 'important'
 ## Template Content Validation
 
 ### Template Structure Validation
+
 - [ ] **YAML Frontmatter**: All templates include proper YAML frontmatter with required fields
   - [ ] **name**: Template name clearly identifies purpose
   - [ ] **description**: Clear, concise description of template usage
@@ -25,6 +27,7 @@ quality_gate: 'important'
   - [ ] **Additional Fields**: Any template-specific required fields present
 
 ### Template Completeness
+
 - [ ] **All Sections Present**: Template includes all necessary sections for its purpose
 - [ ] **Required Fields**: All required fields clearly marked and explained
 - [ ] **Optional Fields**: Optional fields clearly distinguished from required fields
@@ -32,6 +35,7 @@ quality_gate: 'important'
 - [ ] **Examples**: Realistic examples provided where helpful
 
 ### Manufacturing Context Integration
+
 - [ ] **Manufacturing Scenarios**: Template addresses manufacturing-specific scenarios appropriately
 - [ ] **Inventory Management**: Template includes inventory management context where relevant
 - [ ] **Manufacturing Workflows**: Template addresses manufacturing workflow requirements
@@ -41,6 +45,7 @@ quality_gate: 'important'
 ## Template Type-Specific Validation
 
 ### Issue Templates
+
 - [ ] **Problem Description**: Clear structure for describing manufacturing issues
 - [ ] **Reproduction Steps**: Structured format for manufacturing scenario reproduction
 - [ ] **Expected Behavior**: Clear format for expected manufacturing system behavior
@@ -48,6 +53,7 @@ quality_gate: 'important'
 - [ ] **Impact Assessment**: Manufacturing impact assessment structure
 
 ### Pull Request Templates
+
 - [ ] **Change Description**: Clear structure for describing manufacturing-related changes
 - [ ] **Testing Validation**: Manufacturing testing validation checklist
 - [ ] **Breaking Changes**: Manufacturing compatibility impact assessment
@@ -55,6 +61,7 @@ quality_gate: 'important'
 - [ ] **Review Requirements**: Manufacturing domain review requirements
 
 ### Code Review Templates
+
 - [ ] **Component Validation**: Appropriate validation for different component types
 - [ ] **Manufacturing Standards**: Manufacturing-grade quality standards enforcement
 - [ ] **Performance Validation**: Manufacturing performance requirement validation
@@ -62,6 +69,7 @@ quality_gate: 'important'
 - [ ] **Compliance Check**: Manufacturing compliance requirement validation
 
 ### Testing Templates
+
 - [ ] **Test Coverage**: Manufacturing test coverage requirements
 - [ ] **Test Types**: All relevant manufacturing test types covered
 - [ ] **Performance Testing**: Manufacturing performance testing requirements
@@ -69,6 +77,7 @@ quality_gate: 'important'
 - [ ] **Integration Testing**: Manufacturing integration testing requirements
 
 ### Architecture Templates
+
 - [ ] **Decision Context**: Manufacturing business context for architectural decisions
 - [ ] **Options Analysis**: Manufacturing-appropriate option evaluation
 - [ ] **Impact Assessment**: Manufacturing impact assessment criteria
@@ -78,6 +87,7 @@ quality_gate: 'important'
 ## Template Usability Validation
 
 ### User Experience
+
 - [ ] **Clear Instructions**: Template instructions are clear and unambiguous
 - [ ] **Logical Flow**: Template fields follow logical order
 - [ ] **Reasonable Length**: Template is comprehensive but not overwhelming
@@ -85,6 +95,7 @@ quality_gate: 'important'
 - [ ] **Completion Guidance**: Clear guidance on how to complete each section
 
 ### Manufacturing Operator Experience
+
 - [ ] **Operator-Friendly Language**: Templates use language appropriate for manufacturing operators
 - [ ] **Workflow Integration**: Templates integrate with manufacturing workflows
 - [ ] **Time Considerations**: Templates respect manufacturing operator time constraints
@@ -92,6 +103,7 @@ quality_gate: 'important'
 - [ ] **Escalation Paths**: Templates provide clear escalation paths for manufacturing issues
 
 ### Developer Experience
+
 - [ ] **Technical Accuracy**: Templates use correct technical terminology
 - [ ] **Development Integration**: Templates integrate with development workflows
 - [ ] **Tool Integration**: Templates work well with development tools
@@ -101,6 +113,7 @@ quality_gate: 'important'
 ## Manufacturing Domain Validation
 
 ### Business Process Alignment
+
 - [ ] **Inventory Workflows**: Templates align with MTM inventory management workflows
 - [ ] **Manufacturing Operations**: Templates support manufacturing operation requirements
 - [ ] **Quality Processes**: Templates enforce manufacturing quality processes
@@ -108,6 +121,7 @@ quality_gate: 'important'
 - [ ] **Compliance Standards**: Templates ensure manufacturing compliance standards
 
 ### Manufacturing Data Handling
+
 - [ ] **Data Accuracy**: Templates ensure manufacturing data accuracy
 - [ ] **Data Security**: Templates address manufacturing data security
 - [ ] **Data Integrity**: Templates validate manufacturing data integrity
@@ -115,6 +129,7 @@ quality_gate: 'important'
 - [ ] **Performance Data**: Templates address manufacturing performance data requirements
 
 ### Manufacturing System Integration
+
 - [ ] **System Compatibility**: Templates ensure manufacturing system compatibility
 - [ ] **Integration Requirements**: Templates address manufacturing system integration
 - [ ] **Performance Requirements**: Templates validate manufacturing performance requirements
@@ -124,6 +139,7 @@ quality_gate: 'important'
 ## Content Quality Standards
 
 ### Writing Quality
+
 - [ ] **Grammar and Spelling**: No grammar or spelling errors
 - [ ] **Professional Tone**: Consistent, professional tone throughout
 - [ ] **Clear Language**: Language is clear and accessible
@@ -131,6 +147,7 @@ quality_gate: 'important'
 - [ ] **Appropriate Detail Level**: Appropriate level of detail for intended audience
 
 ### Technical Accuracy
+
 - [ ] **Current Information**: All technical information is current and accurate
 - [ ] **Version Compatibility**: All references compatible with MTM technology stack
 - [ ] **Best Practices**: Templates promote current best practices
@@ -138,6 +155,7 @@ quality_gate: 'important'
 - [ ] **Performance Considerations**: Performance implications properly addressed
 
 ### Manufacturing Accuracy
+
 - [ ] **Process Accuracy**: Manufacturing processes accurately represented
 - [ ] **Terminology Accuracy**: Manufacturing terminology used correctly
 - [ ] **Workflow Accuracy**: Manufacturing workflows accurately reflected
@@ -147,6 +165,7 @@ quality_gate: 'important'
 ## Template Maintenance Validation
 
 ### Version Control
+
 - [ ] **Change Tracking**: Template changes properly tracked and documented
 - [ ] **Version History**: Clear version history maintained
 - [ ] **Change Rationale**: Reasons for template changes documented
@@ -154,6 +173,7 @@ quality_gate: 'important'
 - [ ] **Migration Guidance**: Guidance provided for template updates
 
 ### Update Procedures
+
 - [ ] **Review Process**: Clear process for template updates
 - [ ] **Approval Process**: Appropriate approval process for template changes
 - [ ] **Testing Process**: Template changes tested before deployment
@@ -161,6 +181,7 @@ quality_gate: 'important'
 - [ ] **Training Process**: Training provided for significant template changes
 
 ### Usage Analytics
+
 - [ ] **Usage Tracking**: Template usage tracked and analyzed
 - [ ] **Effectiveness Measurement**: Template effectiveness measured
 - [ ] **Feedback Collection**: User feedback collected and analyzed
@@ -170,6 +191,7 @@ quality_gate: 'important'
 ## Automated Validation Checks
 
 ### Format Validation
+
 - [ ] **Markdown Syntax**: Valid markdown syntax throughout template
 - [ ] **YAML Validation**: YAML frontmatter is valid and properly formatted
 - [ ] **Link Validation**: All internal links are valid
@@ -177,6 +199,7 @@ quality_gate: 'important'
 - [ ] **Formatting Consistency**: Consistent formatting throughout template
 
 ### Content Validation
+
 - [ ] **Required Field Check**: All required fields are present
 - [ ] **Example Validation**: All examples are accurate and current
 - [ ] **Instruction Clarity**: Instructions are clear and complete
@@ -186,6 +209,7 @@ quality_gate: 'important'
 ## Integration Testing
 
 ### Workflow Integration
+
 - [ ] **GitHub Integration**: Templates integrate properly with GitHub workflows
 - [ ] **Tool Integration**: Templates work with development and manufacturing tools
 - [ ] **Process Integration**: Templates fit into existing development and manufacturing processes
@@ -193,6 +217,7 @@ quality_gate: 'important'
 - [ ] **Notification Integration**: Templates trigger appropriate notifications
 
 ### User Acceptance Testing
+
 - [ ] **Developer Testing**: Developers can successfully use templates
 - [ ] **Manufacturing Team Testing**: Manufacturing team can successfully use templates
 - [ ] **Manager Testing**: Management can extract needed information from template usage
@@ -202,6 +227,7 @@ quality_gate: 'important'
 ## Manual Review Items
 
 ### Template Design Review
+
 - [ ] **Purpose Clarity**: Template purpose is clear and well-defined
 - [ ] **Scope Appropriateness**: Template scope is appropriate for its intended use
 - [ ] **Structure Logic**: Template structure is logical and intuitive
@@ -209,6 +235,7 @@ quality_gate: 'important'
 - [ ] **Usability Assessment**: Template is usable by intended audience
 
 ### Manufacturing Domain Review
+
 - [ ] **Business Alignment**: Template aligns with manufacturing business needs
 - [ ] **Process Integration**: Template integrates with manufacturing processes
 - [ ] **Quality Standards**: Template enforces appropriate manufacturing quality standards
@@ -216,6 +243,7 @@ quality_gate: 'important'
 - [ ] **Compliance Requirements**: Template ensures manufacturing compliance
 
 ### Technical Review
+
 - [ ] **Technical Accuracy**: All technical content is accurate
 - [ ] **Implementation Feasibility**: Template requirements are technically feasible
 - [ ] **Tool Compatibility**: Template works with required tools
@@ -230,6 +258,7 @@ quality_gate: 'important'
 - [ ] **Quality Gate Approval**: [Name] - [Date]
 
 ## Notes
+
 [Space for reviewer notes, template improvement suggestions, and manufacturing context enhancements]
 
 ---

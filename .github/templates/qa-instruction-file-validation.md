@@ -10,6 +10,7 @@ quality_gate: 'important'
 # Instruction File Validation - Quality Assurance Checklist
 
 ## Context
+
 - **Component Type**: Instruction Documentation (GitHub Copilot Instructions, Implementation Guides)
 - **Manufacturing Domain**: MTM inventory management instruction accuracy and AI optimization
 - **Quality Gate**: Pre-merge validation for accurate AI-assisted development guidance
@@ -17,6 +18,7 @@ quality_gate: 'important'
 ## Instruction File Content Validation
 
 ### Technology Accuracy Validation
+
 - [ ] **Framework Versions**: All technology versions match MTM_WIP_Application_Avalonia.csproj exactly
   - [ ] **.NET 8** (TargetFramework: net8.0)
   - [ ] **Avalonia UI 11.3.4** (NOT WPF)
@@ -25,6 +27,7 @@ quality_gate: 'important'
   - [ ] **Microsoft Extensions 9.0.8** (DI, Logging, Configuration, Hosting)
 
 ### MVVM Pattern Validation
+
 - [ ] **Community Toolkit Only**: All MVVM patterns use MVVM Community Toolkit exclusively
 - [ ] **No ReactiveUI**: Zero ReactiveUI patterns or references present
 - [ ] **[ObservableProperty] Usage**: All property patterns use [ObservableProperty] attribute
@@ -32,6 +35,7 @@ quality_gate: 'important'
 - [ ] **Source Generator Patterns**: All examples use source generator features correctly
 
 ### Database Pattern Validation
+
 - [ ] **Stored Procedures Only**: All database examples use stored procedures exclusively
 - [ ] **Helper Pattern**: All database calls use Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()
 - [ ] **No Direct SQL**: Zero direct SQL query examples present
@@ -39,7 +43,8 @@ quality_gate: 'important'
 - [ ] **Transaction Type Logic**: Correct manufacturing transaction type determination (user intent, not operation numbers)
 
 ### Avalonia UI Pattern Validation
-- [ ] **Correct Namespace**: All AXAML examples use https://github.com/avaloniaui namespace
+
+- [ ] **Correct Namespace**: All AXAML examples use <https://github.com/avaloniaui> namespace
 - [ ] **x:Name Usage**: All Grid naming uses x:Name (not Name) to prevent AVLN2000 errors
 - [ ] **DynamicResource Usage**: All theme references use DynamicResource for theme consistency
 - [ ] **Control Equivalents**: Use TextBlock (not Label), Flyout (not Popup), etc.
@@ -48,6 +53,7 @@ quality_gate: 'important'
 ## Manufacturing Domain Accuracy
 
 ### Business Logic Validation
+
 - [ ] **Inventory Management**: Instruction examples accurately reflect MTM inventory workflows
 - [ ] **Manufacturing Operations**: Operation sequences (90→100→110→120) correctly explained as workflow steps
 - [ ] **Transaction Types**: Transaction types (IN/OUT/TRANSFER) correctly determined by user intent
@@ -55,6 +61,7 @@ quality_gate: 'important'
 - [ ] **Location Management**: Location concepts accurately reflect manufacturing physical locations
 
 ### Manufacturing Workflow Instructions
+
 - [ ] **Complete Workflows**: Instructions cover complete manufacturing operator workflows
 - [ ] **QuickButtons Usage**: QuickButtons functionality accurately documented
 - [ ] **Error Scenarios**: Manufacturing error scenarios properly documented
@@ -62,6 +69,7 @@ quality_gate: 'important'
 - [ ] **Multi-User Scenarios**: Multi-operator/multi-shift scenarios addressed
 
 ### Manufacturing Data Integrity
+
 - [ ] **Data Validation Rules**: Manufacturing data validation rules accurately documented
 - [ ] **Business Rules**: Manufacturing business rules correctly explained
 - [ ] **Audit Requirements**: Manufacturing audit trail requirements covered
@@ -71,6 +79,7 @@ quality_gate: 'important'
 ## GitHub Copilot Optimization
 
 ### AI Context Optimization
+
 - [ ] **Clear Examples**: Code examples are clear and complete for AI understanding
 - [ ] **Pattern Consistency**: All patterns consistently demonstrated across instruction file
 - [ ] **Anti-Pattern Documentation**: Common mistakes documented with ❌ WRONG examples
@@ -78,6 +87,7 @@ quality_gate: 'important'
 - [ ] **Context Completeness**: Sufficient context provided for AI to generate accurate code
 
 ### Instruction Structure Validation
+
 - [ ] **Frontmatter Present**: YAML frontmatter with description and applies_to fields
 - [ ] **Clear Headings**: Logical heading structure for AI navigation
 - [ ] **Code Block Language**: All code blocks properly tagged with language identifiers
@@ -85,6 +95,7 @@ quality_gate: 'important'
 - [ ] **Table of Contents**: Complex instruction files include navigation aids
 
 ### Manufacturing Context for AI
+
 - [ ] **Manufacturing Examples**: All examples use realistic MTM manufacturing scenarios
 - [ ] **Business Context**: Manufacturing business context explained for AI understanding
 - [ ] **Domain Terminology**: Manufacturing terminology properly defined and used consistently
@@ -94,6 +105,7 @@ quality_gate: 'important'
 ## Implementation Pattern Validation
 
 ### Code Example Quality
+
 - [ ] **Compilation Ready**: All code examples would compile without modification
 - [ ] **Complete Examples**: Code examples are complete, not partial snippets
 - [ ] **Error Handling**: Code examples include appropriate error handling
@@ -101,6 +113,7 @@ quality_gate: 'important'
 - [ ] **Manufacturing Realistic**: Code examples use realistic manufacturing data
 
 ### Architecture Pattern Validation
+
 - [ ] **Service-Oriented Design**: Examples reflect MTM service-oriented architecture
 - [ ] **Dependency Injection**: All examples use proper DI patterns
 - [ ] **Configuration Patterns**: Configuration examples match MTM configuration architecture
@@ -108,6 +121,7 @@ quality_gate: 'important'
 - [ ] **Performance Patterns**: Examples include performance considerations
 
 ### Anti-Pattern Prevention
+
 - [ ] **Common Mistakes**: Common implementation mistakes documented and prevented
 - [ ] **Memory Leaks**: Memory leak patterns identified and prevented
 - [ ] **Performance Issues**: Performance anti-patterns documented and prevented
@@ -117,6 +131,7 @@ quality_gate: 'important'
 ## Documentation Quality Standards
 
 ### Writing Quality
+
 - [ ] **Clear Language**: Instructions written in clear, unambiguous language
 - [ ] **Logical Flow**: Information presented in logical order
 - [ ] **Consistent Terminology**: Technical terminology used consistently
@@ -124,6 +139,7 @@ quality_gate: 'important'
 - [ ] **Professional Tone**: Professional, instructional tone maintained
 
 ### Technical Accuracy
+
 - [ ] **Code Syntax**: All code examples use correct syntax
 - [ ] **API Usage**: All API usage examples are correct and current
 - [ ] **Configuration Examples**: All configuration examples are valid
@@ -131,6 +147,7 @@ quality_gate: 'important'
 - [ ] **File Path Examples**: All file path examples are correct
 
 ### Completeness Validation
+
 - [ ] **Scenario Coverage**: All relevant manufacturing scenarios covered
 - [ ] **Edge Cases**: Important edge cases documented
 - [ ] **Troubleshooting**: Common troubleshooting scenarios included
@@ -140,6 +157,7 @@ quality_gate: 'important'
 ## Cross-Reference Validation
 
 ### Internal Cross-References
+
 - [ ] **Link Accuracy**: All internal links point to correct files and sections
 - [ ] **File Path Accuracy**: All referenced file paths are correct for current repository structure
 - [ ] **Section References**: All section references are accurate and up-to-date
@@ -147,6 +165,7 @@ quality_gate: 'important'
 - [ ] **Context References**: All context file references are accurate
 
 ### External References
+
 - [ ] **Documentation Links**: All external documentation links are valid and current
 - [ ] **Version Compatibility**: All external references compatible with MTM technology versions
 - [ ] **Official Sources**: All technology references point to official documentation
@@ -154,6 +173,7 @@ quality_gate: 'important'
 - [ ] **Maintenance Planning**: Process for maintaining external reference accuracy
 
 ### Manufacturing Reference Validation
+
 - [ ] **Business Process References**: All manufacturing process references are accurate
 - [ ] **Data Model References**: All manufacturing data model references are correct
 - [ ] **Workflow References**: All manufacturing workflow references are accurate
@@ -163,6 +183,7 @@ quality_gate: 'important'
 ## Automated Validation Checks
 
 ### Markdown Validation
+
 - [ ] **Syntax Validation**: Markdown syntax is valid and renders correctly
 - [ ] **Link Validation**: All markdown links are valid and accessible
 - [ ] **Image Validation**: All referenced images exist and are accessible
@@ -170,6 +191,7 @@ quality_gate: 'important'
 - [ ] **Code Block Validation**: All code blocks are properly formatted and tagged
 
 ### Content Validation
+
 - [ ] **Spelling Check**: All text passes spell check validation
 - [ ] **Grammar Check**: All text passes grammar validation
 - [ ] **Consistency Check**: Terminology and patterns used consistently
@@ -179,6 +201,7 @@ quality_gate: 'important'
 ## Manual Review Items
 
 ### Manufacturing Domain Expert Review
+
 - [ ] **Business Accuracy**: Manufacturing processes accurately represented
 - [ ] **Workflow Completeness**: All critical manufacturing workflows covered
 - [ ] **Data Accuracy**: Manufacturing data patterns accurately documented
@@ -186,6 +209,7 @@ quality_gate: 'important'
 - [ ] **Usability Considerations**: Manufacturing operator usability addressed
 
 ### Technical Expert Review
+
 - [ ] **Architecture Accuracy**: Technical architecture accurately represented
 - [ ] **Implementation Accuracy**: Implementation patterns are correct and optimal
 - [ ] **Performance Implications**: Performance implications accurately documented
@@ -193,6 +217,7 @@ quality_gate: 'important'
 - [ ] **Maintainability**: Instructions promote maintainable code patterns
 
 ### AI Optimization Review
+
 - [ ] **GitHub Copilot Effectiveness**: Instructions optimize GitHub Copilot code generation
 - [ ] **Context Clarity**: AI context is clear and comprehensive
 - [ ] **Pattern Recognition**: Patterns are clearly recognizable by AI
@@ -207,6 +232,7 @@ quality_gate: 'important'
 - [ ] **Quality Gate Approval**: [Name] - [Date]
 
 ## Notes
+
 [Space for reviewer notes, instruction improvements, and manufacturing context enhancements]
 
 ---

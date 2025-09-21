@@ -14,14 +14,15 @@
 
 ## 📋 Executive Summary
 
-The UI Theme & Design System feature provides a comprehensive visual identity and interaction framework for the MTM manufacturing application. It includes 18+ professional themes with light and dark variants, advanced customization capabilities, real-time theme switching, and complete design system components. This centralized design approach ensures consistent user experience, accessibility compliance, and brand alignment across all manufacturing operations.
+The UI Theme & Design System feature provides a comprehensive visual identity and interaction framework for the MTM manufacturing application. It includes **19 professional themes** with light and dark variants, real-time theme switching, and complete design system components optimized for Avalonia UI 11.3.4. This centralized design approach ensures consistent user experience, accessibility compliance, and brand alignment across all manufacturing operations.
 
 ### Key Value Proposition
-- **18+ Professional Themes** with light/dark variants optimized for manufacturing environments
-- **Real-Time Theme Switching** with instant application-wide updates and resource management
-- **Advanced Customization Engine** with live preview, color palettes, and custom theme creation
+
+- **19 Professional Themes** with light/dark variants optimized for manufacturing environments
+- **Real-Time Theme Switching** with instant application-wide updates via ThemeService
+- **Avalonia 11.3.4 Native Integration** with DynamicResource bindings and cross-platform support
 - **Manufacturing-Optimized Design** with high contrast options and industrial color schemes
-- **Complete Component Library** with consistent styling, interactions, and accessibility features
+- **Complete Component Library** with consistent styling, interactions, and WCAG 2.1 AA compliance
 
 ---
 
@@ -30,6 +31,7 @@ The UI Theme & Design System feature provides a comprehensive visual identity an
 Manufacturing software interfaces often lack visual consistency, accessibility compliance, and customization options that meet diverse operational requirements. Traditional design systems fail to address:
 
 ### Current Pain Points
+
 - **Visual Inconsistency** across different application areas and manufacturing operations
 - **Limited Customization** for different shifts, departments, and accessibility needs
 - **Poor Accessibility** not meeting manufacturing environment requirements (high contrast, large targets)
@@ -37,6 +39,7 @@ Manufacturing software interfaces often lack visual consistency, accessibility c
 - **Theme Performance Issues** with slow switching, resource conflicts, and memory leaks
 
 ### Business Impact
+
 - **User Fatigue** from poor visual design and inconsistent interface patterns
 - **Accessibility Compliance Risks** not meeting ADA and manufacturing safety standards
 - **Training Overhead** from inconsistent UI patterns across different system areas
@@ -48,12 +51,14 @@ Manufacturing software interfaces often lack visual consistency, accessibility c
 ## 🚀 Goals and Success Metrics
 
 ### Primary Goals
+
 1. **Establish Design System**: Create comprehensive, consistent visual identity across all application areas
 2. **Enable Theme Customization**: Provide real-time theme switching with advanced personalization options
 3. **Ensure Accessibility**: Meet WCAG 2.1 AA standards with manufacturing-specific accessibility features  
 4. **Optimize Performance**: Implement efficient theme loading, resource management, and memory optimization
 
 ### Success Metrics (90-Day Post-Launch)
+
 - **User Experience**: >4.7/5 rating for visual appeal and interface consistency
 - **Theme Usage**: >80% of users actively use theme customization features
 - **Accessibility Compliance**: 100% WCAG 2.1 AA compliance with manufacturing extensions
@@ -65,16 +70,19 @@ Manufacturing software interfaces often lack visual consistency, accessibility c
 ## 👥 Target Users
 
 ### Primary Users
+
 - **Production Operators**: Frontline workers requiring high-contrast, accessible interfaces
 - **Shift Supervisors**: Staff needing professional appearance with departmental customization
 - **System Administrators**: IT staff managing organization-wide theme policies and custom branding
 
 ### Secondary Users  
+
 - **Plant Managers**: Leadership requiring professional, branded interfaces for customer demonstrations
 - **Quality Inspectors**: Staff needing high-contrast themes for precise visual inspection work
 - **Maintenance Technicians**: Workers requiring themes optimized for different lighting conditions
 
 ### User Personas
+
 - **"High-Contrast Henry"**: Quality inspector who needs maximum visual clarity for precise work
 - **"Professional Patricia"**: Plant manager who values branded, professional appearance for client visits
 - **"Customization Carl"**: System administrator who creates department-specific themes and branding
@@ -84,6 +92,7 @@ Manufacturing software interfaces often lack visual consistency, accessibility c
 ## 🏗️ Technical Architecture
 
 ### System Components
+
 ```mermaid
 graph TD
     A[ThemeService] --> B[Theme Resource Manager]
@@ -103,13 +112,15 @@ graph TD
 ```
 
 ### Core Technologies
+
 - **Framework**: .NET 8 with Avalonia UI 11.3.4 styling system
-- **Theme Architecture**: Resource Dictionary-based with MVVM Community Toolkit integration
-- **Dynamic Loading**: Asynchronous theme resource loading with memory management
-- **Color System**: RGB/HSL color manipulation with accessibility contrast validation
-- **Performance**: Resource caching, virtual theme loading, and garbage collection optimization
+- **Theme Management**: ThemeService with DynamicResource bindings
+- **Dependency Injection**: Microsoft.Extensions.DependencyInjection 9.0.8
+- **Configuration**: Microsoft.Extensions.Configuration 9.0.8 with appsettings.json
+- **Cross-Platform Support**: Windows, macOS, Linux, Android with native theming
 
 ### Architecture Patterns
+
 ```csharp
 // Theme service with dynamic resource management
 public class ThemeService : IThemeService
@@ -154,17 +165,20 @@ public class ThemeInfo
 
 ## ✨ Core Features
 
-### F1: Comprehensive Theme Collection (18+ Professional Themes)
+### F1: Comprehensive Theme Collection (19 Professional Themes)
+
 **User Story**: As a production operator, I want access to multiple professional theme options including high-contrast variants so I can choose the most suitable visual design for my working conditions and personal preferences.
 
 **Acceptance Criteria**:
-- ✅ 18+ professional themes covering light, dark, and high-contrast variants
+
+- ✅ 19 professional themes covering light, dark, and high-contrast variants
 - ✅ Manufacturing-optimized color palettes (MTM_Blue, MTM_Amber, MTM_Green, MTM_Industrial, etc.)
 - ✅ Accessibility-compliant themes meeting WCAG 2.1 AA standards
 - ✅ Department-specific themes with customizable color schemes
 - ✅ Professional appearance suitable for customer demonstrations and audits
 
 **Available Theme Collection**:
+
 ```csharp
 // Light Theme Variants
 MTMTheme (Default)        - Windows 11 Professional Blue (#0078D4)
@@ -193,9 +207,11 @@ MTM_HighContrast          - Maximum Contrast (#000000/#FFFFFF)
 ```
 
 ### F2: Real-Time Theme Switching Engine
+
 **User Story**: As a shift supervisor, I want instant theme switching capabilities so I can quickly adapt the interface appearance for different lighting conditions, shifts, or presentation requirements without application restart.
 
 **Acceptance Criteria**:
+
 - ✅ <500ms theme switching with complete visual refresh
 - ✅ No application restart required for theme changes
 - ✅ Automatic resource cleanup preventing memory leaks
@@ -203,6 +219,7 @@ MTM_HighContrast          - Maximum Contrast (#000000/#FFFFFF)
 - ✅ Preservation of user data and application state during theme changes
 
 **Technical Implementation**:
+
 ```csharp
 [RelayCommand]
 private async Task SetThemeAsync(string themeId)
@@ -251,65 +268,82 @@ private async Task ForceCompleteApplicationRefreshAsync()
 }
 ```
 
-### F3: Advanced Theme Builder and Customization Engine
-**User Story**: As a system administrator, I want advanced theme customization tools so I can create organization-specific themes, match corporate branding, and provide personalized visual experiences for different departments.
+### F3: Theme Configuration and Management System
+
+**User Story**: As a system administrator, I want theme configuration management so I can set default themes, manage theme availability, and ensure consistent visual branding across manufacturing workstations.
 
 **Acceptance Criteria**:
-- ✅ Live preview engine showing real-time color changes
-- ✅ Custom color picker with HSL, RGB, and HEX input options
-- ✅ Brand color palette import from corporate style guides
-- ✅ Theme export/import functionality for sharing across installations
-- ✅ Department-specific theme templates with approval workflows
+
+- ✅ Theme configuration in appsettings.json with Environment-specific overrides
+- ✅ ThemeService dependency injection with proper lifecycle management
+- ✅ Default theme selection with fallback mechanism
+- ✅ Theme availability configuration for different user roles
+- ✅ Centralized theme resource management with DynamicResource bindings
 
 **Technical Implementation**:
-```csharp
-public partial class ThemeBuilderViewModel : BaseViewModel
-{
-    [ObservableProperty]
-    private Color _primaryActionColor = Color.FromRgb(0, 120, 212);
-    
-    [ObservableProperty]
-    private Color _secondaryActionColor = Color.FromRgb(16, 110, 190);
-    
-    [ObservableProperty]
-    private bool _isLivePreviewEnabled = true;
 
-    [RelayCommand]
-    private async Task ApplyLivePreviewAsync()
-    {
-        if (!IsLivePreviewEnabled) return;
-        
-        var colorOverrides = new Dictionary<string, string>
-        {
-            ["MTM_Shared_Logic.PrimaryAction"] = _primaryActionColor.ToString(),
-            ["MTM_Shared_Logic.SecondaryAction"] = _secondaryActionColor.ToString()
-        };
-        
-        await _themeService.ApplyCustomColorsAsync(colorOverrides);
-    }
+```csharp
+// ThemeService registration in ServiceCollectionExtensions.cs
+public static void AddMTMServices(this IServiceCollection services, IConfiguration configuration)
+{
+    services.AddSingleton<IThemeService, ThemeService>();
+    services.Configure<ThemeOptions>(configuration.GetSection("Themes"));
+}
+
+// Configuration in appsettings.json
+{
+  "Themes": {
+    "DefaultTheme": "MTMTheme",
+    "AvailableThemes": [
+      "MTMTheme", "MTM_Blue", "MTM_Amber", "MTM_Green", "MTM_Red",
+      "MTM_Teal", "MTM_Indigo", "MTM_Rose", "MTM_Emerald", "MTM_Light",
+      "MTM_Dark", "MTM_Blue_Dark", "MTM_Green_Dark", "MTM_Red_Dark", 
+      "MTM_Teal_Dark", "MTM_Indigo_Dark", "MTM_Rose_Dark", "MTM_Light_Dark",
+      "MTM_HighContrast"
+    ],
+    "AllowUserThemeSelection": true
+  }
+}
+
+// Theme switching implementation
+public class ThemeService : IThemeService
+{
+    private readonly IConfiguration _configuration;
     
-    [RelayCommand] 
-    private async Task ExportCustomThemeAsync()
+    public async Task<ServiceResult> ChangeThemeAsync(string themeName)
     {
-        var customTheme = new CustomThemeDefinition
+        try
         {
-            Name = CustomThemeName,
-            BaseTheme = SelectedBaseTheme,
-            ColorOverrides = GetAllColorOverrides(),
-            CreatedBy = Environment.UserName,
-            CreatedDate = DateTime.Now
-        };
-        
-        var json = JsonSerializer.Serialize(customTheme, new JsonSerializerOptions { WriteIndented = true });
-        await SaveThemeToFileAsync(json);
+            var themeUri = new Uri($"avares://MTM_WIP_Application_Avalonia/Resources/Themes/{themeName}.axaml");
+            var app = Application.Current;
+            
+            if (app?.Resources != null)
+            {
+                app.Resources.MergedDictionaries.Clear();
+                app.Resources.MergedDictionaries.Add(new ResourceInclude(themeUri)
+                {
+                    Source = themeUri
+                });
+                
+                return ServiceResult.Success("Theme changed successfully");
+            }
+            
+            return ServiceResult.Failure("Application not available");
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failure($"Theme change failed: {ex.Message}");
+        }
     }
 }
 ```
 
 ### F4: Complete MTM Component Design System
+
 **User Story**: As a developer, I want a comprehensive component library with consistent styling so I can build new features that automatically inherit the current theme and maintain visual consistency across the entire application.
 
 **Acceptance Criteria**:
+
 - ✅ Button components with primary, secondary, and danger variants
 - ✅ Card components with shadows, borders, and hover effects
 - ✅ Form elements with validation states and accessibility features
@@ -317,6 +351,7 @@ public partial class ThemeBuilderViewModel : BaseViewModel
 - ✅ Data display components with alternating row colors and selection states
 
 **Component Style Architecture**:
+
 ```xml
 <!-- Core Button System -->
 <ControlTheme x:Key="MTM_PrimaryButton" TargetType="Button">
@@ -354,9 +389,11 @@ public partial class ThemeBuilderViewModel : BaseViewModel
 ```
 
 ### F5: Manufacturing-Optimized Accessibility System
+
 **User Story**: As a quality inspector, I want accessibility-optimized themes with high contrast and large touch targets so I can work efficiently in various lighting conditions while meeting ADA compliance requirements.
 
 **Acceptance Criteria**:
+
 - ✅ High-contrast theme exceeding WCAG 2.1 AAA standards
 - ✅ Large touch targets (44px minimum) for manufacturing environments
 - ✅ Clear focus indicators with visible keyboard navigation
@@ -364,6 +401,7 @@ public partial class ThemeBuilderViewModel : BaseViewModel
 - ✅ Color-blind accessible color palettes with shape/pattern alternatives
 
 **High Contrast Implementation**:
+
 ```xml
 <!-- MTM High Contrast Theme Colors -->
 <SolidColorBrush x:Key="MTM_Shared_Logic.PrimaryAction" Color="#FFFF00"/>        <!-- Yellow on black -->
@@ -392,9 +430,11 @@ public partial class ThemeBuilderViewModel : BaseViewModel
 ```
 
 ### F6: Theme Performance Optimization and Resource Management
+
 **User Story**: As a system administrator, I want efficient theme loading and memory management so the application maintains optimal performance during theme switching and extended usage across multiple shifts.
 
 **Acceptance Criteria**:
+
 - ✅ <50MB memory usage per loaded theme with automatic garbage collection
 - ✅ Resource caching system preventing redundant theme file loading
 - ✅ Background loading for unused themes with priority queuing
@@ -402,6 +442,7 @@ public partial class ThemeBuilderViewModel : BaseViewModel
 - ✅ Performance monitoring and diagnostics for theme operations
 
 **Performance Implementation**:
+
 ```csharp
 public class ThemeResourceCache
 {
@@ -452,6 +493,7 @@ public class ThemeResourceCache
 ### MTM Design System Specifications
 
 #### Color Philosophy and Psychology
+
 - **Professional Blue (#0078D4)**: Trust, reliability, corporate professionalism
 - **Industrial Amber (#FF8F00)**: Energy, manufacturing focus, equipment attention  
 - **Success Green (#43A047)**: Positive outcomes, quality achievements, growth
@@ -459,6 +501,7 @@ public class ThemeResourceCache
 - **Focus Teal (#00ACC1)**: Calm concentration, precision work, quality control
 
 #### Typography Hierarchy
+
 ```css
 /* MTM Typography Scale */
 Heading 1: 32px, Bold, #323130 (HeadingText)
@@ -471,6 +514,7 @@ Interactive: 14px, Medium, #0078D4 (InteractiveText)
 ```
 
 #### Spacing and Layout System
+
 - **Micro spacing**: 4px for tight element grouping
 - **Small spacing**: 8px for related element separation
 - **Medium spacing**: 16px for section boundaries and card padding
@@ -480,12 +524,14 @@ Interactive: 14px, Medium, #0078D4 (InteractiveText)
 #### Component Interaction Standards
 
 ##### Button Interaction Patterns
+
 1. **Hover State**: 150ms transition to hover color with subtle elevation
 2. **Active State**: Immediate visual depression with darker color
 3. **Focus State**: High-contrast outline with keyboard navigation support
 4. **Disabled State**: 50% opacity with cursor change and no interactions
 
 ##### Card and Panel Behaviors
+
 1. **Default State**: Subtle shadow with clean borders
 2. **Hover State**: Enhanced shadow with background color shift
 3. **Selected State**: Border color change with maintained readability
@@ -496,12 +542,14 @@ Interactive: 14px, Medium, #0078D4 (InteractiveText)
 ## 🔒 Security and Compliance
 
 ### Accessibility Compliance Standards
+
 - **WCAG 2.1 AA Compliance**: All themes meet minimum accessibility requirements
 - **WCAG 2.1 AAA High Contrast**: Dedicated high-contrast theme exceeds AAA standards
 - **Manufacturing Extensions**: Additional contrast ratios for industrial lighting conditions
 - **Screen Reader Optimization**: Comprehensive ARIA labels and semantic structure
 
 ### Theme Security and Integrity
+
 ```csharp
 public class ThemeSecurityValidator
 {
@@ -526,6 +574,7 @@ public class ThemeSecurityValidator
 ```
 
 ### Brand and Intellectual Property Protection
+
 - **Theme Watermarking**: Embedded metadata identifying theme creators and organizations
 - **Usage Tracking**: Analytics for theme usage patterns and customization frequency
 - **Export Control**: Approval workflows for sharing custom themes externally
@@ -536,18 +585,21 @@ public class ThemeSecurityValidator
 ## 📈 Performance Requirements
 
 ### Theme Loading Performance Targets
+
 - **Initial Theme Load**: <1 second for complete application theming
 - **Theme Switch**: <500ms for real-time switching with full visual refresh
 - **Resource Cleanup**: <200ms for theme resource disposal and memory cleanup
 - **Live Preview**: <100ms for color changes during theme customization
 
 ### Memory and Resource Optimization
+
 - **Theme Memory Footprint**: <50MB per active theme with efficient resource sharing
 - **Cache Management**: Weak reference caching with automatic garbage collection
 - **Resource Loading**: Background loading for popular themes with priority queuing
 - **Memory Leak Prevention**: Complete resource disposal tracking with leak detection
 
 ### Scalability and Concurrent Usage
+
 - **Multiple Theme Operations**: Support 5+ concurrent theme operations without performance degradation
 - **Large Theme Collections**: Handle 50+ custom themes with efficient indexing and search
 - **Theme Synchronization**: Real-time theme updates across multiple application instances
@@ -558,6 +610,7 @@ public class ThemeSecurityValidator
 ## 🧪 Testing Strategy
 
 ### Unit Testing (Target: >95% Coverage)
+
 ```csharp
 // Key test scenarios for theme system
 ThemeServiceTests:
@@ -580,18 +633,21 @@ ThemeResourceCacheTests:
 ```
 
 ### Visual Regression Testing
+
 - Automated screenshot comparison for all 18+ themes across key UI components
 - Cross-platform rendering validation (Windows, macOS, Linux)
 - High-contrast theme verification against WCAG compliance tools
 - Component interaction testing with various theme combinations
 
 ### Performance Testing
+
 - **Theme Loading Performance**: Measure loading times for all themes under various system loads
 - **Memory Usage Testing**: Monitor memory consumption during extended theme usage
 - **Concurrent Operation Testing**: Test theme switching performance under simulated user load
 - **Resource Leak Detection**: Long-running tests to identify memory leaks and resource cleanup issues
 
 ### User Acceptance Testing
+
 - **Scenario 1**: Production operator switches between high-contrast and standard themes during shift changes
 - **Scenario 2**: System administrator creates custom corporate theme and deploys to department
 - **Scenario 3**: Quality inspector uses high-contrast theme for detailed visual inspection work
@@ -602,6 +658,7 @@ ThemeResourceCacheTests:
 ## 🚀 Implementation Phases
 
 ### Phase 1: Core Theme Infrastructure (Completed ✅)
+
 - [x] ThemeService with 18+ professional themes and dynamic loading
 - [x] Real-time theme switching with complete application refresh
 - [x] Resource management and memory optimization
@@ -609,6 +666,7 @@ ThemeResourceCacheTests:
 - [x] Complete theme file collection with light/dark variants
 
 ### Phase 2: Advanced Customization Engine (In Progress)
+
 - [x] Theme Builder ViewModel with live preview capabilities
 - [ ] Custom color picker with HSL, RGB, HEX input options
 - [ ] Theme export/import functionality with JSON serialization
@@ -616,6 +674,7 @@ ThemeResourceCacheTests:
 - [ ] Department-specific theme templates and approval workflows
 
 ### Phase 3: Accessibility and Compliance (Future)
+
 - [ ] Enhanced high-contrast themes exceeding WCAG 2.1 AAA standards
 - [ ] Screen reader optimization with comprehensive ARIA support
 - [ ] Manufacturing environment accessibility extensions
@@ -623,6 +682,7 @@ ThemeResourceCacheTests:
 - [ ] Color-blind accessibility features with pattern alternatives
 
 ### Phase 4: Enterprise Features (Future)  
+
 - [ ] Theme synchronization across multiple application instances
 - [ ] Corporate branding validation and approval workflows
 - [ ] Advanced analytics and usage tracking for theme preferences
@@ -634,6 +694,7 @@ ThemeResourceCacheTests:
 ## 📊 Monitoring and Analytics
 
 ### Key Performance Indicators (KPIs)
+
 1. **Theme Usage Analytics**
    - Most popular themes by user segments and time periods
    - Theme switching frequency and patterns
@@ -650,6 +711,7 @@ ThemeResourceCacheTests:
    - Performance degradation during theme operations
 
 ### Monitoring Implementation
+
 ```csharp
 // Theme usage analytics
 Logger.LogInformation("Theme changed: {ThemeId} by user {UserId} at {Timestamp}. Load time: {LoadTime}ms",
@@ -678,12 +740,14 @@ await AccessibilityService.ValidateThemeAsync(currentTheme, new {
 ## 🔄 Maintenance and Support
 
 ### Theme Update and Versioning
+
 - **Automatic Updates**: Background updates for theme improvements and security patches
 - **Version Control**: Theme versioning with rollback capabilities for stability
 - **Migration Support**: Automatic migration of custom themes during application updates
 - **Compatibility Testing**: Validation of existing custom themes with new application versions
 
 ### Support Documentation and Training
+
 - **Theme User Guide**: Comprehensive guide for end users on theme selection and basic customization
 - **Administrator Guide**: Advanced guide for creating custom themes and managing organizational branding  
 - **Developer Documentation**: Technical reference for extending the theme system and creating new components
@@ -694,6 +758,7 @@ await AccessibilityService.ValidateThemeAsync(currentTheme, new {
 ## 📝 Appendices
 
 ### A. Complete Theme Color Specifications
+
 ```csharp
 // MTM Default Theme Color Palette
 Primary Action:    #0078D4  (Windows 11 Professional Blue)
@@ -717,6 +782,7 @@ Interactive Text:  #0078D4  (Primary blue for links and actions)
 ```
 
 ### B. Accessibility Compliance Matrix
+
 ```csharp
 // WCAG 2.1 AA Compliance Requirements
 Text Contrast (Normal):     4.5:1 minimum ratio
@@ -733,6 +799,7 @@ Lighting Adaptation:        Brightness-adjusted color palettes
 ```
 
 ### C. Performance Benchmarks
+
 ```csharp
 // Theme Loading Performance Standards
 Initial Application Load:   <2 seconds with default theme
@@ -749,6 +816,7 @@ Memory Leak Tolerance:     0MB - complete cleanup required
 ```
 
 ### D. Component Style Template
+
 ```xml
 <!-- Template for creating theme-compliant components -->
 <ControlTheme x:Key="MTM_ComponentTemplate" TargetType="ContentControl">

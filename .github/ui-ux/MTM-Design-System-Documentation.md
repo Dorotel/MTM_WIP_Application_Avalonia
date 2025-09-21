@@ -9,6 +9,7 @@ This document defines the comprehensive design system for the MTM WIP Applicatio
 ### **Core Principles**
 
 #### **1. Manufacturing-First Design**
+
 ```yaml
 Principle: Design for the factory floor environment
 Application:
@@ -25,6 +26,7 @@ Examples:
 ```
 
 #### **2. Consistency and Predictability**
+
 ```yaml
 Principle: Users should never have to learn the interface twice
 Application:
@@ -41,6 +43,7 @@ Examples:
 ```
 
 #### **3. Efficiency and Speed**
+
 ```yaml
 Principle: Minimize time between intent and completion
 Application:
@@ -57,6 +60,7 @@ Examples:
 ```
 
 #### **4. Error Prevention and Recovery**
+
 ```yaml
 Principle: Prevent errors when possible, make recovery easy when not
 Application:
@@ -77,6 +81,7 @@ Examples:
 ### **Color Psychology in Manufacturing Context**
 
 #### **Semantic Color Mapping**
+
 ```yaml
 Status Colors:
   Green (#28A745): 
@@ -111,6 +116,7 @@ Status Colors:
 ```
 
 #### **Color Accessibility Matrix**
+
 ```yaml
 Contrast Ratios (WCAG 2.1 AA Compliance):
   Primary Text on Background: 4.5:1 minimum
@@ -134,6 +140,7 @@ Color Blindness Considerations:
 ### **Typography Hierarchy**
 
 #### **Information Hierarchy Mapping**
+
 ```yaml
 Page Titles (H1 - 32px Bold):
   Usage: Primary page identification
@@ -172,6 +179,7 @@ Small Text (12px Regular):
 ```
 
 #### **Readability Optimization**
+
 ```yaml
 Line Height Guidelines:
   Headings: 1.2x font size for tight spacing
@@ -194,6 +202,7 @@ Font Weight Usage:
 ### **Spacing and Layout System**
 
 #### **8-Point Grid System**
+
 ```yaml
 Base Unit: 8px (optimized for both desktop and touch interfaces)
 
@@ -224,6 +233,7 @@ Extra Large Spacing (32px+):
 ```
 
 #### **Component Spacing Rules**
+
 ```yaml
 Buttons:
   Internal Padding: 12px horizontal, 8px vertical
@@ -251,6 +261,7 @@ Data Tables:
 ### **Input Components**
 
 #### **Text Input Fields**
+
 ```yaml
 Standard TextBox:
   Height: 32px minimum
@@ -275,6 +286,7 @@ Validation States:
 ```
 
 #### **Selection Controls**
+
 ```yaml
 ComboBox/Dropdown:
   Closed Height: 32px
@@ -299,6 +311,7 @@ Checkboxes:
 ### **Navigation Components**
 
 #### **Primary Navigation**
+
 ```yaml
 Main Navigation Bar:
   Height: 56px
@@ -321,6 +334,7 @@ Tab Navigation:
 ```
 
 #### **Secondary Navigation**
+
 ```yaml
 Sidebar Navigation:
   Width: 240px (collapsed: 60px)
@@ -341,6 +355,7 @@ Context Menus:
 ### **Feedback Components**
 
 #### **Status and Progress Indicators**
+
 ```yaml
 Status Badges:
   Height: 20px
@@ -366,6 +381,7 @@ Loading Spinners:
 ```
 
 #### **Alert and Notification Systems**
+
 ```yaml
 Toast Notifications:
   Width: 320px
@@ -394,6 +410,7 @@ Inline Alerts:
 ### **Inventory Display Patterns**
 
 #### **Part Information Cards**
+
 ```yaml
 Part Card Layout:
   Width: 280px minimum
@@ -415,6 +432,7 @@ Visual Hierarchy:
 ```
 
 #### **Stock Level Indicators**
+
 ```yaml
 Stock Gauge Design:
   Shape: Half-circle or linear progress bar
@@ -431,6 +449,7 @@ Quick Indicators:
 ### **Operation Workflow Patterns**
 
 #### **Process Step Indicators**
+
 ```yaml
 Step Progression:
   Layout: Horizontal flow with connecting lines
@@ -447,6 +466,7 @@ Step Details:
 ```
 
 #### **Operation Status Displays**
+
 ```yaml
 Status Card Design:
   Background: Status-appropriate color (light tint)
@@ -466,6 +486,7 @@ Status Hierarchy:
 ### **Data Entry Optimization**
 
 #### **Manufacturing Form Patterns**
+
 ```yaml
 Quick Entry Forms:
   Layout: Single column for mobile/tablet
@@ -483,6 +504,7 @@ Batch Entry:
 ```
 
 #### **Part ID Entry Patterns**
+
 ```yaml
 Part ID Field Design:
   Font: Monospace for character alignment
@@ -505,6 +527,7 @@ Visual Feedback:
 **CRITICAL IMPLEMENTATION**: All tab views connected to MainView.axaml must implement the InventoryTabView standard layout pattern to ensure proper input field containment and professional UI consistency.
 
 #### **Required Structure Pattern**
+
 ```xml
 <!-- REQUIRED: ScrollViewer root container -->
 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
@@ -538,11 +561,13 @@ Visual Feedback:
 ```
 
 #### **Implementation Status**
+
 - ✅ **InventoryTabView**: Reference implementation (complete)
 - ❌ **RemoveTabView**: Requires update to this pattern  
 - ❌ **TransferTabView**: Requires update to this pattern
 
 #### **Non-Negotiable Requirements**
+
 1. **ScrollViewer as root container** - Prevents content overflow
 2. **Grid with RowDefinitions="*,Auto"** - Separates content from actions
 3. **All input fields contained within grid boundaries** - Professional appearance
@@ -554,6 +579,7 @@ Visual Feedback:
 ### **Responsive Grid Framework**
 
 #### **Breakpoint System**
+
 ```yaml
 Manufacturing Workstation Sizes:
   Small: 1024px - 1365px (older workstations)
@@ -571,6 +597,7 @@ Gutter Width: 16px (consistent across breakpoints)
 ```
 
 #### **Content Area Guidelines**
+
 ```yaml
 Maximum Content Width:
   Reading Content: 720px
@@ -588,6 +615,7 @@ Minimum Content Width:
 ### **Dashboard Layout Patterns**
 
 #### **Widget Grid System**
+
 ```yaml
 Widget Sizes:
   Small: 1x1 grid units (280px × 200px)
@@ -612,6 +640,7 @@ Grid Behavior:
 ### **Motion Principles**
 
 #### **Animation Guidelines**
+
 ```yaml
 Duration Standards:
   Micro-interactions: 100-200ms
@@ -632,6 +661,7 @@ Animation Purposes:
 ```
 
 #### **Interaction Feedback**
+
 ```yaml
 Button Interactions:
   Hover: Background color change (100ms)
@@ -654,6 +684,7 @@ Loading States:
 ### **Micro-Interactions**
 
 #### **Manufacturing-Specific Interactions**
+
 ```yaml
 Part Selection:
   Visual: Highlight with primary color border

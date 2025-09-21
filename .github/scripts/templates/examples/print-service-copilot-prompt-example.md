@@ -21,6 +21,7 @@ You are continuing development on **Print Service** in an established .NET 8 Ava
 Based on gap analysis, address these blocking issues first:
 
 ### 1. Missing Navigation Integration (BLOCKER)
+
 **Impact**: Feature completely inaccessible from application  
 **Files Affected**: `ViewModels/MainForm/MainViewViewModel.cs`, `ViewModels/MainForm/PrintViewModel.cs`  
 **Required Pattern**: ThemeEditorViewModel navigation pattern  
@@ -43,12 +44,14 @@ private async Task OpenPrintAsync()
 ```
 
 ### 2. Incomplete PrintService Implementation (BLOCKER)
+
 **Impact**: Core functionality non-functional, print operations will fail  
 **Files Affected**: `Services/PrintService.cs`  
 **Required Pattern**: Comprehensive async service implementation with error handling  
 **Estimated Effort**: 4 hours
 
 ### 3. Missing PrintView AXAML Interface (BLOCKER)
+
 **Impact**: No user interface available for print functionality  
 **Files Affected**: `Views/MainForm/PrintView.axaml`, `Views/MainForm/PrintView.axaml.cs`  
 **Required Pattern**: Full-window dual-panel layout with MTM theme integration  
@@ -59,6 +62,7 @@ private async Task OpenPrintAsync()
 ## 🏗️ MTM Architecture Requirements (MUST FOLLOW)
 
 ### Core Patterns
+
 - **ViewModels**: MVVM Community Toolkit with `[ObservableProperty]` and `[RelayCommand]` only
 - **Database Access**: Not applicable for Print Service (UI-focused functionality)
 - **AXAML Syntax**: Use `x:Name` (never `Name`), Avalonia namespace `xmlns="https://github.com/avaloniaui"`
@@ -66,6 +70,7 @@ private async Task OpenPrintAsync()
 - **Navigation**: Follow ThemeEditorViewModel pattern for full-window transitions
 
 ### Service Integration Requirements
+
 ```csharp
 // Print Service is already registered - verify this pattern exists:
 services.TryAddSingleton<IPrintService, PrintService>();
@@ -85,6 +90,7 @@ public PrintService(ILogger<PrintService> logger, IConfigurationService configur
 ```
 
 ### Theme Integration Requirements
+
 ```xml
 <!-- Required DynamicResource bindings for Print UI: -->
 <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
@@ -101,7 +107,8 @@ public PrintService(ILogger<PrintService> logger, IConfigurationService configur
 ## 🔄 Current Implementation Status
 
 ### ✅ Completed Components
-```
+
+```treeview
 Services/
 ├── ✅ IPrintService.cs - Complete interface definition with all method signatures
 Extensions/
@@ -109,7 +116,8 @@ Extensions/
 ```
 
 ### 🔄 Partially Implemented (Needs Completion)
-```
+
+```treeview
 Services/
 ├── 🔄 PrintService.cs - Constructor only (25% complete)
 │   ├── ❌ Missing: GetPrintConfigurationAsync implementation
@@ -131,7 +139,8 @@ ViewModels/MainForm/
 ```
 
 ### ❌ Missing Required Files
-```
+
+```treeview
 Views/MainForm/
 ├── ❌ PrintView.axaml - Main print interface (CRITICAL)
 ├── ❌ PrintView.axaml.cs - Code-behind (CRITICAL)
@@ -155,6 +164,7 @@ Models/
 Execute in this specific order to resolve dependencies:
 
 ### Phase 1: Foundation (Critical - Complete First)
+
 1. **Navigation Integration Implementation**
    - **Why First**: Enables feature access, unblocks all other development
    - **Files**: `ViewModels/MainForm/MainViewViewModel.cs`
@@ -166,18 +176,20 @@ Execute in this specific order to resolve dependencies:
    - **Pattern**: Comprehensive async methods with error handling
 
 ### Phase 2: Core Implementation
-3. **Data Models Creation**
+
+1. **Data Models Creation**
    - **Dependencies**: Requires Phase 1 completion for proper typing
    - **Files**: `Models/PrintConfiguration.cs`, `Models/PrintTemplate.cs`, `Models/PrintJob.cs`
    - **Pattern**: Simple POCO classes with nullable reference types
 
-4. **PrintView AXAML Interface**
+2. **PrintView AXAML Interface**
    - **Dependencies**: Requires Phase 1 completion for navigation target
    - **Files**: `Views/MainForm/PrintView.axaml`, `Views/MainForm/PrintView.axaml.cs`
    - **Pattern**: Full-window layout with dual-panel structure
 
 ### Phase 3: Integration & Polish
-5. **Complete PrintViewModel Implementation**
+
+1. **Complete PrintViewModel Implementation**
    - **Dependencies**: Requires Phases 1-2 completion for full functionality
    - **Files**: `ViewModels/MainForm/PrintViewModel.cs`
    - **Pattern**: All [RelayCommand] methods with error handling and navigation
@@ -189,24 +201,28 @@ Execute in this specific order to resolve dependencies:
 Before implementing any code, verify:
 
 ### MVVM Community Toolkit Compliance
+
 - [ ] NO ReactiveUI patterns (completely removed from codebase)
 - [ ] Use `[ObservableProperty]` for all bindable properties  
 - [ ] Use `[RelayCommand]` for all command implementations
 - [ ] Inherit from `BaseViewModel` class
 
 ### Avalonia AXAML Compliance  
+
 - [ ] Use `x:Name` instead of `Name` on all Grid definitions
 - [ ] Use correct Avalonia namespace: `xmlns="https://github.com/avaloniaui"`
 - [ ] Follow InventoryTabView grid pattern for all tab views: `RowDefinitions="*,Auto"`
 - [ ] ScrollViewer as root element to prevent overflow
 
 ### Service Layer Compliance
+
 - [ ] Use dependency injection via constructor parameters
 - [ ] Services already registered in `ServiceCollectionExtensions.cs`
 - [ ] Follow single-category service consolidation pattern
 - [ ] Implement proper disposal if needed
 
 ### Navigation Integration Compliance
+
 - [ ] Follow ThemeEditorViewModel navigation pattern exactly
 - [ ] Use `NavigationService.NavigateTo<TView, TViewModel>()` method
 - [ ] Implement proper error handling for navigation failures
@@ -217,6 +233,7 @@ Before implementing any code, verify:
 ## 💡 Code Examples for Current Context
 
 ### Required PrintService Implementation Pattern
+
 ```csharp
 public class PrintService : IPrintService
 {
@@ -309,6 +326,7 @@ public class PrintService : IPrintService
 ```
 
 ### Required PrintViewModel Pattern
+
 ```csharp
 [ObservableObject]
 public partial class PrintViewModel : BaseViewModel, IDisposable
@@ -444,6 +462,7 @@ public partial class PrintViewModel : BaseViewModel, IDisposable
 ```
 
 ### Required Data Models Pattern
+
 ```csharp
 // Models/PrintConfiguration.cs
 public class PrintConfiguration
@@ -480,6 +499,7 @@ public class PrintTemplate
 ```
 
 ### Required PrintView AXAML Layout Pattern
+
 ```xml
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -634,6 +654,7 @@ public class PrintTemplate
 ```
 
 ### Required Navigation Integration Pattern
+
 ```csharp
 // In MainViewViewModel.cs - add this command to enable print access
 [RelayCommand]
@@ -658,30 +679,35 @@ private async Task OpenPrintAsync()
 After implementation, verify:
 
 ### Compilation & Runtime
+
 - [ ] No compilation errors or warnings
 - [ ] No AVLN2000 AXAML syntax errors
 - [ ] Application launches without exceptions
 - [ ] Print feature accessible via main navigation
 
 ### MTM Pattern Compliance
+
 - [ ] All ViewModels use MVVM Community Toolkit patterns exclusively
 - [ ] All services follow dependency injection patterns
 - [ ] All errors handled via Services.ErrorHandling.HandleErrorAsync()
 - [ ] All UI follows MTM design system with DynamicResource bindings
 
 ### Integration Testing
+
 - [ ] Navigation to Print view works from main application
 - [ ] Theme switching works correctly across all MTM theme variants
 - [ ] Service dependencies resolve correctly via DI container
 - [ ] Configuration loading works through IConfigurationService
 
 ### Functionality Testing
+
 - [ ] Print configuration loads successfully
 - [ ] Print preview generation works without errors
 - [ ] Print job processing completes successfully
 - [ ] Error handling graceful for all edge cases
 
 ### Performance & UX
+
 - [ ] UI responsive during print preview generation (< 2 seconds)
 - [ ] No memory leaks during print operations
 - [ ] Proper loading states and user feedback
@@ -694,16 +720,19 @@ After implementation, verify:
 Document your progress:
 
 ### Implementation Progress
+
 - **Completed Tasks**: [Navigation integration, PrintService implementation, PrintView creation]
 - **Partially Completed**: [PrintViewModel commands, Layout controls]
 - **Blocked Items**: [Any issues preventing progress]
 
 ### Architectural Decisions
+
 - **Pattern Choices**: [MVVM Community Toolkit implementation, full-window navigation]
 - **Integration Approaches**: [NavigationService usage, ThemeService integration]
 - **Performance Considerations**: [Print preview lazy loading, memory management]
 
 ### Next Session Preparation
+
 - **Next Priority**: [Complete PrintLayoutControlView, add print templates]
 - **Dependencies**: [PrintService completion required for advanced features]
 - **Context Notes**: [Print preview implementation needs optimization for large documents]

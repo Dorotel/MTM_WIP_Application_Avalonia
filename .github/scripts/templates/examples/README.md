@@ -1,55 +1,69 @@
-# MTM Audit System Example: Print Service Analysis
+---
+name: Examples README Template
+description: 'Documentation template for MTM audit system examples directory'
+applies_to: 'examples/*'
+development_context: true
+template_type: 'documentation'
+quality_gate: 'development'
+---
 
-This directory contains a real-world example of the MTM Audit System analyzing the Print Service implementation. Use these files as templates for analyzing other features.
+# MTM Audit System Examples
+
+This directory contains real-world examples of the MTM Audit System analyzing feature implementations. Use these files as templates for analyzing and developing other features.
 
 ## Example Files
 
-### Gap Report Example
-- `print-service-gap-report-example.md` - Complete gap analysis for Print Service
-- Shows real implementation status, missing files, and priority ordering
-- Demonstrates MTM pattern compliance checking
-- Includes actionable next steps and time estimates
+### Gap Report Examples
 
-### Copilot Prompt Example  
-- `print-service-copilot-prompt-example.md` - Ready-to-use Copilot continuation prompt
+- Feature-specific gap analysis reports showing implementation status
+- Missing component identification and priority ordering
+- MTM pattern compliance checking
+- Actionable next steps with time estimates
+
+### Copilot Prompt Examples  
+
+- Ready-to-use GitHub Copilot continuation prompts
 - Generated from gap report analysis
-- Includes critical context and implementation priorities
-- Shows proper MTM pattern examples and compliance checks
+- Critical context and implementation priorities
+- MTM pattern examples and compliance requirements
 
-## How This Example Was Generated
+## How Examples Are Generated
 
-1. **Gap Analysis Phase**: Audit system analyzed Print Service implementation plan against current PR state
-2. **Pattern Compliance Check**: Verified adherence to MTM MVVM, Avalonia, and service patterns
-3. **Priority Assessment**: Identified critical blockers vs. enhancement items
-4. **Context Generation**: Created developer-friendly continuation prompt with examples
+1. **Gap Analysis Phase**: Audit system analyzes feature implementation against current state
+2. **Pattern Compliance Check**: Verifies adherence to MTM MVVM, Avalonia, and service patterns
+3. **Priority Assessment**: Identifies critical blockers vs. enhancement items
+4. **Context Generation**: Creates developer-friendly prompts with implementation examples
 
-## Using This Example
+## Using These Examples
 
-### For Print Service Development
-1. Copy content from `print-service-copilot-prompt-example.md`
-2. Paste into GitHub issue with `#github-pull-request_copilot-coding-agent` hashtag
-3. Copilot will implement missing components following MTM patterns
+### For Active Development
 
-### For Other Features
-1. Use these files as templates for structure and content style
-2. Replace Print Service specific details with your feature information
-3. Follow the same gap analysis → priority ordering → implementation pattern approach
-4. Maintain the same level of detail for MTM pattern compliance checking
+1. Copy content from relevant copilot prompt example
+2. Paste into GitHub issue or development environment
+3. Use with GitHub Copilot for pattern-compliant implementation
 
-## Key Benefits Demonstrated
+### For New Features
+
+1. Use existing examples as templates for structure and style
+2. Replace feature-specific details with your requirements
+3. Follow gap analysis → priority ordering → implementation workflow
+4. Maintain MTM pattern compliance checking standards
+
+## Key Benefits
 
 - **Consistency**: All implementations follow established MTM patterns
-- **Efficiency**: Developers get targeted, actionable guidance
+- **Efficiency**: Targeted, actionable development guidance
 - **Quality**: Comprehensive compliance checking prevents pattern violations
-- **Continuity**: Rich context enables seamless multi-session development
+- **Continuity**: Rich context enables effective multi-session development
 
-## Template Customization Points
+## Template Adaptation
 
-When adapting for other features, customize:
-- Feature name and description
-- File paths and component lists
-- Specific business logic and requirements
-- Database procedures and integration points
-- UI layout and navigation patterns
+When creating new examples, customize:
 
-The core structure, pattern compliance checking, and priority methodology remain consistent across all MTM features.
+- Feature name and business requirements
+- Component architecture and file organization
+- Database integration and service patterns
+- UI/UX implementation and navigation flows
+- Testing strategies and quality gates
+
+The core audit methodology, pattern compliance framework, and priority assessment approach remain consistent across all MTM features.

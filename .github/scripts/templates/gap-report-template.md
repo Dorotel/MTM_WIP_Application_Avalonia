@@ -1,10 +1,19 @@
+---
+name: Gap Report Template
+description: 'Implementation gap analysis template for MTM feature development'
+applies_to: 'development/*'
+development_context: true
+template_type: 'gap-analysis'
+quality_gate: 'development'
+---
+
 # MTM Feature Implementation Gap Report Template
 
 **Branch**: {BRANCH-NAME}  
 **Feature**: {FEATURE-NAME}  
 **Generated**: {DATE-TIME}  
 **Implementation Plan**: {PLAN-PATH}  
-**Audit Version**: 1.0
+**Template Version**: 1.0
 
 ## Executive Summary
 
@@ -15,207 +24,194 @@
 **MTM Pattern Compliance**: {X}% compliant  
 
 ### Quick Status
-- 🟢 **Services**: {X/Y} implemented
-- 🟡 **ViewModels**: {X/Y} implemented  
-- 🔴 **Views**: {X/Y} implemented
-- 🟢 **Integration**: {X/Y} integration points complete
+
+- 🟢 **Services**: {X/Y} implemented (following MTM service patterns)
+- 🟡 **ViewModels**: {X/Y} implemented (MVVM Community Toolkit 8.3.2)
+- 🔴 **Views**: {X/Y} implemented (Avalonia 11.3.4 syntax)
+- 🟢 **Database**: {X/Y} stored procedures integrated
+- 🟢 **DI Registration**: {X/Y} services registered in ServiceCollectionExtensions
+- 🟡 **Theme Integration**: {X/Y} views using DynamicResource bindings
+
+## Technology Stack Compliance
+
+### .NET 8 + Avalonia 11.3.4 Compliance
+
+- **Target Framework**: {✅/❌} .NET 8.0 (`<TargetFramework>net8.0</TargetFramework>`)
+- **Avalonia Version**: {✅/❌} 11.3.4 (in MTM_WIP_Application_Avalonia.csproj)
+- **Namespace Usage**: {✅/❌} `xmlns="https://github.com/avaloniaui"` (NOT WPF)
+- **Control Naming**: {✅/❌} `x:Name` used (never `Name` attribute)
+
+### MVVM Community Toolkit 8.3.2 Compliance
+
+- **Source Generators**: {✅/❌} `[ObservableObject]` partial classes
+- **Properties**: {✅/❌} `[ObservableProperty]` private fields
+- **Commands**: {✅/❌} `[RelayCommand]` methods with proper async/await
+- **Notifications**: {✅/❌} `[NotifyPropertyChangedFor]` dependencies
+- **ReactiveUI Removal**: {✅/❌} No ReactiveUI patterns found
+
+### MySQL 9.4.0 Database Integration
+
+- **Stored Procedures Only**: {✅/❌} No direct SQL queries found
+- **Parameter Construction**: {✅/❌} MySqlParameter arrays properly used
+- **Service Integration**: {✅/❌} IDatabaseService dependency injection
+- **Error Handling**: {✅/❌} ServiceResult pattern for database operations
+- **Connection Management**: {✅/❌} IConfigurationService for connection strings
 
 ## File Status Analysis
 
 ### ✅ Fully Completed Files
-```
-Services/
-├── ✅ SomeService.cs - Complete implementation with all required methods
-│   ├── Interface: IPrintService fully implemented
-│   ├── Methods: All public methods implemented with error handling
-│   ├── Integration: NavigationService, ThemeService, ConfigurationService
-│   └── Patterns: MVVM Community Toolkit compliant
 
-ViewModels/
-├── ✅ SomeViewModel.cs - Complete MVVM implementation
-│   ├── Properties: All [ObservableProperty] attributes implemented
-│   ├── Commands: All [RelayCommand] methods implemented
-│   ├── Dependencies: Proper constructor injection
-│   └── Error handling: Services.ErrorHandling.HandleErrorAsync() integration
+```bash
+#!/bin/bash
+{COMPLETED_FILES_SECTION}
 ```
 
 ### 🔄 Partially Implemented Files
-```
-Services/
-├── 🔄 IncompleteService.cs - Partial implementation
-│   ├── ❌ Missing: GetPrintConfigurationAsync method
-│   ├── ❌ Missing: Event handlers for PrintStatusChanged
-│   ├── ✅ Complete: Basic service structure and constructor
-│   └── 🔄 Needs: Error handling in 3 methods
 
-ViewModels/
-├── 🔄 PartialViewModel.cs - Core structure present
-│   ├── ✅ Complete: Basic properties and constructor
-│   ├── ❌ Missing: 4 RelayCommand implementations  
-│   ├── ❌ Missing: Navigation integration
-│   └── 🔄 Needs: Cleanup and disposal patterns
+```bash
+#!/bin/bash
+{PARTIAL_FILES_SECTION}
+```
+
+```bash
+#!/bin/bash
+{PARTIAL_FILES_SECTION}
+```
+
+```bash
+#!/bin/bash
+{PARTIAL_FILES_SECTION}
 ```
 
 ### ❌ Missing Required Files
-```
-Views/
-├── ❌ RequiredView.axaml - Critical for user interface
-│   └── Purpose: Main feature interface with dual-panel layout
-├── ❌ RequiredView.axaml.cs - Code-behind implementation
-│   └── Purpose: Minimal code-behind following MTM patterns
 
-Models/
-├── ❌ ConfigurationModel.cs - Data structure definitions
-│   └── Purpose: Print configuration and template models
+```bash
+#!/bin/bash
+{MISSING_FILES_SECTION}
 ```
 
 ## MTM Architecture Compliance Analysis
 
-### ✅ MVVM Community Toolkit Patterns
-- **Status**: Fully compliant
-- **Details**: All ViewModels use [ObservableProperty] and [RelayCommand] attributes
-- **Validation**: Source generators working correctly, no manual INotifyPropertyChanged
+### Current Service Architecture (24 Services)
 
-### 🔄 Avalonia AXAML Syntax Compliance
-- **Status**: Partially compliant (60% complete)
-- **Issues Found**:
-  - ❌ `Name` property used instead of `x:Name` on 3 Grid controls
-  - ❌ Missing `xmlns="https://github.com/avaloniaui"` namespace in 2 files
-  - ✅ DynamicResource bindings properly implemented
-- **Action Required**: Fix AXAML syntax to prevent AVLN2000 compilation errors
+- **Configuration Services**: ConfigurationService, ApplicationStateService
+- **Data Services**: DatabaseService, MasterDataService, InventoryEditingService, RemoveService  
+- **UI Services**: ThemeService, NavigationService, SuggestionOverlayService, VirtualPanelManager
+- **State Services**: SettingsService, SettingsPanelStateManager, StartupDialogService
+- **Utility Services**: QuickButtonsService, FocusManagementService, FileServices, etc.
 
-### ✅ Service Registration
-- **Status**: Properly implemented
-- **Details**: Services registered in ServiceCollectionExtensions.cs with TryAddSingleton/TryAddTransient
-- **Validation**: All services resolvable via dependency injection
+**Service Pattern Compliance**:
 
-### ❌ Navigation Integration
-- **Status**: Not implemented
-- **Missing**: NavigationService integration following ThemeEditor pattern
-- **Impact**: Critical - feature cannot be accessed without navigation
-- **Action Required**: Implement NavigateTo() calls with proper view/viewmodel setup
+- **Interface/Implementation**: {✅/❌} All services have proper abstractions
+- **Constructor Injection**: {✅/❌} ArgumentNullException.ThrowIfNull validation
+- **Lifetime Management**: {✅/❌} Proper Singleton/Scoped/Transient registration
+- **Error Handling**: {✅/❌} Centralized via Services.ErrorHandling
 
-### 🔄 Theme System Integration
-- **Status**: Partially implemented (40% complete)
-- **Complete**: DynamicResource bindings for MTM_Shared_Logic.* resources
-- **Missing**: Theme compatibility testing across MTM_Blue, MTM_Green, MTM_Dark, MTM_Red
-- **Action Required**: Comprehensive theme integration testing
+### Theme System Integration (19 Themes Available)
 
-### ❌ Error Handling
-- **Status**: Inconsistent implementation
-- **Issues**: Only 30% of methods use Services.ErrorHandling.HandleErrorAsync()
-- **Risk**: High - unhandled exceptions will crash application
-- **Action Required**: Implement comprehensive error handling throughout
+**Available Themes**: MTM_Blue, MTM_Blue_Dark, MTM_Green, MTM_Green_Dark, MTM_Red, MTM_Red_Dark, MTM_Amber, MTM_Teal, MTM_Indigo, MTM_Rose, MTM_Emerald, MTM_Light, MTM_Dark, MTM_HighContrast, etc.
+
+- **DynamicResource Usage**: {✅/❌} All colors use DynamicResource bindings
+- **Theme Service**: {✅/❌} ThemeService properly registered and functional
+- **Resource Files**: {✅/❌} Theme AXAML files in Resources/Themes/
+- **Cross-platform Support**: {✅/❌} Themes work on Windows/macOS/Linux
+
+### Database Integration Patterns
+
+**Required Stored Procedures**:
+
+- **Inventory**: inv_inventory_Add_Item, inv_inventory_Remove_Item, inv_inventory_Get_ByPartID
+- **Transactions**: inv_transaction_Add, inv_transaction_Get_History  
+- **Master Data**: md_part_ids_Get_All, md_locations_Get_All, md_operation_numbers_Get_All
+- **QuickButtons**: qb_quickbuttons_Get_ByUser, qb_quickbuttons_Save
+- **Error Logging**: log_error_Add_Error, log_error_Get_All
+- **System**: sys_health_check
+
+**Database Compliance**:
+
+- **Stored Procedure Only**: {✅/❌} No direct SQL queries found
+- **Helper Usage**: {✅/❌} Helper_Database_StoredProcedure.ExecuteDataTableWithStatus used
+- **Parameter Construction**: {✅/❌} MySqlParameter arrays properly constructed
+- **Result Processing**: {✅/❌} Status checking and DataTable processing
+
+- **Status**: {STATUS}
+- **Details**: {REGISTRATION_DETAILS}
+
+### Navigation Integration
+
+- **Status**: {STATUS}
+- **Implementation**: {NAVIGATION_STATUS}
+- **Action Required**: {NAVIGATION_ACTIONS}
+
+### Theme System Integration
+
+- **Status**: {STATUS}
+- **Complete**: {THEME_COMPLETE}
+- **Missing**: {THEME_MISSING}
+
+### Error Handling
+
+- **Status**: {STATUS}
+- **Coverage**: {ERROR_COVERAGE}
+- **Action Required**: {ERROR_ACTIONS}
 
 ## Priority Gap Analysis
 
 ### 🚨 Critical Priority (Blocking Issues)
-1. **Missing Navigation Integration**
-   - **Impact**: Feature completely inaccessible
-   - **Effort**: 2 hours
-   - **Files**: PrintViewModel.cs, MainViewViewModel.cs
-   - **Action**: Implement NavigationService.NavigateTo() pattern
 
-2. **Incomplete Service Implementation**  
-   - **Impact**: Core functionality non-functional
-   - **Effort**: 4 hours
-   - **Files**: PrintService.cs
-   - **Action**: Implement all IPrintService interface methods
-
-3. **Missing Main UI View**
-   - **Impact**: No user interface available
-   - **Effort**: 6 hours  
-   - **Files**: PrintView.axaml, PrintView.axaml.cs
-   - **Action**: Create dual-panel layout with MTM theme integration
+{CRITICAL_GAPS}
 
 ### ⚠️ High Priority (Feature Incomplete)
-1. **Partial ViewModel Implementation**
-   - **Impact**: Commands not functional
-   - **Effort**: 3 hours
-   - **Files**: PrintViewModel.cs, PrintLayoutControlViewModel.cs
-   - **Action**: Complete all [RelayCommand] method implementations
 
-2. **AXAML Syntax Errors**
-   - **Impact**: Compilation failures
-   - **Effort**: 1 hour
-   - **Files**: Multiple .axaml files
-   - **Action**: Fix Name/x:Name issues and namespace declarations
+{HIGH_PRIORITY_GAPS}
 
 ### 📋 Medium Priority (Enhancement)
-1. **Error Handling Consistency**
-   - **Impact**: Potential runtime crashes
-   - **Effort**: 2 hours
-   - **Files**: All service and viewmodel files
-   - **Action**: Add Services.ErrorHandling.HandleErrorAsync() calls
 
-2. **Theme Compatibility Testing**
-   - **Impact**: Inconsistent user experience
-   - **Effort**: 1 hour
-   - **Files**: All .axaml files
-   - **Action**: Test against all MTM theme variants
+{MEDIUM_PRIORITY_GAPS}
 
 ## Database Integration Status
 
 ### Stored Procedures Pattern Compliance
-- **Status**: {Compliant/Non-compliant/Not Applicable}
+
+- **Status**: {STATUS}
 - **Pattern**: Helper_Database_StoredProcedure.ExecuteDataTableWithStatus()
-- **Issues**: {None/List specific issues}
-- **Action Required**: {None/Specific actions needed}
+- **Issues**: {DATABASE_ISSUES}
+- **Action Required**: {DATABASE_ACTIONS}
 
 ## Integration Points Status
 
 ### NavigationService Integration
-- **Required Pattern**: Follow ThemeEditorViewModel navigation implementation
-- **Current Status**: ❌ Not implemented
-- **Missing Components**: NavigateTo() calls, view/viewmodel registration
-- **Dependencies**: INavigationService injection in ViewModels
+
+- **Current Status**: {NAV_STATUS}
+- **Missing Components**: {NAV_MISSING}
+- **Dependencies**: {NAV_DEPENDENCIES}
 
 ### ThemeService Integration  
-- **Required Pattern**: DynamicResource bindings for all theme elements
-- **Current Status**: 🔄 Partial (60% complete)
-- **Missing Components**: Theme compatibility validation
-- **Dependencies**: IThemeService for runtime theme switching
+
+- **Current Status**: {THEME_STATUS}
+- **Missing Components**: {THEME_MISSING_COMPONENTS}
+- **Dependencies**: {THEME_DEPENDENCIES}
 
 ### ErrorHandling Integration
-- **Required Pattern**: Services.ErrorHandling.HandleErrorAsync() for all exceptions
-- **Current Status**: ❌ Inconsistent (30% coverage)  
-- **Missing Components**: Try-catch blocks with proper error handling
-- **Dependencies**: Centralized error service
+
+- **Current Status**: {ERROR_STATUS}
+- **Missing Components**: {ERROR_MISSING}
+- **Dependencies**: {ERROR_DEPENDENCIES}
 
 ## Next Development Session Action Plan
 
 ### Immediate Tasks (Next 2 Hours)
-1. **Fix Navigation Integration** - Critical blocker
-   - File: `ViewModels/PrintViewModel.cs`
-   - Action: Add NavigationService dependency and implement navigation commands
-   - Pattern: Follow `ViewModels/ThemeEditorViewModel.cs` implementation
 
-2. **Complete Service Implementation** - Core functionality
-   - File: `Services/PrintService.cs`
-   - Action: Implement missing IPrintService interface methods
-   - Focus: GetPrintConfigurationAsync, event handlers
-
-3. **Fix AXAML Syntax Errors** - Compilation blocker
-   - Files: All `.axaml` files with errors
-   - Action: Replace `Name` with `x:Name`, fix namespace declarations
-   - Validation: Ensure no AVLN2000 errors
+{IMMEDIATE_TASKS}
 
 ### Secondary Tasks (Next 4 Hours)
-1. **Complete ViewModel Implementation**
-   - Files: All ViewModel files with partial implementation
-   - Action: Implement all [RelayCommand] methods with proper error handling
 
-2. **Create Missing Views**
-   - Files: Required .axaml/.axaml.cs files
-   - Action: Implement dual-panel layout following MTM design system
-
-3. **Comprehensive Error Handling**
-   - Files: All service and viewmodel files
-   - Action: Add Services.ErrorHandling.HandleErrorAsync() throughout
+{SECONDARY_TASKS}
 
 ## Quality Assurance Checklist
 
 ### Pre-Testing Requirements
+
 - [ ] All critical priority gaps resolved
 - [ ] No compilation errors or warnings
 - [ ] All services properly registered in ServiceCollectionExtensions
@@ -223,6 +219,7 @@ Models/
 - [ ] MTM theme compatibility verified
 
 ### Testing Scenarios
+
 - [ ] Feature accessible from main navigation
 - [ ] All user workflows complete successfully  
 - [ ] Error handling graceful for edge cases
@@ -232,19 +229,21 @@ Models/
 ## Development Session Notes
 
 ### Context for Next Session
-- **Last Focus Area**: {Specific component or issue worked on}
-- **Current Blocker**: {Any blocking issues preventing progress}
-- **Next Logical Step**: {Recommended next implementation step}
-- **Architecture Decisions**: {Any architectural choices made during development}
+
+- **Last Focus Area**: {LAST_FOCUS}
+- **Current Blocker**: {CURRENT_BLOCKER}
+- **Next Logical Step**: {NEXT_STEP}
+- **Architecture Decisions**: {ARCHITECTURE_NOTES}
 
 ### Code Review Notes
-- **Pattern Compliance**: {Any deviations from MTM patterns noted}
-- **Performance Concerns**: {Any performance issues identified}
-- **Security Considerations**: {Any security-related findings}
-- **Maintainability Issues**: {Any code maintainability concerns}
+
+- **Pattern Compliance**: {PATTERN_NOTES}
+- **Performance Concerns**: {PERFORMANCE_NOTES}
+- **Security Considerations**: {SECURITY_NOTES}
+- **Maintainability Issues**: {MAINTAINABILITY_NOTES}
 
 ---
 
-**Audit Completed**: {DATE-TIME}  
-**Next Audit Recommended**: After addressing critical priority gaps  
-**Generated by**: MTM Pull Request Audit System v1.0
+**Template Generated**: {DATE-TIME}  
+**Usage**: Fill in placeholders with actual implementation data  
+**MTM Gap Report Template**: v1.0

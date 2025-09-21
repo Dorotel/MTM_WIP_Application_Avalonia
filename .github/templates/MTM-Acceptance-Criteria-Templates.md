@@ -16,6 +16,7 @@ This document provides comprehensive acceptance criteria templates for MTM WIP A
 ### 1. Manufacturing Feature Acceptance Criteria
 
 #### Inventory Management Feature Template
+
 ```gherkin
 Feature: Inventory Management
   As a manufacturing operator
@@ -24,52 +25,110 @@ Feature: Inventory Management
 
 Background:
   Given I am logged in as a manufacturing operator
-  And the application is connected to the MTM database
-  And master data is loaded (parts, operations, locations)
+  And the application is connected to the MTM MySQL database
+  And master data is loaded from stored procedures (parts, operations, locations)
+  And the UI theme is loaded (one of 19 available MTM themes)
 
-Scenario: Add inventory item successfully
+Scenario: Add inventory item successfully via stored procedures
   Given I have navigated to the Inventory tab
-  When I enter valid part ID "MTR-1001"
+  When I enter valid part ID "MTR-1001" 
   And I select operation "100"
   And I enter quantity "25"
   And I select location "STATION_A"
   And I click the Save button
-  Then the inventory item should be saved to the database
-  And I should see a success message
+  Then the system should call stored procedure "inv_inventory_Add_Item"
+  And the inventory item should be saved to the database
+  And I should see a success overlay notification
   And the form should be reset for next entry
-  And a transaction record should be created
+  And a transaction record should be created via "inv_transaction_Add"
+  And the QuickButtons should update with this recent transaction
 
-Scenario: Form validation prevents invalid submissions
+Scenario: Form validation with MVVM Community Toolkit
   Given I have navigated to the Inventory tab
   When I leave the part ID field empty
   And I try to save the form
-  Then the Save button should be disabled
+  Then the Save command should be disabled via CanExecute logic
   And I should see validation messages for required fields
-  And no database operations should occur
+  And no database stored procedures should be called
+  And the UI should remain responsive
 
-Scenario: Manufacturing operation workflow validation
-  Given I have inventory for part "MTR-1001" in operation "90"
-  When I try to add the same part to operation "120"
-  Without processing through operation "100" and "110"
-  Then the system should warn about workflow sequence
-  And allow the transaction with confirmation
+Scenario: Master data integration with caching
+  Given I have navigated to the Inventory tab
+  When I click on the Part ID suggestion field
+  Then the system should call "md_part_ids_Get_All" stored procedure
+  And results should be cached for 5 minutes
+  And I should see auto-complete suggestions
+  And the suggestions should filter as I type
+  And the SuggestionOverlay should display properly
+
+Scenario: Cross-platform theme compatibility
+  Given I am using the application on any supported platform (Windows/macOS/Linux)
+  When I switch between any of the 19 available themes
+  Then all UI elements should display correctly
+  And the inventory form should remain functional
+  And theme colors should update via DynamicResource bindings
+  And no theme-specific errors should occur
 
 Acceptance Criteria:
+✅ Must use ONLY stored procedures for all database operations
+✅ Must implement MVVM Community Toolkit patterns ([ObservableObject], [RelayCommand])
 ✅ Must support all manufacturing operations (90, 100, 110, 120, 130)
-✅ Must validate part ID format according to MTM standards
+✅ Must validate part ID format according to MTM standards (alphanumeric, max 50 chars)
 ✅ Must enforce positive quantity values only
-✅ Must require all mandatory fields before submission
-✅ Must create audit trail for all transactions
-✅ Must support concurrent user operations
-✅ Must work consistently across Windows, macOS, Linux
-✅ Must complete transactions within 2 seconds
-✅ Must integrate with existing master data
+✅ Must require all mandatory fields via CanExecute command logic
+✅ Must create audit trail via stored procedures for all transactions
+✅ Must support concurrent user operations without data corruption
+✅ Must work consistently across Windows, macOS, Linux, and Android
+✅ Must complete database transactions within 2 seconds
+✅ Must integrate with cached master data (5-minute expiration)
 ✅ Must maintain data integrity during concurrent operations
+✅ Must use centralized error handling via Services.ErrorHandling
+✅ Must support all 19 MTM theme variations
+✅ Must use Avalonia UI patterns (not WPF syntax)
+```
+
+#### Theme Management Feature Template
+
+```gherkin
+Feature: Dynamic Theme Management
+  As a manufacturing operator
+  I want to customize the application appearance
+  So that I can work comfortably in different lighting conditions
+
+Background:
+  Given I am logged in to the MTM application
+  And the ThemeService is properly registered in DI
+  And theme resources are loaded from Resources/Themes/
+
+Scenario: Switch between available themes
+  Given I am in the Settings panel
+  When I select "MTM_Blue_Dark" from the theme dropdown
+  Then the ThemeService should update Application.Current.Styles
+  And all UI elements should reflect the new theme
+  And the theme preference should be persisted
+  And the change should be immediate without restart
+
+Scenario: Theme persistence across sessions
+  Given I have selected "MTM_Green" theme
+  When I close and restart the application
+  Then the application should load with "MTM_Green" theme
+  And all controls should display correctly
+
+Acceptance Criteria:
+✅ Must support all 19 MTM themes (Blue, Green, Red, Dark variants, etc.)
+✅ Must use DynamicResource bindings for all colors
+✅ Must persist theme selection in application settings
+✅ Must update UI immediately without restart required
+✅ Must work correctly with all Avalonia controls
+✅ Must maintain theme consistency across all views
+✅ Must support both light and dark theme variants
+✅ Must handle theme switching gracefully during operations
 ```
 
 #### QuickButtons Feature Template
+
 ```gherkin
-Feature: QuickButtons Manufacturing Shortcuts
+Feature: QuickButtons Manufacturing Shortcuts  
   As a manufacturing operator
   I want quick access to frequently used transactions
   So that I can perform repetitive operations efficiently
@@ -77,6 +136,8 @@ Feature: QuickButtons Manufacturing Shortcuts
 Background:
   Given I am logged in as a manufacturing operator
   And I have performed several inventory transactions
+  And the QuickButtonsService is properly initialized
+  And recent transactions are cached in memory
   And QuickButtons are enabled in system settings
 
 Scenario: QuickButtons are automatically generated from recent transactions
@@ -117,6 +178,7 @@ Acceptance Criteria:
 ### 2. Cross-Platform Acceptance Criteria
 
 #### Cross-Platform Compatibility Template
+
 ```gherkin
 Feature: Cross-Platform Compatibility
   As a manufacturing organization
@@ -171,6 +233,7 @@ Acceptance Criteria:
 ### 3. Performance Acceptance Criteria
 
 #### Performance Requirements Template
+
 ```gherkin
 Feature: Manufacturing Performance Requirements
   As a manufacturing operator
@@ -226,6 +289,7 @@ Acceptance Criteria:
 ### 4. Security Acceptance Criteria
 
 #### Security Requirements Template
+
 ```gherkin
 Feature: Manufacturing Data Security
   As a manufacturing organization
@@ -274,6 +338,7 @@ Acceptance Criteria:
 ### 5. Data Quality Acceptance Criteria
 
 #### Data Integrity Template
+
 ```gherkin
 Feature: Manufacturing Data Integrity
   As a manufacturing organization
@@ -322,6 +387,7 @@ Acceptance Criteria:
 ### 6. Usability Acceptance Criteria
 
 #### Manufacturing User Experience Template
+
 ```gherkin
 Feature: Manufacturing Operator User Experience
   As a manufacturing operator
@@ -377,9 +443,11 @@ Acceptance Criteria:
 ## Quality Gates for Acceptance Criteria
 
 ### Definition of Done Checklist
+
 For each feature to be considered complete, it must:
 
 #### Functional Requirements
+
 - [ ] All acceptance criteria scenarios pass
 - [ ] All business rules are implemented correctly
 - [ ] All error conditions are handled appropriately
@@ -387,6 +455,7 @@ For each feature to be considered complete, it must:
 - [ ] All manufacturing domain rules are enforced
 
 #### Technical Requirements
+
 - [ ] Code meets quality standards (>95% test coverage)
 - [ ] All platforms are tested and working
 - [ ] Performance requirements are met
@@ -394,6 +463,7 @@ For each feature to be considered complete, it must:
 - [ ] Database integration is complete and tested
 
 #### User Experience Requirements
+
 - [ ] UI follows MTM design guidelines
 - [ ] Manufacturing workflows are optimized
 - [ ] Error messages are clear and helpful
@@ -401,6 +471,7 @@ For each feature to be considered complete, it must:
 - [ ] Accessibility requirements are met
 
 #### Quality Assurance Requirements
+
 - [ ] All tests pass (unit, integration, UI, cross-platform)
 - [ ] Code review is completed
 - [ ] Security review is completed
@@ -408,6 +479,7 @@ For each feature to be considered complete, it must:
 - [ ] Manufacturing domain validation is completed
 
 #### Release Requirements
+
 - [ ] Feature documentation is complete
 - [ ] User training materials are prepared
 - [ ] Deployment procedures are tested
@@ -417,6 +489,7 @@ For each feature to be considered complete, it must:
 ## Acceptance Testing Process
 
 ### Testing Phases
+
 1. **Development Testing**: Developer validates acceptance criteria during development
 2. **Quality Assurance Testing**: QA team validates all acceptance criteria
 3. **User Acceptance Testing**: Manufacturing users validate real-world usage
@@ -426,6 +499,7 @@ For each feature to be considered complete, it must:
 7. **Final Acceptance**: Business stakeholder sign-off
 
 ### Manufacturing Domain Validation
+
 - [ ] Manufacturing subject matter experts review feature behavior
 - [ ] Real manufacturing scenarios are tested
 - [ ] Manufacturing compliance requirements are validated

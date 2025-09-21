@@ -1,3 +1,12 @@
+---
+name: MTM Audit System - Continuous Quality
+description: 'Quality assurance checklist for Manufacturing Tracking and Monitoring (MTM) continuous quality monitoring and manufacturing system health validation'
+applies_to: 'monitoring/**/*.md'
+manufacturing_context: true
+review_type: 'continuous'
+quality_gate: 'critical'
+---
+
 # MTM Pull Request Audit System - Main Execution Prompt
 
 **Copy this prompt into VS Code GitHub Copilot Chat to execute the audit system:**
@@ -6,11 +15,12 @@
 
 @copilot #file:.github/scripts/README.md Execute comprehensive MTM Pull Request Audit and Copilot Continuation System for current branch.
 
-## Audit Execution Requirements:
+## Audit Execution Requirements
 
 ### Phase 1: Discovery & Analysis
+
 1. **Identify Implementation Plan**:
-   - Search for implementation plan: `docs/ways-of-work/plan/*/implementation-plan/implementation-plan.md`
+   - Search for implementation plan: `docs/plans/*/implementation-plan/implementation-plan.md`
    - Extract feature name from path (e.g., "print-service" from path)
    - Parse requirements, file specifications, and acceptance criteria
 
@@ -29,12 +39,14 @@
    - Check error handling implementation
 
 ### Phase 2: Report Generation
+
 1. **Clean Previous Reports** (if they exist):
    - Delete `docs/audit/{BRANCH-NAME}-gap-report.md` if exists
    - Delete `docs/audit/{BRANCH-NAME}-copilot-prompt.md` if exists
    - Create fresh reports to avoid stale progress tracking
 
 2. **Generate Gap Report** (`docs/audit/{BRANCH-NAME}-gap-report.md`):
+
    ```markdown
    # MTM Feature Implementation Gap Report
    **Branch**: {BRANCH-NAME}
@@ -75,7 +87,8 @@
    - Specific actionable items for immediate implementation
    ```
 
-3. **Generate Copilot Prompt** (`docs/audit/{BRANCH-NAME}-copilot-prompt.md`):
+3. **Generate Copilot Prompt** (`docs/audit/{BRANCH-SHORTDESCRIPTIONNAME}-copilot-prompt.md`):
+
    ```markdown
    # MTM Feature Continuation Prompt for @copilot
    **Copy and paste this prompt in PR comments or Copilot Chat**
@@ -119,6 +132,7 @@
    ```
 
 ### Phase 3: Execution Validation
+
 1. **Verify Report Quality**:
    - Gap report contains specific, actionable items
    - Copilot prompt includes sufficient context for continuation
@@ -130,6 +144,7 @@
    - Create reports with proper naming convention
 
 ## Success Criteria
+
 - [ ] Implementation plan successfully located and parsed
 - [ ] Current branch state accurately analyzed
 - [ ] Gap report contains specific, actionable gaps
@@ -138,6 +153,7 @@
 - [ ] Reports are ready for immediate use in development workflow
 
 ## MTM-Specific Validation Checklist
+
 - [ ] MVVM Community Toolkit patterns checked
 - [ ] Avalonia AXAML syntax compliance verified  
 - [ ] Service registration in ServiceCollectionExtensions validated
