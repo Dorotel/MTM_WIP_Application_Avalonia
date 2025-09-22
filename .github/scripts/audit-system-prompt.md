@@ -164,3 +164,15 @@ quality_gate: 'critical'
 - [ ] MTM design system compliance (DynamicResource bindings) checked
 
 Execute this audit system now and generate comprehensive reports for current development session continuation.
+
+
+## 🤖 Joyride Integration
+
+**Use Joyride automation when safe and possible:**
+- `joyride_evaluate_code` for VS Code API automation
+- `joyride_request_human_input` for interactive workflows
+- File template generation and pattern enforcement
+- Real-time validation and consistency checking
+
+**MTM-Specific Applications:** MVVM pattern enforcement, theme validation, database testing, cross-platform automation.
+

@@ -247,3 +247,15 @@ quality_gate: 'development'
 **Template Generated**: {DATE-TIME}  
 **Usage**: Fill in placeholders with actual implementation data  
 **MTM Gap Report Template**: v1.0
+
+
+## 🤖 Joyride Integration
+
+**Use Joyride automation when safe and possible:**
+- `joyride_evaluate_code` for VS Code API automation
+- `joyride_request_human_input` for interactive workflows
+- File template generation and pattern enforcement
+- Real-time validation and consistency checking
+
+**MTM-Specific Applications:** MVVM pattern enforcement, theme validation, database testing, cross-platform automation.
+

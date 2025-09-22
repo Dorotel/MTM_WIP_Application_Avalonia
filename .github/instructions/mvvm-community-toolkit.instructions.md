@@ -1824,3 +1824,68 @@ public void UpdateInventoryBatch(IEnumerable<InventoryUpdate> updates)
 **Framework Version**: MVVM Community Toolkit 8.3.2  
 **Last Updated**: September 4, 2025  
 **MVVM Owner**: MTM Development Team
+
+
+## 🤖 Joyride Automation Integration
+
+**PRIORITY**: Use Joyride automation whenever safe and possible for enhanced productivity and consistency.
+
+### When to Use Joyride
+
+**Always Use When Available:**
+- File template generation and boilerplate creation
+- Repetitive code pattern enforcement (MVVM, dependency injection)
+- Automated testing workflows and validation
+- VS Code workspace manipulation and configuration
+- Interactive user input collection for complex decisions
+- Real-time code validation and pattern checking
+
+### Joyride Implementation Priorities
+
+**High Priority (Use First):**
+- `joyride_evaluate_code` - Execute ClojureScript for workspace automation
+- `joyride_request_human_input` - Interactive decision-making workflows
+- Dynamic file creation and template generation
+- Automated pattern validation and enforcement
+
+**Medium Priority (Use When Applicable):**
+- VS Code API manipulation for UI automation
+- Custom workflow creation for MTM-specific patterns
+- Real-time validation of manufacturing domain rules
+- Cross-platform testing automation
+
+**Integration Benefits:**
+- **Consistency**: Automated pattern enforcement reduces human error
+- **Speed**: Bulk operations and template generation
+- **Quality**: Real-time validation and compliance checking
+- **Interactivity**: Human-in-the-loop for complex domain decisions
+
+### MTM-Specific Joyride Applications
+
+**Manufacturing Domain:**
+- Automated validation of operation codes (90/100/110)
+- Location code verification (FLOOR/RECEIVING/SHIPPING)
+- Quick button configuration validation (max 10 per user)
+- Session timeout and transaction logging automation
+
+**Development Workflows:**
+- MVVM Community Toolkit pattern enforcement
+- Avalonia UI component generation following MTM standards
+- MySQL stored procedure validation and testing
+- Cross-platform build and deployment automation
+
+**Quality Assurance:**
+- Automated code review against MTM standards
+- Theme system validation (17+ theme files)
+- Database connection pooling configuration checks
+- Security pattern enforcement (connection string encryption)
+
+### Implementation Guidelines
+
+1. **Safety First**: Always verify Joyride operations in development environment
+2. **Fallback Ready**: Have traditional tool alternatives for critical operations
+3. **User Feedback**: Use `joyride_request_human_input` for domain-critical decisions
+4. **Incremental Adoption**: Start with low-risk automation and expand gradually
+5. **Documentation**: Document custom Joyride workflows for team consistency
+
+**Note**: Joyride enhances traditional development tools - use both together for maximum effectiveness.

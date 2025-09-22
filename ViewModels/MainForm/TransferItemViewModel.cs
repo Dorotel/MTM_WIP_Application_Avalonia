@@ -1514,6 +1514,82 @@ public partial class TransferItemViewModel : BaseViewModel
     }
 
     #endregion
+
+    #region Enhanced Validation Methods
+
+    /// <summary>
+    /// Enhanced MTM manufacturing validation for transfer operations
+    /// Validates operation sequences, location routing, and business rules
+    /// </summary>
+    public bool ValidateManufacturingTransferOperation()
+    {
+        try
+        {
+            var validationErrors = new List<string>();
+
+            // Validate manufacturing operations sequence
+            if (!string.IsNullOrEmpty(SelectedOperation))
+            {
+                var operationNumber = int.TryParse(SelectedOperation, out int opNum) ? opNum : 0;
+                var validOperations = new[] { 90, 100, 110, 120, 130 }; // MTM standard operations
+
+                if (operationNumber > 0 && !validOperations.Contains(operationNumber))
+                {
+                    validationErrors.Add($"Operation {SelectedOperation} is not a valid MTM manufacturing operation (90, 100, 110, 120, 130)");
+                }
+            }
+
+            // Validate location routing logic
+            if (!string.IsNullOrEmpty(SelectedToLocation))
+            {
+                var validLocationPatterns = new[] { "WC", "FLOOR", "QC", "SHIP", "RECEIVING" };
+                var locationValid = validLocationPatterns.Any(pattern =>
+                    SelectedToLocation.StartsWith(pattern, StringComparison.OrdinalIgnoreCase));
+
+                if (!locationValid)
+                {
+                    validationErrors.Add($"Destination location '{SelectedToLocation}' does not follow MTM location naming standards");
+                }
+
+                // Validate not transferring to same location
+                if (SelectedInventoryItem != null &&
+                    string.Equals(SelectedInventoryItem.Location, SelectedToLocation, StringComparison.OrdinalIgnoreCase))
+                {
+                    validationErrors.Add("Cannot transfer to the same location");
+                }
+            }
+
+            // Validate transfer quantity business rules
+            if (TransferQuantity <= 0)
+            {
+                validationErrors.Add("Transfer quantity must be greater than zero");
+            }
+
+            if (SelectedInventoryItem != null && TransferQuantity > SelectedInventoryItem.Quantity)
+            {
+                validationErrors.Add($"Transfer quantity ({TransferQuantity}) exceeds available quantity ({SelectedInventoryItem.Quantity})");
+            }
+
+            // Log validation results
+            if (validationErrors.Any())
+            {
+                _logger.LogWarning("MTM Transfer validation failed: {Errors}", string.Join("; ", validationErrors));
+                StatusMessage = $"Validation errors: {validationErrors.Count} issues found";
+                return false;
+            }
+
+            _logger.LogDebug("MTM Transfer validation passed for {PartId} to {Location}",
+                SelectedInventoryItem?.PartId, SelectedToLocation);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in MTM transfer validation");
+            return false;
+        }
+    }
+
+    #endregion
 }
 
 #region Event Args

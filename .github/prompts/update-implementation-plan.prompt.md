@@ -1,7 +1,7 @@
 ---
 mode: 'agent'
 description: 'Update an existing implementation plan file with new or update requirements to provide new features, refactoring existing code or upgrading packages, design, architecture or infrastructure.'
-tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'githubRepo', 'openSimpleBrowser', 'problems', 'runTasks', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI']
+tools: ['codebase', 'search', 'read', 'analysis', 'file_search', 'grep_search', 'get_search_view_results', 'list_dir', 'read_file', 'semantic_search', 'joyride_evaluate_code', 'joyride_request_human_input', 'joyride_basics_for_agents', 'joyride_assisting_users_guide', 'web_search', 'run_terminal', 'edit_file', 'create_file', 'move_file', 'delete_file', 'git_operations', 'database_query', 'test_runner', 'documentation_generator', 'dependency_analyzer', 'performance_profiler', 'security_scanner', 'cross_platform_tester', 'ui_automation', 'manufacturing_domain_validator', 'copilot_optimizer']
 ---
 # Update Implementation Plan
 
@@ -591,3 +591,49 @@ Comprehensive testing strategy to validate documentation optimization:
 **Target Completion**: 8 phases, 80 tasks with checkpoint validation every 5 tasks  
 **Expected Outcome**: 502+ files reduced to ~150 optimized files in unified .github/ documentation system, with redundant files preserved in organized quarantine structure
 ```
+
+## 🤖 Joyride Automation Capabilities
+
+**Enhanced with Joyride VS Code Extension API automation** for dynamic workflow creation and advanced VS Code manipulation:
+
+### Core Joyride Integration
+
+- **`joyride_evaluate_code`**: Execute ClojureScript directly in VS Code Extension Host environment
+- **`joyride_request_human_input`**: Interactive human-in-the-loop workflows for domain decisions
+- **`joyride_basics_for_agents`**: Access Joyride automation patterns and capabilities
+- **`joyride_assisting_users_guide`**: User-focused Joyride guidance and assistance
+
+### Advanced Automation Capabilities
+
+**VS Code API Access**: Full Extension API access for workspace manipulation, UI automation, and system integration
+
+**Interactive Workflows**: Dynamic user input collection for complex decision-making scenarios
+
+**Real-time Validation**: Live code execution and testing within VS Code environment
+
+**Custom Automation Scripts**: Create reusable ClojureScript automation for MTM-specific workflows
+
+### MTM-Specific Joyride Applications
+
+- **File Template Generation**: Automated ViewModel/Service creation following MTM patterns
+- **MVVM Pattern Enforcement**: Dynamic validation and correction of Community Toolkit usage
+- **Theme System Automation**: Automated theme switching and resource validation workflows
+- **Database Integration Testing**: Live stored procedure validation and connection testing
+- **Cross-Platform Validation**: Automated testing across Windows/macOS/Linux environments
+- **Manufacturing Workflow Automation**: Inventory operation validation and transaction testing
+
+### Workflow Enhancement Examples
+
+```clojure
+;; Example: Automated MVVM pattern validation
+(joyride_evaluate_code 
+  "(require '["vscode" :as vscode])
+   (vscode/window.showInformationMessage \"Validating MVVM patterns...\")")
+
+;; Example: Interactive domain clarification
+(joyride_request_human_input 
+  "Specify manufacturing operation type (90/100/110):")
+```
+
+**Integration Benefit**: Combines traditional file analysis tools with live VS Code automation for comprehensive MTM development workflow enhancement.
+

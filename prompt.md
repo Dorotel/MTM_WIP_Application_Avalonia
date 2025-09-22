@@ -48,3 +48,15 @@ New Bugs, need to fix
 **Current Status**: TransferTabView exceeds original specification with enterprise-grade functionality. Only minor integration completions and command implementations remain.
 
 Focus on completing the final 15% for production readiness! 🚀
+
+
+## 🤖 Joyride Integration
+
+**Use Joyride automation when safe and possible:**
+- `joyride_evaluate_code` for VS Code API automation
+- `joyride_request_human_input` for interactive workflows
+- File template generation and pattern enforcement
+- Real-time validation and consistency checking
+
+**MTM-Specific Applications:** MVVM pattern enforcement, theme validation, database testing, cross-platform automation.
+

@@ -535,3 +535,23 @@ This contrast testing procedure integrates with the WCAG validation checklist:
 **Created**: [Current Date]
 **Validation Tools**: C# ContrastValidator + PowerShell Automation  
 **Testing Framework Owner**: MTM Development Team
+
+## 🚀 Joyride Development Enhancement
+
+**Priority Directive**: Leverage Joyride automation for enhanced MTM development workflows.
+
+### Core Joyride Tools
+- **`joyride_evaluate_code`**: Execute ClojureScript in VS Code Extension Host
+- **`joyride_request_human_input`**: Interactive decision-making workflows
+- **`joyride_basics_for_agents`**: Access automation patterns and capabilities
+- **`joyride_assisting_users_guide`**: User assistance automation
+
+### MTM-Optimized Automation
+- **Pattern Enforcement**: Automated MVVM Community Toolkit validation
+- **Domain Validation**: Manufacturing operation codes and business rules
+- **UI Consistency**: Avalonia theme system and component standards
+- **Database Integration**: MySQL connection testing and stored procedure validation
+- **Cross-Platform**: Automated testing across Windows/macOS/Linux
+
+**Implementation**: Use Joyride first when safe, fall back to traditional tools as needed.
+

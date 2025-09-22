@@ -374,3 +374,24 @@ Each ADR must include:
 - Code examples where applicable
 
 This ADR collection provides comprehensive documentation of all major architectural decisions in the MTM WIP Application, ensuring future developers understand the reasoning behind technical choices and can make informed decisions about modifications or extensions.
+
+
+## 🚀 Joyride Development Enhancement
+
+**Priority Directive**: Leverage Joyride automation for enhanced MTM development workflows.
+
+### Core Joyride Tools
+- **`joyride_evaluate_code`**: Execute ClojureScript in VS Code Extension Host
+- **`joyride_request_human_input`**: Interactive decision-making workflows
+- **`joyride_basics_for_agents`**: Access automation patterns and capabilities
+- **`joyride_assisting_users_guide`**: User assistance automation
+
+### MTM-Optimized Automation
+- **Pattern Enforcement**: Automated MVVM Community Toolkit validation
+- **Domain Validation**: Manufacturing operation codes and business rules
+- **UI Consistency**: Avalonia theme system and component standards
+- **Database Integration**: MySQL connection testing and stored procedure validation
+- **Cross-Platform**: Automated testing across Windows/macOS/Linux
+
+**Implementation**: Use Joyride first when safe, fall back to traditional tools as needed.
+
