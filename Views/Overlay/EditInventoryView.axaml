@@ -154,12 +154,12 @@
           <TextBlock Text="Edit Inventory Item (Limited Access)"
                      FontSize="14"
                      FontWeight="Bold"
-                     Foreground="White" />
+                     Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}" />
           <TextBox Text="{Binding EditModel.PartId, StringFormat='Part: {0} - Only Operation, Quantity &amp; Notes editable', Mode=OneWay}"
                    FontSize="11"
                    MinHeight="22"
                    Classes="input-field"
-                   Foreground="White"
+                   Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
                    Opacity="0.9"
                    IsReadOnly="True"
                    Background="Transparent"

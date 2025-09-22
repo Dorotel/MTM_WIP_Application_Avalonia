@@ -162,14 +162,14 @@
                                         Width="24"
                                         Height="24"
                                         Margin="0,0,16,0"
-                                        Foreground="White"/>
+                                        Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"/>
             
             <!-- Title -->
             <TextBlock Grid.Column="1"
                        Text="{Binding Title}"
                        FontWeight="Bold"
                        FontSize="18"
-                       Foreground="White"
+                       Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
                        VerticalAlignment="Center"/>
             
             <!-- Close Button -->
@@ -179,7 +179,7 @@
               <materialIcons:MaterialIcon Kind="Close"
                                           Width="16"
                                           Height="16"
-                                          Foreground="White"/>
+                                          Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"/>
             </Button>
           </Grid>
         </Border>
@@ -279,7 +279,7 @@
                          Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
             <TextBlock Text="Processing..." 
                        HorizontalAlignment="Center" 
-                       Foreground="White"
+                       Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
                        FontWeight="SemiBold" />
           </StackPanel>
         </Border>

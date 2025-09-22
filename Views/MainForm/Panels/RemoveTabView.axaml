@@ -184,7 +184,7 @@
               <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
                 <ProgressBar IsIndeterminate="True" Width="200" Height="4"
                            Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-                <TextBlock Text="Loading inventory data..." FontSize="14" Foreground="White"
+                <TextBlock Text="Loading inventory data..." FontSize="14" Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
                           HorizontalAlignment="Center" />
               </StackPanel>
             </Border>

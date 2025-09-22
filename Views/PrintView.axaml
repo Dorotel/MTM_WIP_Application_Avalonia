@@ -351,7 +351,7 @@
                                     HorizontalAlignment="Center" 
                                     VerticalAlignment="Top"
                                     Margin="20">
-                                <Border Background="White" 
+                                <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
                                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
                                        BorderThickness="1" 
                                        CornerRadius="4">
@@ -375,7 +375,7 @@
                                                 Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
                                     <TextBlock Text="Generating print preview..." 
                                               FontSize="14" 
-                                              Foreground="White" 
+                                              Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}" 
                                               HorizontalAlignment="Center" />
                                 </StackPanel>
                             </Border>

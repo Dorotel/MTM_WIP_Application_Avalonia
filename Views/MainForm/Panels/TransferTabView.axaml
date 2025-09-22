@@ -335,7 +335,7 @@
                                   Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
                       <TextBlock Text="Loading inventory data..."
                                 FontSize="14"
-                                Foreground="White"
+                                Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
                                 HorizontalAlignment="Center"/>
                       <!-- [TRANSFER-DEBUG] Status Message Display -->
                       <TextBlock Text="{Binding StatusMessage, TargetNullValue='Preparing...'}"

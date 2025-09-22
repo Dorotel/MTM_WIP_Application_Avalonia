@@ -79,7 +79,7 @@
           
           <!-- Transaction Type Icon -->
           <Border Grid.Column="0"
-                  Background="White"
+                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                   CornerRadius="12"
                   Width="24"
                   Height="24"
@@ -102,7 +102,7 @@
             <TextBlock x:Name="OperationText"
                        Text="Operation 100"
                        FontSize="10"
-                       Foreground="White"
+                       Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
                        Opacity="0.9"/>
           </StackPanel>
           
@@ -116,7 +116,7 @@
                        HorizontalAlignment="Center"/>
             <TextBlock Text="qty"
                        FontSize="9"
-                       Foreground="White"
+                       Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
                        Opacity="0.8"
                        HorizontalAlignment="Center"/>
           </StackPanel>
@@ -127,7 +127,7 @@
                                  Kind="ChevronRight"
                                  Width="16"
                                  Height="16"
-                                 Foreground="White"
+                                 Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
                                  VerticalAlignment="Center"/>
         </Grid>
       </Border>
