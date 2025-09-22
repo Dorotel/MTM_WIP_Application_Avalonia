@@ -1,7 +1,7 @@
 ---
 mode: 'agent'
 description: 'Update an existing implementation plan file with new or update requirements to provide new features, refactoring existing code or upgrading packages, design, architecture or infrastructure.'
-tools: ['codebase', 'search', 'read', 'analysis', 'file_search', 'grep_search', 'get_search_view_results', 'list_dir', 'read_file', 'semantic_search', 'joyride_evaluate_code', 'joyride_request_human_input', 'joyride_basics_for_agents', 'joyride_assisting_users_guide', 'web_search', 'run_terminal', 'edit_file', 'create_file', 'move_file', 'delete_file', 'git_operations', 'database_query', 'test_runner', 'documentation_generator', 'dependency_analyzer', 'performance_profiler', 'security_scanner', 'cross_platform_tester', 'ui_automation', 'manufacturing_domain_validator', 'copilot_optimizer']
+tools: ['*']
 ---
 # Update Implementation Plan
 
@@ -54,6 +54,7 @@ Plans must consist of discrete, atomic phases containing executable tasks. Each 
 All progress updates during implementation must use a simple, standardized format for maximum clarity and efficiency:
 
 ### Required Update Report Format
+
 ```
 ## Implementation Progress Report
 
@@ -81,6 +82,7 @@ All progress updates during implementation must use a simple, standardized forma
 ```
 
 ### Reporting Standards
+
 - Updates required every 5 completed tasks (at each checkpoint)
 - Keep descriptions concise and actionable
 - Focus on concrete progress rather than process details
@@ -132,6 +134,7 @@ Execute tasks systematically following the implementation plan located at `.gith
 ```
 
 This prevents future agents from:
+
 - Re-executing completed tasks
 - Spending time verifying what work has been done
 - Creating duplicate efforts or conflicting changes
@@ -142,6 +145,7 @@ This prevents future agents from:
 **Format**: Replace empty completion cells with ✅ and completion date
 
 ## Success Metrics
+
 - Reduce file count from 502+ to ~150 core files in .github/
 - All docs/ content successfully migrated to .github/ structure
 - Quarantine folder organized with all redundant/duplicate files
@@ -149,12 +153,14 @@ This prevents future agents from:
 - GitHub Copilot instructions tested and optimized
 
 ## Emergency Protocols
+
 - If any task encounters blockers, document in progress report
 - If file structure changes unexpectedly, pause and reassess
 - If critical files are at risk, create backup before proceeding
 - If GitHub Copilot effectiveness decreases, rollback and investigate
 
 **Start Execution**: Begin with Implementation Phase 1, Task 1 and provide your first progress report after completing Task 5.
+
 ```
 
 This prompt should be used to initialize any agent that will continue this implementation work.
@@ -636,4 +642,3 @@ Comprehensive testing strategy to validate documentation optimization:
 ```
 
 **Integration Benefit**: Combines traditional file analysis tools with live VS Code automation for comprehensive MTM development workflow enhancement.
-

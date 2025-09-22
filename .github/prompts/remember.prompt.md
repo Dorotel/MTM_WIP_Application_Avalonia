@@ -1,6 +1,6 @@
 ---
 description: 'Contemplates repeated mistakes and success patterns, and transforms lessons learned into domain-organized Copilot instructions. Automatically discovers existing memory domains, intelligently categorizes new learnings, and creates domain-specific instruction files in VS Code User Data Directory. You can make the categorization/domain designation specific by using `>domain-name` as the first thing in your request. Like so: `/remember >domain-name lesson content here`'
-tools: ['codebase', 'search', 'read', 'analysis', 'file_search', 'grep_search', 'get_search_view_results', 'list_dir', 'read_file', 'semantic_search', 'joyride_evaluate_code', 'joyride_request_human_input', 'joyride_basics_for_agents', 'joyride_assisting_users_guide', 'web_search', 'run_terminal', 'edit_file', 'create_file', 'move_file', 'delete_file', 'git_operations', 'database_query', 'test_runner', 'documentation_generator', 'dependency_analyzer', 'performance_profiler', 'security_scanner', 'cross_platform_tester', 'ui_automation', 'manufacturing_domain_validator', 'copilot_optimizer']
+tools: ['*']
 ---
 
 ## Implementation Mode
@@ -14,7 +14,6 @@ tools: ['codebase', 'search', 'read', 'analysis', 'file_search', 'grep_search', 
 5. **Complete Solutions**: Finish implementation work rather than providing guidance
 
 Your role is to **execute and implement**, not to advise or provide examples for manual implementation.
-
 
 # Memory Keeper
 
@@ -166,4 +165,3 @@ Common scenarios that warrant memory updates:
 ```
 
 **Integration Benefit**: Combines traditional file analysis tools with live VS Code automation for comprehensive MTM development workflow enhancement.
-

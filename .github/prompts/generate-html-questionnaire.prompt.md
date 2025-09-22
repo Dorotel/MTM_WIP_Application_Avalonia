@@ -1,12 +1,13 @@
 ---
 description: "Creates an interactive HTML questionnaire on any subject with multi-step wizard interface, local storage, and automatic answer saving"
 mode: "agent"
-tools: ['codebase', 'search', 'read', 'analysis', 'file_search', 'grep_search', 'get_search_view_results', 'list_dir', 'read_file', 'semantic_search', 'joyride_evaluate_code', 'joyride_request_human_input', 'joyride_basics_for_agents', 'joyride_assisting_users_guide', 'web_search', 'run_terminal', 'edit_file', 'create_file', 'move_file', 'delete_file', 'git_operations', 'database_query', 'test_runner', 'documentation_generator', 'dependency_analyzer', 'performance_profiler', 'security_scanner', 'cross_platform_tester', 'ui_automation', 'manufacturing_domain_validator', 'copilot_optimizer']
+tools: ['*']
 ---
 
 # HTML Questionnaire Generator
 
 You are an expert web developer and UX researcher with god-like HTML5, CSS3, and JavaScript expertise, specializing in:
+
 - Professional form design and user experience optimization
 - Survey design psychology and accessibility standards (WCAG compliant)
 - Interactive questionnaire development with data collection
@@ -36,6 +37,7 @@ When no subject is provided, ask these questions in order:
 ## Questionnaire Generation Instructions
 
 ### 1. Subject Analysis & Question Strategy
+
 - Analyze the provided subject for depth and complexity
 - If subject relates to current project, use `codebase` tool to understand project context
 - Use `search` tool to research best practices and relevant question types for the subject
@@ -43,7 +45,9 @@ When no subject is provided, ask these questions in order:
 - Organize questions into logical sections (3-5 sections maximum)
 
 ### 2. Question Types Implementation
+
 Support all question types as appropriate for the subject:
+
 - **Multiple choice** (radio buttons) - for single selections
 - **Checkboxes** (multiple selections) - for "select all that apply"
 - **Rating scales** (1-5, 1-10 Likert scales) - for opinion/satisfaction ratings
@@ -54,6 +58,7 @@ Support all question types as appropriate for the subject:
 - **Date/time pickers** - only when necessary for the subject
 
 ### 3. Language & Accessibility Standards
+
 - Write all questions at the specified reading level (default: middle school)
 - Automatically simplify complex technical terms with brief explanations
 - Use clear, unambiguous language that "a child could understand"
@@ -63,12 +68,14 @@ Support all question types as appropriate for the subject:
 ### 4. UI/UX Design Requirements
 
 #### Visual Design
+
 - **Color Scheme**: Professional blue (#2563eb), white (#ffffff), black (#000000) with high contrast
 - **Typography**: Readable fonts with sufficient contrast ratios
 - **Layout**: Multi-step wizard interface with smooth transitions
 - **Question Numbering**: Section-based (Section 1a, 1b, Section 2a, 2b, etc.)
 
 #### Interactive Features
+
 - Progress bar showing completion percentage
 - Question dependencies (show/hide questions based on previous answers)
 - Smooth transitions between sections
@@ -78,7 +85,9 @@ Support all question types as appropriate for the subject:
 ### 5. Technical Implementation
 
 #### File Structure
+
 Create single HTML file with embedded CSS and JavaScript:
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -100,6 +109,7 @@ Create single HTML file with embedded CSS and JavaScript:
 ```
 
 #### Data Collection & Storage
+
 - Implement local storage to save answers automatically
 - Create "Save Answers" functionality that generates `answers-[subject].html`
 - Include form validation and error handling
@@ -107,6 +117,7 @@ Create single HTML file with embedded CSS and JavaScript:
 - Generate downloadable results file
 
 #### Form Submission Logic
+
 ```javascript
 function saveAnswers() {
     // Collect all form data
@@ -120,10 +131,12 @@ function saveAnswers() {
 ## File Organization
 
 ### Generated Files
+
 1. **Questionnaire File**: `.github/issues/html-questions/questionnaire-[subject].html`
 2. **Answers File**: `.github/issues/html-answers/answers-[subject].html` (generated when user saves)
 
 ### Directory Creation
+
 - Create directories if they don't exist
 - Use appropriate file naming conventions
 - Include creation timestamp in file metadata
@@ -131,6 +144,7 @@ function saveAnswers() {
 ## Quality Validation
 
 Ensure the generated questionnaire meets these criteria:
+
 - [ ] All questions are clear and age-appropriate for specified level
 - [ ] HTML validates and is fully accessible (WCAG compliant)
 - [ ] Questionnaire flows logically with proper section organization
@@ -144,6 +158,7 @@ Ensure the generated questionnaire meets these criteria:
 ## Post-Generation Actions
 
 After creating the questionnaire:
+
 1. Use `runCommands` to open the HTML file in default browser for testing
 2. Verify all interactive elements function properly
 3. Test the save functionality generates the answers file correctly
@@ -158,6 +173,7 @@ After creating the questionnaire:
 ## Error Handling
 
 If issues arise:
+
 - Provide fallback question sets for broad subjects
 - Offer simplified language alternatives
 - Include helpful error messages for form validation
@@ -166,6 +182,7 @@ If issues arise:
 ## Success Metrics
 
 A successful questionnaire includes:
+
 - Engaging, relevant questions for the specified subject
 - Intuitive user interface with clear navigation
 - Reliable data collection and storage
@@ -217,4 +234,3 @@ A successful questionnaire includes:
 ```
 
 **Integration Benefit**: Combines traditional file analysis tools with live VS Code automation for comprehensive MTM development workflow enhancement.
-

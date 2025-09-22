@@ -1,12 +1,12 @@
 ---
 description: "Prompt for generating an AGENTS.md file for a repository"
 mode: "agent"
-tools: ['codebase', 'search', 'read', 'analysis', 'file_search', 'grep_search', 'get_search_view_results', 'list_dir', 'read_file', 'semantic_search', 'joyride_evaluate_code', 'joyride_request_human_input', 'joyride_basics_for_agents', 'joyride_assisting_users_guide', 'web_search', 'run_terminal', 'edit_file', 'create_file', 'move_file', 'delete_file', 'git_operations', 'database_query', 'test_runner', 'documentation_generator', 'dependency_analyzer', 'performance_profiler', 'security_scanner', 'cross_platform_tester', 'ui_automation', 'manufacturing_domain_validator', 'copilot_optimizer']
+tools: ['*']
 ---
 
 # Create high‑quality AGENTS.md file
 
-You are a code agent. Your task is to create a complete, accurate AGENTS.md at the root of this repository that follows the public guidance at https://agents.md/.
+You are a code agent. Your task is to create a complete, accurate AGENTS.md at the root of this repository that follows the public guidance at <https://agents.md/>.
 
 AGENTS.md is an open format designed to provide coding agents with the context and instructions they need to work effectively on a project.
 
@@ -293,4 +293,3 @@ When creating the AGENTS.md file, prioritize clarity, completeness, and actionab
 ```
 
 **Integration Benefit**: Combines traditional file analysis tools with live VS Code automation for comprehensive MTM development workflow enhancement.
-

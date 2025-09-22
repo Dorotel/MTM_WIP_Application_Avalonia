@@ -1,7 +1,7 @@
 ---
 description: 'This workflow guides you through a systematic approach to identify missing features, prioritize them, and create detailed specifications for implementation.'
 mode: 'agent'
-tools: ['codebase', 'search', 'read', 'analysis', 'file_search', 'grep_search', 'get_search_view_results', 'list_dir', 'read_file', 'semantic_search', 'joyride_evaluate_code', 'joyride_request_human_input', 'joyride_basics_for_agents', 'joyride_assisting_users_guide', 'web_search', 'run_terminal', 'edit_file', 'create_file', 'move_file', 'delete_file', 'git_operations', 'database_query', 'test_runner', 'documentation_generator', 'dependency_analyzer', 'performance_profiler', 'security_scanner', 'cross_platform_tester', 'ui_automation', 'manufacturing_domain_validator', 'copilot_optimizer']
+tools: ['*']
 ---
 
 # Product Manager Assistant: Feature Identification and Specification
@@ -19,6 +19,7 @@ This workflow guides you through a systematic approach to identify missing featu
   - Any placeholder implementations
 
 **Guiding Questions:**
+
 - What is the primary purpose of this project?
 - What user problems does it solve?
 - What patterns exist in the current implementation?
@@ -33,6 +34,7 @@ This workflow guides you through a systematic approach to identify missing featu
 - Focus on core functionality first (not nice-to-have features)
 
 **Output Creation:**
+
 - Create a list of potential missing features (5-7 items)
 - For each feature, note:
   - Current implementation status
@@ -44,6 +46,7 @@ This workflow guides you through a systematic approach to identify missing featu
 - Apply a score to each identified gap:
 
 **Scoring Matrix (1-5 scale):**
+
 - User Impact: How many users benefit?
 - Strategic Alignment: Fits core mission?
 - Implementation Feasibility: Technical complexity?
@@ -53,6 +56,7 @@ This workflow guides you through a systematic approach to identify missing featu
 **Priority = (User Impact × Strategic Alignment) / (Implementation Effort × Risk Level)**
 
 **Output Creation:**
+
 - Present the top 3 highest-priority missing features based on the scoring
 - For each, provide:
   - Feature name
@@ -69,6 +73,7 @@ This workflow guides you through a systematic approach to identify missing featu
   - Keep the specification implementation-friendly
 
 **For Each Feature Specification:**
+
 1. **Overview & Scope**
    - What problem does it solve?
    - What's included and what's explicitly excluded?
@@ -101,31 +106,38 @@ This workflow guides you through a systematic approach to identify missing featu
 # [Feature Name]
 
 ## Overview
+
 [Brief description of the feature and its purpose]
 
 ## Scope
+
 [What's included and what's explicitly excluded]
 
 ## Technical Requirements
+
 [Specific technical needs and constraints]
 
 ## Implementation Plan
+
 [Step-by-step approach with simple code examples]
 
 ## Acceptance Criteria
+
 [Clear list of requirements to consider the feature complete]
 
 ## Priority
+
 [Justification for prioritization]
 
 ## Dependencies
+
 - **Blocks:** [List of issues blocked by this one]
 - **Blocked by:** [List of issues this one depends on]
 
 ## Implementation Size
+
 - **Estimated effort:** [Small/Medium/Large]
 - **Sub-issues:** [Links to sub-issues if this is a parent issue]
-
 
 ## 5.5 Work Distribution Optimization
 
@@ -145,6 +157,7 @@ This workflow guides you through a systematic approach to identify missing featu
   - Include sub-issue specific acceptance criteria
 
 **Implementation Guidelines:**
+
 - Use GitHub issue linking syntax to create explicit relationships
 - Add labels to indicate dependency status (e.g., "blocked", "prerequisite")
 - Include estimated complexity/effort for each issue to aid sprint planning
@@ -157,6 +170,7 @@ This workflow guides you through a systematic approach to identify missing featu
 - Note any potential challenges or considerations
 
 Remember throughout this process:
+
 - Favor simplicity over complexity
 - Start with minimal viable implementations that work
 - Focus on developer experience
@@ -209,4 +223,3 @@ This workflow embodiment of our approach should help maintain consistency in how
 ```
 
 **Integration Benefit**: Combines traditional file analysis tools with live VS Code automation for comprehensive MTM development workflow enhancement.
-
