@@ -31,6 +31,7 @@ Follow the established MTM project commit message format:
 ### Commit Types
 
 **Primary Types:**
+
 - `feat:` New features (manufacturing workflows, UI components, services)
 - `fix:` Bug fixes (MVVM issues, database connections, UI glitches)
 - `docs:` Documentation changes (README, instructions, guides)
@@ -40,6 +41,7 @@ Follow the established MTM project commit message format:
 - `chore:` Maintenance tasks (dependencies, build tools, configuration)
 
 **MTM-Specific Types:**
+
 - `feat(manufacturing):` Manufacturing domain features
 - `feat(ui):` Avalonia UI components and themes
 - `feat(data):` Database and MySQL integration
@@ -58,6 +60,7 @@ Follow the established MTM project commit message format:
 ### MTM Component Scopes
 
 **Architecture Components:**
+
 - `viewmodels` - MVVM ViewModels
 - `views` - Avalonia AXAML views
 - `services` - Business logic services
@@ -65,6 +68,7 @@ Follow the established MTM project commit message format:
 - `controls` - Custom Avalonia controls
 
 **Domain Components:**
+
 - `inventory` - Inventory management features
 - `transactions` - Manufacturing transactions
 - `quickbuttons` - Quick button functionality
@@ -72,6 +76,7 @@ Follow the established MTM project commit message format:
 - `themes` - Theme system
 
 **Infrastructure Components:**
+
 - `database` - MySQL integration
 - `config` - Configuration management
 - `logging` - File logging service
@@ -80,6 +85,7 @@ Follow the established MTM project commit message format:
 ### Message Generation Guidelines
 
 **Description Format:**
+
 - Use imperative mood ("add", "fix", "update")
 - Keep under 50 characters for subject line
 - Capitalize first letter
@@ -87,12 +93,14 @@ Follow the established MTM project commit message format:
 - Be specific about what was changed
 
 **Body Guidelines (when needed):**
+
 - Explain the "what" and "why", not the "how"
 - Use bullet points for multiple changes
 - Reference manufacturing operations (90/100/110) when applicable
 - Mention cross-platform implications if relevant
 
 **Footer Guidelines:**
+
 - Reference GitHub issues: `Closes #123`
 - Breaking changes: `BREAKING CHANGE: description`
 - Co-authored commits: `Co-authored-by: Name <email>`
@@ -100,6 +108,7 @@ Follow the established MTM project commit message format:
 ### Example Commit Messages
 
 **Feature Examples:**
+
 ```
 feat(inventory): Add real-time inventory tracking for FLOOR location
 
@@ -109,6 +118,7 @@ feat(database): Add stored procedure for operation 110 shipping transactions
 ```
 
 **Fix Examples:**
+
 ```
 fix(mvvm): Resolve ObservableProperty binding issues in InventoryViewModel
 
@@ -118,6 +128,7 @@ fix(database): Correct MySQL connection pooling timeout configuration
 ```
 
 **Other Examples:**
+
 ```
 docs: Update AGENTS.md with comprehensive Joyride automation guide
 
@@ -129,12 +140,14 @@ test: Add cross-platform validation for TransferTabView component
 ### Usage Instructions
 
 **Basic Usage:**
+
 1. Run this prompt after making changes
 2. The system will analyze your git changes
 3. Receive a properly formatted commit message
 4. Copy and use with `git commit -m "message"`
 
 **Advanced Usage:**
+
 - Request multiple commit message options
 - Ask for commit message with body and footer
 - Request breaking change format
@@ -143,12 +156,14 @@ test: Add cross-platform validation for TransferTabView component
 ### Workflow Integration
 
 **Pre-commit Analysis:**
+
 - Analyze staged changes only
 - Consider manufacturing domain impact
 - Check for breaking changes
 - Validate against MTM standards
 
 **Quality Checks:**
+
 - Ensure message follows conventional format
 - Verify scope matches changed files
 - Check description clarity and conciseness
@@ -157,12 +172,14 @@ test: Add cross-platform validation for TransferTabView component
 ## 🤖 Joyride Integration
 
 **Use Joyride automation when safe and possible:**
+
 - `joyride_evaluate_code` for git status analysis and VS Code integration
 - `joyride_request_human_input` for clarifying change intent when ambiguous
 - Automated analysis of file patterns and change types
 - Interactive selection of commit type when multiple types apply
 
-**MTM-Specific Applications:** 
+**MTM-Specific Applications:**
+
 - Manufacturing domain validation for operation codes and business rules
 - MVVM pattern analysis for ViewModels and Services changes
 - Theme system impact assessment for UI changes
@@ -171,17 +188,20 @@ test: Add cross-platform validation for TransferTabView component
 ### Implementation Commands
 
 **Analyze Current Changes:**
+
 ```bash
 # This prompt will automatically analyze your current git status
 # and generate appropriate commit messages
 ```
 
 **Generate Multiple Options:**
+
 ```bash
 # Request 3 different commit message options for the same changes
 ```
 
 **Interactive Mode:**
+
 ```bash
 # Use Joyride for interactive commit message generation
 # with human input for complex or ambiguous changes
@@ -190,18 +210,21 @@ test: Add cross-platform validation for TransferTabView component
 ### MTM Project Context
 
 **Manufacturing Focus:**
+
 - Always consider manufacturing workflow impact
 - Reference operation codes (90/100/110) when applicable
 - Consider multi-location effects (FLOOR/RECEIVING/SHIPPING)
 - Account for operator transaction patterns
 
 **Technical Focus:**
+
 - .NET 8 and Avalonia UI 11.3.4 compatibility
 - MVVM Community Toolkit 8.3.2 patterns
 - MySQL 9.4.0 database integration
 - Cross-platform support (Windows/macOS/Linux)
 
 **Quality Standards:**
+
 - Follow established testing patterns
 - Maintain 17+ theme compatibility
 - Ensure 45+ stored procedure integration
