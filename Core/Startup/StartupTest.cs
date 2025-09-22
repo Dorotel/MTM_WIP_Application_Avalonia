@@ -18,7 +18,6 @@ public static class StartupTest
         
         try
         {
-            Console.WriteLine("=== MTM WIP Application Startup Test ===");
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Starting startup infrastructure test...");
 
             // Test configuration loading

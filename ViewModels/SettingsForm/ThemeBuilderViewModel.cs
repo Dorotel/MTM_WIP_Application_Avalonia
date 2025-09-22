@@ -378,7 +378,6 @@ public partial class ThemeBuilderViewModel : BaseViewModel
             ThemeName = $"Random Theme {DateTime.Now:HHmmss}";
             ThemeDescription = "Randomly generated color theme";
             
-            Logger.LogDebug("Theme colors randomized");
         }
         catch (Exception ex)
         {

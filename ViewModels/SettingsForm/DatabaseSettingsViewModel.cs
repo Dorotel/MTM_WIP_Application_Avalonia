@@ -166,7 +166,6 @@ public partial class DatabaseSettingsViewModel : BaseViewModel
             }
             else
             {
-                Logger.LogDebug("No existing database settings found, using defaults");
             }
         }
         catch (Exception ex)

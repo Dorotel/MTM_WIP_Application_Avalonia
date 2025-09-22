@@ -91,7 +91,6 @@ public partial class ShortcutsViewModel : BaseViewModel
             {
                 // Note: Current IConfigurationService doesn't have async save methods
                 // This would need to be implemented when configuration persistence is added
-                Logger.LogDebug("Would save shortcut: {Action} = {KeyCombination}", shortcut.Action, shortcut.KeyCombination);
             }
 
             Logger.LogInformation("Keyboard shortcuts saved successfully");
@@ -145,7 +144,6 @@ public partial class ShortcutsViewModel : BaseViewModel
             SelectedShortcut = shortcut;
             IsEditing = true;
 
-            Logger.LogDebug("Started editing shortcut: {Action}", shortcut.Action);
             await Task.CompletedTask;
         }
         catch (Exception ex)

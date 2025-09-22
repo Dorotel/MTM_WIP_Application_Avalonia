@@ -189,7 +189,6 @@ public partial class AddUserViewModel : BaseViewModel
         Department = string.Empty;
         Notes = string.Empty;
 
-        Logger.LogDebug("User form cleared");
         await Task.CompletedTask;
     }
 
@@ -209,7 +208,6 @@ public partial class AddUserViewModel : BaseViewModel
             // In a real implementation, this would check against the database
             // For now, just log the validation request
             await Task.Delay(500); // Simulate async validation
-            Logger.LogDebug("Username {Username} validation completed", Username);
         }
         catch (Exception ex)
         {

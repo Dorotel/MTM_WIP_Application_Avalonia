@@ -8,6 +8,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
+using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Views;
@@ -929,33 +930,105 @@ namespace MTM_WIP_Application_Avalonia.Views
         }
 
         /// <summary>
-        /// Handles Advanced Entry button click - clears inventory tab inputs
+        /// Handles Advanced Entry button click - clears inventory tab inputs and shows progress overlay
         /// </summary>
-        private void OnAdvancedEntryRequested(object? sender, EventArgs e)
+        private async void OnAdvancedEntryRequested(object? sender, EventArgs e)
         {
             try
             {
                 System.Diagnostics.Debug.WriteLine("Advanced Entry requested - clearing inventory inputs");
+
+                // Show progress overlay for advanced view switching
+                var progressOverlayService = Program.GetOptionalService<Services.IProgressOverlayService>();
+                if (progressOverlayService != null)
+                {
+                    await progressOverlayService.ShowProgressOverlayAsync(
+                        title: "Loading Advanced View",
+                        statusMessage: "Preparing advanced inventory entry...",
+                        isDeterminate: false,
+                        cancellable: false
+                    );
+                }
+
                 ClearInventoryTabInputs();
+
+                // Simulate loading time for advanced view preparation
+                await Task.Delay(150);
+
+                // Hide progress overlay
+                if (progressOverlayService != null)
+                {
+                    await progressOverlayService.HideProgressOverlayAsync();
+                }
             }
             catch (Exception ex)
             {
+                // Hide progress overlay on error
+                try
+                {
+                    var progressOverlayService = Program.GetOptionalService<Services.IProgressOverlayService>();
+                    if (progressOverlayService != null)
+                    {
+                        await progressOverlayService.HideProgressOverlayAsync();
+                    }
+                }
+                catch (Exception progressEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error hiding progress overlay: {progressEx.Message}");
+                }
+
                 System.Diagnostics.Debug.WriteLine($"Error handling Advanced Entry request: {ex.Message}");
             }
         }
 
         /// <summary>
-        /// Handles Advanced Removal button click - clears remove tab inputs
+        /// Handles Advanced Removal button click - clears remove tab inputs and shows progress overlay
         /// </summary>
-        private void OnAdvancedRemovalRequested(object? sender, EventArgs e)
+        private async void OnAdvancedRemovalRequested(object? sender, EventArgs e)
         {
             try
             {
                 System.Diagnostics.Debug.WriteLine("Advanced Removal requested - clearing remove inputs");
+
+                // Show progress overlay for advanced view switching
+                var progressOverlayService = Program.GetOptionalService<Services.IProgressOverlayService>();
+                if (progressOverlayService != null)
+                {
+                    await progressOverlayService.ShowProgressOverlayAsync(
+                        title: "Loading Advanced View",
+                        statusMessage: "Preparing advanced removal interface...",
+                        isDeterminate: false,
+                        cancellable: false
+                    );
+                }
+
                 ClearRemoveTabInputs();
+
+                // Simulate loading time for advanced view preparation
+                await Task.Delay(150);
+
+                // Hide progress overlay
+                if (progressOverlayService != null)
+                {
+                    await progressOverlayService.HideProgressOverlayAsync();
+                }
             }
             catch (Exception ex)
             {
+                // Hide progress overlay on error
+                try
+                {
+                    var progressOverlayService = Program.GetOptionalService<Services.IProgressOverlayService>();
+                    if (progressOverlayService != null)
+                    {
+                        await progressOverlayService.HideProgressOverlayAsync();
+                    }
+                }
+                catch (Exception progressEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error hiding progress overlay: {progressEx.Message}");
+                }
+
                 System.Diagnostics.Debug.WriteLine($"Error handling Advanced Removal request: {ex.Message}");
             }
         }
@@ -1483,8 +1556,9 @@ namespace MTM_WIP_Application_Avalonia.Views
 
         /// <summary>
         /// Handles tab selection changes to clear input fields and prevent SuggestionOverlay triggers
+        /// Shows progress overlay during view switching operations
         /// </summary>
-        private void OnTabSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        private async void OnTabSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             try
             {
@@ -1496,15 +1570,40 @@ namespace MTM_WIP_Application_Avalonia.Views
 
                 System.Diagnostics.Debug.WriteLine($"Tab changed from {oldIndex} to {newIndex} - ensuring tab switch flag is set");
 
+                // Get progress overlay service and show switching indicator
+                var progressOverlayService = Program.GetOptionalService<Services.IProgressOverlayService>();
+                if (progressOverlayService != null)
+                {
+                    var tabNames = new[] { "Inventory", "Remove", "Transfer" };
+                    var targetTabName = newIndex >= 0 && newIndex < tabNames.Length ? tabNames[newIndex] : "View";
+
+                    // Show progress overlay for view switching
+                    await progressOverlayService.ShowProgressOverlayAsync(
+                        title: "Switching View",
+                        statusMessage: $"Loading {targetTabName} tab...",
+                        isDeterminate: false,
+                        cancellable: false
+                    );
+                }
+
                 // Ensure the tab switch flag is set (in case earlier events didn't trigger)
                 IsTabSwitchInProgress = true;
 
                 // CRITICAL: Clear inputs from ALL tabs immediately to prevent SuggestionOverlay triggers
-                // This ensures clearing happens before any focus events can trigger SuggestionOverlay
+                // This happens BEFORE any focus events can trigger SuggestionOverlay
                 ClearAllTabInputsImmediate();
 
-                // Final cleanup of the flag after tab change completes
-                Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+                // Simulate brief loading time for view switching (real operations would be actual content loading)
+                await Task.Delay(200);
+
+                // Hide progress overlay
+                if (progressOverlayService != null)
+                {
+                    await progressOverlayService.HideProgressOverlayAsync();
+                }
+
+                // Final cleanup of the flag after tab change completes (don't await to prevent blocking)
+                _ = Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
                 {
                     await Task.Delay(400); // Allow final focus events to complete
                     IsTabSwitchInProgress = false;
@@ -1514,6 +1613,21 @@ namespace MTM_WIP_Application_Avalonia.Views
             catch (Exception ex)
             {
                 IsTabSwitchInProgress = false; // Ensure flag is cleared on error
+
+                // Hide progress overlay on error
+                try
+                {
+                    var progressOverlayService = Program.GetOptionalService<Services.IProgressOverlayService>();
+                    if (progressOverlayService != null)
+                    {
+                        await progressOverlayService.HideProgressOverlayAsync();
+                    }
+                }
+                catch (Exception progressEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error hiding progress overlay: {progressEx.Message}");
+                }
+
                 System.Diagnostics.Debug.WriteLine($"Error handling tab selection change: {ex.Message}");
             }
         }

@@ -6,11 +6,12 @@
 
 ## Overview
 
-This master index catalogs all documentation files identified in the MTM WIP Application repository and provides the restructuring plan to organize them into the new `.github` folder hierarchy following official GitHub Copilot awesome-copilot repository standards from https://github.com/github/awesome-copilot.
+This master index catalogs all documentation files identified in the MTM WIP Application repository and provides the restructuring plan to organize them into the new `.github` folder hierarchy following official GitHub Copilot awesome-copilot repository standards from <https://github.com/github/awesome-copilot>.
 
 ## New Documentation Structure (Awesome-Copilot Compliant)
 
 ### Folder Hierarchy Pattern
+
 ```
 .github/
 ├── prompts/              # Task-specific prompts (.prompt.md)  
@@ -40,6 +41,7 @@ This master index catalogs all documentation files identified in the MTM WIP App
 ```
 
 ### File Naming Convention (Awesome-Copilot Standards)
+
 - **Prompts**: `{task-name}.prompt.md` (accessible via `/` commands in Copilot Chat)
 - **Instructions**: `{framework-or-pattern}.instructions.md` (apply automatically to file patterns)
 - **Chat Modes**: `{persona-name}.chatmode.md` (specialized AI assistants)
@@ -48,6 +50,7 @@ This master index catalogs all documentation files identified in the MTM WIP App
 - **Requirements**: `req_{name}.md` (requirements documents)
 
 ### Required Frontmatter (Awesome-Copilot Format)
+
 ```yaml
 ---
 description: 'Brief description of the file purpose'
@@ -147,34 +150,41 @@ tools: ['codebase', 'fetch', 'search', 'usages'] # Available tools array
 ## File-by-File User Stories & Use Cases
 
 ### Copilot Instructions
+
 - **User Story**: As a developer using GitHub Copilot, I want clear, categorized instructions so that I can get accurate code suggestions that follow MTM patterns.
 - **Use Case**: When implementing a new feature, reference the appropriate instruction files to ensure Copilot generates code following established patterns.
 
 ### Templates
+
 - **User Story**: As a developer, I want standardized templates for common tasks so that I can consistently create features, components, and services.
 - **Use Case**: When starting a new feature, use the feature request template to ensure all requirements are captured correctly.
 
 ### Context Files
+
 - **User Story**: As a developer, I want comprehensive context about the business domain and technology stack so that I can make informed architectural decisions.
 - **Use Case**: Before making changes to inventory management, reference the business domain context to understand manufacturing workflows.
 
 ### Pattern Files
+
 - **User Story**: As a developer, I want established code patterns documented so that I can maintain consistency across the codebase.
 - **Use Case**: When creating a new ViewModel, reference the MVVM Community Toolkit patterns to ensure proper implementation.
 
 ### Development Guides
+
 - **User Story**: As a new team member, I want step-by-step guides for common development tasks so that I can be productive quickly.
 - **Use Case**: When setting up the development environment, follow the setup configuration guide to ensure all dependencies are properly installed.
 
 ## Archive Plan
 
 ### Files to Archive (Original Structure Preserved)
+
 - All files in `/docs/` directory
 - All files in `/Documentation/` directory  
 - Root level documentation files (`prompt.md`, `README.md`, etc.)
 - Any orphaned documentation files
 
 ### Archive Structure
+
 ```
 MTM_Documentation_Archive_2025-09-10.zip
 ├── docs/
@@ -187,7 +197,9 @@ MTM_Documentation_Archive_2025-09-10.zip
 ## Interactive HTML Documentation System
 
 ### Overview
+
 A comprehensive, user-friendly HTML documentation system will be created to provide:
+
 - **Plain English explanations** of all files and their purposes
 - **Real-world usage scenarios** with step-by-step examples  
 - **Interactive navigation** matching the exact folder structure
@@ -195,6 +207,7 @@ A comprehensive, user-friendly HTML documentation system will be created to prov
 - **Mobile-responsive design** for accessibility
 
 ### HTML Documentation Structure
+
 ```
 .github/Documentation-Management/
 ├── html-documentation/
@@ -220,14 +233,18 @@ A comprehensive, user-friendly HTML documentation system will be created to prov
 ### Real-World Scenarios Documentation
 
 #### Scenario 1: New Developer Onboarding
+
 **File**: `scenarios/new-developer-onboarding.html`
+
 - **Step 1**: Set up development environment using setup guides
 - **Step 2**: Install awesome-copilot extensions and configure MTM chat modes
 - **Step 3**: Practice with MTM-specific prompts for common tasks
 - **Step 4**: Review architecture documentation and coding standards
 
 #### Scenario 2: Feature Development Workflow  
+
 **File**: `scenarios/feature-development-workflow.html`
+
 - **Step 1**: Create feature request using `mtm-feature-request.prompt.md`
 - **Step 2**: Activate `mtm-architect.chatmode.md` for design guidance
 - **Step 3**: Use UI component prompts for interface development
@@ -235,7 +252,9 @@ A comprehensive, user-friendly HTML documentation system will be created to prov
 - **Step 5**: Implement error handling following MTM standards
 
 #### Scenario 3: Code Review Process
+
 **File**: `scenarios/code-review-process.html`
+
 - **Step 1**: Use MTM coding standards instructions for review checklist
 - **Step 2**: Activate quality assurance chat modes
 - **Step 3**: Validate against architecture patterns
@@ -244,6 +263,7 @@ A comprehensive, user-friendly HTML documentation system will be created to prov
 ### Interactive Features
 
 #### 1. Folder Structure Navigator
+
 ```html
 <div class="folder-navigator">
   <ul class="folder-tree">
@@ -261,6 +281,7 @@ A comprehensive, user-friendly HTML documentation system will be created to prov
 ```
 
 #### 2. Search and Filter System
+
 ```html
 <div class="search-system">
   <input type="text" id="documentation-search" placeholder="Search documentation...">
@@ -273,6 +294,7 @@ A comprehensive, user-friendly HTML documentation system will be created to prov
 ```
 
 #### 3. Usage Examples with Copy-Paste Code
+
 ```html
 <div class="usage-example">
   <h4>Using the MTM Feature Request Prompt</h4>
@@ -295,17 +317,31 @@ A comprehensive, user-friendly HTML documentation system will be created to prov
 ## Implementation Timeline (Updated)
 
 ### Week 1: Analysis & Setup
+
 - [x] Create master inventory
 - [x] Define new folder structure following awesome-copilot standards
 - [x] Create placeholder folders
 
 ### Week 2: Migration & Recreation
+
 - [ ] Move and recreate Copilot-related documentation  
 - [ ] Move and recreate development guides
 - [ ] Update all cross-references
 - [ ] **NEW**: Create HTML documentation structure and templates
 
+## Recently Added Documentation
+
+### Development Guides (Phase 1 - In Progress)
+
+- **Universal-Progress-Overlay-Implementation-Guide.md** (`.github/development-guides/`)
+  - **Purpose**: Comprehensive implementation guide for the Universal Progress Overlay system
+  - **Status**: ✅ Created (needs markdown lint fixes)
+  - **Content**: Service registration, view integration, API reference, threading considerations
+  - **Use Case**: Reference guide for implementing progress overlays throughout the MTM application
+  - **Dependencies**: IProgressOverlayService, ProgressOverlayView, MVVM Community Toolkit patterns
+
 ### Week 3: Quality Assurance & HTML Development
+
 - [ ] Comprehensive audit of migrated content
 - [ ] Validate all links and references
 - [ ] **NEW**: Build interactive HTML documentation system
@@ -313,6 +349,7 @@ A comprehensive, user-friendly HTML documentation system will be created to prov
 - [ ] **NEW**: Implement search and navigation features
 
 ### Week 4: Cleanup & Final Documentation
+
 - [ ] Create archive of old documentation
 - [ ] Remove old documentation files
 - [ ] Final validation of new structure

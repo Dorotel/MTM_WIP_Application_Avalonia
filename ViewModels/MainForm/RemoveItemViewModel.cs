@@ -169,8 +169,6 @@ public partial class RemoveItemViewModel : BaseViewModel
         get
         {
             var canDelete = SelectedItems.Count > 0 && !IsLoading;
-            Logger.LogTrace("🔍 QA DEBUG: CanDelete evaluated - SelectedItems.Count: {Count}, IsLoading: {IsLoading}, Result: {CanDelete}",
-                SelectedItems.Count, IsLoading, canDelete);
             return canDelete;
         }
     }
@@ -322,7 +320,6 @@ public partial class RemoveItemViewModel : BaseViewModel
     private void OnLoadingStateChangedFromService(object? sender, bool isLoading)
     {
         IsLoading = isLoading;
-        Logger.LogDebug("Loading state changed from RemoveService: {IsLoading}", isLoading);
     }
 
     /// <summary>
@@ -336,13 +333,6 @@ public partial class RemoveItemViewModel : BaseViewModel
 
         Logger.LogInformation("🔍 QA DEBUG: SelectedItems collection changed: {Action}, Count: {Count}, CanDelete: {CanDelete}",
             e.Action, SelectedItems.Count, CanDelete);
-
-        // Log selection details for debugging
-        if (Logger.IsEnabled(LogLevel.Debug))
-        {
-            Logger.LogDebug("🔍 QA DEBUG: Current selection details: {Items}",
-                string.Join(", ", SelectedItems.Select(i => $"{i.PartId}({i.Id})")));
-        }
     }
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -429,20 +419,15 @@ public partial class RemoveItemViewModel : BaseViewModel
                     InventoryItems.Clear();
                     if (result.Value != null)
                     {
-                        Logger.LogDebug("Adding {Count} items to InventoryItems collection", result.Value.Count);
                         foreach (var item in result.Value)
                         {
-                            Logger.LogDebug("Adding item - ID: {ID}, PartID: {PartID}, Location: {Location}, Operation: {Operation}, Quantity: {Quantity}",
-                                item.Id, item.PartId, item.Location, item.Operation, item.Quantity);
                             InventoryItems.Add(item);
                         }
-                        Logger.LogDebug("InventoryItems collection now has {Count} items", InventoryItems.Count);
                     }
 
                     // Manually trigger HasInventoryItems property change notification
                     OnPropertyChanged(nameof(HasInventoryItems));
                     OnPropertyChanged(nameof(AreSearchFieldsEnabled));
-                    Logger.LogDebug("HasInventoryItems property changed, value: {HasItems}", HasInventoryItems);
                 });
 
                 Logger.LogInformation("Search completed successfully: {Count} items found", result.Value?.Count ?? 0);
@@ -918,7 +903,6 @@ public partial class RemoveItemViewModel : BaseViewModel
             {
                 // Show the confirmation dialog
                 confirmationViewModel.IsVisible = true;
-                Logger.LogDebug("Multi-row confirmation dialog displayed for {Count} items", itemCount);
 
                 // Wait for user confirmation (with timeout to prevent infinite wait)
                 using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(5)); // 5 minute timeout
@@ -997,7 +981,6 @@ public partial class RemoveItemViewModel : BaseViewModel
                     if (result.IsSuccess)
                     {
                         successCount++;
-                        Logger.LogDebug("Successfully deleted item: {PartId}", item.PartId);
                     }
                     else
                     {
@@ -1288,14 +1271,12 @@ public partial class RemoveItemViewModel : BaseViewModel
                     if (NoteEditorItem != null)
                     {
                         NoteEditorItem.Notes = e.UpdatedNote ?? string.Empty;
-                        Logger.LogDebug("Updated inventory item notes for {PartId}", NoteEditorItem.PartId);
                     }
                 });
 
                 // Optionally refresh the search results to show updated data from database
                 if (!string.IsNullOrWhiteSpace(SelectedPart))
                 {
-                    Logger.LogDebug("Refreshing search results to reflect database changes");
                     await Search().ConfigureAwait(false);
                 }
             }
@@ -1396,7 +1377,6 @@ public partial class RemoveItemViewModel : BaseViewModel
 
                 // NOTE: Do NOT unsubscribe events or set ViewModel to null
                 // The ViewModel remains cached for reuse with preserved data
-                Logger.LogDebug("EditInventoryViewModel cleaned up but preserved in cache");
             }
 
             // Hide the dialog overlay
@@ -1404,7 +1384,6 @@ public partial class RemoveItemViewModel : BaseViewModel
             IsEditDialogVisible = false;
 
             // NOTE: Do NOT refresh data here - selective updates are handled by OnInventoryItemSaved()
-            Logger.LogDebug("Edit dialog closed successfully - search results preserved, ViewModel cached");
         }
         catch (Exception ex)
         {
@@ -1441,7 +1420,6 @@ public partial class RemoveItemViewModel : BaseViewModel
                         {
                             // Replace the item to trigger ObservableCollection notifications
                             InventoryItems[index] = e.SavedItem;
-                            Logger.LogDebug("Updated InventoryItems collection at index {Index} with edited data", index);
                         }
                     }
                     else
@@ -1483,12 +1461,10 @@ public partial class RemoveItemViewModel : BaseViewModel
             // If we have current search criteria, re-run the search
             if (!string.IsNullOrWhiteSpace(SelectedPart) || !string.IsNullOrWhiteSpace(SelectedOperation))
             {
-                Logger.LogDebug("Refreshing search results with current criteria");
                 await Search();
             }
             else
             {
-                Logger.LogDebug("No active search criteria, clearing results");
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     InventoryItems.Clear();
@@ -1517,15 +1493,11 @@ public partial class RemoveItemViewModel : BaseViewModel
             Logger.LogInformation("Loading ComboBox data from database");
 
             // Load Parts using md_part_ids_Get_All stored procedure
-            Logger.LogDebug("Calling md_part_ids_Get_All stored procedure");
             var partResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_part_ids_Get_All",
                 new Dictionary<string, object>()
             ).ConfigureAwait(false);
-
-            Logger.LogDebug("md_part_ids_Get_All result: IsSuccess={IsSuccess}, RowCount={RowCount}",
-                partResult.IsSuccess, partResult.Data?.Rows.Count ?? 0);
 
             if (partResult.IsSuccess)
             {
@@ -1554,15 +1526,11 @@ public partial class RemoveItemViewModel : BaseViewModel
             }
 
             // Load Operations using md_operation_numbers_Get_All stored procedure
-            Logger.LogDebug("Calling md_operation_numbers_Get_All stored procedure");
             var operationResult = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
                 _databaseService.GetConnectionString(),
                 "md_operation_numbers_Get_All",
                 new Dictionary<string, object>()
             ).ConfigureAwait(false);
-
-            Logger.LogDebug("md_operation_numbers_Get_All result: IsSuccess={IsSuccess}, RowCount={RowCount}",
-                operationResult.IsSuccess, operationResult.Data?.Rows.Count ?? 0);
 
             if (operationResult.IsSuccess)
             {
@@ -1631,74 +1599,6 @@ public partial class RemoveItemViewModel : BaseViewModel
         });
         return Task.CompletedTask;
     }
-
-    /// <summary>
-    /// Loads sample inventory data for demonstration
-    /// </summary>
-    private Task LoadSampleInventoryDataAsync()
-    {
-        Dispatcher.UIThread.Post(() =>
-        {
-            var sampleItems = new[]
-            {
-                new InventoryItem
-                {
-                    Id = 1,
-                    PartId = "PART001",
-                    Operation = "100",
-                    Location = "WC01",
-                    Quantity = 25,
-                    Notes = "Ready for next operation",
-                    User = "TestUser",
-                    LastUpdated = DateTime.Now.AddHours(-2)
-                },
-                new InventoryItem
-                {
-                    Id = 2,
-                    PartId = "PART001",
-                    Operation = "110",
-                    Location = "WC02",
-                    Quantity = 15,
-                    Notes = "Quality check required",
-                    User = "TestUser",
-                    LastUpdated = DateTime.Now.AddHours(-1)
-                },
-                new InventoryItem
-                {
-                    Id = 3,
-                    PartId = "PART002",
-                    Operation = "90",
-                    Location = "WC01",
-                    Quantity = 40,
-                    Notes = "Incoming from supplier",
-                    User = "TestUser",
-                    LastUpdated = DateTime.Now.AddMinutes(-30)
-                }
-            };
-
-            // Filter sample data based on search criteria
-            var filteredItems = sampleItems.AsEnumerable();
-
-            if (!string.IsNullOrWhiteSpace(SelectedPart))
-            {
-                filteredItems = filteredItems.Where(item =>
-                    item.PartId.Equals(SelectedPart, StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (!string.IsNullOrWhiteSpace(SelectedOperation))
-            {
-                filteredItems = filteredItems.Where(item =>
-                    item.Operation?.Equals(SelectedOperation, StringComparison.OrdinalIgnoreCase) == true);
-            }
-
-            foreach (var item in filteredItems)
-            {
-                InventoryItems.Add(item);
-            }
-        });
-        return Task.CompletedTask;
-    }
-
     #endregion
 
     #region Error Handling
@@ -1799,9 +1699,6 @@ public partial class RemoveItemViewModel : BaseViewModel
             dataTable.Rows.Add(row);
         }
 
-        Logger.LogDebug("Converted {ItemCount} inventory items to DataTable with {ColumnCount} columns",
-            inventoryItems.Count, dataTable.Columns.Count);
-
         return dataTable;
     }
 
@@ -1821,7 +1718,6 @@ public partial class RemoveItemViewModel : BaseViewModel
             {
                 if (_editViewModelCache.TryGetValue(item.Id, out var cachedViewModel))
                 {
-                    Logger.LogDebug("Removing cached EditInventoryViewModel for inventory ID {Id}", item.Id);
 
                     // Unsubscribe from events
                     cachedViewModel.DialogClosed -= OnEditDialogClosed;
@@ -1832,7 +1728,6 @@ public partial class RemoveItemViewModel : BaseViewModel
                 }
             }
 
-            Logger.LogDebug("ViewModel cache cleanup completed. Cache size: {CacheSize}", _editViewModelCache.Count);
         }
         catch (Exception ex)
         {
@@ -1854,20 +1749,17 @@ public partial class RemoveItemViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Showing part suggestions for input: {Input}", userInput);
 
             // Get suggestions from RemoveService
             var suggestions = await _removeService.GetPartSuggestionsAsync(userInput).ConfigureAwait(false);
 
             if (suggestions.Any())
             {
-                Logger.LogDebug("RemoveService provided {Count} part suggestions", suggestions.Count);
                 return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, suggestions, userInput);
             }
             else
             {
                 // Fall back to local collections if RemoveService doesn't have suggestions
-                Logger.LogDebug("Falling back to local PartOptions collection ({Count} items)", PartOptions.Count);
                 return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, PartOptions, userInput);
             }
         }
@@ -1890,20 +1782,17 @@ public partial class RemoveItemViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Showing operation suggestions for input: {Input}", userInput);
 
             // Get suggestions from RemoveService
             var suggestions = await _removeService.GetOperationSuggestionsAsync(userInput).ConfigureAwait(false);
 
             if (suggestions.Any())
             {
-                Logger.LogDebug("RemoveService provided {Count} operation suggestions", suggestions.Count);
                 return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, suggestions, userInput);
             }
             else
             {
                 // Fall back to local collections if RemoveService doesn't have suggestions
-                Logger.LogDebug("Falling back to local OperationOptions collection ({Count} items)", OperationOptions.Count);
                 return await _suggestionOverlayService.ShowSuggestionsAsync(targetControl, OperationOptions, userInput);
             }
         }
@@ -1948,4 +1837,3 @@ public partial class RemoveItemViewModel : BaseViewModel
 
     #endregion
 }
-

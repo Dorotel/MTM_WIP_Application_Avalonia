@@ -27,13 +27,13 @@ public partial class ThemeQuickSwitcher : UserControl
     public ThemeQuickSwitcher()
     {
         InitializeComponent();
-        
+
         // Initialize components
         if (ThemeComboBox != null)
         {
             ThemeComboBox.SelectedIndex = 0; // Default to MTM Light
         }
-        
+
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
     }
@@ -48,13 +48,13 @@ public partial class ThemeQuickSwitcher : UserControl
             // Get services from DI container
             _logger = Program.GetOptionalService<ILogger<ThemeQuickSwitcher>>();
             _themeService = Program.GetOptionalService<IThemeService>();
-            
+
             _logger?.LogDebug("ThemeQuickSwitcher OnLoaded event started");
-            
+
             InitializeThemeDropdown();
             InitializeEventHandlers();
-            
-            _logger?.LogInformation("ThemeQuickSwitcher initialized successfully with {ThemeCount} themes", 
+
+            _logger?.LogInformation("ThemeQuickSwitcher initialized successfully with {ThemeCount} themes",
                 ThemeComboBox?.Items.Count ?? 0);
         }
         catch (Exception ex)
@@ -75,20 +75,20 @@ public partial class ThemeQuickSwitcher : UserControl
             {
                 // Clear existing items
                 ThemeComboBox.Items.Clear();
-                
+
                 // Add built-in themes
                 AddBuiltInThemes();
-                
+
                 // Add custom themes
                 await AddCustomThemesAsync();
-                
+
                 // Get current theme and set selection
                 var currentTheme = _themeService.CurrentTheme;
-                
+
                 // Find the matching ComboBoxItem by Tag
                 var matchingItem = ThemeComboBox.Items.OfType<ComboBoxItem>()
                     .FirstOrDefault(item => item.Tag?.ToString() == currentTheme);
-                
+
                 if (matchingItem != null)
                 {
                     ThemeComboBox.SelectedItem = matchingItem;
@@ -151,7 +151,7 @@ public partial class ThemeQuickSwitcher : UserControl
             if (ThemeComboBox == null) return;
 
             var themesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Themes");
-            
+
             if (!Directory.Exists(themesDirectory))
             {
                 _logger?.LogDebug("Custom themes directory does not exist: {Directory}", themesDirectory);
@@ -159,13 +159,13 @@ public partial class ThemeQuickSwitcher : UserControl
             }
 
             var customThemeFiles = Directory.GetFiles(themesDirectory, "Custom_*.json");
-            
+
             if (customThemeFiles.Length > 0)
             {
                 // Add separator for custom themes
-                var separator = new ComboBoxItem 
-                { 
-                    Content = "─── Custom Themes ───", 
+                var separator = new ComboBoxItem
+                {
+                    Content = "─── Custom Themes ───",
                     Tag = "separator",
                     IsEnabled = false
                 };
@@ -185,9 +185,9 @@ public partial class ThemeQuickSwitcher : UserControl
 
                         if (themeInfo != null && !string.IsNullOrWhiteSpace(themeInfo.Name))
                         {
-                            var customThemeItem = new ComboBoxItem 
-                            { 
-                                Content = $"🎨 {themeInfo.Name} (Custom)", 
+                            var customThemeItem = new ComboBoxItem
+                            {
+                                Content = $"🎨 {themeInfo.Name} (Custom)",
                                 Tag = Path.GetFileNameWithoutExtension(filePath)
                             };
                             ToolTip.SetTip(customThemeItem, $"Custom theme by {themeInfo.CreatedBy ?? "Unknown"}\nCreated: {new FileInfo(filePath).CreationTime:yyyy-MM-dd}");
@@ -248,12 +248,12 @@ public partial class ThemeQuickSwitcher : UserControl
         {
             ApplyButton.Click += OnApplyButtonClick;
         }
-        
+
         if (ThemeComboBox != null)
         {
             ThemeComboBox.SelectionChanged += OnThemeSelectionChanged;
         }
-        
+
         // Wire up the edit theme button
         var editButton = this.FindControl<Button>("EditThemeButton");
         if (editButton != null)
@@ -324,11 +324,11 @@ public partial class ThemeQuickSwitcher : UserControl
             {
                 // Use the ThemeService to apply the theme
                 var result = await _themeService.SetThemeAsync(themeId);
-                
+
                 if (result.IsSuccess)
                 {
                     _logger?.LogInformation("Theme applied successfully: {ThemeId} - {Message}", themeId, result.Message);
-                    
+
                     // Save user preference if successful
                     var saveResult = await _themeService.SaveUserPreferredThemeAsync(themeId);
                     if (!saveResult.IsSuccess)
@@ -356,7 +356,7 @@ public partial class ThemeQuickSwitcher : UserControl
         {
             _logger?.LogError(ex, "Error in ApplyThemeAsync for theme {ThemeId}", themeId);
             System.Diagnostics.Debug.WriteLine($"Error in ApplyThemeAsync: {ex.Message}");
-            
+
             // Fallback to basic theme switching
             ApplyBasicTheme(themeId);
         }
@@ -388,7 +388,7 @@ public partial class ThemeQuickSwitcher : UserControl
                             window.InvalidateVisual();
                             window.InvalidateMeasure();
                             window.InvalidateArrange();
-                            
+
                             // Recursively invalidate all child controls
                             InvalidateControlTree(window);
                         }
@@ -457,7 +457,7 @@ public partial class ThemeQuickSwitcher : UserControl
         {
             var matchingItem = ThemeComboBox.Items.OfType<ComboBoxItem>()
                 .FirstOrDefault(item => item.Tag?.ToString() == themeId);
-            
+
             if (matchingItem != null)
             {
                 ThemeComboBox.SelectedItem = matchingItem;
@@ -501,19 +501,19 @@ public partial class ThemeQuickSwitcher : UserControl
         {
             if (Avalonia.Application.Current != null)
             {
-                var themeVariant = themeId.Contains("Dark") 
-                    ? Avalonia.Styling.ThemeVariant.Dark 
+                var themeVariant = themeId.Contains("Dark")
+                    ? Avalonia.Styling.ThemeVariant.Dark
                     : Avalonia.Styling.ThemeVariant.Light;
-                
+
                 Avalonia.Application.Current.RequestedThemeVariant = themeVariant;
-                
+
                 // CRITICAL FIX: Force immediate refresh for basic themes too
                 _ = Task.Run(async () =>
                 {
                     await Task.Delay(50);
                     await ForceApplicationThemeUpdateAsync();
                 });
-                
+
                 _logger?.LogInformation("Applied basic theme variant: {ThemeVariant} for theme {ThemeId}", themeVariant, themeId);
                 System.Diagnostics.Debug.WriteLine($"Applied basic theme variant: {themeVariant}");
             }

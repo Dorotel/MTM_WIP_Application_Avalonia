@@ -114,13 +114,13 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
         ArgumentNullException.ThrowIfNull(logger);
 
         _debugInstanceId = ++_debugInstanceIdCounter;
-        
+
         using var scope = Logger.BeginScope("SuggestionOverlayInitialization");
         Logger.LogInformation("SuggestionOverlayViewModel instance {InstanceId} created", _debugInstanceId);
 
         // Initialize with empty collection
         Suggestions = new ObservableCollection<string>();
-        
+
         Logger.LogInformation("SuggestionOverlayViewModel initialized with empty suggestions");
 
         // Initialize commands
@@ -147,12 +147,12 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
         ArgumentNullException.ThrowIfNull(logger);
 
         _debugInstanceId = ++_debugInstanceIdCounter;
-        
+
         using var scope = Logger.BeginScope("SuggestionOverlayInitialization");
         Logger.LogInformation("SuggestionOverlayViewModel instance {InstanceId} created", _debugInstanceId);
 
         Suggestions = new ObservableCollection<string>(suggestions);
-        
+
         Logger.LogInformation("SuggestionOverlayViewModel initialized with {SuggestionCount} suggestions", Suggestions.Count);
 
         // Initialize commands
@@ -176,12 +176,9 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
     /// <returns>True if a valid suggestion is selected; otherwise, false.</returns>
     private bool CanSelect()
     {
-        bool result = !string.IsNullOrEmpty(SelectedSuggestion) && 
+        bool result = !string.IsNullOrEmpty(SelectedSuggestion) &&
                      Suggestions.Contains(SelectedSuggestion);
-        
-        Logger.LogDebug("SelectCommand.CanExecute check: SelectedSuggestion='{SelectedSuggestion}', Result={Result}", 
-            SelectedSuggestion, result);
-        
+
         return result;
     }
 
@@ -244,7 +241,6 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
         // Ensure Select button state updates when Suggestions change
         Suggestions.CollectionChanged += (_, __) =>
         {
-            Logger.LogDebug("Suggestions collection changed. Count: {SuggestionCount}", Suggestions.Count);
             UpdateSuggestionSelectedState();
             SelectCommand.NotifyCanExecuteChanged();
         };
@@ -256,7 +252,6 @@ public partial class SuggestionOverlayViewModel : BaseViewModel
     private void UpdateSuggestionSelectedState()
     {
         IsSuggestionSelected = !string.IsNullOrEmpty(SelectedSuggestion);
-        Logger.LogDebug("IsSuggestionSelected updated to {IsSuggestionSelected}", IsSuggestionSelected);
     }
 
     #endregion

@@ -161,7 +161,6 @@ public partial class AboutViewModel : BaseViewModel
     private void ToggleSystemInfo()
     {
         ShowSystemInfo = !ShowSystemInfo;
-        Logger.LogDebug("System info visibility toggled: {Visible}", ShowSystemInfo);
     }
 
     /// <summary>

@@ -98,7 +98,6 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
 
     public PrintLayoutControlViewModel(ILogger<PrintLayoutControlViewModel> logger) : base(logger)
     {
-        Logger.LogDebug("PrintLayoutControlViewModel initialized");
     }
 
     #region Initialization
@@ -137,7 +136,6 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
             UpdateColumnCounts();
             StatusMessage = $"Loaded {Columns.Count} columns for customization";
 
-            Logger.LogDebug("Initialized PrintLayoutControl with {ColumnCount} columns", Columns.Count);
         }
         catch (Exception ex)
         {
@@ -213,7 +211,6 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
             HasUnsavedChanges = true;
             
             StatusMessage = makeVisible ? "All columns made visible" : "All columns hidden";
-            Logger.LogDebug("Toggled all columns visibility to: {Visible}", makeVisible);
         }
         catch (Exception ex)
         {
@@ -256,7 +253,6 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
             HasUnsavedChanges = true;
             
             StatusMessage = "Columns reset to default configuration";
-            Logger.LogDebug("Reset {ColumnCount} columns to default configuration", Columns.Count);
         }
         catch (Exception ex)
         {
@@ -320,7 +316,6 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
 
                 HasUnsavedChanges = true;
                 StatusMessage = $"Moved '{SelectedColumn.Header}' up";
-                Logger.LogDebug("Moved column '{Header}' up in display order", SelectedColumn.Header);
 
                 // Update command states
                 MoveColumnUpCommand.NotifyCanExecuteChanged();
@@ -361,7 +356,6 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
 
                 HasUnsavedChanges = true;
                 StatusMessage = $"Moved '{SelectedColumn.Header}' down";
-                Logger.LogDebug("Moved column '{Header}' down in display order", SelectedColumn.Header);
 
                 // Update command states
                 MoveColumnUpCommand.NotifyCanExecuteChanged();
@@ -450,7 +444,6 @@ public partial class PrintLayoutControlViewModel : BaseViewModel
 
             HasUnsavedChanges = false;
             StatusMessage = "Layout changes applied successfully";
-            Logger.LogDebug("Applied layout changes to {ColumnCount} columns", Columns.Count);
         }
         catch (Exception ex)
         {

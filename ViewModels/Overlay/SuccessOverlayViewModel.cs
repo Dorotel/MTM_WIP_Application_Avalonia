@@ -105,7 +105,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
 
     public SuccessOverlayViewModel(ILogger<SuccessOverlayViewModel> logger) : base(logger)
     {
-        Logger.LogDebug("SuccessOverlayViewModel initialized");
     }
 
     /// <summary>
@@ -131,7 +130,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Manual dismiss requested");
             await AnimateOutAsync();
         }
         catch (Exception ex)
@@ -150,7 +148,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Continue requested from error overlay");
             
             // Stop emergency monitoring since user is continuing
             StopEmergencyShutdownMonitoring();
@@ -300,7 +297,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Force dismiss requested");
             
             // Stop emergency monitoring
             StopEmergencyShutdownMonitoring();
@@ -326,7 +322,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Starting emergency shutdown monitoring");
 
             _emergencyCancellationSource?.Cancel();
             _emergencyCancellationSource?.Dispose();
@@ -371,7 +366,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
                 }
                 catch (OperationCanceledException)
                 {
-                    Logger.LogDebug("Emergency monitoring cancelled");
                 }
                 catch (Exception ex)
                 {
@@ -403,7 +397,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
             _emergencyCancellationSource?.Dispose();
             _emergencyCancellationSource = null;
 
-            Logger.LogDebug("Emergency shutdown monitoring stopped");
         }
         catch (Exception ex)
         {
@@ -416,7 +409,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     /// </summary>
     private async Task MonitorEmergencyShutdown(CancellationToken cancellationToken)
     {
-        Logger.LogDebug("Emergency shutdown monitoring started");
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -575,7 +567,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
             }
 
             Progress = 1.0;
-            Logger.LogDebug("Animate in completed");
         }
         catch (Exception ex)
         {
@@ -591,7 +582,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Starting animate out");
 
             // Animate out
             for (double i = 1.0; i >= 0.0; i -= 0.1)
@@ -607,7 +597,6 @@ public partial class SuccessOverlayViewModel : BaseViewModel
             AnimationCompleted?.Invoke();
             DismissRequested?.Invoke();
 
-            Logger.LogDebug("Animate out completed");
         }
         catch (Exception ex)
         {

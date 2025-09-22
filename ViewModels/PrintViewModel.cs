@@ -219,7 +219,6 @@ public partial class PrintViewModel : BaseViewModel
                           Microsoft.Extensions.Logging.Abstractions.NullLogger<PrintLayoutControlViewModel>.Instance;
         PrintLayoutControlViewModel = new PrintLayoutControlViewModel(layoutLogger);
 
-        Logger.LogDebug("PrintViewModel initialized");
         
         // Initialize with default title
         DocumentTitle = "MTM Report";
@@ -287,7 +286,6 @@ public partial class PrintViewModel : BaseViewModel
                 SelectedPrinter = AvailablePrinters.First();
             }
 
-            Logger.LogDebug("Loaded {PrinterCount} available printers", AvailablePrinters.Count);
         }
         catch (Exception ex)
         {
@@ -321,7 +319,6 @@ public partial class PrintViewModel : BaseViewModel
             CustomHeaderText = config.CustomHeaderText;
             CustomFooterText = config.CustomFooterText;
 
-            Logger.LogDebug("Loaded print configuration for {DataSourceType}", DataSourceType);
         }
         catch (Exception ex)
         {
@@ -342,7 +339,6 @@ public partial class PrintViewModel : BaseViewModel
                 AvailableTemplates.Add(template);
             }
 
-            Logger.LogDebug("Loaded {TemplateCount} available templates", AvailableTemplates.Count);
         }
         catch (Exception ex)
         {
@@ -378,7 +374,6 @@ public partial class PrintViewModel : BaseViewModel
                 // Initialize the layout control with print columns
                 PrintLayoutControlViewModel.InitializeColumns(PrintColumns);
 
-                Logger.LogDebug("Initialized {ColumnCount} print columns", PrintColumns.Count);
             }
         }
         catch (Exception ex)
@@ -501,7 +496,6 @@ public partial class PrintViewModel : BaseViewModel
     {
         ShowLayoutPanel = !ShowLayoutPanel;
         StatusMessage = ShowLayoutPanel ? "Layout customization panel opened" : "Layout customization panel closed";
-        Logger.LogDebug("Layout panel toggled to: {ShowLayoutPanel}", ShowLayoutPanel);
     }
 
     /// <summary>
@@ -614,7 +608,6 @@ public partial class PrintViewModel : BaseViewModel
                 }
             }
 
-            Logger.LogDebug("Applied template column configuration");
         }
         catch (Exception ex)
         {
@@ -634,7 +627,6 @@ public partial class PrintViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Closing print view");
 
             if (HasUnsavedChanges)
             {
@@ -651,7 +643,6 @@ public partial class PrintViewModel : BaseViewModel
                 if (OriginalViewContext != null)
                 {
                     _navigationService.NavigateTo(OriginalViewContext);
-                    Logger.LogDebug("Navigated back to original view context");
                 }
                 else
                 {
@@ -664,7 +655,6 @@ public partial class PrintViewModel : BaseViewModel
                             DataContext = mainViewModel
                         };
                         _navigationService.NavigateTo(mainView);
-                        Logger.LogDebug("Navigated back to MainView as fallback");
                     }
                 }
             }
@@ -712,7 +702,6 @@ public partial class PrintViewModel : BaseViewModel
             var config = CreatePrintConfiguration();
             await _printService.SavePrintConfigurationAsync(config, DataSourceType);
             HasUnsavedChanges = false;
-            Logger.LogDebug("Current print configuration saved for {DataSourceType}", DataSourceType);
         }
         catch (Exception ex)
         {

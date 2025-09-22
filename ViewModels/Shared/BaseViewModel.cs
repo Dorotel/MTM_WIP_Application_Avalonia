@@ -30,7 +30,7 @@ public abstract partial class BaseViewModel : ObservableValidator, IDisposable
         // Create a design-time safe logger that doesn't require DI
         try
         {
-            using var loggerFactory = LoggerFactory.Create(builder => 
+            using var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
                 builder.SetMinimumLevel(LogLevel.Warning); // Reduce noise in design mode
@@ -50,16 +50,10 @@ public abstract partial class BaseViewModel : ObservableValidator, IDisposable
     protected bool SetPropertyWithLogging<T>(ref T field, T newValue, string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, newValue)) return false;
-        
+
         var oldValue = field;
         var result = SetProperty(ref field, newValue, propertyName);
-        
-        if (result)
-        {
-            Logger.LogDebug("Property changed: {PropertyName} from '{OldValue}' to '{NewValue}' in {ViewModelType}", 
-                propertyName, oldValue, newValue, GetType().Name);
-        }
-            
+
         return result;
     }
 
@@ -71,7 +65,6 @@ public abstract partial class BaseViewModel : ObservableValidator, IDisposable
         try
         {
             base.OnPropertyChanged(e);
-            Logger.LogTrace("PropertyChanged event raised for: {PropertyName} in {ViewModelType}", e.PropertyName, GetType().Name);
         }
         catch (Exception ex)
         {
@@ -87,7 +80,6 @@ public abstract partial class BaseViewModel : ObservableValidator, IDisposable
             if (disposing)
             {
                 // Dispose managed resources
-                Logger.LogDebug("Disposing {ViewModelType}", GetType().Name);
             }
             _isDisposed = true;
         }
@@ -99,4 +91,3 @@ public abstract partial class BaseViewModel : ObservableValidator, IDisposable
         GC.SuppressFinalize(this);
     }
 }
-

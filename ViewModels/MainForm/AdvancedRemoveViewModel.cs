@@ -389,7 +389,6 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
             RemovalDateRangeEnd = DateTimeOffset.Now;
             RemovalHistory.Clear();
             StatusMessage = "Filters cleared";
-            Logger.LogDebug("Filters cleared");
         }
         catch (Exception ex)
         {
@@ -755,7 +754,6 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
         try
         {
             IsFilterPanelExpanded = !IsFilterPanelExpanded;
-            Logger.LogDebug("Filter panel toggled to {IsExpanded}", IsFilterPanelExpanded);
         }
         catch (Exception ex)
         {
@@ -836,7 +834,6 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Loading options for AdvancedRemoveViewModel");
             var connectionString = _configurationService.GetConnectionString();
 
             // Load Part IDs from stored procedure
@@ -914,7 +911,6 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 // Continue without user filtering if the procedure doesn't exist
             }
 
-            Logger.LogDebug("Options loaded successfully");
         }
         catch (Exception ex)
         {
@@ -927,7 +923,6 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Loading removal history");
             var connectionString = _configurationService.GetConnectionString();
 
             // Get recent removal transactions from database
@@ -970,7 +965,6 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
                 }
             });
 
-            Logger.LogDebug("Removal history loaded successfully with {Count} records", RemovalHistory.Count);
         }
         catch (Exception ex)
         {
@@ -986,7 +980,6 @@ public partial class AdvancedRemoveViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Executing search with current filter criteria");
 
             IsBusy = true;
             StatusMessage = "Searching...";

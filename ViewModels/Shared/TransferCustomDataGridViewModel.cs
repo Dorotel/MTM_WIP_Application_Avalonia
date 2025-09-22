@@ -110,7 +110,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
         _applicationStateService = applicationStateService;
         _successOverlayService = successOverlayService;
 
-        Logger.LogDebug("TransferCustomDataGridViewModel initialized");
 
         // Initialize event handlers
         SelectedItems.CollectionChanged += OnSelectedItemsCollectionChanged;
@@ -133,7 +132,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
 
             await RefreshTransferDataAsync();
 
-            Logger.LogDebug("Transfer grid data refreshed successfully, item count: {Count}", ItemsSource.Count);
         }
         catch (Exception ex)
         {
@@ -158,7 +156,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
 
             await EditTransferItemAsync(SelectedItem);
 
-            Logger.LogDebug("Transfer item edited successfully");
         }
         catch (Exception ex)
         {
@@ -185,7 +182,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
                 await ExecuteMultipleTransfersAsync(SelectedItems.ToList());
             }
 
-            Logger.LogDebug("Transfer execution completed successfully");
         }
         catch (Exception ex)
         {
@@ -201,7 +197,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
         {
             SelectedItem = null;
             SelectedItems.Clear();
-            Logger.LogDebug("Transfer selection cleared");
         }
         catch (Exception ex)
         {
@@ -221,7 +216,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
                 {
                     SelectedItems.Add(item);
                 }
-                Logger.LogDebug("All transfer items selected, count: {Count}", SelectedItems.Count);
             }
         }
         catch (Exception ex)
@@ -243,7 +237,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
             }
 
             OnPropertyChanged(nameof(CanExecuteTransfers));
-            Logger.LogDebug("Transfer validation completed");
         }
         catch (Exception ex)
         {
@@ -275,7 +268,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
                 ItemsSource.Add(item);
             }
 
-            Logger.LogDebug("Transfer ItemsSource set with {Count} items", items.Count);
         }
         catch (Exception ex)
         {
@@ -293,8 +285,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
         try
         {
             ItemsSource.Add(item);
-            Logger.LogDebug("Transfer item added: {PartId} from {FromLocation} to {ToLocation}",
-                item.PartId, item.FromLocation, item.ToLocation);
         }
         catch (Exception ex)
         {
@@ -321,7 +311,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
                     SelectedItem = null;
                 }
 
-                Logger.LogDebug("Transfer item removed: {PartId}", item.PartId);
             }
             return removed;
         }
@@ -347,8 +336,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
                 if (quantityUpdates.TryGetValue(key, out var newQuantity))
                 {
                     item.TransferQuantity = Math.Min(newQuantity, item.AvailableQuantity);
-                    Logger.LogDebug("Updated transfer quantity for {PartId}: {Quantity}",
-                        item.PartId, item.TransferQuantity);
                 }
             }
 
@@ -372,7 +359,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
     {
         // Default implementation - derived classes should override
         await Task.Delay(100); // Simulate async operation
-        Logger.LogDebug("Default refresh transfer data implementation completed");
     }
 
     /// <summary>
@@ -384,7 +370,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
 
         // Default implementation - placeholder
         await Task.Delay(100); // Simulate async operation
-        Logger.LogDebug("Default edit transfer item implementation completed for {PartId}", item.PartId);
     }
 
     /// <summary>
@@ -547,9 +532,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
                 item.IsTransferValid = false;
                 item.ValidationErrors.Add("From and To locations cannot be the same");
             }
-
-            Logger.LogDebug("Transfer validation completed for {PartId}: Valid={IsValid}, Errors={ErrorCount}",
-                item.PartId, item.IsTransferValid, item.ValidationErrors.Count);
         }
         catch (Exception ex)
         {
@@ -579,7 +561,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
             Columns.Add(new CustomDataGridColumn("TransferQuantity", "Transfer", typeof(int), 80));
             Columns.Add(new CustomDataGridColumn("Notes", "Notes", typeof(string), 80));
 
-            Logger.LogDebug("Transfer columns configured: {Count} columns", Columns.Count);
         }
         catch (Exception ex)
         {
@@ -606,7 +587,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
                 SelectedItem = null;
             }
 
-            Logger.LogDebug("Selected transfer items collection changed, new count: {Count}", SelectedItems.Count);
         }
         catch (Exception ex)
         {
@@ -628,7 +608,6 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
                 ItemsSource.Clear();
                 SelectedItems.Clear();
                 Columns.Clear();
-                Logger.LogDebug("TransferCustomDataGridViewModel disposed");
             }
             catch (Exception ex)
             {
@@ -641,4 +620,3 @@ public partial class TransferCustomDataGridViewModel : BaseViewModel
 
     #endregion
 }
-

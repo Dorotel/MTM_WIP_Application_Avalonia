@@ -179,9 +179,6 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
     private async Task LoadTransactionsAsync()
     {
         using var scope = Logger.BeginScope("LoadTransactions");
-        Logger.LogDebug("Loading transactions with filters - StartDate: {StartDate}, EndDate: {EndDate}, User: {User}, Search: {Search}", 
-            StartDate, EndDate, SelectedUser, SearchText);
-
         try
         {
             IsLoading = true;
@@ -189,7 +186,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
 
             // Use stored procedure approach
             DataTable dataTable;
-            
+
             // Load transactions based on filters
             if (SelectedUser == "All Users" || string.IsNullOrEmpty(SelectedUser))
             {
@@ -203,13 +200,13 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
             var allTransactions = ConvertDataTableToTransactionRecords(dataTable).ToList();
 
             // Apply date filter
-            allTransactions = allTransactions.Where(t => 
+            allTransactions = allTransactions.Where(t =>
                 t.TransactionDate >= StartDate && t.TransactionDate <= EndDate).ToList();
 
             // Apply search filter if specified
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                allTransactions = allTransactions.Where(t => 
+                allTransactions = allTransactions.Where(t =>
                     t.PartId.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                     t.Location.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                     t.Operation.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
@@ -231,18 +228,14 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
             {
                 Transactions = new ObservableCollection<TransactionRecord>(pagedTransactions);
             });
-            
+
             StatusMessage = $"Loaded {Transactions.Count} transactions";
             Logger.LogInformation("Successfully loaded {Count} transactions", Transactions.Count);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading transactions");
-            await ErrorHandling.HandleErrorAsync(
-                ex,
-                "Load Transactions",
-                _applicationState.CurrentUser ?? "System",
-                new Dictionary<string, object> { ["Operation"] = "LoadTransactions" });
+            await ErrorHandling.HandleErrorAsync(ex, "Load Transactions", _applicationState.CurrentUser ?? "System", new Dictionary<string, object> { ["Operation"] = "LoadTransactions" });
         }
         finally
         {
@@ -259,8 +252,6 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
     private async Task SearchAsync()
     {
         using var scope = Logger.BeginScope("Search");
-        Logger.LogDebug("Executing search with text: {SearchText}", SearchText);
-
         CurrentPage = 1; // Reset to first page when searching
         await LoadTransactionsAsync().ConfigureAwait(false);
     }
@@ -274,7 +265,6 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
     private async Task RefreshAsync()
     {
         using var scope = Logger.BeginScope("Refresh");
-        Logger.LogDebug("Refreshing transaction data");
 
         await LoadTransactionsAsync().ConfigureAwait(false);
         await LoadUsersAsync().ConfigureAwait(false);
@@ -289,7 +279,6 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
     private async Task FilterByUserAsync()
     {
         using var scope = Logger.BeginScope("FilterByUser");
-        Logger.LogDebug("Filtering by user: {User}", SelectedUser);
 
         CurrentPage = 1; // Reset to first page when filtering
         await LoadTransactionsAsync().ConfigureAwait(false);
@@ -302,7 +291,6 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
     private async Task FilterByDateAsync()
     {
         using var scope = Logger.BeginScope("FilterByDate");
-        Logger.LogDebug("Filtering by date range: {StartDate} to {EndDate}", StartDate, EndDate);
 
         CurrentPage = 1; // Reset to first page when filtering
         await LoadTransactionsAsync().ConfigureAwait(false);
@@ -317,7 +305,6 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
     private void ClearFilters()
     {
         using var scope = Logger.BeginScope("ClearFilters");
-        Logger.LogDebug("Clearing all filters");
 
         SearchText = string.Empty;
         SelectedUser = "All Users";
@@ -383,7 +370,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
         try
         {
             SelectedTransaction = transaction;
-            Logger.LogInformation("Selected transaction: ID={TransactionId}, PartId={PartId}", 
+            Logger.LogInformation("Selected transaction: ID={TransactionId}, PartId={PartId}",
                 transaction.TransactionId, transaction.PartId);
 
             StatusMessage = $"Selected transaction: {transaction.TransactionType} - {transaction.PartId}";
@@ -406,7 +393,6 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
     private async Task ExportAsync()
     {
         using var scope = Logger.BeginScope("Export");
-        Logger.LogDebug("Exporting transaction data");
 
         try
         {
@@ -415,7 +401,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
 
             // Implementation for export functionality would go here
             // This is a placeholder for the actual export logic
-            
+
             StatusMessage = "Export completed successfully";
             Logger.LogInformation("Transaction export completed");
         }
@@ -456,15 +442,14 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
     {
         try
         {
-            Logger.LogDebug("Loading available users for transaction history");
 
             var usersData = await _databaseService.GetAllUsersAsync();
-            
+
             // Update collection on UI thread
             Dispatcher.UIThread.Post(() =>
             {
                 var users = new ObservableCollection<string> { "All Users" }; // Add default option
-                
+
                 if (usersData != null)
                 {
                     foreach (DataRow row in usersData.Rows)
@@ -535,7 +520,6 @@ public partial class TransactionHistoryViewModel : BaseViewModel, INotifyPropert
             }
         }
 
-        Logger.LogDebug("Converted {Count} DataRows to TransactionRecords", transactions.Count);
         return transactions;
     }
 

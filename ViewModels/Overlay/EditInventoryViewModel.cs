@@ -50,7 +50,6 @@ public partial class EditInventoryViewModel : BaseViewModel
             newValue.PropertyChanged -= OnEditModelPropertyChanged; // Ensure no double subscription
             newValue.PropertyChanged += OnEditModelPropertyChanged;
 
-            Logger.LogDebug("🔍 Subscribed to new EditModel property changes");
 
             // Trigger initial CanSave evaluation
             OnPropertyChanged(nameof(CanSave));
@@ -66,7 +65,6 @@ public partial class EditInventoryViewModel : BaseViewModel
     /// </summary>
     private void OnEditModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        Logger.LogDebug("🔍 EditModel property changed: {PropertyName}", e.PropertyName);
 
         ValidateField(e.PropertyName);
         OnPropertyChanged(nameof(CanSave)); // Notify CanSave when EditModel changes
@@ -75,7 +73,6 @@ public partial class EditInventoryViewModel : BaseViewModel
         // Subscribe to HasChanges property specifically to ensure CanSave updates
         if (e.PropertyName == nameof(EditModel.HasChanges))
         {
-            Logger.LogDebug("EditModel.HasChanges changed to: {HasChanges}", EditModel.HasChanges);
             OnPropertyChanged(nameof(CanSave));
             SaveCommand.NotifyCanExecuteChanged(); // Critical: Notify SaveCommand when HasChanges updates
         }
@@ -174,14 +171,6 @@ public partial class EditInventoryViewModel : BaseViewModel
                         operationValid &&
                         quantityValid;
 
-            // Debug logging to identify which condition is failing
-            Logger.LogDebug("🔍 CanSave DEBUG: CanEditRecord={CanEdit}, HasChanges={HasChanges}, " +
-                          "HasValidationErrors={HasErrors}, IsLoading={Loading}, " +
-                          "IsOperationValid={OperationValid}, IsQuantityValid={QuantityValid}, " +
-                          "RESULT={Result}",
-                          canEdit, hasChanges, hasErrors, loading,
-                          operationValid, quantityValid, result);
-
             return result;
         }
     }
@@ -243,35 +232,30 @@ public partial class EditInventoryViewModel : BaseViewModel
     /// </summary>
     partial void OnCanEditRecordChanged(bool value)
     {
-        Logger.LogDebug("CanEditRecord changed to: {CanEditRecord}", value);
         OnPropertyChanged(nameof(CanSave));
         SaveCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnHasValidationErrorsChanged(bool value)
     {
-        Logger.LogDebug("HasValidationErrors changed to: {HasValidationErrors}", value);
         OnPropertyChanged(nameof(CanSave));
         SaveCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnIsLoadingChanged(bool value)
     {
-        Logger.LogDebug("IsLoading changed to: {IsLoading}", value);
         OnPropertyChanged(nameof(CanSave));
         SaveCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnIsOperationValidChanged(bool value)
     {
-        Logger.LogDebug("IsOperationValid changed to: {IsOperationValid}", value);
         OnPropertyChanged(nameof(CanSave));
         SaveCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnIsQuantityValidChanged(bool value)
     {
-        Logger.LogDebug("IsQuantityValid changed to: {IsQuantityValid}", value);
         OnPropertyChanged(nameof(CanSave));
         SaveCommand.NotifyCanExecuteChanged();
     }
@@ -360,7 +344,6 @@ public partial class EditInventoryViewModel : BaseViewModel
                 ValidateAllFields();
 
                 // Force initial CanSave evaluation and notification
-                Logger.LogDebug("🔍 InitializeAsync(int) - Initial validation completed, triggering CanSave notification");
                 OnPropertyChanged(nameof(CanSave));
                 SaveCommand.NotifyCanExecuteChanged();
             }
@@ -369,7 +352,6 @@ public partial class EditInventoryViewModel : BaseViewModel
                 // Even if user can't edit, we should set the validation states properly
                 IsOperationValid = true; // Don't block on validation if can't edit anyway
                 IsQuantityValid = true;
-                Logger.LogDebug("🔍 InitializeAsync(int) - User can't edit, setting validation states to true");
                 OnPropertyChanged(nameof(CanSave));
                 SaveCommand.NotifyCanExecuteChanged();
             }
@@ -449,7 +431,6 @@ public partial class EditInventoryViewModel : BaseViewModel
                 ValidateAllFields();
 
                 // Force initial CanSave evaluation and notification
-                Logger.LogDebug("🔍 InitializeAsync(InventoryItem) - Initial validation completed, triggering CanSave notification");
                 OnPropertyChanged(nameof(CanSave));
                 SaveCommand.NotifyCanExecuteChanged();
             }
@@ -458,7 +439,6 @@ public partial class EditInventoryViewModel : BaseViewModel
                 // Even if user can't edit, we should set the validation states properly
                 IsOperationValid = true; // Don't block on validation if can't edit anyway
                 IsQuantityValid = true;
-                Logger.LogDebug("🔍 InitializeAsync(InventoryItem) - User can't edit, setting validation states to true");
                 OnPropertyChanged(nameof(CanSave));
                 SaveCommand.NotifyCanExecuteChanged();
             }
@@ -482,7 +462,6 @@ public partial class EditInventoryViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Loading master data for edit dialog");
 
             // Load master data using the service
             await _masterDataService.LoadAllMasterDataAsync();
@@ -499,9 +478,6 @@ public partial class EditInventoryViewModel : BaseViewModel
             AvailableOperations.Clear();
             foreach (var operation in _masterDataService.Operations)
                 AvailableOperations.Add(operation);
-
-            Logger.LogDebug("Master data loaded: {PartIdCount} part IDs, {LocationCount} locations, {OperationCount} operations",
-                AvailablePartIds.Count, AvailableLocations.Count, AvailableOperations.Count);
         }
         catch (Exception ex)
         {
@@ -687,7 +663,6 @@ public partial class EditInventoryViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Cleaning up EditInventoryViewModel state");
 
             // Reset loading and UI states only
             IsLoading = false;
@@ -711,7 +686,6 @@ public partial class EditInventoryViewModel : BaseViewModel
             // Note: DO NOT reset EditModel here - it should only be reset when new data is loaded
             // This preserves data for potential CustomDataGrid updates
 
-            Logger.LogDebug("EditInventoryViewModel cleanup completed - Data preserved for updates");
         }
         catch (Exception ex)
         {

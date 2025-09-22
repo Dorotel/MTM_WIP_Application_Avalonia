@@ -25,14 +25,14 @@ public interface IThemeService : INotifyPropertyChanged
     string CurrentTheme { get; }
     IReadOnlyList<ThemeInfo> AvailableThemes { get; }
     bool IsDarkTheme { get; }
-    
+
     Task<ServiceResult> SetThemeAsync(string themeId);
     Task<ServiceResult> ToggleVariantAsync();
     Task<ServiceResult<string>> GetUserPreferredThemeAsync();
     Task<ServiceResult> SaveUserPreferredThemeAsync(string themeId);
     Task<ServiceResult> ApplyCustomColorsAsync(Dictionary<string, string> colorOverrides);
     Task<ServiceResult> InitializeThemeSystemAsync();
-    
+
     event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
 }
 
@@ -65,7 +65,7 @@ public class ServiceResult
     public bool IsSuccess { get; set; }
     public string Message { get; set; } = string.Empty;
     public Exception? Exception { get; set; }
-    
+
     public static ServiceResult Success(string message = "") => new() { IsSuccess = true, Message = message };
     public static ServiceResult Failure(string message, Exception? exception = null) => new() { IsSuccess = false, Message = message, Exception = exception };
 }
@@ -76,7 +76,7 @@ public class ServiceResult
 public class ServiceResult<T> : ServiceResult
 {
     public T? Value { get; set; }
-    
+
     public static ServiceResult<T> Success(T value, string message = "") => new() { IsSuccess = true, Value = value, Message = message };
     public static new ServiceResult<T> Failure(string message, Exception? exception = null) => new() { IsSuccess = false, Message = message, Exception = exception };
 }
@@ -100,19 +100,19 @@ public class ThemeService : IThemeService
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-        
+
         _availableThemes = InitializeThemes();
-        
+
         // Set default theme to MTMTheme if available, otherwise first theme
         _currentTheme = _availableThemes.FirstOrDefault(t => t.Id == DEFAULT_THEME_ID) ?? _availableThemes.First();
-        
-        _logger.LogInformation("ThemeService initialized with {ThemeCount} available themes, default theme: {DefaultTheme}", 
+
+        _logger.LogInformation("ThemeService initialized with {ThemeCount} available themes, default theme: {DefaultTheme}",
             _availableThemes.Count, _currentTheme.DisplayName);
-            
+
         // CRITICAL FIX: Don't initialize themes immediately during service registration
         // Theme initialization will be handled by the Application.Initialize() method
         // This prevents "Call from invalid thread" errors during startup
-        
+
         _logger.LogDebug("ThemeService created successfully - theme application deferred until UI thread is ready");
     }
 
@@ -129,7 +129,7 @@ public class ThemeService : IThemeService
         try
         {
             _logger.LogInformation("Initializing theme system after UI thread establishment");
-            
+
             // Load user's preferred theme or apply default
             var preferredThemeResult = await GetUserPreferredThemeAsync();
             if (preferredThemeResult.IsSuccess && !string.IsNullOrEmpty(preferredThemeResult.Value))
@@ -142,11 +142,11 @@ public class ThemeService : IThemeService
                 }
                 else
                 {
-                    _logger.LogWarning("Failed to apply preferred theme {Theme}, falling back to default: {Error}", 
+                    _logger.LogWarning("Failed to apply preferred theme {Theme}, falling back to default: {Error}",
                         preferredThemeResult.Value, setThemeResult.Message);
                 }
             }
-            
+
             // Fallback: apply default theme
             try
             {
@@ -189,7 +189,7 @@ public class ThemeService : IThemeService
             // Notify theme change
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTheme)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDarkTheme)));
-            
+
             ThemeChanged?.Invoke(this, new ThemeChangedEventArgs
             {
                 PreviousTheme = previousTheme,
@@ -215,7 +215,7 @@ public class ThemeService : IThemeService
         {
             var targetIsDark = !_currentTheme.IsDark;
             var targetTheme = _availableThemes.FirstOrDefault(t => t.IsDark == targetIsDark);
-            
+
             if (targetTheme != null)
             {
                 return await SetThemeAsync(targetTheme.Id);
@@ -239,7 +239,7 @@ public class ThemeService : IThemeService
         {
             // Get current user - ensure uppercase for database consistency
             var currentUser = Environment.UserName.ToUpper();
-            
+
             _logger.LogDebug("Retrieving user preferred theme from database for user: {UserId}", currentUser);
 
             // Get database service to retrieve user settings
@@ -252,17 +252,17 @@ public class ThemeService : IThemeService
 
             // Get user settings JSON from database
             var settingsJson = await databaseService.GetUserSettingsAsync(currentUser);
-            
+
             if (string.IsNullOrEmpty(settingsJson))
             {
-                _logger.LogInformation("No settings found for user {UserId}, using default theme {DefaultTheme}", 
+                _logger.LogInformation("No settings found for user {UserId}, using default theme {DefaultTheme}",
                     currentUser, DEFAULT_THEME_ID);
                 return ServiceResult<string>.Success(DEFAULT_THEME_ID);
             }
 
             // Parse JSON to get Theme_Name
             string preferredTheme = DEFAULT_THEME_ID;
-            
+
             try
             {
                 var jsonDoc = System.Text.Json.JsonDocument.Parse(settingsJson);
@@ -281,21 +281,21 @@ public class ThemeService : IThemeService
             }
             catch (System.Text.Json.JsonException jsonEx)
             {
-                _logger.LogWarning(jsonEx, "Failed to parse user settings JSON for user {UserId}: {SettingsJson}", 
+                _logger.LogWarning(jsonEx, "Failed to parse user settings JSON for user {UserId}: {SettingsJson}",
                     currentUser, settingsJson);
             }
 
             // Validate that the preferred theme exists
             if (!_availableThemes.Any(t => t.Id == preferredTheme))
             {
-                _logger.LogWarning("User preferred theme '{PreferredTheme}' not found, using default '{DefaultTheme}'", 
+                _logger.LogWarning("User preferred theme '{PreferredTheme}' not found, using default '{DefaultTheme}'",
                     preferredTheme, DEFAULT_THEME_ID);
-                    
+
                 // Update database with default theme
                 await UpdateUserThemeInDatabaseAsync(currentUser, DEFAULT_THEME_ID);
                 preferredTheme = DEFAULT_THEME_ID;
             }
-            
+
             _logger.LogInformation("Retrieved user preferred theme: {Theme} for user {UserId}", preferredTheme, currentUser);
             return ServiceResult<string>.Success(preferredTheme);
         }
@@ -315,11 +315,11 @@ public class ThemeService : IThemeService
         {
             // Get current user - ensure uppercase for database consistency
             var currentUser = Environment.UserName.ToUpper();
-            
+
             _logger.LogInformation("Saving user preferred theme: {Theme} for user {UserId}", themeId, currentUser);
 
             await UpdateUserThemeInDatabaseAsync(currentUser, themeId);
-            
+
             _logger.LogInformation("User preferred theme saved successfully: {Theme} for user {UserId}", themeId, currentUser);
             return ServiceResult.Success("Theme preference saved to database");
         }
@@ -347,12 +347,12 @@ public class ThemeService : IThemeService
 
             // Create theme JSON - this matches the format shown in the database image
             var themeJson = System.Text.Json.JsonSerializer.Serialize(new { Theme_Name = themeId });
-            
+
             _logger.LogDebug("Updating theme for user {UserId} with JSON: {ThemeJson}", userId, themeJson);
 
             // Use the existing SaveThemeSettingsAsync method which calls usr_ui_settings_SetThemeJson
             var success = await databaseService.SaveThemeSettingsAsync(userId, themeJson);
-            
+
             if (success)
             {
                 _logger.LogInformation("Successfully updated theme in database for user {UserId}: {ThemeId}", userId, themeId);
@@ -404,17 +404,17 @@ public class ThemeService : IThemeService
                             {
                                 // Create a SolidColorBrush from the color
                                 var brush = new SolidColorBrush(color);
-                                
+
                                 // Update or add the resource
                                 Application.Current.Resources[colorOverride.Key] = brush;
-                                
-                                _logger.LogDebug("Applied color override: {Key} = {Color}", 
+
+                                _logger.LogDebug("Applied color override: {Key} = {Color}",
                                     colorOverride.Key, colorOverride.Value);
                                 successCount++;
                             }
                             else
                             {
-                                _logger.LogWarning("Invalid color format for {Key}: {Value}", 
+                                _logger.LogWarning("Invalid color format for {Key}: {Value}",
                                     colorOverride.Key, colorOverride.Value);
                             }
                         }
@@ -424,7 +424,7 @@ public class ThemeService : IThemeService
                         }
                     }
 
-                    _logger.LogInformation("Successfully applied {SuccessCount}/{TotalCount} color overrides", 
+                    _logger.LogInformation("Successfully applied {SuccessCount}/{TotalCount} color overrides",
                         successCount, colorOverrides.Count);
                 }
                 catch (Exception ex)
@@ -459,7 +459,7 @@ public class ThemeService : IThemeService
                 IsDark = false,
                 PreviewColor = "#0078D4"
             },
-            
+
             // Light Themes
             new ThemeInfo
             {
@@ -533,7 +533,7 @@ public class ThemeService : IThemeService
                 IsDark = false,
                 PreviewColor = "#00C853"
             },
-            
+
             // Dark Variants
             new ThemeInfo
             {
@@ -599,7 +599,7 @@ public class ThemeService : IThemeService
                 IsDark = true,
                 PreviewColor = "#AD1457"
             },
-            
+
             // Accessibility Theme
             new ThemeInfo
             {
@@ -627,14 +627,14 @@ public class ThemeService : IThemeService
                     // Wait for Application.Current to be available with timeout
                     var maxWaitTime = TimeSpan.FromSeconds(10);
                     var startTime = DateTime.UtcNow;
-                    
+
                     while (Application.Current == null && DateTime.UtcNow - startTime < maxWaitTime)
                     {
                         _logger.LogDebug("Waiting for Application.Current to be available...");
                         await Task.Delay(100);
                     }
-                    
-                    if (Application.Current == null) 
+
+                    if (Application.Current == null)
                     {
                         _logger.LogWarning("Application.Current is still null after {MaxWaitSeconds}s, cannot apply theme", maxWaitTime.TotalSeconds);
                         return;
@@ -646,7 +646,7 @@ public class ThemeService : IThemeService
 
                     // Apply theme-specific resource file
                     await LoadThemeResourcesAsync(theme.Id);
-                    
+
                     _logger.LogDebug("Applied theme variant: {Variant} for theme: {Theme}", themeVariant, theme.DisplayName);
                 }
                 catch (Exception ex)
@@ -670,7 +670,7 @@ public class ThemeService : IThemeService
     {
         try
         {
-            if (Application.Current?.Resources == null) 
+            if (Application.Current?.Resources == null)
             {
                 _logger.LogWarning("Application resources not available");
                 return;
@@ -680,26 +680,26 @@ public class ThemeService : IThemeService
 
             // Build the resource URI for the specific theme
             var themeResourceUri = new Uri($"avares://MTM_WIP_Application_Avalonia/Resources/Themes/{themeId}.axaml");
-            
+
             try
             {
                 // Clear existing theme-specific resources FIRST
                 ClearThemeResources();
-                
+
                 // Small delay to ensure cleanup completes
                 await Task.Delay(20);
-                
+
                 // Load the theme resource dictionary using AvaloniaXamlLoader
-                try 
+                try
                 {
                     // Try to load the resource dictionary directly
                     var themeResources = (ResourceDictionary)AvaloniaXamlLoader.Load(themeResourceUri);
-                    
+
                     // Merge the new theme resources
                     Application.Current.Resources.MergedDictionaries.Add(themeResources);
-                    
+
                     _logger.LogInformation("Successfully loaded theme resources from: {Uri}", themeResourceUri);
-                    
+
                     // CRITICAL FIX: Force immediate and complete resource refresh
                     await ForceCompleteApplicationRefreshAsync();
                 }
@@ -755,7 +755,7 @@ public class ThemeService : IThemeService
                                 }
                             }
                             break;
-                            
+
                         case ISingleViewApplicationLifetime singleView:
                             try
                             {
@@ -904,12 +904,12 @@ public class ThemeService : IThemeService
         {
             // Store current selection
             var currentSelection = tabControl.SelectedIndex;
-            
+
             // Force TabControl to refresh
             tabControl.InvalidateVisual();
             tabControl.InvalidateMeasure();
             tabControl.InvalidateArrange();
-            
+
             // Force style re-application by cycling through all TabItems
             for (int i = 0; i < tabControl.Items.Count; i++)
             {
@@ -918,7 +918,7 @@ public class ThemeService : IThemeService
                     // Temporarily select each tab to force style refresh
                     tabControl.SelectedIndex = i;
                     Task.Delay(1).Wait(); // Minimal delay for style application
-                    
+
                     // Force refresh after each selection change
                     tabControl.InvalidateVisual();
                     tabControl.InvalidateMeasure();
@@ -929,18 +929,18 @@ public class ThemeService : IThemeService
                     _logger.LogWarning(ex, "Error during TabItem {Index} refresh", i);
                 }
             }
-            
+
             // Restore original selection
             tabControl.SelectedIndex = currentSelection;
-            
+
             // Final comprehensive refresh
             tabControl.InvalidateVisual();
             tabControl.InvalidateMeasure();
             tabControl.InvalidateArrange();
-            
+
             // Force update of the entire TabControl layout
             tabControl.UpdateLayout();
-            
+
             _logger.LogDebug("Forced TabControl refresh with style cycling for theme update");
         }
         catch (Exception ex)
@@ -961,8 +961,8 @@ public class ThemeService : IThemeService
             // Remove any existing theme resource dictionaries
             // We identify them by checking if they contain MTM theme keys
             var themeResourceDictionaries = Application.Current.Resources.MergedDictionaries
-                .Where(dict => 
-                    dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out _) || 
+                .Where(dict =>
+                    dict.TryGetResource("MTM_Shared_Logic.PrimaryAction", null, out _) ||
                     dict.TryGetResource("MTM_Shared_Logic.CardBackgroundBrush", null, out _) ||
                     dict.TryGetResource("MTM_Shared_Logic.SecondaryAction", null, out _) ||
                     dict.TryGetResource("MTM_Shared_Logic.MainBackground", null, out _))
@@ -990,7 +990,7 @@ public class ThemeService : IThemeService
                 }
             }
 
-            _logger.LogDebug("Cleared {Count} existing theme resource dictionaries and {KeyCount} direct resources", 
+            _logger.LogDebug("Cleared {Count} existing theme resource dictionaries and {KeyCount} direct resources",
                 themeResourceDictionaries.Count, mtmResourceKeys.Count);
         }
         catch (Exception ex)

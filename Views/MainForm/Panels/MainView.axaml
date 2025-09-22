@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
+             xmlns:overlayViews="using:MTM_WIP_Application_Avalonia.Views.Overlay"
              xmlns:panelViews="using:MTM_WIP_Application_Avalonia.Views.MainForm.Panels"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
@@ -49,7 +50,7 @@
     <!-- Header Menu with MTM Branding -->
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
-            Padding="24,8"
+            Padding="24,4"
             BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.ShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,2,8,0'}"
             HorizontalAlignment="Stretch">
       <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
@@ -93,27 +94,13 @@
             ColumnSpacing="16"
             HorizontalAlignment="Stretch">
 
-        <!-- Main Progress Bar -->
-        <Border Grid.Column="0"
-                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-                BorderThickness="1"
-                Padding="12,6"
-                CornerRadius="12"
-                HorizontalAlignment="Left">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="Progress:"
-                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                       FontSize="10"
-                       FontWeight="Medium"/>
-            <ProgressBar Minimum="0" Maximum="100"
-                         Width="100" Height="8"
-                         Value="{Binding ProgressValue, FallbackValue=0}"
-                         Foreground="{DynamicResource MTM_Shared_Logic.ProcessingBrush}"
-                         Background="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
-                         CornerRadius="4"/>
-          </StackPanel>
-        </Border>
+        <!-- Progress Overlay Display -->
+        <overlayViews:ProgressOverlayView Grid.Column="0"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Center"
+                                         DataContext="{Binding ProgressOverlayService.CurrentProgressOverlay}"
+                                         MinWidth="200"
+                                         MaxWidth="280" />
 
         <!-- Spacer -->
         <Border Grid.Column="1" Background="Transparent"/>
@@ -342,7 +329,7 @@
                                 IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
                                 IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
                                 Margin="0,8,8,8"
-                                HorizontalAlignment="Stretch"
+                                HorizontalAlignment="Right"
                                 VerticalAlignment="Stretch"
                                 MinWidth="40">
         <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"

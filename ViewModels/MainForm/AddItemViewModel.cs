@@ -231,7 +231,6 @@ public partial class AddItemViewModel : BaseViewModel
         Notes = string.Empty;
         StatusMessage = string.Empty;
         
-        Logger.LogDebug("Form cleared in AddItemViewModel");
     }
 
     /// <summary>
@@ -246,7 +245,6 @@ public partial class AddItemViewModel : BaseViewModel
             IsLoading = true;
             
             using var scope = Logger.BeginScope("LoadMasterData");
-            Logger.LogDebug("Loading master data for AddItemViewModel");
 
             // Load available item types
             var itemTypesData = await _databaseService.GetAllItemTypesAsync().ConfigureAwait(false);

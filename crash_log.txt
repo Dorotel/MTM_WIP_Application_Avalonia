@@ -1,0 +1,735 @@
+[2025-09-21 23:43:41.095] MTM WIP Application Program.Main() starting...
+[2025-09-21 23:43:41.109] Command line args: []
+[2025-09-21 23:43:41.109] Configuring services using ApplicationStartup...
+[2025-09-21 23:43:41.110] ConfigureServicesAsync() started
+[2025-09-21 23:43:41.110] Application not yet initialized, starting fresh initialization
+[2025-09-21 23:43:41.111] ApplicationStartup.InitializeApplication() started
+[2025-09-21 23:43:41.111] ConfigureApplication() started
+[2025-09-21 23:43:41.111] Environment: Production
+[2025-09-21 23:43:41.125] ValidateConfiguration() started
+[2025-09-21 23:43:41.125] Warning: DefaultConnection string not configured
+[2025-09-21 23:43:41.125] Warning: MTM:ApplicationName not configured, using default
+[2025-09-21 23:43:41.125] Configuration validation completed successfully
+[2025-09-21 23:43:41.125] Configuration setup completed in 13ms
+[2025-09-21 23:43:41.125] Configuration phase completed
+[2025-09-21 23:43:41.126] ConfigureLogging() started
+[2025-09-21 23:43:41.128] Logging configuration completed in 2ms
+[2025-09-21 23:43:41.128] Logging configuration completed
+[2025-09-21 23:43:41.129] ConfigureCoreServices() started
+[2025-09-21 23:43:41.132] Core services registration completed in 3ms
+[2025-09-21 23:43:41.132] Core services configuration completed
+[2025-09-21 23:43:41.133] ConfigureApplicationServices() started
+[2025-09-21 23:43:41.133] Application services registration completed in 0ms
+[2025-09-21 23:43:41.133] Application services configuration completed
+[2025-09-21 23:43:41.133] BuildAndValidateServices() started
+[2025-09-21 23:43:41.147] Service provider built successfully
+[2025-09-21 23:43:41.147] Performing runtime service validation...
+[VALIDATION-SUCCESS] IConfigurationService resolved successfully
+2025-09-21 23:43:43.863 info: MTM_WIP_Application_Avalonia.Services.ApplicationStateService[0]
+      ApplicationStateService initialized with default user: JOHNK
+[VALIDATION-SUCCESS] IApplicationStateService resolved successfully
+[VALIDATION-SUCCESS] INavigationService resolved successfully
+2025-09-21 23:43:43.867 dbug[VALIDATION-SUCCESS] IFilePathService resolved successfully
+: MTM_WIP_Application_Avalonia.Services.NavigationService[0]
+      NavigationService constructed successfully
+2025-09-21 23:43:43.867 info: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      ThemeService initialized with 19 available themes, default theme: MTM Default
+2025-09-21 23:43:43.867 [VALIDATION-SUCCESS] IThemeService resolved successfully
+dbug: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      ThemeService created successfully - theme application deferred until UI thread is ready
+2025-09-21 23:43:43.868 info: MTM_WIP_Application_Avalonia.Services.SettingsService[0]
+      SettingsService initialized
+2025-09-21 23:43:43.868 dbug: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Configuration key 'Settings:Theme' not found, using default value
+2025-09-21 23:43:43.869 dbug: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Configuration key 'Settings:AutoSave' not found, using default value
+2025-09-21 23:43:43.869 dbug: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Configuration key 'Settings:DefaultLocation' not found, using default value
+2025-09-21 23:43:43.869 dbug: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Configuration key 'Settings:DefaultOperation' not found, using default value
+2025-09-21 23:43:43.869 dbug: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Configuration key 'Settings:EnableAdvancedFeatures' not found, using default value
+2025-09-21 23:43:43.869 dbug: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Configuration key 'Settings:WindowWidth' not found, using default value
+2025-09-21 23:43:43.869 dbug: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Configuration key 'Settings:WindowHeight' not found, using default value
+2025-09-21 23:43:43.869 dbug: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Configuration key 'Settings:RememberWindowSize' not found, using default value
+2025-09-21 23:43:43.869 dbug: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Configuration key 'Settings:DefaultPageSize' not found, using default value
+2025-09-21 23:43:43.869 dbug: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Configuration key 'Settings:EnableRealTimeUpdates' not found, using default value
+2025-09-21 23:43:43.869 info: MTM_WIP_Application_Avalonia.Services.SettingsService[0]
+      Settings loaded successfully
+[VALIDATION-SUCCESS] ISettingsService resolved successfully
+2025-09-21 23:43:43.873 info: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Using connection string: Server=localhost, Database=mtm_wip_application_test, Uid=JOHNK
+2025-09-21 23:43:43.873 info: MTM_WIP_Application_Avalonia.Services.DatabaseService[0]
+      DatabaseService initialized with connection string
+[VALIDATION-SUCCESS] IDatabaseService resolved successfully
+[VALIDATION-SUCCESS] IQuickButtonsService resolved successfully
+[VALIDATION-SUCCESS] IProgressService resolved successfully
+2025-09-21 23:43:43.873 [VALIDATION-SUCCESS] ISuggestionOverlayService resolved successfully
+dbug: MTM_WIP_Application_Avalonia.Services.SuggestionOverlayService[0]
+      SuggestionOverlayService created successfully with focus management: True
+2025-09-21 23:43:43.874 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      MasterDataService initialized
+[VALIDATION-SUCCESS] IMasterDataService resolved successfully
+[VALIDATION-SUCCESS] IFileLoggingService resolved successfully
+[VALIDATION-SUCCESS] IFocusManagementService resolved successfully
+2025-09-21 23:43:43.874 dbug: MTM_WIP_Application_Avalonia.Services.RemoveService[0]
+      RemoveService initialized with dependencies
+[VALIDATION-SUCCESS] IRemoveService resolved successfully
+[VALIDATION-SUCCESS] IFileSelectionService resolved successfully
+[2025-09-21 23:43:43.874] Runtime service validation completed successfully
+[2025-09-21 23:43:43.874] Performing application validation...
+2025-09-21 23:43:43.874 info: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Starting comprehensive application validation
+[2025-09-21 23:43:43.875] StartupValidationService.ValidateApplication() started
+2025-09-21 23:43:43.875 [2025-09-21 23:43:43.875] ValidateServices() started
+dbug: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Starting service dependency validation
+2025-09-21 23:43:43.875 trce: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Critical service IConfiguration validated successfully
+2025-09-21 23:43:43.875 trce: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Critical service ILoggerFactory validated successfully
+2025-09-21 23:43:43.875 trce: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Critical service IConfigurationService validated successfully
+2025-09-21 23:43:43.875 trce: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Critical service IApplicationStateService validated successfully
+2025-09-21 23:43:43.875 trce: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Critical service INavigationService validated successfully
+2025-09-21 23:43:43.875 trce: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Optional service IThemeService validated successfully
+2025-09-21 23:43:43.875 trce: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Optional service ISettingsService validated successfully
+2025-09-21 23:43:43.875 trce: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Optional service IDatabaseService validated successfully
+2025-09-21 23:43:43.876 [2025-09-21 23:43:43.876] ValidateViewModels() started
+dbug: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Starting ViewModel validation
+2025-09-21 23:43:43.876 dbug: MTM_WIP_Application_Avalonia.Services.SuccessOverlayService[0]
+      SuccessOverlayService initialized
+2025-09-21 23:43:43.879 info: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Using connection string: Server=localhost, Database=mtm_wip_application_test, Uid=JOHNK
+2025-09-21 23:43:43.880 trce: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Critical ViewModel InventoryTabViewModel validated successfully
+[2025-09-21 23:43:43.880] ViewModel validation completed
+[2025-09-21 23:43:43.880] Service validation completed in 4ms
+2025-09-21 23:43:43.880 dbug: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Service validation completed in 4ms with 0 errors and 0 warnings
+2025-09-21 23:43:43.880 dbug: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Starting configuration validation
+[2025-09-21 23:43:43.880] ValidateConfiguration() started
+2025-09-21 23:43:43.880 warn: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      DefaultConnection string is not configured
+[2025-09-21 23:43:43.881] Configuration validation completed in 0ms
+2025-09-21 23:43:43.881 dbug: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Configuration validation completed in 0ms with 0 errors and 4 warnings
+2025-09-21 23:43:43.881 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Loading master data using MTM stored procedure patterns
+2025-09-21 23:43:43.881 info: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Using connection string: Server=localhost, Database=mtm_wip_application_test, Uid=JOHNK
+2025-09-21 23:43:43.881 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Testing database connection...
+[2025-09-21 23:43:43.882] ValidateApplicationRequirements() started
+2025-09-21 23:43:43.882 dbug: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Starting application requirements validation
+2025-09-21 23:43:43.882 [2025-09-21 23:43:43.882] Application requirements validation completed in 0ms
+dbug: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Application requirements validation completed in 0ms
+2025-09-21 23:43:43.882 info: MTM_WIP_Application_Avalonia.Core.Startup.StartupValidationService[0]
+      Application validation completed successfully in 7ms with 5 warnings
+[2025-09-21 23:43:43.882] Application validation completed successfully in 7ms
+[2025-09-21 23:43:43.882] Application validation completed successfully
+[2025-09-21 23:43:43.882] Service build and validation completed in 2748ms
+2025-09-21 23:43:43.882 info[2025-09-21 23:43:43.882] Application initialization completed in 2771ms
+: ApplicationStartup[0]
+      Application initialization completed successfully in 2771ms
+[2025-09-21 23:43:43.882] Service configuration completed in 2772ms
+2025-09-21 23:43:43.882 info: object[0]
+      Service configuration completed successfully in 2772ms
+[2025-09-21 23:43:43.886] Starting Avalonia application...
+[2025-09-21 23:43:43.886] Platform: Microsoft Windows NT 10.0.26100.0
+[2025-09-21 23:43:43.886] Runtime: 8.0.20
+[2025-09-21 23:43:43.886] Is Interactive: True
+2025-09-21 23:43:43.886 [2025-09-21 23:43:43.886] Starting with classic desktop lifetime (cross-platform compatible)
+info: object[0]
+      Starting Avalonia application with 0 arguments
+[2025-09-21 23:43:43.887] Building Avalonia app for platform: Win32NT
+[2025-09-21 23:43:43.903] Configuring for Windows platform
+2025-09-21 23:43:43.971 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      ? Database connection test successful - Server: localhost, Database: mtm_wip_application_test
+2025-09-21 23:43:43.974 dbug: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Loading Part IDs from database using DatabaseService
+2025-09-21 23:43:43.978 dbug: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Loading Operations from database using DatabaseService
+2025-09-21 23:43:43.978 dbug: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Loading Locations from database using DatabaseService
+2025-09-21 23:43:43.979 dbug: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Loading Users from database using DatabaseService
+[2025-09-21 23:43:44] App.Initialize() started
+[2025-09-21 23:43:44] Global exception handlers configured for emergency shutdown
+[2025-09-21 23:43:44] App.Initialize() completed - XAML loaded successfully
+[2025-09-21 23:43:44] App.OnFrameworkInitializationCompleted() started
+[2025-09-21 23:43:44] Initializing application services...
+[2025-09-21 23:43:44] Configuration service obtained
+[2025-09-21 23:43:44] Model_AppVariables initialized
+2025-09-21 23:43:44.182 [2025-09-21 23:43:44] Logging infrastructure initialized
+info[2025-09-21 23:43:44] Initializing theme system...
+: MTM_WIP_Application_Avalonia.App[0]
+      MTM WIP Application framework initialization started
+2025-09-21 23:43:44.182 info: MTM_WIP_Application_Avalonia.App[0]
+      Model_AppVariables and database helper initialized successfully
+[2025-09-21 23:43:44] Removed 1 conflicting theme dictionaries
+[2025-09-21 23:43:44] Basic theme initialization complete - ThemeService will load user's preferred theme
+[2025-09-21 23:43:44] Creating MainWindow with dependency injection...
+2025-09-21 23:43:44.186 info: MTM_WIP_Application_Avalonia.ViewModels.MainWindowViewModel[0]
+      MainWindowViewModel initialized with dependency injection - Services injected successfully
+2025-09-21 23:43:44.186 info[2025-09-21 23:43:44] MainWindowViewModel resolved
+: MTM_WIP_Application_Avalonia.App[0]
+      MainWindowViewModel service resolved successfully
+2025-09-21 23:43:44.249 [2025-09-21 23:43:44] MainWindow created and DataContext set
+info[2025-09-21 23:43:44] Initializing MainView after platform initialization...
+: MTM_WIP_Application_Avalonia.App[0]
+      Main window created with dependency injection - DataContext set to MainWindowViewModel
+2025-09-21 23:43:44.250 info: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Using connection string: Server=localhost, Database=mtm_wip_application_test, Uid=JOHNK
+2025-09-21 23:43:44.250 dbug: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Master data loading already in progress, skipping
+2025-09-21 23:43:44.250 dbug: MTM_WIP_Application_Avalonia.Services.PrintService[0]
+      PrintService initialized with templates path: C:\Users\johnk\Documents\MTM WIP Application\Print\Templates, config path: C:\Users\johnk\Documents\MTM WIP Application\Print\Configurations
+2025-09-21 23:43:44.252 info: API.ViewModels.MainForm.RemoveItemViewModel[0]
+      => DataLoading
+      Loading ComboBox data from database
+2025-09-21 23:43:44.252 dbug: Helper_Database_StoredProcedure[0]
+      => DataLoading
+      Executing stored procedure: md_part_ids_Get_All
+2025-09-21 23:43:44.252 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.TransferItemViewModel[0]
+      TransferItemViewModel initialized with dependency injection
+2025-09-21 23:43:44.253 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.TransferItemViewModel[0]
+      Loading transfer ComboBox data from database
+2025-09-21 23:43:44.253 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: md_part_ids_Get_All
+2025-09-21 23:43:44.257 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.AdvancedInventoryViewModel[0]
+      AdvancedInventoryViewModel initialized with dependency injection
+2025-09-21 23:43:44.257 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.AdvancedRemoveViewModel[0]
+      Initializing AdvancedRemoveViewModel
+2025-09-21 23:43:44.257 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.AdvancedRemoveViewModel[0]
+      AdvancedRemoveViewModel constructor completed - database loading deferred
+2025-09-21 23:43:44.257 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.AdvancedRemoveViewModel[0]
+      AdvancedRemoveViewModel initialized successfully
+2025-09-21 23:43:44.258 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      ProgressOverlayService initialized successfully
+?????? QuickButtonsViewModel constructor STARTED
+2025-09-21 23:43:44.258 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      QuickButtonsViewModel initialized with dependency injection
+2025-09-21 23:43:44.258 info: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Using connection string: Server=localhost, Database=mtm_wip_application_test, Uid=JOHNK
+2025-09-21 23:43:44.258 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? QuickButtonsViewModel constructor started
+2025-09-21 23:43:44.258 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: md_part_ids_Get_All
+?????? Current user in constructor: 'JOHNK'
+2025-09-21 23:43:44.258 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? Current user in constructor: 'JOHNK'
+?????? Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync
+2025-09-21 23:43:44.258 ?????? QuickButtonsViewModel constructor COMPLETED
+info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? Starting Dispatcher.UIThread.InvokeAsync for LoadLast10TransactionsAsync
+2025-09-21 23:43:44.258 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? QuickButtonsViewModel constructor completed
+?????? Loading transactions in background - about to call LoadLast10TransactionsAsync
+2025-09-21 23:43:44.258 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? Loading transactions in background - about to call LoadLast10TransactionsAsync
+2025-09-21 23:43:44.259 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      MainViewViewModel initialized with dependency injection
+?????? LoadLast10TransactionsAsync ENTRY POINT
+2025-09-21 23:43:44.259 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? LoadLast10TransactionsAsync ENTRY POINT
+2025-09-21 23:43:44.259 info: MTM_WIP_Application_Avalonia.Services.ProgressService[0]
+      Operation started: Loading recent transactions... (Cancellable: False)
+?????? Current user in LoadLast10TransactionsAsync: 'JOHNK'
+2025-09-21 23:43:44.260 ?????? About to call QuickButtons service with user: JOHNK
+info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? Current user in LoadLast10TransactionsAsync: 'JOHNK'
+2025-09-21 23:43:44.260 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? About to call QuickButtons service with user: JOHNK
+2025-09-21 23:43:44.260 dbug: MTM_WIP_Application_Avalonia.Services.QuickButtonsService[0]
+      Loading quick buttons for user: JOHNK
+2025-09-21 23:43:44.260 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: qb_quickbuttons_Get_ByUser
+2025-09-21 23:43:44.260 info: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG: Starting execution of qb_quickbuttons_Get_ByUser
+2025-09-21 23:43:44.261 dbug: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG: qb_quickbuttons_Get_ByUser input parameters:
+2025-09-21 23:43:44.261 dbug: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG:   @p_User = 'JOHNK' (String)
+2025-09-21 23:43:44.261 info: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG: GET CONTEXT - Retrieving quick buttons for user 'JOHNK'
+2025-09-21 23:43:44.261 dbug: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG: Added parameter @p_User = JOHNK (Type: String)
+2025-09-21 23:43:44.261 info: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG: Executing stored procedure with 1 input parameters
+2025-09-21 23:43:44.275 info: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG: Procedure qb_quickbuttons_Get_ByUser completed - Status: 1, Message: '', Rows: 9, Duration: 14ms
+2025-09-21 23:43:44.275 info: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG: qb_quickbuttons_Get_ByUser result - Status: 1 (WARNING), Message: ''
+2025-09-21 23:43:44.275 info: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG: Get operation returned 9 quick buttons - WARNING
+2025-09-21 23:43:44.275 dbug: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG: Result columns: ID(Int32), Position(Int32), PartID(String), Operation(String), Quantity(Int32), Location(String), ItemType(String), Created_Date(DateTime), DateModified(DateTime)
+2025-09-21 23:43:44.276 dbug: Helper_Database_StoredProcedure[0]
+      ?? QUICKBUTTON DEBUG: First row data: ID=423, Position=1, PartID=21-28841-006, Operation=95, Quantity=500, Location=, ItemType=WIP, Created_Date=9/21/2025 1:52:08 PM, DateModified=
+2025-09-21 23:43:44.276 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: qb_quickbuttons_Get_ByUser, Status: 1, Rows: 9
+2025-09-21 23:43:44.276 dbug: MTM_WIP_Application_Avalonia.Services.QuickButtonsService[0]
+      Available columns in qb_quickbuttons_Get_ByUser result: ID, Position, PartID, Operation, Quantity, Location, ItemType, Created_Date, DateModified
+2025-09-21 23:43:44.277 info: MTM_WIP_Application_Avalonia.Services.QuickButtonsService[0]
+      Loaded 9 quick buttons for user JOHNK
+?????? QuickButtons service returned 9 transactions
+2025-09-21 23:43:44.277 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? QuickButtons service returned 9 transactions
+2025-09-21 23:43:44.284 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: md_part_ids_Get_All, Status: -1, Rows: 2908
+2025-09-21 23:43:44.296 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      SuccessOverlayService resolved in constructor: True
+[2025-09-21 23:43:44.307] Network logging failed: The network path was not found. : '\\mtmanu-fs01\Expo Drive\MH_RESOURCE\Material_Handler\MTM WIP App\Logs\JOHNK'
+2025-09-21 23:43:44.308 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: md_operation_numbers_Get_All
+2025-09-21 23:43:44.312 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: md_operation_numbers_Get_All, Status: -1, Rows: 75
+[2025-09-21 23:43:44.313] Network logging failed: The network path was not found. : '\\mtmanu-fs01\Expo Drive\MH_RESOURCE\Material_Handler\MTM WIP App\Logs\JOHNK'
+2025-09-21 23:43:44.313 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: md_locations_Get_All
+2025-09-21 23:43:44.362 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: md_locations_Get_All, Status: -1, Rows: 10317
+[2025-09-21 23:43:44.362] Network logging failed: The network path was not found. : '\\mtmanu-fs01\Expo Drive\MH_RESOURCE\Material_Handler\MTM WIP App\Logs\JOHNK'
+2025-09-21 23:43:44.362 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.AdvancedInventoryViewModel[0]
+      Successfully loaded master data for advanced inventory operations
+2025-09-21 23:43:44.392 info: MTM_WIP_Application_Avalonia.Views.TransferTabView[0]
+      [TRANSFER-DEBUG] TransferTabView constructor - Services resolved: Logger=True, Success=True, Suggestion=True
+2025-09-21 23:43:44.392 dbug: MTM_WIP_Application_Avalonia.Views.TransferTabView[0]
+      TransferTabView created with dependency injection
+2025-09-21 23:43:44.487 info: MTM_WIP_Application_Avalonia.ViewModels.MainWindowViewModel[0]
+      MainView manually initialized and set as CurrentView
+2025-09-21 23:43:44.489 info: MTM_WIP_Application_Avalonia.Services.FocusManagementService[0]
+      Setting startup focus after application initialization completes
+2025-09-21 23:43:44.489 [2025-09-21 23:43:44] MainView initialized successfully after platform startup
+[2025-09-21 23:43:44] Scheduling startup dialog...
+info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Startup focus requested for application initialization
+2025-09-21 23:43:44.489 info: MTM_WIP_Application_Avalonia.App[0]
+      MainView initialized successfully after Avalonia platform startup
+2025-09-21 23:43:44.489 info[2025-09-21 23:43:44] Framework initialization completed
+: MTM_WIP_Application_Avalonia.App[0]
+      Framework initialization completed successfully
+2025-09-21 23:43:44.489 dbug: MTM_WIP_Application_Avalonia.App[0]
+      Startup dialog task started
+2025-09-21 23:43:44.742 dbug: Helper_Database_StoredProcedure[0]
+      => DataLoading
+      Stored procedure executed: md_part_ids_Get_All, Status: -1, Rows: 2908
+2025-09-21 23:43:44.742 info: API.ViewModels.MainForm.RemoveItemViewModel[0]
+      => DataLoading
+      Loaded 0 parts
+2025-09-21 23:43:44.742 dbug: Helper_Database_StoredProcedure[0]
+      => DataLoading
+      Executing stored procedure: md_operation_numbers_Get_All
+2025-09-21 23:43:44.746 dbug: Helper_Database_StoredProcedure[0]
+      => DataLoading
+      Stored procedure executed: md_operation_numbers_Get_All, Status: -1, Rows: 75
+2025-09-21 23:43:44.747 info: API.ViewModels.MainForm.RemoveItemViewModel[0]
+      => DataLoading
+      Loaded 0 operations
+2025-09-21 23:43:44.747 info: API.ViewModels.MainForm.RemoveItemViewModel[0]
+      => DataLoading
+      ComboBox data loaded successfully - Parts: 0, Operations: 0
+2025-09-21 23:43:44.775 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: md_part_ids_Get_All, Status: -1, Rows: 2908
+2025-09-21 23:43:44.775 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.TransferItemViewModel[0]
+      Loaded 0 parts for transfer
+2025-09-21 23:43:44.775 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: md_operation_numbers_Get_All
+2025-09-21 23:43:44.780 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: md_operation_numbers_Get_All, Status: -1, Rows: 75
+2025-09-21 23:43:44.780 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.TransferItemViewModel[0]
+      Loaded 0 operations for transfer
+2025-09-21 23:43:44.780 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: md_locations_Get_All
+2025-09-21 23:43:44.855 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: md_locations_Get_All, Status: -1, Rows: 10317
+2025-09-21 23:43:44.855 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.TransferItemViewModel[0]
+      Loaded 0 locations for transfer
+2025-09-21 23:43:44.855 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.TransferItemViewModel[0]
+      Transfer ComboBox data loaded successfully
+2025-09-21 23:43:44.860 dbug: MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher[0]
+      ThemeQuickSwitcher OnLoaded event started
+2025-09-21 23:43:44.864 dbug: MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher[0]
+      Custom themes directory does not exist: C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\bin\Debug\net8.0\Resources\Themes
+2025-09-21 23:43:44.865 dbug: MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher[0]
+      Set current theme selection to: MTMTheme
+2025-09-21 23:43:44.865 info: MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher[0]
+      ThemeQuickSwitcher initialized successfully with 16 themes
+2025-09-21 23:43:44.867 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:43:44.874 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Form state initialized successfully
+2025-09-21 23:43:44.874 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:43:44.874 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      InventoryTabView ViewModel connected successfully
+2025-09-21 23:43:44.874 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      QuickButtonsView not found in visual tree - integration skipped
+2025-09-21 23:43:44.878 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Successfully loaded 75 Operations from database
+2025-09-21 23:43:44.878 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Successfully loaded 87 Users from database
+2025-09-21 23:43:44.878 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Successfully loaded 2908 Part IDs from database
+2025-09-21 23:43:44.879 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Successfully loaded 10317 Locations from database
+2025-09-21 23:43:44.879 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Master data loaded successfully from database - Parts: 2908, Operations: 75, Locations: 10317, Users: 87
+2025-09-21 23:43:44.888 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      Added 9 transaction buttons to QuickButtons collection
+?????? Total QuickButtons collection now has 10 items (9 non-empty, 1 empty)
+2025-09-21 23:43:44.910 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? Total QuickButtons collection now has 10 items (9 non-empty, 1 empty)
+2025-09-21 23:43:44.911 info: MTM_WIP_Application_Avalonia.Services.ProgressService[0]
+      Operation completed: Loading recent transactions...
+?????? Background loading completed LoadLast10TransactionsAsync
+2025-09-21 23:43:44.912 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      ?? Dispatcher.UIThread.InvokeAsync completed LoadLast10TransactionsAsync
+2025-09-21 23:43:45.457 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:43:45.457 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] PartTextBox lost focus. User entered: ''. PartIds count: 2908
+2025-09-21 23:43:45.457 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Sample PartIDs: 00061011, 00658500, 01-27991-000, 01-31591-000, 01-32672-000, 01-33016-000, 01-33371-000, 01-34467-000, 01-34577-000, 01-34578-000
+2025-09-21 23:43:45.458 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part '' - ExactMatch: False, SemiMatches: 2908
+2025-09-21 23:43:45.458 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part overlay not shown - value is empty
+2025-09-21 23:43:45.459 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:43:45.492 info: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Initializing theme system after UI thread establishment
+2025-09-21 23:43:45.493 dbug: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Retrieving user preferred theme from database for user: JOHNK
+2025-09-21 23:43:45.494 dbug: MTM_WIP_Application_Avalonia.Services.DatabaseService[0]
+      Getting user settings for user: JOHNK
+2025-09-21 23:43:45.494 dbug: MTM_WIP_Application_Avalonia.Services.DatabaseService[0]
+      Executing scalar query: SELECT SettingsJson FROM usr_ui_settings WHERE UserID = @userId
+2025-09-21 23:43:45.495 dbug: MTM_WIP_Application_Avalonia.Services.DatabaseService[0]
+      Scalar query executed successfully, result: {"Theme_Name": "MTMTheme", "Theme_FontSize": 9}
+2025-09-21 23:43:45.495 dbug: MTM_WIP_Application_Avalonia.Services.DatabaseService[0]
+      Retrieved settings for user JOHNK: {"Theme_Name": "MTMTheme", "Theme_FontSize": 9}
+2025-09-21 23:43:45.501 info: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Retrieved user preferred theme: MTMTheme for user JOHNK
+2025-09-21 23:43:45.512 dbug: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Cleared 0 existing theme resource dictionaries and 2 direct resources
+2025-09-21 23:43:45.548 info: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Successfully loaded theme resources from: avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTMTheme.axaml
+2025-09-21 23:43:45.616 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Switched to Remove tab - Mode: Normal
+2025-09-21 23:43:45.616 info: API.ViewModels.MainForm.RemoveItemViewModel[0]
+      => DataLoading
+      Loading ComboBox data from database
+2025-09-21 23:43:45.617 dbug: Helper_Database_StoredProcedure[0]
+      => DataLoading
+      Executing stored procedure: md_part_ids_Get_All
+2025-09-21 23:43:45.618 dbug: MTM_WIP_Application_Avalonia.Services.FocusManagementService[0]
+      Setting focus for tab switch to tab index: 1
+2025-09-21 23:43:45.618 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Tab selection change completed successfully for index: 1
+2025-09-21 23:43:45.620 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      InventoryTabView cleanup completed - arrow key handling delegated to MainWindow
+2025-09-21 23:43:45.631 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Switched to Transfer tab
+2025-09-21 23:43:45.631 dbug: MTM_WIP_Application_Avalonia.Services.FocusManagementService[0]
+      Setting focus for tab switch to tab index: 2
+2025-09-21 23:43:45.631 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Tab selection change completed successfully for index: 2
+2025-09-21 23:43:45.647 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Switched to Inventory tab - Mode: Normal
+2025-09-21 23:43:45.647 dbug: MTM_WIP_Application_Avalonia.Services.FocusManagementService[0]
+      Setting focus for tab switch to tab index: 0
+2025-09-21 23:43:45.647 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Tab selection change completed successfully for index: 0
+2025-09-21 23:43:45.654 dbug: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Forced TabControl refresh with style cycling for theme update
+2025-09-21 23:43:45.655 dbug: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Complete window refresh performed
+2025-09-21 23:43:45.655 dbug: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Complete application refresh completed
+2025-09-21 23:43:45.700 dbug: Helper_Database_StoredProcedure[0]
+      => DataLoading
+      Stored procedure executed: md_part_ids_Get_All, Status: -1, Rows: 2908
+2025-09-21 23:43:45.700 info: API.ViewModels.MainForm.RemoveItemViewModel[0]
+      => DataLoading
+      Loaded 2908 parts
+2025-09-21 23:43:45.700 dbug: Helper_Database_StoredProcedure[0]
+      => DataLoading
+      Executing stored procedure: md_operation_numbers_Get_All
+2025-09-21 23:43:45.701 dbug: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Applied theme variant: Light for theme: MTM Default
+2025-09-21 23:43:45.701 info: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Theme changed from MTM Default to MTM Default
+2025-09-21 23:43:45.701 info: MTM_WIP_Application_Avalonia.Services.ThemeService[0]
+      Applied user preferred theme: MTMTheme
+[2025-09-21 23:43:45] Deferred theme initialization successful: Theme system initialized with preferred theme: MTMTheme
+2025-09-21 23:43:45.701 info: MTM_WIP_Application_Avalonia.App[0]
+      Deferred theme initialization successful: Theme system initialized with preferred theme: MTMTheme
+2025-09-21 23:43:45.701 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Loading master data using MTM stored procedure patterns
+2025-09-21 23:43:45.701 info: MTM_WIP_Application_Avalonia.Services.ConfigurationService[0]
+      Using connection string: Server=localhost, Database=mtm_wip_application_test, Uid=JOHNK
+2025-09-21 23:43:45.701 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Testing database connection...
+2025-09-21 23:43:45.701 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      ? Database connection test successful - Server: localhost, Database: mtm_wip_application_test
+2025-09-21 23:43:45.701 dbug: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Loading Part IDs from database using DatabaseService
+2025-09-21 23:43:45.701 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: md_part_ids_Get_All
+2025-09-21 23:43:45.701 dbug: MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher[0]
+      Updated ComboBox selection to theme: MTMTheme
+2025-09-21 23:43:45.701 dbug: MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher[0]
+      Updated dropdown selection due to external theme change (dispatched): MTMTheme
+2025-09-21 23:43:45.701 dbug: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Loading Operations from database using DatabaseService
+2025-09-21 23:43:45.701 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: md_operation_numbers_Get_All
+2025-09-21 23:43:45.702 dbug: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Loading Locations from database using DatabaseService
+2025-09-21 23:43:45.702 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: md_locations_Get_All
+2025-09-21 23:43:45.702 dbug: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Loading Users from database using DatabaseService
+2025-09-21 23:43:45.702 dbug: Helper_Database_StoredProcedure[0]
+      Executing stored procedure: usr_users_Get_All
+2025-09-21 23:43:45.704 dbug: Helper_Database_StoredProcedure[0]
+      => DataLoading
+      Stored procedure executed: md_operation_numbers_Get_All, Status: -1, Rows: 75
+2025-09-21 23:43:45.704 info: API.ViewModels.MainForm.RemoveItemViewModel[0]
+      => DataLoading
+      Loaded 75 operations
+2025-09-21 23:43:45.704 info: API.ViewModels.MainForm.RemoveItemViewModel[0]
+      => DataLoading
+      ComboBox data loaded successfully - Parts: 2908, Operations: 2
+2025-09-21 23:43:45.707 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: md_operation_numbers_Get_All, Status: -1, Rows: 75
+2025-09-21 23:43:45.707 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Successfully loaded 75 Operations from database
+2025-09-21 23:43:45.718 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: usr_users_Get_All, Status: -1, Rows: 87
+2025-09-21 23:43:45.718 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Successfully loaded 87 Users from database
+2025-09-21 23:43:45.739 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: md_part_ids_Get_All, Status: -1, Rows: 2908
+2025-09-21 23:43:45.739 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Successfully loaded 2908 Part IDs from database
+2025-09-21 23:43:45.768 dbug: Helper_Database_StoredProcedure[0]
+      Stored procedure executed: md_locations_Get_All, Status: -1, Rows: 10317
+2025-09-21 23:43:45.769 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Successfully loaded 10317 Locations from database
+2025-09-21 23:43:45.769 info: MTM_WIP_Application_Avalonia.Services.MasterDataService[0]
+      Master data loaded successfully from database - Parts: 2908, Operations: 75, Locations: 10317, Users: 87
+[2025-09-21 23:43:45] Master data loaded successfully at startup
+2025-09-21 23:43:45.769 info: MTM_WIP_Application_Avalonia.App[0]
+      Master data loaded successfully at application startup
+2025-09-21 23:43:45.769 dbug: MTM_WIP_Application_Avalonia.App[0]
+      Startup dialog execution point reached
+2025-09-21 23:43:45.803 dbug: MTM_WIP_Application_Avalonia.Services.FocusManagementService[0]
+      Tab switch focus set to TabIndex=1 control: PartTextBox
+2025-09-21 23:43:46.497 info: MTM_WIP_Application_Avalonia.Services.FocusManagementService[0]
+      Startup focus set to first TabIndex=1 control: PartTextBox
+2025-09-21 23:43:54.206 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:43:54.206 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] PartTextBox lost focus. User entered: ''. PartIds count: 2908
+2025-09-21 23:43:54.206 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Sample PartIDs: 00061011, 00658500, 01-27991-000, 01-31591-000, 01-32672-000, 01-33016-000, 01-33371-000, 01-34467-000, 01-34577-000, 01-34578-000
+2025-09-21 23:43:54.207 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part '' - ExactMatch: False, SemiMatches: 2908
+2025-09-21 23:43:54.208 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part overlay not shown - value is empty
+2025-09-21 23:43:54.208 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:43:55.836 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:43:55.836 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] PartTextBox lost focus. User entered: ''. PartIds count: 2908
+2025-09-21 23:43:55.836 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Sample PartIDs: 00061011, 00658500, 01-27991-000, 01-31591-000, 01-32672-000, 01-33016-000, 01-33371-000, 01-34467-000, 01-34577-000, 01-34578-000
+2025-09-21 23:43:55.837 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part '' - ExactMatch: False, SemiMatches: 2908
+2025-09-21 23:43:55.837 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part overlay not shown - value is empty
+2025-09-21 23:43:55.838 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:00.779 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:44:00.779 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] PartTextBox lost focus. User entered: ''. PartIds count: 2908
+2025-09-21 23:44:00.779 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Sample PartIDs: 00061011, 00658500, 01-27991-000, 01-31591-000, 01-32672-000, 01-33016-000, 01-33371-000, 01-34467-000, 01-34577-000, 01-34578-000
+2025-09-21 23:44:00.780 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part '' - ExactMatch: False, SemiMatches: 2908
+2025-09-21 23:44:00.780 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part overlay not shown - value is empty
+2025-09-21 23:44:00.780 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:00.865 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      Executing quick action: 21-28841-006, 95, 500
+2025-09-21 23:44:00.866 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Processing quick action for tab 0: 95 - 21-28841-006 (500 units)
+2025-09-21 23:44:00.867 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Quick action processed successfully and status updated
+2025-09-21 23:44:00.989 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:44:00.990 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] PartTextBox lost focus. User entered: '21-28841-006'. PartIds count: 2908
+2025-09-21 23:44:00.990 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Sample PartIDs: 00061011, 00658500, 01-27991-000, 01-31591-000, 01-32672-000, 01-33016-000, 01-33371-000, 01-34467-000, 01-34577-000, 01-34578-000
+2025-09-21 23:44:00.990 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part '21-28841-006' - ExactMatch: True, SemiMatches: 1
+2025-09-21 23:44:00.990 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part overlay not shown - '21-28841-006' is exact match
+2025-09-21 23:44:00.990 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:01.114 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:44:01.114 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] OperationTextBox lost focus. User entered: '95'. Operations count: 75
+2025-09-21 23:44:01.114 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:02.410 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:44:02.410 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] LocationTextBox lost focus. User entered: ''. Locations count: 10317
+2025-09-21 23:44:02.410 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:02.493 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      Executing quick action: 21-28841-009, 900, 500
+2025-09-21 23:44:02.493 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Processing quick action for tab 0: 900 - 21-28841-009 (500 units)
+2025-09-21 23:44:02.493 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Quick action processed successfully and status updated
+2025-09-21 23:44:02.610 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:44:02.610 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] PartTextBox lost focus. User entered: '21-28841-009'. PartIds count: 2908
+2025-09-21 23:44:02.610 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Sample PartIDs: 00061011, 00658500, 01-27991-000, 01-31591-000, 01-32672-000, 01-33016-000, 01-33371-000, 01-34467-000, 01-34577-000, 01-34578-000
+2025-09-21 23:44:02.610 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part '21-28841-009' - ExactMatch: True, SemiMatches: 1
+2025-09-21 23:44:02.610 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part overlay not shown - '21-28841-009' is exact match
+2025-09-21 23:44:02.610 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:02.734 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:44:02.734 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] OperationTextBox lost focus. User entered: '900'. Operations count: 75
+2025-09-21 23:44:02.734 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:03.261 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:44:03.261 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] LocationTextBox lost focus. User entered: ''. Locations count: 10317
+2025-09-21 23:44:03.261 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:03.346 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      Executing quick action: 21-28841-006, 95, 500
+2025-09-21 23:44:03.346 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Processing quick action for tab 0: 95 - 21-28841-006 (500 units)
+2025-09-21 23:44:03.347 info: MTM_WIP_Application_Avalonia.ViewModels.MainForm.MainViewViewModel[0]
+      Quick action processed successfully and status updated
+2025-09-21 23:44:03.461 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:44:03.461 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] PartTextBox lost focus. User entered: '21-28841-006'. PartIds count: 2908
+2025-09-21 23:44:03.461 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Sample PartIDs: 00061011, 00658500, 01-27991-000, 01-31591-000, 01-32672-000, 01-33016-000, 01-33371-000, 01-34467-000, 01-34577-000, 01-34578-000
+2025-09-21 23:44:03.461 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part '21-28841-006' - ExactMatch: True, SemiMatches: 1
+2025-09-21 23:44:03.461 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Part overlay not shown - '21-28841-006' is exact match
+2025-09-21 23:44:03.461 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:03.585 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:44:03.585 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] OperationTextBox lost focus. User entered: '95'. Operations count: 75
+2025-09-21 23:44:03.585 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:05.688 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Both overlay services successfully resolved - SuggestionType: SuggestionOverlayService, SuccessType: SuccessOverlayService
+2025-09-21 23:44:05.688 info: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      [FocusLost] LocationTextBox lost focus. User entered: ''. Locations count: 10317
+2025-09-21 23:44:05.688 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      Save button validation completed - CanSave: False
+2025-09-21 23:44:05.765 info: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Starting progress operation: Processing Quick Buttons
+2025-09-21 23:44:05.765 info: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay shown: Processing Quick Buttons
+2025-09-21 23:44:06.068 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 0/100 - Processing step 1 of 11...
+2025-09-21 23:44:06.068 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 0
+2025-09-21 23:44:06.374 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 10/100 - Processing step 2 of 11...
+2025-09-21 23:44:06.374 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 10
+2025-09-21 23:44:06.682 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 20/100 - Processing step 3 of 11...
+2025-09-21 23:44:06.682 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 20
+2025-09-21 23:44:06.991 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 30/100 - Processing step 4 of 11...
+2025-09-21 23:44:06.991 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 30
+2025-09-21 23:44:07.300 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 40/100 - Processing step 5 of 11...
+2025-09-21 23:44:07.300 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 40
+2025-09-21 23:44:07.607 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 50/100 - Processing step 6 of 11...
+2025-09-21 23:44:07.607 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 50
+2025-09-21 23:44:07.914 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 60/100 - Processing step 7 of 11...
+2025-09-21 23:44:07.914 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 60
+2025-09-21 23:44:08.222 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 70/100 - Processing step 8 of 11...
+2025-09-21 23:44:08.222 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 70
+2025-09-21 23:44:08.529 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 80/100 - Processing step 9 of 11...
+2025-09-21 23:44:08.529 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 80
+2025-09-21 23:44:08.837 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 90/100 - Processing step 10 of 11...
+2025-09-21 23:44:08.837 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 90
+2025-09-21 23:44:09.145 dbug: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress updated: 100/100 - Processing step 11 of 11...
+2025-09-21 23:44:09.145 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay updated: 100
+2025-09-21 23:44:09.146 info: MTM_WIP_Application_Avalonia.ViewModels.Overlay.ProgressOverlayViewModel[0]
+      Progress operation completed successfully
+2025-09-21 23:44:09.147 info: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay completed
+2025-09-21 23:44:09.147 info: MTM_WIP_Application_Avalonia.ViewModels.QuickButtonsViewModel[0]
+      Progress overlay demo completed successfully
+2025-09-21 23:44:12.165 dbug: MTM_WIP_Application_Avalonia.Services.ProgressOverlayService[0]
+      Progress overlay hidden
+2025-09-21 23:44:46.042 dbug: MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher[0]
+      ThemeQuickSwitcher unloaded and cleaned up
+2025-09-21 23:44:46.042 dbug: MTM_WIP_Application_Avalonia.Views.InventoryTabView[0]
+      InventoryTabView cleanup completed - arrow key handling delegated to MainWindow
+[2025-09-21 23:44:46.045] Application completed successfully in 64951ms (Avalonia: 62159ms)
+2025-09-21 23:44:46.045 info: object[0]
+      MTM WIP Application completed successfully - Total: 64951ms, Avalonia: 62159ms

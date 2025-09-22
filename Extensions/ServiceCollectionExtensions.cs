@@ -58,6 +58,7 @@ public static class ServiceCollectionExtensions
         // UI and Application services
         services.TryAddSingleton<IQuickButtonsService, QuickButtonsService>();
         services.TryAddSingleton<IProgressService, ProgressService>();
+        services.TryAddSingleton<IProgressOverlayService, ProgressOverlayService>();
 
         // Register SuggestionOverlay service - change to singleton for validation
         services.TryAddSingleton<ISuggestionOverlayService, SuggestionOverlayService>();

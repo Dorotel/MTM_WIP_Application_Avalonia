@@ -28,6 +28,7 @@ public partial class MainViewViewModel : BaseViewModel
     private readonly IServiceProvider _serviceProvider;
     private readonly IDatabaseService _databaseService;
     private readonly IFocusManagementService _focusManagementService;
+    private readonly IProgressOverlayService _progressOverlayService;
 
     /// <summary>
     /// Gets or sets the currently selected tab index (0-based)
@@ -114,6 +115,9 @@ public partial class MainViewViewModel : BaseViewModel
     public AdvancedRemoveViewModel AdvancedRemoveViewModel { get; }
     public TransferItemViewModel TransferItemViewModel { get; }
 
+    // Services
+    public IProgressOverlayService ProgressOverlayService => _progressOverlayService;
+
     // Cached view instances to prevent recreation and state loss
     private Views.InventoryTabView? _cachedInventoryTabView;
     private Views.AdvancedInventoryView? _cachedAdvancedInventoryView;
@@ -148,6 +152,7 @@ public partial class MainViewViewModel : BaseViewModel
         INavigationService navigationService,
         IApplicationStateService applicationState,
         IDatabaseService databaseService,
+        IProgressOverlayService progressOverlayService,
         InventoryTabViewModel inventoryTabViewModel,
         RemoveItemViewModel removeItemViewModel,
         TransferItemViewModel transferItemViewModel,
@@ -161,6 +166,7 @@ public partial class MainViewViewModel : BaseViewModel
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
+        _progressOverlayService = progressOverlayService ?? throw new ArgumentNullException(nameof(progressOverlayService));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _focusManagementService = focusManagementService ?? throw new ArgumentNullException(nameof(focusManagementService));
 
@@ -479,9 +485,6 @@ public partial class MainViewViewModel : BaseViewModel
 
     private void OnQuickActionExecuted(object? sender, QuickActionExecutedEventArgs e)
     {
-        Logger.LogDebug("OnQuickActionExecuted event handler triggered - Sender: {SenderType}, PartId: {PartId}, Operation: {Operation}, Quantity: {Quantity}",
-            sender?.GetType().Name ?? "null", e.PartId, e.Operation, e.Quantity);
-
         try
         {
             // Populate appropriate tab fields with QuickButton data based on current tab
@@ -491,7 +494,6 @@ public partial class MainViewViewModel : BaseViewModel
             switch (SelectedTabIndex)
             {
                 case 0: // Inventory Tab
-                    Logger.LogDebug("Populating Inventory tab with quick action data");
                     InventoryTabViewModel.SelectedPart = e.PartId;
                     InventoryTabViewModel.SelectedOperation = e.Operation;
                     InventoryTabViewModel.Quantity = e.Quantity;
@@ -501,7 +503,6 @@ public partial class MainViewViewModel : BaseViewModel
                     TriggerInventoryValidationUpdate();
                     break;
                 case 1: // Remove Tab
-                    Logger.LogDebug("Populating Remove tab with quick action data - Advanced mode: {IsAdvanced}", IsAdvancedRemoveMode);
                     if (IsAdvancedRemoveMode)
                     {
                         // Populate Advanced Remove text filters for wildcard search
@@ -516,7 +517,6 @@ public partial class MainViewViewModel : BaseViewModel
                     }
                     break;
                 case 2: // Transfer Tab
-                    Logger.LogDebug("Populating Transfer tab with quick action data using SetTransferConfiguration");
                     var quickButtonData = new QuickButtonData
                     {
                         PartId = e.PartId,
@@ -549,7 +549,6 @@ public partial class MainViewViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Triggering inventory validation update after QuickButton population");
 
             // Call the InventoryTabViewModel's validation refresh method
             // This will update all validation properties and clear error states
@@ -572,7 +571,6 @@ public partial class MainViewViewModel : BaseViewModel
                 TriggerLostFocusRequested?.Invoke(this, focusArgs);
             });
 
-            Logger.LogDebug("Inventory validation update, LostFocus triggers, and Location focus completed");
         }
         catch (Exception ex)
         {
@@ -584,7 +582,6 @@ public partial class MainViewViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("OnInventoryValidationLostFocusRequested event handler triggered - triggering LostFocus for validation");
 
             // Trigger LostFocus events on all relevant fields to restore error highlighting
             var fieldsToTrigger = new List<string> { "PartId", "Operation", "Quantity", "Location" };
@@ -602,7 +599,6 @@ public partial class MainViewViewModel : BaseViewModel
                 TriggerLostFocusRequested?.Invoke(this, focusArgs);
             });
 
-            Logger.LogDebug("Validation LostFocus triggers and PartID focus completed for Reset operation");
         }
         catch (Exception ex)
         {
@@ -612,9 +608,6 @@ public partial class MainViewViewModel : BaseViewModel
 
     private void OnItemsRemoved(object? sender, ItemsRemovedEventArgs e)
     {
-        Logger.LogDebug("OnItemsRemoved event handler triggered - Sender: {SenderType}, Items count: {ItemCount}",
-            sender?.GetType().Name ?? "null", e.RemovedItems.Count);
-
         try
         {
             // Update status with removal information
@@ -624,13 +617,6 @@ public partial class MainViewViewModel : BaseViewModel
 
             Logger.LogInformation("Items removed successfully: {ItemCount} items, {TotalQuantity} total quantity",
                 itemCount, totalQuantity);
-
-            // Log details of removed items for debugging
-            foreach (var item in e.RemovedItems)
-            {
-                Logger.LogDebug("Removed item: {PartId} - {Operation} ({Quantity} units) from {Location}",
-                    item.PartId, item.Operation, item.Quantity, item.Location);
-            }
 
             // TODO: Update QuickButtons or other components as needed
         }
@@ -643,8 +629,6 @@ public partial class MainViewViewModel : BaseViewModel
 
     private void OnItemsTransferred(object? sender, ItemsTransferredEventArgs e)
     {
-        Logger.LogDebug("OnItemsTransferred event handler triggered - Sender: {SenderType}, PartId: {PartId}",
-            sender?.GetType().Name ?? "null", e.PartId);
 
         try
         {
@@ -688,9 +672,6 @@ public partial class MainViewViewModel : BaseViewModel
 
     private void OnTabSelectionChanged(int tabIndex)
     {
-        Logger.LogDebug("OnTabSelectionChanged triggered - Previous tab: {PreviousTab}, New tab: {NewTab}",
-            SelectedTabIndex, tabIndex);
-
         try
         {
             switch (tabIndex)
@@ -708,11 +689,9 @@ public partial class MainViewViewModel : BaseViewModel
                     // Load data when switching to Remove tab
                     if (IsAdvancedRemoveMode)
                     {
-                        Logger.LogDebug("Loading data for Advanced Remove mode");
                         if (AdvancedRemoveViewModel.LoadDataCommand.CanExecute(null))
                         {
                             AdvancedRemoveViewModel.LoadDataCommand.Execute(null);
-                            Logger.LogDebug("Advanced Remove LoadDataCommand executed");
                         }
                         else
                         {
@@ -721,11 +700,9 @@ public partial class MainViewViewModel : BaseViewModel
                     }
                     else
                     {
-                        Logger.LogDebug("Loading data for Normal Remove mode");
                         if (RemoveItemViewModel.LoadDataCommand.CanExecute(null))
                         {
                             RemoveItemViewModel.LoadDataCommand.Execute(null);
-                            Logger.LogDebug("Normal Remove LoadDataCommand executed");
                         }
                         else
                         {
@@ -738,9 +715,7 @@ public partial class MainViewViewModel : BaseViewModel
                     Logger.LogInformation("Switched to Transfer tab");
 
                     // Load data when switching to Transfer tab
-                    Logger.LogDebug("Loading data for Transfer tab");
                     // Transfer ViewModel will load data when needed
-                    Logger.LogDebug("Transfer tab activated - data will load on demand");
                     break;
                 default:
                     StatusText = "Ready";
@@ -776,7 +751,6 @@ public partial class MainViewViewModel : BaseViewModel
                 {
                     DataContext = AdvancedInventoryViewModel
                 };
-                Logger.LogDebug("Created new cached AdvancedInventoryView instance");
             }
 
             InventoryContent = _cachedAdvancedInventoryView;
@@ -790,7 +764,6 @@ public partial class MainViewViewModel : BaseViewModel
                 {
                     DataContext = InventoryTabViewModel
                 };
-                Logger.LogDebug("Created new cached InventoryTabView instance");
             }
 
             InventoryContent = _cachedInventoryTabView;
@@ -812,7 +785,6 @@ public partial class MainViewViewModel : BaseViewModel
                 {
                     DataContext = AdvancedRemoveViewModel
                 };
-                Logger.LogDebug("Created new cached AdvancedRemoveView instance");
             }
 
             RemoveContent = _cachedAdvancedRemoveView;
@@ -826,7 +798,6 @@ public partial class MainViewViewModel : BaseViewModel
                 {
                     DataContext = RemoveItemViewModel
                 };
-                Logger.LogDebug("Created new cached RemoveTabView instance");
             }
 
             RemoveContent = _cachedRemoveTabView;
@@ -866,7 +837,6 @@ public partial class MainViewViewModel : BaseViewModel
                 DelayMs = 150
             });
 
-            Logger.LogDebug("Tab switch focus requested for tab index: {TabIndex}", tabIndex);
         }
         catch (Exception ex)
         {

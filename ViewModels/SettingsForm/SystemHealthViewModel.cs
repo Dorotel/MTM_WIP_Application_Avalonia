@@ -104,7 +104,6 @@ public partial class SystemHealthViewModel : BaseViewModel
     private async Task TestDatabaseConnectionAsync()
     {
         using var scope = Logger.BeginScope("TestDatabaseConnection");
-        Logger.LogDebug("Testing database connection");
 
         try
         {
@@ -148,7 +147,6 @@ public partial class SystemHealthViewModel : BaseViewModel
     private async Task RefreshMetricsAsync()
     {
         using var scope = Logger.BeginScope("RefreshMetrics");
-        Logger.LogDebug("Refreshing system metrics");
 
         try
         {
@@ -182,7 +180,6 @@ public partial class SystemHealthViewModel : BaseViewModel
     private async Task ClearLogsAsync()
     {
         using var scope = Logger.BeginScope("ClearLogs");
-        Logger.LogDebug("Clearing system logs");
 
         try
         {
@@ -220,7 +217,6 @@ public partial class SystemHealthViewModel : BaseViewModel
     private async Task ExportDiagnosticsAsync()
     {
         using var scope = Logger.BeginScope("ExportDiagnostics");
-        Logger.LogDebug("Exporting diagnostic information");
 
         try
         {
@@ -259,7 +255,6 @@ public partial class SystemHealthViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogDebug("Loading system health data");
 
             // Load system metrics
             await LoadSystemMetricsAsync().ConfigureAwait(false);

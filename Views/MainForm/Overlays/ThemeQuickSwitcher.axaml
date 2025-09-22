@@ -9,9 +9,9 @@
             BorderThickness="1"
             CornerRadius="6"
             Padding="8">
-        
+
         <StackPanel Orientation="Horizontal" Spacing="8">
-            
+
             <!-- Theme Icon with Edit Button -->
             <StackPanel Orientation="Horizontal" Spacing="4">
                 <Button x:Name="EditThemeButton"
@@ -40,7 +40,7 @@
                     </Button.Styles>
                 </Button>
             </StackPanel>
-            
+
             <!-- Theme Selector -->
             <ComboBox x:Name="ThemeComboBox"
                       MinWidth="180"
@@ -50,7 +50,7 @@
                       ToolTip.Tip="Select application theme">
                 <!-- Items will be populated dynamically from code-behind -->
             </ComboBox>
-            
+
             <!-- Quick Apply Button -->
             <Button x:Name="ApplyButton"
                     Content="Apply"

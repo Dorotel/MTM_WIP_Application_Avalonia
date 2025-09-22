@@ -5,6 +5,7 @@
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
+             xmlns:overlay="using:MTM_WIP_Application_Avalonia.Views.Overlay"
              mc:Ignorable="d"
              d:DesignWidth="240"
              d:DesignHeight="600"
@@ -34,13 +35,13 @@
       <Setter Property="Cursor" Value="Hand"/>
       <Setter Property="FontWeight" Value="Medium"/>
     </Style>
-    
+
     <Style Selector="Button.quick-button:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="BorderThickness" Value="2"/>
     </Style>
-    
+
     <Style Selector="Button.quick-button:pressed">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryAction}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
@@ -195,8 +196,8 @@
 
   <!-- Main container with transparent background to blend with parent -->
   <Grid Margin="4" Background="Transparent">
-    <!-- Header Section, Content Area, and Footer Section -->
-    <Grid RowDefinitions="Auto,*,Auto">
+    <!-- Main content with header, content, and footer -->
+    <Grid x:Name="MainContentGrid" RowDefinitions="Auto,*,Auto">
       <!-- Simplified Header with Toggle Buttons -->
       <Border Grid.Row="0"
               Classes="header-panel"
@@ -235,7 +236,7 @@
 
       <!-- Dynamic Content Area -->
       <Grid Grid.Row="1" Background="Transparent">
-        
+
         <!-- Quick Actions Panel -->
         <ScrollViewer IsVisible="{Binding !IsShowingHistory}"
                       VerticalScrollBarVisibility="Auto"
@@ -291,13 +292,13 @@
                                  HorizontalAlignment="Center"
                                  VerticalAlignment="Center"/>
                     </Border>
-                    
+
                     <!-- Button content with MTM typography - Only Part ID -->
                     <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
                       <TextBlock Text="{Binding DisplayText}"
                                  Classes="primary-text"/>
                     </StackPanel>
-                    
+
                     <!-- Quantity indicator with lighter background -->
                     <Border Grid.Column="3"
                             Background="Transparent"
@@ -313,7 +314,7 @@
                         <Run Text="{Binding Quantity}"/>
                       </TextBlock>
                     </Border>
-                    
+
                     <!-- Operation indicator with lighter background and Op. label -->
                     <Border Grid.Column="4"
                             Background="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"
@@ -347,7 +348,7 @@
                       HorizontalScrollBarVisibility="Disabled"
                       Background="Transparent"
                       Padding="4">
-          
+
           <!-- Use ItemsControl with TransactionExpandableButton controls -->
           <ItemsControl ItemsSource="{Binding SessionTransactionHistory}">
             <ItemsControl.ItemsPanel>
@@ -357,7 +358,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <controls:TransactionExpandableButton 
+                <controls:TransactionExpandableButton
                   PartId="{Binding PartId}"
                   Operation="{Binding Operation}"
                   Quantity="{Binding Quantity}"
@@ -372,69 +373,69 @@
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
-          
+
         </ScrollViewer>
 
       </Grid>
-      
+
       <!-- Comprehensive Footer Section with QoL Buttons and Debug Information -->
       <Border Grid.Row="2"
               Classes="header-panel"
               Padding="8"
               Margin="0,8,0,0">
         <!-- QoL Buttons Row - Icon-only with tooltips for compact layout -->
-        <StackPanel Orientation="Horizontal" 
+        <StackPanel Orientation="Horizontal"
                     Spacing="2"
                     HorizontalAlignment="Center">
-          
+
           <!-- New Button -->
           <Button Classes="toggle-button"
                   Command="{Binding NewQuickButtonCommand}"
                   ToolTip.Tip="Create new quick button">
             <materialIcons:MaterialIcon Kind="Plus" Width="14" Height="14"/>
           </Button>
-          
+
           <!-- Refresh All Button -->
           <Button Classes="toggle-button"
                   Command="{Binding RefreshButtonsCommand}"
                   ToolTip.Tip="Refresh quick buttons from database">
             <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14"/>
           </Button>
-          
+
           <!-- Clear All Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ClearAllButtonsCommand}"
                   ToolTip.Tip="Remove all quick actions">
             <materialIcons:MaterialIcon Kind="DeleteSweep" Width="14" Height="14"/>
           </Button>
-          
+
           <!-- Reset Order Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ResetOrderCommand}"
                   ToolTip.Tip="Reset button order to default">
             <materialIcons:MaterialIcon Kind="SortAlphabeticalAscending" Width="14" Height="14"/>
           </Button>
-          
+
           <!-- Export Settings Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ExportQuickButtonsCommand}"
                   ToolTip.Tip="Export quick buttons configuration">
             <materialIcons:MaterialIcon Kind="Export" Width="14" Height="14"/>
           </Button>
-          
+
           <!-- Import Settings Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ImportQuickButtonsCommand}"
                   ToolTip.Tip="Import quick buttons configuration">
             <materialIcons:MaterialIcon Kind="Import" Width="14" Height="14"/>
           </Button>
-          
+
           <!-- Help/Info Button -->
           <Button Classes="toggle-button"
                   ToolTip.Tip="Show quick buttons help and keyboard shortcuts">
             <materialIcons:MaterialIcon Kind="HelpCircleOutline" Width="14" Height="14"/>
           </Button>
-          
+
         </StackPanel>
       </Border>
     </Grid>
