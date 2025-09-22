@@ -3,12 +3,28 @@
 **Framework**: Avalonia UI 11.3.4  
 **Pattern**: Custom Control Development  
 **Created**: 2025-09-14  
+**Updated**: 2025-09-21 (Phase 1 Material.Avalonia Integration)
+
+---
+
+## 📚 Comprehensive Avalonia Documentation Reference
+
+**IMPORTANT**: This repository contains the complete Avalonia documentation straight from the official website in the `.github/Avalonia-Documentation/` folder. For custom control development:
+
+- **Custom Controls Guide**: `.github/Avalonia-Documentation/guides/custom-controls/`
+- **Control Development**: `.github/Avalonia-Documentation/guides/custom-controls/create-a-custom-control.md`
+- **Styled Properties**: `.github/Avalonia-Documentation/guides/custom-controls/defining-properties.md`
+- **Control Templates**: `.github/Avalonia-Documentation/guides/styles-and-resources/control-themes.md`
+- **Advanced Controls**: `.github/Avalonia-Documentation/reference/controls/`
+
+**Always reference the local Avalonia-Documentation folder for the most current and comprehensive control development guidance.**
 
 ---
 
 ## 🎯 Core Custom Control Patterns
 
 ### UserControl vs Control Base Classes
+
 ```csharp
 // UserControl pattern - Composite controls with XAML UI
 public partial class CollapsiblePanel : UserControl
@@ -87,6 +103,7 @@ public partial class CollapsiblePanel : UserControl
 ```
 
 ### Control Base Class Pattern - Lookless Controls
+
 ```csharp
 // Control pattern - Lookless control with template support
 public class TransactionExpandableButton : Button
@@ -233,6 +250,7 @@ public event EventHandler<TransactionExecutedEventArgs> TransactionExecuted
 ## 🏭 Manufacturing-Specific Control Patterns
 
 ### Manufacturing DataGrid with Custom Columns
+
 ```csharp
 // Custom DataGrid for manufacturing inventory display
 public class ManufacturingInventoryGrid : DataGrid
@@ -447,6 +465,7 @@ public class ManufacturingDateColumn : DataGridTextColumn
 ```
 
 ### Manufacturing Quick Action Panel
+
 ```csharp
 // Composite control for manufacturing quick actions
 public partial class ManufacturingQuickActionPanel : UserControl
@@ -611,6 +630,7 @@ public partial class ManufacturingQuickActionPanel : UserControl
 ## ❌ Anti-Patterns (Avoid These)
 
 ### Heavy Operations in Property Setters
+
 ```csharp
 // ❌ WRONG: Expensive operations in property setters block UI
 public class ExpensiveControl : UserControl
@@ -688,6 +708,7 @@ public class EfficientControl : UserControl
 ```
 
 ### Improper Dependency Property Implementation
+
 ```csharp
 // ❌ WRONG: Improper dependency property patterns
 public class BadPropertyControl : UserControl
@@ -756,6 +777,7 @@ public class GoodPropertyControl : UserControl
 ```
 
 ### Memory Leaks from Event Subscriptions
+
 ```csharp
 // ❌ WRONG: Event subscriptions without cleanup
 public class LeakyControl : UserControl
@@ -832,9 +854,11 @@ public class ProperControl : UserControl, IDisposable
 ## 🔧 Manufacturing Control Troubleshooting
 
 ### Issue: Custom Control Not Applying Styles
+
 **Symptoms**: Control renders with default appearance, custom styles ignored
 
 **Solution**: Ensure proper DefaultStyleKey and resource registration
+
 ```csharp
 // ✅ CORRECT: Proper style key registration
 static TransactionExpandableButton()
@@ -860,9 +884,11 @@ static TransactionExpandableButton()
 ```
 
 ### Issue: Data Binding Not Working in Custom Controls
+
 **Symptoms**: Bound values not updating in custom control properties
 
 **Solution**: Implement proper property change notifications
+
 ```csharp
 // ✅ CORRECT: Property change observation
 public ManufacturingControl()
@@ -880,9 +906,11 @@ public ManufacturingControl()
 ```
 
 ### Issue: Performance Problems with Large Manufacturing Datasets
+
 **Symptoms**: UI becomes sluggish when displaying many items
 
 **Solution**: Implement virtualization and efficient rendering
+
 ```csharp
 // ✅ CORRECT: Virtualized rendering for manufacturing data
 public class VirtualizedManufacturingList : ListBox
@@ -923,6 +951,7 @@ public class VirtualizedManufacturingList : ListBox
 ## 🧪 Custom Control Testing Patterns
 
 ### Unit Testing Custom Controls
+
 ```csharp
 [TestFixture]
 public class CollapsiblePanelTests
@@ -1011,6 +1040,7 @@ public class CollapsiblePanelTests
 ```
 
 ### UI Integration Testing
+
 ```csharp
 [TestFixture]
 public class CustomControlIntegrationTests
@@ -1076,6 +1106,7 @@ public class CustomControlIntegrationTests
 ## 🔗 AXAML Usage Examples
 
 ### CollapsiblePanel Usage
+
 ```xml
 <controls:CollapsiblePanel Header="Manufacturing Operations" IsExpanded="True">
     <StackPanel Spacing="8">
@@ -1087,6 +1118,7 @@ public class CustomControlIntegrationTests
 ```
 
 ### TransactionExpandableButton Usage
+
 ```xml
 <controls:TransactionExpandableButton 
     PartId="{Binding PartId}"
@@ -1098,6 +1130,7 @@ public class CustomControlIntegrationTests
 ```
 
 ### ManufacturingInventoryGrid Usage
+
 ```xml
 <controls:ManufacturingInventoryGrid 
     ItemsSource="{Binding InventoryItems}"
@@ -1107,6 +1140,7 @@ public class CustomControlIntegrationTests
 ```
 
 ### ManufacturingQuickActionPanel Usage
+
 ```xml
 <controls:ManufacturingQuickActionPanel 
     QuickActions="{Binding RecentTransactions}"
@@ -1137,6 +1171,7 @@ public class CustomControlIntegrationTests
 ### When to Use Joyride
 
 **Always Use When Available:**
+
 - File template generation and boilerplate creation
 - Repetitive code pattern enforcement (MVVM, dependency injection)
 - Automated testing workflows and validation
@@ -1147,18 +1182,21 @@ public class CustomControlIntegrationTests
 ### Joyride Implementation Priorities
 
 **High Priority (Use First):**
+
 - `joyride_evaluate_code` - Execute ClojureScript for workspace automation
 - `joyride_request_human_input` - Interactive decision-making workflows
 - Dynamic file creation and template generation
 - Automated pattern validation and enforcement
 
 **Medium Priority (Use When Applicable):**
+
 - VS Code API manipulation for UI automation
 - Custom workflow creation for MTM-specific patterns
 - Real-time validation of manufacturing domain rules
 - Cross-platform testing automation
 
 **Integration Benefits:**
+
 - **Consistency**: Automated pattern enforcement reduces human error
 - **Speed**: Bulk operations and template generation
 - **Quality**: Real-time validation and compliance checking
@@ -1167,18 +1205,21 @@ public class CustomControlIntegrationTests
 ### MTM-Specific Joyride Applications
 
 **Manufacturing Domain:**
+
 - Automated validation of operation codes (90/100/110)
 - Location code verification (FLOOR/RECEIVING/SHIPPING)
 - Quick button configuration validation (max 10 per user)
 - Session timeout and transaction logging automation
 
 **Development Workflows:**
+
 - MVVM Community Toolkit pattern enforcement
 - Avalonia UI component generation following MTM standards
 - MySQL stored procedure validation and testing
 - Cross-platform build and deployment automation
 
 **Quality Assurance:**
+
 - Automated code review against MTM standards
 - Theme system validation (17+ theme files)
 - Database connection pooling configuration checks

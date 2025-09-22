@@ -8,22 +8,22 @@
     <Application.Styles>
         <!-- Use FluentTheme base without custom palettes to avoid interference -->
         <FluentTheme />
-        
+
         <!-- Material Icons Styles - REQUIRED for Material.Icons.Avalonia -->
         <materialIcons:MaterialIconStyles />
-        
+
         <!-- MTM Component Styles - PRIORITIZED for complete theme control -->
         <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponents.axaml"/>
 
     </Application.Styles>
-      
+
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <!-- Load only the base MTM theme - others will be loaded dynamically -->
                 <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTMTheme.axaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
+
             <!-- Additional legacy aliases for backward compatibility -->
             <SolidColorBrush x:Key="MTM_Shared_Logic.BackgroundBrush" Color="#F8F7FF"/>
             <SolidColorBrush x:Key="MTM_Shared_Logic.LightBackgroundBrush" Color="#FAFAFA"/>

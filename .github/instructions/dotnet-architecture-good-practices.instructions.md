@@ -4,12 +4,28 @@
 **Application Type**: Avalonia Desktop Application  
 **Architecture Pattern**: MVVM with Service-Oriented Design  
 **Created**: September 4, 2025  
+**Updated**: 2025-09-21 (Phase 1 Material.Avalonia Integration)
+
+---
+
+## 📚 Comprehensive Avalonia Documentation Reference
+
+**IMPORTANT**: This repository contains the complete Avalonia documentation straight from the official website in the `.github/Avalonia-Documentation/` folder. For architectural guidance:
+
+- **Application Architecture**: `.github/Avalonia-Documentation/guides/development-guides/application-architecture/`
+- **Dependency Injection**: `.github/Avalonia-Documentation/guides/development-guides/dependency-injection.md`
+- **Configuration**: `.github/Avalonia-Documentation/guides/development-guides/application-configuration.md`
+- **Performance Tips**: `.github/Avalonia-Documentation/guides/basics/performance-tips.md`
+- **Cross-Platform Development**: `.github/Avalonia-Documentation/guides/platforms/`
+
+**Always reference the local Avalonia-Documentation folder for the most current architectural patterns and best practices.**
 
 ---
 
 ## 🏗️ Core Architecture Principles
 
 ### .NET 8 Foundation Standards
+
 ```csharp
 // Project file configuration - MTM Standard
 <Project Sdk="Microsoft.NET.Sdk">
@@ -45,6 +61,7 @@ public class InventoryService : IInventoryService
 ```
 
 ### Dependency Injection Architecture (Microsoft.Extensions.DependencyInjection)
+
 ```csharp
 // Service registration pattern - ESTABLISHED in Extensions/ServiceCollectionExtensions.cs
 public static class ServiceCollectionExtensions
@@ -105,6 +122,7 @@ public class InventoryService : IInventoryService
 ### Service Layer Design Patterns
 
 #### Category-Based Service Organization (MTM ESTABLISHED PATTERN)
+
 ```csharp
 // CORRECT: Category-based service consolidation in single files
 // File: Services/QuickButtons.cs (700+ lines - ESTABLISHED PATTERN)
@@ -144,6 +162,7 @@ namespace MTM_WIP_Application_Avalonia.Services
 ```
 
 #### Service Result Pattern (MANDATORY)
+
 ```csharp
 // Standard service result pattern used throughout MTM application
 public class ServiceResult
@@ -199,6 +218,7 @@ public async Task<ServiceResult<List<InventoryItem>>> GetInventoryAsync(string p
 ## 🔍 Error Handling and Logging Architecture
 
 ### Centralized Error Handling (MANDATORY PATTERN)
+
 ```csharp
 // All exceptions MUST use the centralized error handler - Services/ErrorHandling.cs
 try
@@ -251,6 +271,7 @@ public static class ErrorHandling
 ```
 
 ### Structured Logging Standards (Microsoft.Extensions.Logging)
+
 ```csharp
 // Logging patterns used throughout MTM application
 public class InventoryService : IInventoryService
@@ -320,6 +341,7 @@ public class InventoryService : IInventoryService
 ## 💾 Data Access Architecture
 
 ### Database Integration Pattern (MySQL with Stored Procedures ONLY)
+
 ```csharp
 // MANDATORY: All database operations MUST use stored procedures
 public class DatabaseService : IDatabaseService
@@ -390,6 +412,7 @@ public async Task<List<InventoryItem>> GetInventoryDirectSQL(string partId) // N
 ```
 
 ### Data Model and Entity Patterns
+
 ```csharp
 // Clean data models with proper validation attributes
 public class InventoryItem
@@ -429,6 +452,7 @@ public class DatabaseResult
 ## ⚡ Performance and Memory Management
 
 ### Async/Await Best Practices
+
 ```csharp
 // Proper async/await implementation
 public class InventoryService : IInventoryService
@@ -468,6 +492,7 @@ public class InventoryService : IInventoryService
 ```
 
 ### Memory Management and Disposal
+
 ```csharp
 // Proper resource disposal patterns
 public class DatabaseService : IDatabaseService, IDisposable
@@ -539,6 +564,7 @@ public async Task<ServiceResult> ProcessWithAsyncDisposableResource()
 ## 🔧 Configuration and Environment Management
 
 ### Configuration Pattern (Microsoft.Extensions.Configuration)
+
 ```csharp
 // Configuration service implementation
 public class ConfigurationService : IConfigurationService
@@ -618,6 +644,7 @@ public class ConfigurationService : IConfigurationService
 ```
 
 ### Environment-Specific Configuration
+
 ```csharp
 // Program.cs configuration setup
 public static void Main(string[] args)
@@ -649,6 +676,7 @@ public static void Main(string[] args)
 ## 🧪 Testing Architecture and Standards
 
 ### Unit Testing Patterns (xUnit + Moq)
+
 ```csharp
 public class InventoryServiceTests : IDisposable
 {
@@ -729,6 +757,7 @@ public class InventoryServiceTests : IDisposable
 ```
 
 ### Integration Testing Patterns
+
 ```csharp
 public class DatabaseIntegrationTests : IClassFixture<DatabaseFixture>
 {
@@ -821,7 +850,6 @@ public class DatabaseFixture : IDisposable
 **Last Updated**: September 4, 2025  
 **Maintained By**: MTM Development Team
 
-
 ## 🤖 Joyride Automation Integration
 
 **PRIORITY**: Use Joyride automation whenever safe and possible for enhanced productivity and consistency.
@@ -829,6 +857,7 @@ public class DatabaseFixture : IDisposable
 ### When to Use Joyride
 
 **Always Use When Available:**
+
 - File template generation and boilerplate creation
 - Repetitive code pattern enforcement (MVVM, dependency injection)
 - Automated testing workflows and validation
@@ -839,18 +868,21 @@ public class DatabaseFixture : IDisposable
 ### Joyride Implementation Priorities
 
 **High Priority (Use First):**
+
 - `joyride_evaluate_code` - Execute ClojureScript for workspace automation
 - `joyride_request_human_input` - Interactive decision-making workflows
 - Dynamic file creation and template generation
 - Automated pattern validation and enforcement
 
 **Medium Priority (Use When Applicable):**
+
 - VS Code API manipulation for UI automation
 - Custom workflow creation for MTM-specific patterns
 - Real-time validation of manufacturing domain rules
 - Cross-platform testing automation
 
 **Integration Benefits:**
+
 - **Consistency**: Automated pattern enforcement reduces human error
 - **Speed**: Bulk operations and template generation
 - **Quality**: Real-time validation and compliance checking
@@ -859,18 +891,21 @@ public class DatabaseFixture : IDisposable
 ### MTM-Specific Joyride Applications
 
 **Manufacturing Domain:**
+
 - Automated validation of operation codes (90/100/110)
 - Location code verification (FLOOR/RECEIVING/SHIPPING)
 - Quick button configuration validation (max 10 per user)
 - Session timeout and transaction logging automation
 
 **Development Workflows:**
+
 - MVVM Community Toolkit pattern enforcement
 - Avalonia UI component generation following MTM standards
 - MySQL stored procedure validation and testing
 - Cross-platform build and deployment automation
 
 **Quality Assurance:**
+
 - Automated code review against MTM standards
 - Theme system validation (17+ theme files)
 - Database connection pooling configuration checks

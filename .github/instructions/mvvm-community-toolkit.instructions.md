@@ -4,12 +4,28 @@
 **Target**: .NET 8 with C# 12  
 **Pattern**: Source Generator-Based MVVM  
 **Created**: September 4, 2025  
+**Updated**: 2025-09-21 (Phase 1 Material.Avalonia Integration)
+
+---
+
+## 📚 Comprehensive Avalonia Documentation Reference
+
+**IMPORTANT**: This repository contains the complete Avalonia documentation straight from the official website in the `.github/Avalonia-Documentation/` folder. For MVVM patterns:
+
+- **MVVM Patterns**: `.github/Avalonia-Documentation/concepts/the-mvvm-pattern/`
+- **Data Binding**: `.github/Avalonia-Documentation/guides/data-binding/`
+- **ViewModels**: `.github/Avalonia-Documentation/concepts/the-mvvm-pattern/viewmodel.md`
+- **Binding from Code**: `.github/Avalonia-Documentation/guides/data-binding/binding-from-code.md`
+- **Community Toolkit Integration**: `.github/Avalonia-Documentation/guides/data-binding/data-binding-syntax.md`
+
+**Always reference the local Avalonia-Documentation folder for the most current MVVM implementation guidance.**
 
 ---
 
 ## 🎯 MANDATORY: MVVM Community Toolkit Only
 
 ### CRITICAL: ReactiveUI Completely Removed
+
 ```csharp
 // ✅ CORRECT: MVVM Community Toolkit pattern (ONLY pattern used in MTM)
 [ObservableObject]
@@ -51,6 +67,7 @@ public class InventoryTabViewModel : ReactiveObject // DON'T USE
 ```
 
 ### Required Using Statements
+
 ```csharp
 // Standard MVVM Community Toolkit imports
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -65,6 +82,7 @@ using System.ComponentModel.DataAnnotations;
 ## 🏗️ BaseViewModel Architecture
 
 ### Standard BaseViewModel Pattern
+
 ```csharp
 // BaseViewModel.cs - Used by all ViewModels in MTM application
 [ObservableObject]
@@ -120,6 +138,7 @@ public abstract partial class BaseViewModel : INotifyPropertyChanged
 ```
 
 ### ViewModel Dependency Injection Pattern
+
 ```csharp
 // Standard constructor pattern for all ViewModels
 [ObservableObject]
@@ -172,6 +191,7 @@ public partial class InventoryTabViewModel : BaseViewModel
 ## 🔧 ObservableProperty Patterns
 
 ### Basic Property Declarations
+
 ```csharp
 [ObservableObject]
 public partial class InventoryTabViewModel : BaseViewModel
@@ -204,6 +224,7 @@ public partial class InventoryTabViewModel : BaseViewModel
 ```
 
 ### Advanced Property Patterns with Validation
+
 ```csharp
 [ObservableObject]
 public partial class InventoryTabViewModel : BaseViewModel
@@ -269,6 +290,7 @@ public partial class InventoryTabViewModel : BaseViewModel
 ```
 
 ### Collection Properties and Management
+
 ```csharp
 [ObservableObject]
 public partial class QuickButtonsTabViewModel : BaseViewModel
@@ -319,6 +341,7 @@ public partial class QuickButtonsTabViewModel : BaseViewModel
 ## ⚡ RelayCommand Patterns
 
 ### Basic Command Patterns
+
 ```csharp
 [ObservableObject]
 public partial class InventoryTabViewModel : BaseViewModel
@@ -421,6 +444,7 @@ public partial class InventoryTabViewModel : BaseViewModel
 ```
 
 ### Advanced Command Patterns
+
 ```csharp
 [ObservableObject]
 public partial class TransactionHistoryTabViewModel : BaseViewModel
@@ -535,6 +559,7 @@ public partial class TransactionHistoryTabViewModel : BaseViewModel
 ```
 
 ### Command State Management
+
 ```csharp
 [ObservableObject]
 public partial class InventoryTabViewModel : BaseViewModel
@@ -586,6 +611,7 @@ public partial class InventoryTabViewModel : BaseViewModel
 ## 📬 Messaging Patterns
 
 ### WeakReferenceMessenger Integration
+
 ```csharp
 [ObservableObject]
 public partial class InventoryTabViewModel : BaseViewModel, 
@@ -711,6 +737,7 @@ public enum MasterDataType
 ## 🔄 Async Patterns and Data Loading
 
 ### Asynchronous Initialization
+
 ```csharp
 [ObservableObject]
 public partial class InventoryTabViewModel : BaseViewModel
@@ -789,6 +816,7 @@ public partial class InventoryTabViewModel : BaseViewModel
 ```
 
 ### Progressive Data Loading
+
 ```csharp
 [ObservableObject]
 public partial class TransactionHistoryTabViewModel : BaseViewModel
@@ -913,6 +941,7 @@ public partial class TransactionHistoryTabViewModel : BaseViewModel
 ## 🧪 Testing ViewModel Patterns
 
 ### Unit Testing ViewModels
+
 ```csharp
 public class InventoryTabViewModelTests
 {
@@ -1032,6 +1061,7 @@ public class InventoryTabViewModelTests
 ```
 
 ### Integration Testing with UI
+
 ```csharp
 public class InventoryTabViewIntegrationTests
 {
@@ -1105,6 +1135,7 @@ public class InventoryTabViewIntegrationTests
 ### Advanced [ObservableProperty] Implementation Patterns
 
 #### Complex Property Validation with Manufacturing Context
+
 ```csharp
 [ObservableObject]
 public partial class InventoryTabViewModel : BaseViewModel
@@ -1207,6 +1238,7 @@ public partial class InventoryTabViewModel : BaseViewModel
 ```
 
 #### Memory-Efficient Collection Properties for Large Datasets
+
 ```csharp
 [ObservableObject]
 public partial class TransactionHistoryViewModel : BaseViewModel
@@ -1328,6 +1360,7 @@ public partial class TransactionHistoryViewModel : BaseViewModel
 ### Advanced [RelayCommand] Patterns with Manufacturing Context
 
 #### Complex Async Command with Error Recovery
+
 ```csharp
 [ObservableObject]
 public partial class InventoryOperationsViewModel : BaseViewModel
@@ -1522,6 +1555,7 @@ public partial class InventoryOperationsViewModel : BaseViewModel
 ### ❌ Advanced Anti-Patterns (Avoid These)
 
 #### Memory Leaks in ViewModels
+
 ```csharp
 // ❌ WRONG: Event subscription without cleanup leads to memory leaks
 [ObservableObject]
@@ -1579,6 +1613,7 @@ public partial class ProperViewModel : BaseViewModel, IDisposable
 ```
 
 #### Blocking UI Thread with Synchronous Operations
+
 ```csharp
 // ❌ WRONG: Blocking the UI thread in manufacturing operations
 [RelayCommand]
@@ -1643,6 +1678,7 @@ private async Task LoadInventoryDataAsync()
 ```
 
 #### Improper Property Dependency Chains
+
 ```csharp
 // ❌ WRONG: Circular property dependencies cause infinite loops
 [ObservableObject]
@@ -1706,9 +1742,11 @@ public partial class ProperDependencyViewModel : BaseViewModel
 ### Common MVVM Issues in Manufacturing Context
 
 #### Issue: ViewModel Not Updating UI During Long Operations
+
 **Symptoms**: UI freezes during manufacturing batch operations, user cannot see progress
 
-**Solution**: 
+**Solution**:
+
 ```csharp
 // Use progress reporting and async operations
 [RelayCommand]
@@ -1725,9 +1763,11 @@ private async Task ProcessLargeBatchAsync()
 ```
 
 #### Issue: Memory Usage Grows During Manufacturing Operations
+
 **Symptoms**: Application memory increases over time, especially during shift changes
 
 **Solution**: Implement proper collection management and disposal patterns:
+
 ```csharp
 // Clear collections periodically
 private async Task CleanupOldDataAsync()
@@ -1749,9 +1789,11 @@ private async Task CleanupOldDataAsync()
 ```
 
 #### Issue: Commands Not Updating CanExecute State
+
 **Symptoms**: Buttons remain disabled/enabled inappropriately during manufacturing operations
 
 **Solution**: Ensure proper property dependency notifications:
+
 ```csharp
 [ObservableProperty]
 [NotifyCanExecuteChangedFor(nameof(SaveInventoryCommand))]
@@ -1769,6 +1811,7 @@ private void OnValidationStateChanged()
 ### Performance Optimization for Manufacturing Workflows
 
 #### Optimize Large Dataset Binding
+
 ```csharp
 // Use virtualization for large manufacturing datasets
 [ObservableProperty]
@@ -1788,6 +1831,7 @@ public void ApplyManufacturingFilters()
 ```
 
 #### Batch UI Updates for Manufacturing Efficiency
+
 ```csharp
 // Batch multiple property changes to reduce UI updates
 public void UpdateInventoryBatch(IEnumerable<InventoryUpdate> updates)
@@ -1825,7 +1869,6 @@ public void UpdateInventoryBatch(IEnumerable<InventoryUpdate> updates)
 **Last Updated**: September 4, 2025  
 **MVVM Owner**: MTM Development Team
 
-
 ## 🤖 Joyride Automation Integration
 
 **PRIORITY**: Use Joyride automation whenever safe and possible for enhanced productivity and consistency.
@@ -1833,6 +1876,7 @@ public void UpdateInventoryBatch(IEnumerable<InventoryUpdate> updates)
 ### When to Use Joyride
 
 **Always Use When Available:**
+
 - File template generation and boilerplate creation
 - Repetitive code pattern enforcement (MVVM, dependency injection)
 - Automated testing workflows and validation
@@ -1843,18 +1887,21 @@ public void UpdateInventoryBatch(IEnumerable<InventoryUpdate> updates)
 ### Joyride Implementation Priorities
 
 **High Priority (Use First):**
+
 - `joyride_evaluate_code` - Execute ClojureScript for workspace automation
 - `joyride_request_human_input` - Interactive decision-making workflows
 - Dynamic file creation and template generation
 - Automated pattern validation and enforcement
 
 **Medium Priority (Use When Applicable):**
+
 - VS Code API manipulation for UI automation
 - Custom workflow creation for MTM-specific patterns
 - Real-time validation of manufacturing domain rules
 - Cross-platform testing automation
 
 **Integration Benefits:**
+
 - **Consistency**: Automated pattern enforcement reduces human error
 - **Speed**: Bulk operations and template generation
 - **Quality**: Real-time validation and compliance checking
@@ -1863,18 +1910,21 @@ public void UpdateInventoryBatch(IEnumerable<InventoryUpdate> updates)
 ### MTM-Specific Joyride Applications
 
 **Manufacturing Domain:**
+
 - Automated validation of operation codes (90/100/110)
 - Location code verification (FLOOR/RECEIVING/SHIPPING)
 - Quick button configuration validation (max 10 per user)
 - Session timeout and transaction logging automation
 
 **Development Workflows:**
+
 - MVVM Community Toolkit pattern enforcement
 - Avalonia UI component generation following MTM standards
 - MySQL stored procedure validation and testing
 - Cross-platform build and deployment automation
 
 **Quality Assurance:**
+
 - Automated code review against MTM standards
 - Theme system validation (17+ theme files)
 - Database connection pooling configuration checks

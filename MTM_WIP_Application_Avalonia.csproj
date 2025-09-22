@@ -5,21 +5,21 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseAppHost>true</UseAppHost>
-    
+
     <!-- Platform-specific output types -->
     <OutputType Condition="$([MSBuild]::IsOSPlatform('Windows'))">WinExe</OutputType>
     <OutputType Condition="!$([MSBuild]::IsOSPlatform('Windows'))">Exe</OutputType>
-    
+
     <!-- Windows-specific settings -->
     <BuiltInComInteropSupport Condition="$([MSBuild]::IsOSPlatform('Windows'))">true</BuiltInComInteropSupport>
     <ApplicationManifest Condition="$([MSBuild]::IsOSPlatform('Windows'))">app.manifest</ApplicationManifest>
-    
+
     <!-- Avalonia configuration -->
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
     <EnableAvaloniaXamlCompilation>true</EnableAvaloniaXamlCompilation>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EnableDefaultAvaloniaXamlItems>true</EnableDefaultAvaloniaXamlItems>
-    
+
     <!-- Runtime identifiers for supported platforms -->
     <RuntimeIdentifiers>win-x64;win-x86;osx-x64;osx-arm64;linux-x64;linux-arm64</RuntimeIdentifiers>
   </PropertyGroup>
@@ -33,6 +33,7 @@
     <AvaloniaXaml Remove="Documentation\Development\Updates\**" />
     <AvaloniaXaml Remove="Exportable\**" />
     <AvaloniaXaml Remove="Resources\**" />
+    <AvaloniaXaml Remove="Material.Avalonia\**" />
     <Compile Remove="Config\**" />
     <Compile Remove="Documentation\Development\Agent_Issues\**" />
     <Compile Remove="Documentation\Development\CopilotQuestions\**" />
@@ -40,6 +41,7 @@
     <Compile Remove="Documentation\Development\Updates\**" />
     <Compile Remove="Exportable\**" />
     <Compile Remove="Resources\**" />
+    <Compile Remove="Material.Avalonia\**" />
     <EmbeddedResource Remove="Config\**" />
     <EmbeddedResource Remove="Documentation\Development\Agent_Issues\**" />
     <EmbeddedResource Remove="Documentation\Development\CopilotQuestions\**" />
@@ -47,6 +49,7 @@
     <EmbeddedResource Remove="Documentation\Development\Updates\**" />
     <EmbeddedResource Remove="Exportable\**" />
     <EmbeddedResource Remove="Resources\**" />
+    <EmbeddedResource Remove="Material.Avalonia\**" />
     <None Remove="Config\**" />
     <None Remove="Documentation\Development\Agent_Issues\**" />
     <None Remove="Documentation\Development\CopilotQuestions\**" />
@@ -54,6 +57,7 @@
     <None Remove="Documentation\Development\Updates\**" />
     <None Remove="Exportable\**" />
     <None Remove="Resources\**" />
+    <None Remove="Material.Avalonia\**" />
   </ItemGroup>
 
   <!-- Theme files as AvaloniaResource for proper compilation -->
@@ -63,7 +67,7 @@
     </AvaloniaResource>
     <AvaloniaResource Include="Resources\Themes\MTMTheme.axaml" />
     <AvaloniaResource Include="Resources\Themes\MTM_Light_Dark.axaml" />
-    
+
     <!-- All 15 Theme Files for Dynamic Switching -->
     <AvaloniaResource Include="Resources\Themes\MTM_Light.axaml" />
     <AvaloniaResource Include="Resources\Themes\MTM_Dark.axaml" />
@@ -98,24 +102,30 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Avalonia.Xaml.Interactivity" Version="11.3.0.6" />
-    
+    <PackageReference Include="DialogHost.Avalonia" Version="0.9.3" />
+
     <!-- Cross-platform hosting and logging -->
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
-    
+
     <!-- MVVM Community Toolkit for MVVM patterns -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
-    
+
     <!-- Database and utility packages -->
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="MySql.Data" Version="9.4.0" />
-    
+
     <!-- Cross-platform UI packages -->
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
-    
+
+    <!-- Material.Avalonia packages for visual components -->
+    <PackageReference Include="Material.Avalonia" Version="3.13.1" />
+    <PackageReference Include="Material.Avalonia.DataGrid" Version="3.13.1" />
+    <PackageReference Include="Material.Avalonia.Dialogs" Version="3.8.0" />
+
     <!-- System packages -->
     <PackageReference Include="System.Drawing.Common" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
-    
+
     <!-- Microsoft Extensions packages (standardized to 8.0.0) -->
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />

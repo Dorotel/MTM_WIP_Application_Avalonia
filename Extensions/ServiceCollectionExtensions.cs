@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IApplicationStateService, ApplicationStateService>();
         services.TryAddSingleton<INavigationService, NavigationService>();
         services.TryAddSingleton<IFilePathService, FilePathService>();
-        
+
         // Logging services
         services.TryAddSingleton<IFileLoggingService, FileLoggingService>();
         services.AddLogging(builder =>
@@ -43,34 +43,34 @@ public static class ServiceCollectionExtensions
                 return new MTMFileLoggerProvider(fileLoggingService);
             });
         });
-        
+
         // Theme and Settings services
         services.TryAddSingleton<IThemeService, ThemeService>();
         services.TryAddSingleton<ISettingsService, SettingsService>();
-        
+
         // SettingsForm services
         services.TryAddSingleton<VirtualPanelManager>();
         services.TryAddSingleton<SettingsPanelStateManager>();
-        
+
         // Database services
         services.TryAddSingleton<IDatabaseService, DatabaseService>();
-        
+
         // UI and Application services
         services.TryAddSingleton<IQuickButtonsService, QuickButtonsService>();
         services.TryAddSingleton<IProgressService, ProgressService>();
-        
+
         // Register SuggestionOverlay service - change to singleton for validation
         services.TryAddSingleton<ISuggestionOverlayService, SuggestionOverlayService>();
-        
+
         // Register SuccessOverlay service - singleton for shared access across ViewModels
         services.TryAddSingleton<ISuccessOverlayService, SuccessOverlayService>();
-        
+
         // Register Master Data service - singleton for shared access across ViewModels
         services.TryAddSingleton<IMasterDataService, MasterDataService>();
-        
+
         // Register Focus Management service - singleton for application-wide focus management
         services.TryAddSingleton<IFocusManagementService, FocusManagementService>();
-        
+
 
         // Register Print service - singleton for shared access across ViewModels
         services.TryAddSingleton<IPrintService, PrintService>();
@@ -80,13 +80,13 @@ public static class ServiceCollectionExtensions
 
         // Register CustomDataGrid service - singleton for shared data grid functionality across views
         services.TryAddSingleton<ICustomDataGridService, CustomDataGridService>();
-        
+
         // Register File Selection service - singleton for unified file operations across application
         services.TryAddSingleton<IFileSelectionService, FileSelectionService>();
-        
+
         // Register Inventory Editing service - singleton for comprehensive inventory editing operations
         services.TryAddSingleton<IInventoryEditingService, InventoryEditingService>();
-        
+
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
         services.TryAddTransient<MainViewViewModel>();
@@ -99,17 +99,17 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<QuickButtonsViewModel>();
         services.TryAddTransient<SettingsViewModel>();
         services.TryAddTransient<ThemeEditorViewModel>();
-        
+
         // Print ViewModels
         services.TryAddTransient<PrintViewModel>();
         services.TryAddTransient<PrintLayoutControlViewModel>();
-        
-        // Overlay ViewModels  
+
+        // Overlay ViewModels
         services.TryAddTransient<NewQuickButtonOverlayViewModel>();
         services.TryAddTransient<NoteEditorViewModel>();
         services.TryAddTransient<ConfirmationOverlayViewModel>();
         services.TryAddTransient<EditInventoryViewModel>();
-        
+
         // SettingsForm ViewModels
         services.TryAddTransient<SettingsViewModel>();
         services.TryAddTransient<DatabaseSettingsViewModel>();
@@ -131,7 +131,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<ThemeBuilderViewModel>();
         services.TryAddTransient<ShortcutsViewModel>();
         services.TryAddTransient<AboutViewModel>();
-        
+
         // Additional SettingsForm ViewModels
         services.TryAddTransient<SystemHealthViewModel>();
         services.TryAddTransient<BackupRecoveryViewModel>();

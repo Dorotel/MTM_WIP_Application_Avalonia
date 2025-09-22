@@ -3,12 +3,27 @@
 **Framework**: Avalonia UI 11.3.4  
 **Pattern**: Behavior-Driven UI Enhancement  
 **Created**: 2025-09-14  
+**Updated**: 2025-09-21 (Phase 1 Material.Avalonia Integration)
+
+---
+
+## 📚 Comprehensive Avalonia Documentation Reference
+
+**IMPORTANT**: This repository contains the complete Avalonia documentation straight from the official website in the `.github/Avalonia-Documentation/` folder. For behavior development:
+
+- **Behaviors Guide**: `.github/Avalonia-Documentation/guides/behaviors/`
+- **Behavior Implementation**: `.github/Avalonia-Documentation/guides/behaviors/creating-custom-behaviors.md`
+- **Advanced Interactions**: `.github/Avalonia-Documentation/guides/behaviors/behavior-interactions.md`
+- **UI Enhancements**: `.github/Avalonia-Documentation/guides/behaviors/`
+
+**Always reference the local Avalonia-Documentation folder for the most current and comprehensive behavior development guidance.**
 
 ---
 
 ## 🎯 Core Avalonia Behavior Patterns
 
 ### Behavior Base Implementation
+
 ```csharp
 // Standard behavior pattern for MTM application
 public class MTMBehaviorBase<T> : Behavior<T> where T : Control
@@ -46,6 +61,7 @@ public class MTMBehaviorBase<T> : Behavior<T> where T : Control
 ```
 
 ### AttachedProperty Implementation
+
 ```csharp
 // Manufacturing-specific validation behavior with AttachedProperty
 public class TextBoxFuzzyValidationBehavior : MTMBehaviorBase<TextBox>
@@ -136,6 +152,7 @@ public class TextBoxFuzzyValidationBehavior : MTMBehaviorBase<TextBox>
 ## 🏭 Manufacturing-Specific Behavior Patterns
 
 ### ComboBox Navigation Enhancement for Manufacturing Operations
+
 ```csharp
 // Based on ComboBoxBehavior.cs - Manufacturing operation selection enhancement
 public class ManufacturingComboBoxBehavior : MTMBehaviorBase<ComboBox>
@@ -292,6 +309,7 @@ public class ManufacturingComboBoxBehavior : MTMBehaviorBase<ComboBox>
 ```
 
 ### AutoComplete Navigation for Manufacturing Part IDs
+
 ```csharp
 // Based on AutoCompleteBoxNavigationBehavior.cs - Enhanced for manufacturing part lookup
 public class ManufacturingAutoCompleteNavigationBehavior : MTMBehaviorBase<AutoCompleteBox>
@@ -416,6 +434,7 @@ public class ManufacturingAutoCompleteNavigationBehavior : MTMBehaviorBase<AutoC
 ## ❌ Anti-Patterns (Avoid These)
 
 ### Memory Leaks in Behaviors
+
 ```csharp
 // ❌ WRONG: Not cleaning up event handlers leads to memory leaks
 public class LeakyBehavior : Behavior<TextBox>
@@ -461,6 +480,7 @@ public class ProperBehavior : MTMBehaviorBase<TextBox>
 ```
 
 ### Expensive Operations in Event Handlers
+
 ```csharp
 // ❌ WRONG: Heavy operations on every keystroke
 public class ExpensiveBehavior : MTMBehaviorBase<TextBox>
@@ -538,6 +558,7 @@ public class EfficientBehavior : MTMBehaviorBase<TextBox>
 ```
 
 ### Thread Safety Violations
+
 ```csharp
 // ❌ WRONG: Modifying UI properties from background thread
 public class ThreadUnsafeBehavior : MTMBehaviorBase<TextBox>
@@ -586,9 +607,11 @@ public class ThreadSafeBehavior : MTMBehaviorBase<TextBox>
 ### Common Issues and Solutions
 
 #### Issue: Behavior Not Attaching to Control
+
 **Symptoms**: Event handlers not firing, behavior seems inactive
 
 **Solution**: Check XAML namespace and behavior registration
+
 ```xml
 <!-- ✅ CORRECT: Proper namespace and behavior attachment -->
 <TextBox Text="{Binding PartId}">
@@ -601,9 +624,11 @@ public class ThreadSafeBehavior : MTMBehaviorBase<TextBox>
 ```
 
 #### Issue: Memory Leaks from Behaviors
+
 **Symptoms**: Application memory usage increases over time, especially with frequently created/destroyed controls
 
 **Solution**: Implement proper cleanup in base behavior class
+
 ```csharp
 // ✅ CORRECT: Base behavior with guaranteed cleanup
 public abstract class MTMBehaviorBase<T> : Behavior<T>, IDisposable where T : Control
@@ -634,9 +659,11 @@ public abstract class MTMBehaviorBase<T> : Behavior<T>, IDisposable where T : Co
 ```
 
 #### Issue: Performance Degradation with Large Lists
+
 **Symptoms**: UI becomes sluggish when working with manufacturing datasets
 
 **Solution**: Implement virtualization and debouncing
+
 ```csharp
 // ✅ CORRECT: Virtualized behavior for large manufacturing datasets
 public class VirtualizedListBehavior : MTMBehaviorBase<ListBox>
@@ -682,6 +709,7 @@ public class VirtualizedListBehavior : MTMBehaviorBase<ListBox>
 ## 🧪 Behavior Testing Patterns
 
 ### Unit Testing Behaviors
+
 ```csharp
 [TestFixture]
 public class TextBoxFuzzyValidationBehaviorTests
@@ -744,6 +772,7 @@ public class TextBoxFuzzyValidationBehaviorTests
 ```
 
 ### Integration Testing with UI
+
 ```csharp
 [TestFixture]
 public class BehaviorIntegrationTests
@@ -806,6 +835,7 @@ public class BehaviorIntegrationTests
 ## 🔗 AXAML Usage Examples
 
 ### Basic Behavior Usage
+
 ```xml
 <TextBox Text="{Binding PartId}" Watermark="Enter Part ID">
     <i:Interaction.Behaviors>
@@ -817,6 +847,7 @@ public class BehaviorIntegrationTests
 ```
 
 ### Advanced Manufacturing ComboBox
+
 ```xml
 <ComboBox ItemsSource="{Binding Operations}" 
           SelectedItem="{Binding SelectedOperation}"
@@ -830,6 +861,7 @@ public class BehaviorIntegrationTests
 ```
 
 ### AutoComplete for Manufacturing Parts
+
 ```xml
 <AutoCompleteBox ItemsSource="{Binding PartIds}"
                  SelectedItem="{Binding SelectedPartId}"
@@ -865,6 +897,7 @@ public class BehaviorIntegrationTests
 ### When to Use Joyride
 
 **Always Use When Available:**
+
 - File template generation and boilerplate creation
 - Repetitive code pattern enforcement (MVVM, dependency injection)
 - Automated testing workflows and validation
@@ -875,18 +908,21 @@ public class BehaviorIntegrationTests
 ### Joyride Implementation Priorities
 
 **High Priority (Use First):**
+
 - `joyride_evaluate_code` - Execute ClojureScript for workspace automation
 - `joyride_request_human_input` - Interactive decision-making workflows
 - Dynamic file creation and template generation
 - Automated pattern validation and enforcement
 
 **Medium Priority (Use When Applicable):**
+
 - VS Code API manipulation for UI automation
 - Custom workflow creation for MTM-specific patterns
 - Real-time validation of manufacturing domain rules
 - Cross-platform testing automation
 
 **Integration Benefits:**
+
 - **Consistency**: Automated pattern enforcement reduces human error
 - **Speed**: Bulk operations and template generation
 - **Quality**: Real-time validation and compliance checking
@@ -895,18 +931,21 @@ public class BehaviorIntegrationTests
 ### MTM-Specific Joyride Applications
 
 **Manufacturing Domain:**
+
 - Automated validation of operation codes (90/100/110)
 - Location code verification (FLOOR/RECEIVING/SHIPPING)
 - Quick button configuration validation (max 10 per user)
 - Session timeout and transaction logging automation
 
 **Development Workflows:**
+
 - MVVM Community Toolkit pattern enforcement
 - Avalonia UI component generation following MTM standards
 - MySQL stored procedure validation and testing
 - Cross-platform build and deployment automation
 
 **Quality Assurance:**
+
 - Automated code review against MTM standards
 - Theme system validation (17+ theme files)
 - Database connection pooling configuration checks

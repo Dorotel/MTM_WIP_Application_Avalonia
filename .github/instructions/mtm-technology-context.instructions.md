@@ -7,6 +7,21 @@ priority: 'high'
 
 # MTM Technology Context - Core Technology Stack Knowledge
 
+## 📚 Comprehensive Avalonia Documentation Reference
+
+**IMPORTANT**: This repository contains the complete Avalonia documentation straight from the official website in the `.github/Avalonia-Documentation/` folder:
+
+- **Complete API Reference**: `.github/Avalonia-Documentation/reference/`
+- **Comprehensive Guides**: `.github/Avalonia-Documentation/guides/`
+- **Cross-Platform Deployment**: `.github/Avalonia-Documentation/deployment/`
+- **MVVM Patterns**: `.github/Avalonia-Documentation/concepts/the-mvvm-pattern/`
+- **Control Documentation**: `.github/Avalonia-Documentation/reference/controls/`
+- **Performance Optimization**: `.github/Avalonia-Documentation/guides/basics/performance-tips.md`
+
+**Always reference the local Avalonia-Documentation folder for the most current and comprehensive guidance.**
+
+---
+
 ## Context Overview
 
 This context provides comprehensive knowledge about the MTM WIP Application technology stack, patterns, and implementation requirements. Use this context to understand technology-specific decisions, constraints, and best practices.
@@ -14,6 +29,7 @@ This context provides comprehensive knowledge about the MTM WIP Application tech
 ## Technology Stack Foundation
 
 ### .NET 8 with C# 12 (Target Framework)
+
 ```xml
 <TargetFramework>net8.0</TargetFramework>
 <LangVersion>12.0</LangVersion>
@@ -21,12 +37,14 @@ This context provides comprehensive knowledge about the MTM WIP Application tech
 ```
 
 **Key C# 12 Features in Use:**
+
 - **Primary Constructors**: Used for simple data classes
 - **Collection Expressions**: `["item1", "item2"]` syntax
 - **Required Members**: `required` keyword for mandatory properties
 - **Null Parameter Checking**: `ArgumentNullException.ThrowIfNull(param)`
 
 **Pattern Example:**
+
 ```csharp
 // C# 12 pattern in MTM application
 public record InventoryItem(string PartId, string Operation, int Quantity, string Location)
@@ -48,9 +66,11 @@ public class InventoryService(ILogger<InventoryService> logger, IConfiguration c
 ```
 
 ### Avalonia UI 11.3.4 (Cross-Platform UI Framework)
+
 **NOT WPF** - Avalonia has specific syntax requirements and capabilities.
 
 **Critical Avalonia-Specific Requirements:**
+
 ```xml
 <!-- CORRECT Avalonia namespace -->
 <UserControl xmlns="https://github.com/avaloniaui"
@@ -65,21 +85,25 @@ public class InventoryService(ILogger<InventoryService> logger, IConfiguration c
 ```
 
 **Avalonia vs WPF Differences:**
+
 - Use `TextBlock` instead of `Label`
 - Use `Flyout` instead of `Popup`
 - Grid naming: `x:Name` is mandatory, `Name` causes AVLN2000 errors
 - Namespace: `https://github.com/avaloniaui` NOT WPF namespace
 
 **Cross-Platform Considerations:**
+
 - **Windows**: Full feature support, native look and feel
 - **macOS**: Cocoa integration, menu bar support
 - **Linux**: GTK backend, X11/Wayland support
 - **Android**: Mobile-optimized controls and touch support
 
 ### MVVM Community Toolkit 8.3.2 (Source Generator MVVM)
+
 **Completely replaces ReactiveUI** - No ReactiveUI patterns in MTM application.
 
 **Mandatory Patterns:**
+
 ```csharp
 [ObservableObject]
 public partial class InventoryTabViewModel : BaseViewModel
@@ -110,15 +134,18 @@ public partial class InventoryTabViewModel : BaseViewModel
 ```
 
 **Source Generator Benefits:**
+
 - Automatic property change notifications
 - Automatic command implementations
 - Compile-time code generation
 - Better performance than reflection-based MVVM
 
 ### MySQL 9.4.0 (Database with Stored Procedures Only)
+
 **Absolutely NO direct SQL queries** - All database operations through stored procedures.
 
 **Mandatory Database Pattern:**
+
 ```csharp
 // ONLY pattern allowed in MTM application
 var parameters = new MySqlParameter[]
@@ -148,6 +175,7 @@ else
 ```
 
 **45+ Available Stored Procedures:**
+
 - **Inventory**: `inv_inventory_Add_Item`, `inv_inventory_Remove_Item`, `inv_inventory_Get_ByPartID`
 - **Transactions**: `inv_transaction_Add`, `inv_transaction_Get_History`
 - **Master Data**: `md_part_ids_Get_All`, `md_locations_Get_All`, `md_operation_numbers_Get_All`
@@ -155,9 +183,11 @@ else
 - **Error Logging**: `log_error_Add_Error`, `log_error_Get_All`
 
 ### Microsoft Extensions 9.0.8 (DI, Logging, Configuration)
+
 **Comprehensive dependency injection and configuration system.**
 
 **Service Registration Pattern:**
+
 ```csharp
 public static class ServiceCollectionExtensions
 {
@@ -182,6 +212,7 @@ public static class ServiceCollectionExtensions
 ```
 
 **Logging Integration:**
+
 ```csharp
 public class InventoryService : IInventoryService
 {
@@ -213,6 +244,7 @@ public class InventoryService : IInventoryService
 ## Key Technology Patterns
 
 ### Dependency Injection Pattern
+
 ```csharp
 // Constructor injection (preferred)
 public class InventoryTabViewModel : BaseViewModel
@@ -233,6 +265,7 @@ public class InventoryTabViewModel : BaseViewModel
 ```
 
 ### Async/Await Pattern
+
 ```csharp
 // Proper async implementation
 public async Task<ServiceResult<T>> ProcessAsync<T>(T data)
@@ -256,6 +289,7 @@ public async Task<ServiceResult<T>> ProcessAsync<T>(T data)
 ```
 
 ### Error Handling Pattern
+
 ```csharp
 // Centralized error handling (mandatory)
 try
@@ -272,6 +306,7 @@ catch (Exception ex)
 ## Configuration Management
 
 ### Configuration Structure
+
 ```json
 {
   "ConnectionStrings": {
@@ -292,6 +327,7 @@ catch (Exception ex)
 ```
 
 ### Configuration Access Pattern
+
 ```csharp
 public class ConfigurationService : IConfigurationService
 {
@@ -309,6 +345,7 @@ public class ConfigurationService : IConfigurationService
 ## Performance Considerations
 
 ### Memory Management
+
 ```csharp
 // Proper resource disposal
 public class DatabaseService : IDatabaseService, IDisposable
@@ -333,6 +370,7 @@ public class DatabaseService : IDatabaseService, IDisposable
 ```
 
 ### Caching Strategy
+
 ```csharp
 // Memory caching for master data
 public class MasterDataService : IMasterDataService
@@ -359,6 +397,7 @@ public class MasterDataService : IMasterDataService
 ## Common Anti-Patterns (Avoid These)
 
 ### ❌ ReactiveUI Patterns
+
 ```csharp
 // DON'T USE - ReactiveUI completely removed from MTM
 public class SomeViewModel : ReactiveObject
@@ -375,6 +414,7 @@ public class SomeViewModel : ReactiveObject
 ```
 
 ### ❌ Direct SQL Queries
+
 ```csharp
 // DON'T USE - Direct SQL forbidden in MTM
 var sql = $"SELECT * FROM inventory WHERE part_id = '{partId}'";
@@ -382,6 +422,7 @@ var command = new MySqlCommand(sql, connection);
 ```
 
 ### ❌ WPF Syntax in Avalonia
+
 ```xml
 <!-- DON'T USE - WPF namespace in Avalonia -->
 <UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
@@ -391,6 +432,7 @@ var command = new MySqlCommand(sql, connection);
 ```
 
 ### ❌ Synchronous Database Operations
+
 ```csharp
 // DON'T USE - Synchronous calls block UI thread
 var result = SomeAsyncOperation().Result;
@@ -400,6 +442,7 @@ var data = SomeAsyncMethod().GetAwaiter().GetResult();
 ## Technology Integration Points
 
 ### UI to ViewModel Binding
+
 ```xml
 <TextBox Text="{Binding PartId}" />
 <Button Command="{Binding SaveCommand}" Content="Save" />
@@ -407,6 +450,7 @@ var data = SomeAsyncMethod().GetAwaiter().GetResult();
 ```
 
 ### ViewModel to Service Integration
+
 ```csharp
 [RelayCommand]
 private async Task LoadDataAsync()
@@ -429,6 +473,7 @@ private async Task LoadDataAsync()
 ```
 
 ### Service to Database Integration
+
 ```csharp
 public async Task<ServiceResult> SaveAsync(InventoryItem item)
 {
@@ -457,6 +502,7 @@ This technology context provides the foundation for all MTM WIP Application deve
 ### When to Use Joyride
 
 **Always Use When Available:**
+
 - File template generation and boilerplate creation
 - Repetitive code pattern enforcement (MVVM, dependency injection)
 - Automated testing workflows and validation
@@ -467,18 +513,21 @@ This technology context provides the foundation for all MTM WIP Application deve
 ### Joyride Implementation Priorities
 
 **High Priority (Use First):**
+
 - `joyride_evaluate_code` - Execute ClojureScript for workspace automation
 - `joyride_request_human_input` - Interactive decision-making workflows
 - Dynamic file creation and template generation
 - Automated pattern validation and enforcement
 
 **Medium Priority (Use When Applicable):**
+
 - VS Code API manipulation for UI automation
 - Custom workflow creation for MTM-specific patterns
 - Real-time validation of manufacturing domain rules
 - Cross-platform testing automation
 
 **Integration Benefits:**
+
 - **Consistency**: Automated pattern enforcement reduces human error
 - **Speed**: Bulk operations and template generation
 - **Quality**: Real-time validation and compliance checking
@@ -487,18 +536,21 @@ This technology context provides the foundation for all MTM WIP Application deve
 ### MTM-Specific Joyride Applications
 
 **Manufacturing Domain:**
+
 - Automated validation of operation codes (90/100/110)
 - Location code verification (FLOOR/RECEIVING/SHIPPING)
 - Quick button configuration validation (max 10 per user)
 - Session timeout and transaction logging automation
 
 **Development Workflows:**
+
 - MVVM Community Toolkit pattern enforcement
 - Avalonia UI component generation following MTM standards
 - MySQL stored procedure validation and testing
 - Cross-platform build and deployment automation
 
 **Quality Assurance:**
+
 - Automated code review against MTM standards
 - Theme system validation (17+ theme files)
 - Database connection pooling configuration checks

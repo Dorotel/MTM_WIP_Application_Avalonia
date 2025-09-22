@@ -16,6 +16,7 @@ This context provides comprehensive knowledge about manufacturing inventory mana
 ### Core Business Entities
 
 #### Part Identification System
+
 ```csharp
 public class PartInfo
 {
@@ -27,12 +28,14 @@ public class PartInfo
 ```
 
 **Part ID Format Rules:**
+
 - Alphanumeric with dashes allowed: `^[A-Za-z0-9\-]{1,50}$`
 - Maximum 50 characters
 - Case-insensitive but stored in uppercase
 - Examples: "PART001", "ABC-123", "MOTOR-HOUSING-V2"
 
 #### Manufacturing Operation Sequence
+
 Manufacturing operations represent workflow steps, NOT transaction types:
 
 ```csharp
@@ -47,13 +50,15 @@ public static class ManufacturingOperations
 }
 ```
 
-**Critical Understanding: Operation Numbers ≠ Transaction Types**
+### Critical Understanding: Operation Numbers ≠ Transaction Types
+
 - Operation numbers ("90", "100", "110") are **workflow steps**
 - Transaction types ("IN", "OUT", "TRANSFER") are determined by **user intent**
 - Same part can be in multiple operations simultaneously
 - Operations represent WHERE the part is in the manufacturing process
 
 #### Location Management System
+
 ```csharp
 public class LocationInfo
 {
@@ -65,6 +70,7 @@ public class LocationInfo
 ```
 
 **Location Types:**
+
 - **Stations**: "STATION_A", "STATION_B" - Manufacturing work centers
 - **WIP Areas**: "WIP_001", "WIP_002" - Work-in-process storage
 - **Storage**: "WAREHOUSE_A", "STORAGE_B" - Inventory storage locations
@@ -73,6 +79,7 @@ public class LocationInfo
 ## Transaction Logic and Business Rules
 
 ### Transaction Type Determination (CRITICAL)
+
 Transaction types are determined by **user intent**, not operation numbers or system logic:
 
 ```csharp
@@ -91,6 +98,7 @@ public string DetermineTransactionType(UserAction action)
 ```
 
 **Transaction Type Examples:**
+
 - **"IN"**: Receiving parts, completing manufacturing step, returning from repair
 - **"OUT"**: Shipping parts, moving to next operation, consuming in assembly
 - **"TRANSFER"**: Moving between locations, changing operation assignments
@@ -98,6 +106,7 @@ public string DetermineTransactionType(UserAction action)
 - **"SCRAP"**: Quality failures, damaged parts, obsolete inventory
 
 ### Inventory Calculation Rules
+
 ```csharp
 public class InventoryCalculation
 {
@@ -127,7 +136,8 @@ public class InventoryCalculation
 ### Manufacturing Workflow Patterns
 
 #### Standard Manufacturing Flow
-```
+
+```bash
 Parts Flow: RECEIVING(90) → OPERATION_1(100) → OPERATION_2(110) → OPERATION_3(120) → SHIPPING(140)
 
 Inventory Tracking:
@@ -139,7 +149,8 @@ Inventory Tracking:
 
 #### Common Workflow Scenarios
 
-**Scenario 1: New Parts Receipt**
+## Scenario 1: New Parts Receipt
+
 ```csharp
 // Parts received from supplier
 var receiptTransaction = new InventoryTransaction
@@ -154,7 +165,8 @@ var receiptTransaction = new InventoryTransaction
 };
 ```
 
-**Scenario 2: Manufacturing Step Completion**
+## Scenario 2: Manufacturing Step Completion
+
 ```csharp
 // Parts completed at Operation 100, moving to Operation 110
 var completionTransactions = new[]
@@ -183,7 +195,8 @@ var completionTransactions = new[]
 };
 ```
 
-**Scenario 3: Quality Issue - Scrap Parts**
+## Scenario 3: Quality Issue - Scrap Parts
+
 ```csharp
 // Defective parts found during inspection
 var scrapTransaction = new InventoryTransaction
@@ -201,6 +214,7 @@ var scrapTransaction = new InventoryTransaction
 ## User Workflow Patterns
 
 ### QuickButtons Functionality
+
 QuickButtons provide rapid access to frequently used transactions:
 
 ```csharp
@@ -234,7 +248,8 @@ public class QuickButtonLogic
 ```
 
 ### Operator Daily Workflow
-```
+
+```treeview
 1. Start Shift
    - Review WIP inventory at assigned stations
    - Check QuickButtons for common operations
@@ -260,6 +275,7 @@ public class QuickButtonLogic
 ## Data Validation Rules
 
 ### Part ID Validation
+
 ```csharp
 public static class PartIdValidation
 {
@@ -280,6 +296,7 @@ public static class PartIdValidation
 ```
 
 ### Quantity Validation
+
 ```csharp
 public static class QuantityValidation
 {
@@ -301,6 +318,7 @@ public static class QuantityValidation
 ```
 
 ### Operation Validation
+
 ```csharp
 public static class OperationValidation
 {
@@ -322,6 +340,7 @@ public static class OperationValidation
 ## Manufacturing KPIs and Metrics
 
 ### Inventory Accuracy Metrics
+
 ```csharp
 public class InventoryMetrics
 {
@@ -333,6 +352,7 @@ public class InventoryMetrics
 ```
 
 ### Manufacturing Efficiency Metrics
+
 - **Throughput**: Parts processed per hour by operation
 - **WIP Levels**: Work-in-process inventory by operation
 - **Cycle Time**: Time from receipt to shipping
@@ -341,6 +361,7 @@ public class InventoryMetrics
 ## Common Manufacturing Scenarios
 
 ### High-Volume Production
+
 ```csharp
 // Batch processing for high-volume parts
 public class BatchProcessing
@@ -373,6 +394,7 @@ public class BatchProcessing
 ```
 
 ### Multi-Location Operations
+
 ```csharp
 // Managing parts across multiple locations
 public class MultiLocationInventory
@@ -416,6 +438,7 @@ public class MultiLocationInventory
 ## Manufacturing Anti-Patterns (Avoid These)
 
 ### ❌ Using Operation Numbers for Transaction Types
+
 ```csharp
 // DON'T DO THIS - Operation numbers are workflow steps, not transaction indicators
 if (operation == "90") 
@@ -425,6 +448,7 @@ if (operation == "90")
 ```
 
 ### ❌ Allowing Negative Inventory
+
 ```csharp
 // DON'T ALLOW - Negative inventory indicates data integrity issues
 var newQuantity = currentQuantity - transactionQuantity; // Could go negative
@@ -432,6 +456,7 @@ inventory.Quantity = newQuantity; // Wrong - no validation
 ```
 
 ### ❌ Ignoring Manufacturing Workflow
+
 ```csharp
 // DON'T DO - Bypassing manufacturing sequence
 // Moving directly from operation 90 to 130 without intermediate steps
@@ -441,7 +466,9 @@ inventory.Quantity = newQuantity; // Wrong - no validation
 ## Integration with MTM Technology Stack
 
 ### Database Integration
+
 All manufacturing data operations use stored procedures exclusively:
+
 ```csharp
 // Manufacturing-specific stored procedures
 await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
@@ -452,7 +479,9 @@ await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
 ```
 
 ### UI Integration
+
 Manufacturing forms follow MTM UI patterns:
+
 ```xml
 <Grid x:Name="ManufacturingGrid" RowDefinitions="Auto,*,Auto">
     <!-- Part selection and operation input -->
@@ -484,6 +513,7 @@ This manufacturing context provides the business domain knowledge essential for 
 ### When to Use Joyride
 
 **Always Use When Available:**
+
 - File template generation and boilerplate creation
 - Repetitive code pattern enforcement (MVVM, dependency injection)
 - Automated testing workflows and validation
@@ -494,18 +524,21 @@ This manufacturing context provides the business domain knowledge essential for 
 ### Joyride Implementation Priorities
 
 **High Priority (Use First):**
+
 - `joyride_evaluate_code` - Execute ClojureScript for workspace automation
 - `joyride_request_human_input` - Interactive decision-making workflows
 - Dynamic file creation and template generation
 - Automated pattern validation and enforcement
 
 **Medium Priority (Use When Applicable):**
+
 - VS Code API manipulation for UI automation
 - Custom workflow creation for MTM-specific patterns
 - Real-time validation of manufacturing domain rules
 - Cross-platform testing automation
 
 **Integration Benefits:**
+
 - **Consistency**: Automated pattern enforcement reduces human error
 - **Speed**: Bulk operations and template generation
 - **Quality**: Real-time validation and compliance checking
@@ -514,18 +547,21 @@ This manufacturing context provides the business domain knowledge essential for 
 ### MTM-Specific Joyride Applications
 
 **Manufacturing Domain:**
+
 - Automated validation of operation codes (90/100/110)
 - Location code verification (FLOOR/RECEIVING/SHIPPING)
 - Quick button configuration validation (max 10 per user)
 - Session timeout and transaction logging automation
 
 **Development Workflows:**
+
 - MVVM Community Toolkit pattern enforcement
 - Avalonia UI component generation following MTM standards
 - MySQL stored procedure validation and testing
 - Cross-platform build and deployment automation
 
 **Quality Assurance:**
+
 - Automated code review against MTM standards
 - Theme system validation (17+ theme files)
 - Database connection pooling configuration checks
