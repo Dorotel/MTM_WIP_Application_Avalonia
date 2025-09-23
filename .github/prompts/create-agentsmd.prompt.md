@@ -1,7 +1,6 @@
 ---
 description: "Prompt for generating an AGENTS.md file for a repository"
 mode: "agent"
-tools: ['*']
 ---
 
 # Create high‑quality AGENTS.md file

@@ -1,6 +1,5 @@
 ---
 mode: 'agent'
-tools: ['*']
 description: 'MTM UI Documentation Audit Expert. Creates comprehensive documentation conflict analysis and UI standards questionnaire for the MTM WIP Application Avalonia project.'
 ---
 

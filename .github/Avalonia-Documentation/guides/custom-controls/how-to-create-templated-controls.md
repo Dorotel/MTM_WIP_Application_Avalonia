@@ -42,4 +42,3 @@ Although the two syntaxes shown here are equivalent in most cases, there are som
 <!-- Instead this syntax must be used in this case. -->
 <GeometryDrawing Brush="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}"/>
 ```
-

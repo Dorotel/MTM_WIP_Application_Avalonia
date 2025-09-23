@@ -1,4 +1,4 @@
-﻿---
+---
 id: focus
 title: Focus
 ---

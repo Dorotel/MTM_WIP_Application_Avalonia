@@ -34,5 +34,3 @@ Then in the corresponding XAML define two controls:
 ```
 
 This means that when the user clicks the button, _Avalonia UI_ updates the view model by calling the `ButtonAction` method. This changes the `Greeting` property using the setter, so in turn the new greeting text is notified back to the text control on the UI.
-
-

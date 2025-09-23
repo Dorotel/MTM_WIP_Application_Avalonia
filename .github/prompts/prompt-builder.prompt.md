@@ -1,6 +1,5 @@
 ---
 mode: 'agent'
-tools: ['*']
 description: 'Guide users through creating high-quality GitHub Copilot prompts with proper structure, tools, and best practices.'
 ---
 
@@ -113,7 +112,6 @@ After gathering all requirements, I will generate a complete `.prompt.md` file f
 ---
 description: "[Clear, concise description from requirements]"
 mode: "[agent|ask|edit based on task type]"
-tools: ["[appropriate tools based on functionality]"]
 model: "[only if specific model required]"
 ---
 

@@ -37,8 +37,3 @@ While using icons can enhance the usability of your application, it is important
 
 * Ensure that the icons are of a suitable size and clearly visible against the background.
 * Use universally recognized icons for common actions to make your application more intuitive.
-
-
-
-
-

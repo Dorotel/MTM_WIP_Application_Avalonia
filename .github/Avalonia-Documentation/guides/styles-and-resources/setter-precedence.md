@@ -1,4 +1,4 @@
-﻿---
+---
 id: setter-precedence
 title: Setter Precedence
 ---

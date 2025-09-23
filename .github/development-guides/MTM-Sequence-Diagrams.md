@@ -432,4 +432,3 @@ These sequence diagrams provide comprehensive documentation of all major workflo
 - **Cross-Platform**: Automated testing across Windows/macOS/Linux
 
 **Implementation**: Use Joyride first when safe, fall back to traditional tools as needed.
-

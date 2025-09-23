@@ -1,4 +1,4 @@
-﻿---
+---
 id: markupextensions
 title: Markup Extensions
 ---

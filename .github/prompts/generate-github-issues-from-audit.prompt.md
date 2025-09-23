@@ -1,6 +1,5 @@
 ---
 mode: 'agent'
-tools: ['*']
 ---
 # GitHub Issues Generator for Implementation Gaps
 

@@ -104,20 +104,3 @@ You can bind this `ObservableCollection` to a `ListBox` in your view, and use a 
 ```
 
 In this scenario, each `Person` in the list will be displayed with their `Name` and `Age` separated by a small margin. If any of items properties change, the `ListBox` item will automatically update. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

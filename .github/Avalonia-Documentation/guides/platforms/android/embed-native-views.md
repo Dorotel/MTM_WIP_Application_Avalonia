@@ -56,4 +56,3 @@ In this method, `CreateControl`, the `parent` object is cast to `AndroidViewCont
 The `isSecond` parameter is used to decide which control to create. If it's `true`, a `WebView` is created, navigates to "https://www.android.com/", and its instance is wrapped in an `AndroidViewControlHandle` which is then returned.
 
 If `isSecond` is `false`, a Button is created with the text "Hello world". The button's `Click` event is wired up to an event handler that increases the `clickCount` and updates the button's text to display the number of clicks. The `Button` instance is also wrapped in an `AndroidViewControlHandle` and returned.
-

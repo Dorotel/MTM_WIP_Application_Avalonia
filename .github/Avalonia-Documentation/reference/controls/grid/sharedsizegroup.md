@@ -1,4 +1,4 @@
-﻿---
+---
 id: sharedsizegroup
 title: SharedSizeGroup
 ---

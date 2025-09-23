@@ -248,4 +248,3 @@ dotnet run --framework netcoreapp2.1
 ```
 
 <img src={ReactiveUIRoutingScreenshot} alt="" />
-

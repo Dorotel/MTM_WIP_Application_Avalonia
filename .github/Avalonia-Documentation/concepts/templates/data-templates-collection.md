@@ -41,4 +41,3 @@ So you can modify the previous sample to use the `DataTemplates` collection, as 
 This results in exactly the same display as on the previous page:
 
 <img src={DataTemplatesCollectionStudentScreenshot} alt=""/>
-

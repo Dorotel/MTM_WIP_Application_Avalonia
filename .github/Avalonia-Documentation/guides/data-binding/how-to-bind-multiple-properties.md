@@ -1,4 +1,4 @@
-﻿---
+---
 id: how-to-bind-multiple-properties
 title: How to Bind Multiple Properties
 ---

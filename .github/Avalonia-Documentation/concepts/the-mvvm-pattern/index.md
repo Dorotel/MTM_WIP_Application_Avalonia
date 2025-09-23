@@ -39,5 +39,3 @@ The advantages of using the MVVM pattern may only become apparent when an applic
 2. Use MVVM from the start because you expect the application to grow. 
 
 You can use the following pages to learn about using MVVM with _Avalonia UI_ whichever of the above strategies you adopt.
-
-

@@ -81,12 +81,3 @@ Then, in your view, you can bind these image sources to `Image` controls:
 The `Source` property of the `Image` control can accept various types of image sources including a file path, a URL, or a resource. Please note that for asynchronous image sources, you must use the `^` character after the binding expression to tell Avalonia that this is an asynchronous binding.
 
 Ensure that local image file paths are accurate, the image file is accessible, and if it's part of your application resources, it's been correctly included in your project. If you're binding to a web image, ensure that the URL is reachable.
-
-
-
-
-
-
-
-
-

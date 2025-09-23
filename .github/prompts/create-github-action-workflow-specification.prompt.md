@@ -1,7 +1,6 @@
 ---
 mode: 'agent'
 description: 'Create a formal specification for an existing GitHub Actions CI/CD workflow, optimized for AI consumption and workflow maintenance.'
-tools: ['*']
 ---
 # Create GitHub Actions Workflow Specification
 

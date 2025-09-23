@@ -15,4 +15,3 @@ For some information about the concept of control layout zones in _Avalonia UI_,
 ## Example Code
 
 To follow the example code that follows, create a new _Avalonia UI project_ using the 'Avalonia Application' template in C#.
-

@@ -28,5 +28,3 @@ Attached layout properties are used in scenarios where the container control has
 :::info
 For a full list of the _Avalonia UI_ built-in controls, see the reference [here](../reference/controls/).
 :::
-
-

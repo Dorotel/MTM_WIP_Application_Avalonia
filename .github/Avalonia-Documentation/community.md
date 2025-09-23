@@ -52,4 +52,3 @@ To get the most effective help:
 3. Always include relevant code examples and what you've tried
 4. Check the documentation and existing GitHub Discussions first
 5. Be specific about which version of Avalonia you're using
-

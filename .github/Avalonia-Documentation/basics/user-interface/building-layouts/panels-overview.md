@@ -586,5 +586,3 @@ for (int i = 0; i < 12; i++)
 </Tabs>
 
 In the above example, each `Rectangle` is automatically assigned to a cell in the grid in the order they were added.
-
-

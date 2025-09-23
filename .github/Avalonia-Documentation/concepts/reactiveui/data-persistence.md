@@ -153,4 +153,3 @@ dotnet run --framework netcoreapp2.1
 ```
 
 See the "[Saving Routing State to the Disk in a Cross-Platform .NET Core GUI App with ReactiveUI and Avalonia](https://habr.com/ru/post/462307/)" blog post to explore how to combine the data persistence feature with ReactiveUI routing and dependency injection. See also [the source code of the sample app](https://github.com/reactiveui/ReactiveUI.Samples/tree/a7d06759e27fa17f9c6a77018362a2f8e0c30fa6/avalonia) in the ReactiveUI.Samples repository.
-
