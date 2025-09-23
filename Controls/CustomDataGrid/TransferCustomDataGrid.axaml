@@ -269,11 +269,11 @@
       </Grid>
     </Border>
 
-    <!-- Data Section with ScrollViewer -->
-    <ScrollViewer Grid.Row="1" Grid.Column="0"
+  <!-- Data Section with ScrollViewer (outer view controls scrolling; disable inner vertical scroll) -->
+  <ScrollViewer Grid.Row="1" Grid.Column="0"
                   x:Name="DataScrollViewer"
                   HorizontalScrollBarVisibility="Auto"
-                  VerticalScrollBarVisibility="Auto"
+          VerticalScrollBarVisibility="Disabled"
                   Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
                   BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
                   BorderThickness="1,0,1,1"
@@ -390,13 +390,13 @@
           </ListBox.ItemTemplate>
         </ListBox>
 
-        <!-- Nothing Found Panel (similar to CustomDataGrid) -->
-        <Border x:Name="NothingFoundPanel"
-                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                BorderThickness="0"
-                Padding="64"
-                MinHeight="200"
-                IsVisible="{Binding !ItemsSource.Count, RelativeSource={RelativeSource AncestorType=UserControl}}">
+  <!-- Nothing Found Panel (disabled here; outer view manages empty-state UI) -->
+  <Border x:Name="NothingFoundPanel"
+    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+    BorderThickness="0"
+    Padding="64"
+    MinHeight="120"
+    IsVisible="False">
 
           <StackPanel HorizontalAlignment="Center"
                       VerticalAlignment="Center"

@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -13,11 +14,25 @@ using MTM_Shared_Logic.Models;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
+using MTM_WIP_Application_Avalonia.Models; // For ItemsTransferredEventArgs
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
+
+/// <summary>
+/// Represents the result of a transfer operation for detailed tracking and reporting
+/// </summary>
+internal class TransferResult
+{
+    public string PartId { get; set; } = string.Empty;
+    public bool Success { get; set; }
+    public string? ErrorMessage { get; set; }
+    public int TransferredQuantity { get; set; }
+    public string FromLocation { get; set; } = string.Empty;
+    public string ToLocation { get; set; } = string.Empty;
+}
 
 /// <summary>
 /// ViewModel for the inventory transfer interface (Control_TransferTab).
@@ -211,23 +226,35 @@ public partial class TransferItemViewModel : BaseViewModel
                                               !ValidateTransferDestination();
 
     /// <summary>
-    /// Indicates if there's a quantity validation error (exceeds available)
+    /// Indicates if there's a quantity validation error (exceeds available or invalid)
     /// </summary>
-    public bool HasQuantityValidationError => TransferQuantity > MaxTransferQuantity || TransferQuantity <= 0;
+    public bool HasQuantityValidationError =>
+        SelectedInventoryItem != null &&
+        (TransferQuantity > MaxTransferQuantity || TransferQuantity <= 0);
 
     /// <summary>
     /// Validation state for transfer quantity - must be positive and within available limits
     /// </summary>
-    public bool IsTransferQuantityValid => TransferQuantity > 0 && TransferQuantity <= MaxTransferQuantity;
+    public bool IsTransferQuantityValid =>
+        SelectedInventoryItem != null &&
+        TransferQuantity > 0 &&
+        TransferQuantity <= MaxTransferQuantity;
 
     /// <summary>
-    /// Indicates if transfer operation can be performed
+    /// Enhanced validation for transfer operation - checks all required conditions
+    /// Row Selected + Location entered + Quantity <= available quantity
     /// </summary>
-    public bool CanTransfer => (SelectedInventoryItem != null || SelectedInventoryItems.Count > 0) &&
-                              !string.IsNullOrWhiteSpace(SelectedToLocation) &&
-                              TransferQuantity > 0 &&
-                              !IsLoading &&
-                              ValidateTransferDestination();
+    public bool CanTransfer =>
+        // Must have at least one item selected
+        (SelectedInventoryItem != null || SelectedInventoryItems.Count > 0) &&
+        // Must have destination location entered
+        !string.IsNullOrWhiteSpace(SelectedToLocation) &&
+        // Location must be different from source location(s)
+        ValidateTransferDestination() &&
+        // For single item transfers, quantity must be valid
+        (SelectedInventoryItem == null || (TransferQuantity > 0 && TransferQuantity <= MaxTransferQuantity)) &&
+        // Must not be currently loading
+        !IsLoading;
 
     /// <summary>
     /// Indicates if search operations can be performed
@@ -252,6 +279,11 @@ public partial class TransferItemViewModel : BaseViewModel
     /// Event fired when panel expand is requested
     /// </summary>
     public event EventHandler? PanelExpandRequested;
+
+    /// <summary>
+    /// Event fired when panel collapse is requested (after successful search)
+    /// </summary>
+    public event EventHandler? PanelCollapseRequested;
 
     /// <summary>
     /// Event fired when SuccessOverlay should be shown
@@ -446,9 +478,17 @@ public partial class TransferItemViewModel : BaseViewModel
                 return;
             }
 
-            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Database query returned {result?.Rows.Count ?? 0} rows");
-            _logger.LogInformation("[TRANSFER-DEBUG] Database query returned {RowCount} rows", result?.Rows.Count ?? 0);
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Database query returned {result?.Rows?.Count ?? 0} rows");
+            _logger.LogInformation("[TRANSFER-DEBUG] Database query returned {RowCount} rows", result?.Rows?.Count ?? 0);
             ReportProgress("Processing results...", "search", 75);
+
+            // Check if result is valid before processing
+            if (result?.Rows == null)
+            {
+                _logger.LogWarning("[TRANSFER-DEBUG] Database query returned null result");
+                ReportProgress("No results found", "search", 100, true);
+                return;
+            }
 
             // Convert DataTable to TransferInventoryItem list first (off UI thread)
             var transferItems = new List<TransferInventoryItem>();
@@ -498,6 +538,13 @@ public partial class TransferItemViewModel : BaseViewModel
             System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Search operation completed successfully with {transferItems.Count} items");
             _logger.LogInformation("Transfer search completed. Found {Count} inventory items", transferItems.Count);
             ReportProgress($"Found {transferItems.Count} transfer candidates", "search", 100, true);
+
+            // Auto-collapse the search panel if results were found
+            if (transferItems.Count > 0)
+            {
+                PanelCollapseRequested?.Invoke(this, EventArgs.Empty);
+                _logger.LogDebug("Auto-collapse requested after successful search with {Count} results", transferItems.Count);
+            }
         }
         finally
         {
@@ -507,7 +554,8 @@ public partial class TransferItemViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Resets search criteria and refreshes all data
+    /// Enhanced reset functionality with comprehensive form state management
+    /// Resets search criteria and refreshes all data - only called by Reset button or tab switching
     /// </summary>
     [RelayCommand]
     private async Task ResetSearchAsync()
@@ -517,25 +565,40 @@ public partial class TransferItemViewModel : BaseViewModel
             IsLoading = true;
             ReportProgress("Resetting transfer form...", "reset", 0);
 
+            _logger.LogInformation("User initiated form reset - clearing all transfer form state");
+
             // Clear search criteria
             SelectedPart = null;
             SelectedOperation = null;
             SelectedToLocation = null;
             PartText = string.Empty;
             OperationText = string.Empty;
-            ToLocationText = string.Empty;
+            ToLocationText = string.Empty; // Reset destination location on explicit reset
+
+            // Reset transfer configuration
             TransferQuantity = 1;
+            MaxTransferQuantity = 0;
+
+            // Clear all selections and data
             InventoryItems.Clear();
             SelectedInventoryItem = null;
-            MaxTransferQuantity = 0;
+            SelectedInventoryItems.Clear();
+
+            // Reset search state
+            _hasSearchBeenExecuted = false;
 
             ReportProgress("Reloading master data...", "reset", 50);
 
-            // Reload all ComboBox data
+            // Reload all ComboBox data to ensure fresh data
             await LoadComboBoxDataAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Transfer search criteria reset and data refreshed");
+            _logger.LogInformation("Transfer form completely reset - all fields cleared and master data refreshed");
             ReportProgress("Transfer form reset complete", "reset", 100, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during form reset operation");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Reset operation failed", _applicationState.CurrentUser ?? "SYSTEM");
         }
         finally
         {
@@ -549,26 +612,40 @@ public partial class TransferItemViewModel : BaseViewModel
     [RelayCommand(CanExecute = nameof(CanTransfer))]
     private async Task ExecuteTransferAsync()
     {
-        // Handle both single and batch transfers
+        // Enhanced transfer logic with improved validation and partial transfer support
         var itemsToTransfer = SelectedInventoryItems.Count > 0 ? SelectedInventoryItems.ToList() :
             (SelectedInventoryItem != null ? new List<TransferInventoryItem> { SelectedInventoryItem } : new List<TransferInventoryItem>());
 
-        if (!itemsToTransfer.Any() || string.IsNullOrWhiteSpace(SelectedToLocation))
+        if (!itemsToTransfer.Any())
         {
-            _logger.LogWarning("Transfer operation attempted with invalid selection");
-            ReportProgress("Invalid transfer configuration", "transfer", 0, false, true);
+            _logger.LogWarning("Transfer operation attempted with no items selected");
+            await Services.ErrorHandling.HandleErrorAsync(
+                new InvalidOperationException("No items selected for transfer"),
+                "Transfer operation failed",
+                _applicationState.CurrentUser ?? "SYSTEM");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(SelectedToLocation))
+        {
+            _logger.LogWarning("Transfer operation attempted without destination location");
+            await Services.ErrorHandling.HandleErrorAsync(
+                new InvalidOperationException("Destination location is required"),
+                "Transfer operation failed",
+                _applicationState.CurrentUser ?? "SYSTEM");
             return;
         }
 
         try
         {
             IsLoading = true;
-            ReportProgress($"Initiating batch transfer of {itemsToTransfer.Count()} item(s)...", "transfer", 0);
+            ReportProgress($"Initiating transfer of {itemsToTransfer.Count} item(s)...", "transfer", 0);
 
-            var totalItems = itemsToTransfer.Count();
+            var totalItems = itemsToTransfer.Count;
             var processedItems = 0;
             var successfulTransfers = 0;
             var failedTransfers = 0;
+            var transferResults = new List<TransferResult>();
 
             foreach (var item in itemsToTransfer)
             {
@@ -579,37 +656,65 @@ public partial class TransferItemViewModel : BaseViewModel
                 ReportProgress($"Processing {partId} ({processedItems + 1} of {totalItems})...", "transfer",
                     (int)((double)processedItems / totalItems * 80)); // Use 80% for processing, 20% for finalization
 
-                // Validate destination location is different from source
+                // Enhanced validation - ensure destination is different from source
                 if (fromLocation.Equals(SelectedToLocation, StringComparison.OrdinalIgnoreCase))
                 {
                     _logger.LogWarning("Transfer skipped - same location: {PartId} at {Location}", partId, fromLocation);
+                    transferResults.Add(new TransferResult
+                    {
+                        PartId = partId,
+                        Success = false,
+                        ErrorMessage = "Source and destination locations are the same"
+                    });
                     failedTransfers++;
                     processedItems++;
                     continue;
                 }
 
-                // For batch transfers, use the quantity from each item (complete transfer)
-                // or the specified TransferQuantity for single item transfers
+                // Determine transfer quantity
+                // For single item selection, use specified TransferQuantity (supports partial transfers)
+                // For multiple item selection, transfer complete quantities
                 var transferQuantity = (totalItems == 1) ? TransferQuantity : item.Quantity;
 
-                // Validate transfer quantity
+                // Enhanced quantity validation
                 if (transferQuantity > item.Quantity)
                 {
                     _logger.LogWarning("Transfer quantity {TransferQuantity} exceeds available {Available} for {PartId}",
                         transferQuantity, item.Quantity, partId);
+                    transferResults.Add(new TransferResult
+                    {
+                        PartId = partId,
+                        Success = false,
+                        ErrorMessage = $"Requested quantity ({transferQuantity}) exceeds available ({item.Quantity})"
+                    });
                     failedTransfers++;
                     processedItems++;
                     continue;
                 }
 
-                // Execute transfer
-                bool transferResult;
+                if (transferQuantity <= 0)
+                {
+                    _logger.LogWarning("Invalid transfer quantity {TransferQuantity} for {PartId}", transferQuantity, partId);
+                    transferResults.Add(new TransferResult
+                    {
+                        PartId = partId,
+                        Success = false,
+                        ErrorMessage = "Transfer quantity must be greater than zero"
+                    });
+                    failedTransfers++;
+                    processedItems++;
+                    continue;
+                }
 
-                if (transferQuantity < item.Quantity && totalItems == 1)
+                // Execute transfer with enhanced logic
+                bool transferResult;
+                var isPartialTransfer = transferQuantity < item.Quantity && totalItems == 1;
+
+                if (isPartialTransfer)
                 {
                     // Partial quantity transfer (only for single item)
-                    _logger.LogInformation("Executing partial transfer: {TransferQuantity} of {TotalQuantity} units for {PartId}",
-                        transferQuantity, item.Quantity, partId);
+                    _logger.LogInformation("Executing partial transfer: {TransferQuantity} of {TotalQuantity} units for {PartId} from {FromLocation} to {ToLocation}",
+                        transferQuantity, item.Quantity, partId, fromLocation, SelectedToLocation);
 
                     transferResult = await _databaseService.TransferQuantityAsync(
                         item.BatchNumber ?? string.Empty,
@@ -618,13 +723,14 @@ public partial class TransferItemViewModel : BaseViewModel
                         transferQuantity,
                         item.Quantity,
                         SelectedToLocation,
-                        _applicationState.CurrentUser
+                        _applicationState.CurrentUser ?? "SYSTEM"
                     );
                 }
                 else
                 {
                     // Complete item transfer
-                    _logger.LogInformation("Executing complete transfer: {TransferQuantity} units for {PartId}", transferQuantity, partId);
+                    _logger.LogInformation("Executing complete transfer: {TransferQuantity} units for {PartId} from {FromLocation} to {ToLocation}",
+                        transferQuantity, partId, fromLocation, SelectedToLocation);
 
                     transferResult = await _databaseService.TransferPartAsync(
                         item.BatchNumber ?? string.Empty,
@@ -637,6 +743,14 @@ public partial class TransferItemViewModel : BaseViewModel
                 if (transferResult)
                 {
                     successfulTransfers++;
+                    transferResults.Add(new TransferResult
+                    {
+                        PartId = partId,
+                        Success = true,
+                        TransferredQuantity = transferQuantity,
+                        FromLocation = fromLocation,
+                        ToLocation = SelectedToLocation
+                    });
 
                     // Update UI - remove or update item
                     if (transferQuantity >= item.Quantity)
@@ -646,12 +760,15 @@ public partial class TransferItemViewModel : BaseViewModel
                     }
                     else
                     {
-                        // Partial transfer - update quantity (single item only)
+                        // Partial transfer - update remaining quantity (single item only)
                         item.Quantity -= transferQuantity;
                         item.LastUpdated = DateTime.Now;
+
+                        // Update MaxTransferQuantity for remaining partial item
+                        OnPropertyChanged(nameof(MaxTransferQuantity));
                     }
 
-                    // Fire event for each successful transfer
+                    // Fire event for each successful transfer with "TRANSFER" transaction type
                     ItemsTransferred?.Invoke(this, new ItemsTransferredEventArgs
                     {
                         PartId = partId,
@@ -659,51 +776,178 @@ public partial class TransferItemViewModel : BaseViewModel
                         FromLocation = fromLocation,
                         ToLocation = SelectedToLocation,
                         TransferredQuantity = transferQuantity,
-                        TransferTime = DateTime.Now
+                        TransferTime = DateTime.Now,
+                        TransactionType = "TRANSFER", // MTM-specific transaction type
+                        IsPartialTransfer = isPartialTransfer
                     });
 
-                    _logger.LogInformation("Successfully transferred {Quantity} units of {PartId} from {FromLocation} to {ToLocation}",
+                    _logger.LogInformation("Successfully transferred {Quantity} units of {PartId} from {FromLocation} to {ToLocation} (Transaction Type: TRANSFER)",
                         transferQuantity, partId, fromLocation, SelectedToLocation);
                 }
                 else
                 {
                     _logger.LogError("Transfer operation failed for {PartId}", partId);
+                    transferResults.Add(new TransferResult
+                    {
+                        PartId = partId,
+                        Success = false,
+                        ErrorMessage = "Database transfer operation failed"
+                    });
                     failedTransfers++;
                 }
 
                 processedItems++;
             }
 
-            // Final status report
-            var finalMessage = totalItems == 1 ?
-                $"Transfer complete: {TransferQuantity} units" :
-                $"Batch transfer complete: {successfulTransfers} successful, {failedTransfers} failed";
-
+            // Enhanced final status report
+            var finalMessage = GenerateTransferSummary(successfulTransfers, failedTransfers, totalItems, TransferQuantity);
             ReportProgress(finalMessage, "transfer", 100, true, failedTransfers > 0);
 
-            // Show success overlay with batch transfer details
+            // Show enhanced success overlay with transfer details
             if (successfulTransfers > 0)
             {
-                var firstItem = itemsToTransfer.First();
-                if (totalItems == 1)
-                {
-                    ShowTransferSuccessOverlay(firstItem.PartId, firstItem.Operation ?? string.Empty,
-                        firstItem.Location, SelectedToLocation, TransferQuantity);
-                }
-                else
-                {
-                    ShowBatchTransferSuccessOverlay(successfulTransfers, failedTransfers, SelectedToLocation ?? "Unknown");
-                }
+                ShowTransferSuccessDetailsAsync(transferResults.Where(r => r.Success).ToList(), failedTransfers);
             }
 
-            // Reset transfer form for next operation
-            SelectedInventoryItem = null;
-            SelectedInventoryItems.Clear();
-            TransferQuantity = 1;
+            // Enhanced form reset - only reset fields when appropriate (not on partial transfer)
+            if (successfulTransfers > 0)
+            {
+                var hasPartialTransfer = transferResults.Any(r => r.Success && totalItems == 1 && r.TransferredQuantity < MaxTransferQuantity);
+                ResetAfterSuccessfulTransferAsync(isPartialTransfer: hasPartialTransfer);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during transfer operation");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Transfer operation failed", _applicationState.CurrentUser ?? "SYSTEM");
         }
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Generates a comprehensive transfer summary message
+    /// </summary>
+    private string GenerateTransferSummary(int successful, int failed, int total, int transferQuantity)
+    {
+        if (total == 1)
+        {
+            return successful > 0
+                ? $"Transfer complete: {transferQuantity} units transferred successfully"
+                : "Transfer failed: Unable to complete operation";
+        }
+
+        return $"Batch transfer complete: {successful} successful, {failed} failed out of {total} items";
+    }
+
+    /// <summary>
+    /// Shows detailed transfer success information
+    /// </summary>
+    private void ShowTransferSuccessDetailsAsync(List<TransferResult> successfulTransfers, int failedCount)
+    {
+        if (!successfulTransfers.Any()) return;
+
+        try
+        {
+            if (successfulTransfers.Count == 1)
+            {
+                var transfer = successfulTransfers.First();
+                ShowTransferSuccessOverlay(transfer.PartId, "", transfer.FromLocation, transfer.ToLocation, transfer.TransferredQuantity);
+            }
+            else
+            {
+                ShowBatchTransferSuccessOverlay(successfulTransfers.Count, failedCount, successfulTransfers.First().ToLocation);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error showing transfer success details");
+        }
+    }
+
+    /// <summary>
+    /// Enhanced form reset after successful transfer with intelligent state management
+    /// Preserves user context while preparing for next operation
+    /// </summary>
+    private void ResetAfterSuccessfulTransferAsync(bool isPartialTransfer)
+    {
+        try
+        {
+            _logger.LogInformation("Resetting form after successful transfer - isPartialTransfer: {IsPartialTransfer}", isPartialTransfer);
+
+            // For partial transfers, preserve the context to allow additional transfers
+            if (isPartialTransfer)
+            {
+                // Keep the partially transferred item selected
+                // Keep destination location for potential additional transfers
+                // Only reset quantity to 1 for next transfer
+                TransferQuantity = 1;
+
+                _logger.LogInformation("Partial transfer completed - preserving selection and location for additional transfers");
+            }
+            else
+            {
+                // Complete transfer - clear selections but preserve search results
+                SelectedInventoryItem = null;
+                SelectedInventoryItems.Clear();
+                TransferQuantity = 1;
+
+                // Preserve destination location - user might want to transfer more items to same location
+                // Preserve search results - user might want to transfer additional items
+                // These will be reset only via explicit Reset button or tab switching
+
+                _logger.LogInformation("Complete transfer finished - cleared selections, preserved search results and destination");
+            }
+
+            // Update computed properties
+            OnPropertyChanged(nameof(MaxTransferQuantity));
+            OnPropertyChanged(nameof(CanTransfer));
+            OnPropertyChanged(nameof(HasQuantityValidationError));
+            OnPropertyChanged(nameof(HasLocationValidationError));
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error resetting form after transfer");
+        }
+    }
+
+    /// <summary>
+    /// Handles tab switching by resetting form state appropriately
+    /// Called when user navigates away from the Transfer tab
+    /// </summary>
+    public async Task HandleTabSwitchAsync()
+    {
+        try
+        {
+            _logger.LogInformation("Transfer tab deactivated - performing soft reset for tab switching");
+
+            // Don't interrupt ongoing operations
+            if (IsLoading)
+            {
+                _logger.LogWarning("Tab switching while transfer operation in progress - skipping reset");
+                return;
+            }
+
+            // Soft reset - preserve search results but clear transfer configuration
+            SelectedInventoryItem = null;
+            SelectedInventoryItems.Clear();
+            ToLocationText = string.Empty; // Clear destination for fresh start on return
+            TransferQuantity = 1;
+            MaxTransferQuantity = 0;
+
+            // Keep search criteria and results for when user returns
+            // This provides better UX as user doesn't lose their search context
+
+            _logger.LogInformation("Transfer tab soft reset completed - preserved search context");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during tab switch handling");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Tab switching error", _applicationState.CurrentUser ?? "SYSTEM");
         }
     }
 
@@ -788,6 +1032,101 @@ public partial class TransferItemViewModel : BaseViewModel
     /// Alias command for ExecutePrintCommand to match AXAML bindings
     /// </summary>
     public IRelayCommand PrintCommand => ExecutePrintCommand;
+
+    /// <summary>
+    /// Command for editing selected inventory items (opens edit dialog)
+    /// Matches CustomDataGrid functionality for consistent user experience
+    /// </summary>
+    public IRelayCommand EditTransferCommand => ExecuteEditTransferCommand;
+
+    /// <summary>
+    /// Executes inventory edit operation for selected transfer items
+    /// Uses inventory editing service to load, edit, and save changes
+    /// </summary>
+    [RelayCommand]
+    private async Task ExecuteEditTransferAsync()
+    {
+        try
+        {
+            if (SelectedInventoryItem == null)
+            {
+                _logger.LogWarning("Edit operation attempted with no item selected");
+                return;
+            }
+
+            _logger.LogInformation("Starting edit operation for transfer item: {PartId} at {Location}",
+                SelectedInventoryItem.PartId, SelectedInventoryItem.Location);
+
+            // Use the same edit service as the main CustomDataGrid for consistency
+            var editService = Program.GetOptionalService<IInventoryEditingService>();
+            if (editService == null)
+            {
+                _logger.LogError("InventoryEditingService not available from DI container");
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException("Edit service not available"),
+                    "Edit operation failed",
+                    _applicationState.CurrentUser ?? "SYSTEM");
+                return;
+            }
+
+            // Load the current inventory item for editing
+            var editModel = await editService.LoadInventoryItemForEditAsync(SelectedInventoryItem.Id);
+            if (editModel == null)
+            {
+                _logger.LogWarning("Could not load inventory item {Id} for editing", SelectedInventoryItem.Id);
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException($"Inventory item {SelectedInventoryItem.Id} not found"),
+                    "Edit operation failed",
+                    _applicationState.CurrentUser ?? "SYSTEM");
+                return;
+            }
+
+            // For now, let's just try to update notes as a simple edit operation
+            // In the future, this could open a full edit dialog
+            var currentNotes = editModel.Notes ?? string.Empty;
+            var newNotes = currentNotes + $" [Transfer Edit: {DateTime.Now:HH:mm}]";
+
+            // Update notes using the service
+            var result = await editService.UpdateNotesOnlyAsync(
+                SelectedInventoryItem.Id,
+                SelectedInventoryItem.PartId,
+                SelectedInventoryItem.BatchNumber ?? string.Empty,
+                newNotes,
+                _applicationState.CurrentUser ?? "SYSTEM"
+            );
+
+            if (result.Success && result.ChangedFields.Any())
+            {
+                _logger.LogInformation("Edit successful for {PartId} - notes updated", SelectedInventoryItem.PartId);
+
+                // Update the item in the collection with new notes
+                SelectedInventoryItem.Notes = newNotes;
+                SelectedInventoryItem.LastUpdated = DateTime.Now;
+
+                // Show success feedback
+                ReportProgress($"Successfully updated notes for {SelectedInventoryItem.PartId}", "edit", 100, true);
+            }
+            else if (!result.Success)
+            {
+                _logger.LogWarning("Edit operation failed for {PartId}: {Error}",
+                    SelectedInventoryItem.PartId, result.ErrorMessage);
+                await Services.ErrorHandling.HandleErrorAsync(
+                    new InvalidOperationException(result.ErrorMessage ?? "Edit operation failed"),
+                    "Edit operation failed",
+                    _applicationState.CurrentUser ?? "SYSTEM");
+            }
+            else
+            {
+                _logger.LogInformation("Edit completed without changes for {PartId}", SelectedInventoryItem.PartId);
+                ReportProgress($"No changes made to {SelectedInventoryItem.PartId}", "edit", 100, true);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during edit transfer operation");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Edit operation failed", _applicationState.CurrentUser ?? "SYSTEM");
+        }
+    }
 
     /// <summary>
     /// Toggles the visibility of the search panel
@@ -1055,7 +1394,7 @@ public partial class TransferItemViewModel : BaseViewModel
         {
             var sampleItems = new[]
             {
-                new InventoryItem
+                new MTM_Shared_Logic.Models.InventoryItem
                 {
                     ID = 1,
                     PartID = "PART001",
@@ -1068,7 +1407,7 @@ public partial class TransferItemViewModel : BaseViewModel
                     BatchNumber = "B001",
                     ItemType = "WIP"
                 },
-                new InventoryItem
+                new MTM_Shared_Logic.Models.InventoryItem
                 {
                     ID = 2,
                     PartID = "PART001",
@@ -1081,7 +1420,7 @@ public partial class TransferItemViewModel : BaseViewModel
                     BatchNumber = "B002",
                     ItemType = "WIP"
                 },
-                new InventoryItem
+                new MTM_Shared_Logic.Models.InventoryItem
                 {
                     ID = 3,
                     PartID = "PART002",
@@ -1094,7 +1433,7 @@ public partial class TransferItemViewModel : BaseViewModel
                     BatchNumber = "B003",
                     ItemType = "WIP"
                 },
-                new InventoryItem
+                new MTM_Shared_Logic.Models.InventoryItem
                 {
                     ID = 4,
                     PartID = "PART003",
@@ -1139,7 +1478,7 @@ public partial class TransferItemViewModel : BaseViewModel
     /// <summary>
     /// Converts an InventoryItem to a TransferInventoryItem
     /// </summary>
-    private static TransferInventoryItem ConvertToTransferItem(InventoryItem item)
+    private static TransferInventoryItem ConvertToTransferItem(MTM_Shared_Logic.Models.InventoryItem item)
     {
         return new TransferInventoryItem
         {
@@ -1429,7 +1768,7 @@ public partial class TransferItemViewModel : BaseViewModel
     /// <summary>
     /// Converts inventory items to DataTable for print service
     /// </summary>
-    private DataTable ConvertInventoryToDataTable(ObservableCollection<InventoryItem> inventoryItems)
+    private DataTable ConvertInventoryToDataTable(ObservableCollection<MTM_Shared_Logic.Models.InventoryItem> inventoryItems)
     {
         var dataTable = new DataTable();
 
@@ -1595,19 +1934,6 @@ public partial class TransferItemViewModel : BaseViewModel
 #region Event Args
 
 /// <summary>
-/// Event arguments for items transferred event
-/// </summary>
-public class ItemsTransferredEventArgs : EventArgs
-{
-    public string PartId { get; set; } = string.Empty;
-    public string Operation { get; set; } = string.Empty;
-    public string FromLocation { get; set; } = string.Empty;
-    public string ToLocation { get; set; } = string.Empty;
-    public int TransferredQuantity { get; set; }
-    public DateTime TransferTime { get; set; }
-}
-
-/// <summary>
 /// Event arguments for SuccessOverlay requests
 /// </summary>
 public class SuccessOverlayEventArgs : EventArgs
@@ -1628,7 +1954,262 @@ public class ProgressReportEventArgs : EventArgs
     public bool IsComplete { get; set; }
     public bool IsError { get; set; }
     public string Operation { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; } = DateTime.Now;
 }
 
 #endregion
+
+/// <summary>
+/// Transfer-specific inventory item class for transfer operations
+/// Extends the base inventory item with transfer-specific properties and methods
+/// </summary>
+public class TransferInventoryItem : INotifyPropertyChanged
+{
+    #region Base Inventory Properties (from MTM_Shared_Logic.Models.InventoryItem)
+
+    /// <summary>
+    /// Gets or sets the unique inventory item ID
+    /// </summary>
+    public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Part ID
+    /// </summary>
+    public string PartId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the current location of the inventory item
+    /// </summary>
+    public string Location { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the operation number (as string: "90", "100", "110", etc.)
+    /// </summary>
+    public string? Operation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current quantity
+    /// </summary>
+    public int Quantity { get; set; }
+
+    /// <summary>
+    /// Gets or sets the item type (WIP, RM, FG, etc.)
+    /// </summary>
+    public string ItemType { get; set; } = "WIP";
+
+    /// <summary>
+    /// Gets or sets the date when the item was received
+    /// </summary>
+    public DateTime ReceiveDate { get; set; } = DateTime.Now;
+
+    /// <summary>
+    /// Gets or sets the last updated timestamp
+    /// </summary>
+    public DateTime LastUpdated { get; set; } = DateTime.Now;
+
+    /// <summary>
+    /// Gets or sets the user who last updated the item
+    /// </summary>
+    public string User { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the batch number for tracking
+    /// </summary>
+    public string? BatchNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional notes
+    /// </summary>
+    public string? Notes { get; set; }
+
+    /// <summary>
+    /// Legacy ID property for compatibility (same as Id)
+    /// </summary>
+    public int ID => Id;
+
+    #endregion
+
+    #region Transfer-Specific Properties
+
+    private string _fromLocation = string.Empty;
+    private string _toLocation = string.Empty;
+    private int _availableQuantity;
+    private int _transferQuantity = 1;
+
+    /// <summary>
+    /// Gets or sets the source location for transfer (usually same as Location)
+    /// </summary>
+    public string FromLocation
+    {
+        get => _fromLocation;
+        set
+        {
+            if (_fromLocation != value)
+            {
+                _fromLocation = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the destination location for transfer
+    /// </summary>
+    public string ToLocation
+    {
+        get => _toLocation;
+        set
+        {
+            if (_toLocation != value)
+            {
+                _toLocation = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the available quantity for transfer
+    /// </summary>
+    public int AvailableQuantity
+    {
+        get => _availableQuantity;
+        set
+        {
+            if (_availableQuantity != value)
+            {
+                _availableQuantity = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the quantity to transfer (for UI binding)
+    /// </summary>
+    public int TransferQuantity
+    {
+        get => _transferQuantity;
+        set
+        {
+            if (_transferQuantity != value)
+            {
+                _transferQuantity = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    #endregion
+
+    #region Transfer-Specific Computed Properties
+
+    /// <summary>
+    /// Indicates if this item can be transferred (has positive quantity and different to/from locations)
+    /// </summary>
+    public bool CanTransfer =>
+        Quantity > 0 &&
+        !string.IsNullOrEmpty(ToLocation) &&
+        !FromLocation.Equals(ToLocation, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Indicates if this is a partial transfer (transfer quantity less than total quantity)
+    /// </summary>
+    public bool IsPartialTransfer => TransferQuantity > 0 && TransferQuantity < Quantity;
+
+    /// <summary>
+    /// Gets a display string for transfer direction (From → To)
+    /// </summary>
+    public string TransferDirection => string.IsNullOrEmpty(ToLocation)
+        ? "Select destination"
+        : $"{FromLocation} → {ToLocation}";
+
+    #endregion
+
+    #region INotifyPropertyChanged Implementation
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    #endregion
+
+    #region Transfer Methods
+
+    /// <summary>
+    /// Validates the transfer configuration for this item
+    /// </summary>
+    /// <returns>True if transfer is valid, false otherwise</returns>
+    public bool ValidateTransfer()
+    {
+        // Check basic requirements
+        if (string.IsNullOrEmpty(ToLocation))
+            return false;
+
+        if (string.IsNullOrEmpty(FromLocation))
+            return false;
+
+        // Check locations are different
+        if (FromLocation.Equals(ToLocation, StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        // Check quantity constraints
+        if (TransferQuantity <= 0 || TransferQuantity > Quantity)
+            return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Prepares this item for transfer by setting transfer-specific properties
+    /// </summary>
+    /// <param name="destinationLocation">Where to transfer to</param>
+    /// <param name="transferQuantity">How much to transfer (0 for full quantity)</param>
+    public void PrepareForTransfer(string destinationLocation, int transferQuantity = 0)
+    {
+        FromLocation = Location; // Current location is source
+        ToLocation = destinationLocation;
+        AvailableQuantity = Quantity;
+        TransferQuantity = transferQuantity > 0 ? Math.Min(transferQuantity, Quantity) : Quantity;
+    }
+
+    /// <summary>
+    /// Updates the item after a successful transfer
+    /// </summary>
+    /// <param name="transferredQuantity">How much was actually transferred</param>
+    /// <param name="wasComplete">True if complete item was transferred</param>
+    public void UpdateAfterTransfer(int transferredQuantity, bool wasComplete)
+    {
+        if (wasComplete)
+        {
+            // Complete transfer - item moved to new location
+            Location = ToLocation;
+            FromLocation = ToLocation;
+        }
+        else
+        {
+            // Partial transfer - reduce quantity
+            Quantity -= transferredQuantity;
+            AvailableQuantity = Quantity;
+        }
+
+        LastUpdated = DateTime.Now;
+        TransferQuantity = 1; // Reset for next transfer
+    }
+
+    #endregion
+
+    #region ToString Override
+
+    /// <summary>
+    /// Returns a string representation of this transfer item
+    /// </summary>
+    public override string ToString()
+    {
+        return $"{PartId} ({Operation}) - {Quantity} at {Location}";
+    }
+
+    #endregion
+}

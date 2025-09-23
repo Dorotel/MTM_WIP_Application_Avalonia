@@ -154,6 +154,7 @@ public class ItemsRemovedEventArgs : EventArgs
 
 /// <summary>
 /// Event arguments for items transferred events.
+/// Enhanced for MTM manufacturing workflows with comprehensive transfer tracking.
 /// </summary>
 public class ItemsTransferredEventArgs : EventArgs
 {
@@ -165,6 +166,11 @@ public class ItemsTransferredEventArgs : EventArgs
     public string UserName { get; set; } = string.Empty;
     public DateTime TransferredDateTime { get; set; } = DateTime.Now;
     public string Notes { get; set; } = string.Empty;
+
+    // Enhanced properties for MTM transfer workflows
+    public DateTime TransferTime { get; set; } = DateTime.Now;
+    public string TransactionType { get; set; } = "TRANSFER"; // MTM-specific transaction type
+    public bool IsPartialTransfer { get; set; } = false; // Indicates if this was a partial quantity transfer
 }
 
 /// <summary>

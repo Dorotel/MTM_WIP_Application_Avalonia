@@ -32,7 +32,7 @@ public partial class TransferTabView : UserControl
     private readonly ISuggestionOverlayService? _suggestionOverlayService;
 
     // Control references
-    private CollapsiblePanel? _transferConfigPanel;
+    private CollapsiblePanel? _searchConfigPanel;
     private Button? _searchButton;
     private Button? _resetButton;
     private TransferCustomDataGrid? _transferInventoryDataGrid;
@@ -98,8 +98,8 @@ public partial class TransferTabView : UserControl
         {
             System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] InitializeControlReferences started");
 
-            _transferConfigPanel = this.FindControl<CollapsiblePanel>("TransferConfigPanel");
-            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] TransferConfigPanel: {(_transferConfigPanel != null ? "FOUND" : "NOT FOUND")}");
+            _searchConfigPanel = this.FindControl<CollapsiblePanel>("SearchConfigPanel");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] SearchConfigPanel: {(_searchConfigPanel != null ? "FOUND" : "NOT FOUND")}");
 
             _searchButton = this.FindControl<Button>("SearchButton");
             System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] SearchButton: {(_searchButton != null ? "FOUND" : "NOT FOUND")}");
@@ -111,7 +111,7 @@ public partial class TransferTabView : UserControl
             System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] TransferInventoryDataGrid: {(_transferInventoryDataGrid != null ? "FOUND" : "NOT FOUND")}");
 
             _logger?.LogInformation("[TRANSFER-DEBUG] Control references initialized: Panel={HasPanel}, SearchButton={HasSearch}, ResetButton={HasReset}, DataGrid={HasDataGrid}",
-                _transferConfigPanel != null, _searchButton != null, _resetButton != null, _transferInventoryDataGrid != null);
+                _searchConfigPanel != null, _searchButton != null, _resetButton != null, _transferInventoryDataGrid != null);
 
             if (_transferInventoryDataGrid == null)
             {
@@ -177,9 +177,9 @@ public partial class TransferTabView : UserControl
                 _resetButton.Click += OnResetButtonClick;
             }
 
-            if (_transferConfigPanel != null)
+            if (_searchConfigPanel != null)
             {
-                _transferConfigPanel.ExpandedChanged += OnTransferConfigPanelExpandedChanged;
+                _searchConfigPanel.ExpandedChanged += OnTransferConfigPanelExpandedChanged;
             }
 
             // Setup SuggestionOverlay event handlers
@@ -216,6 +216,7 @@ public partial class TransferTabView : UserControl
             {
                 System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] DataContext is TransferItemViewModel - subscribing to events");
                 viewModel.PanelExpandRequested += OnPanelExpandRequested;
+                viewModel.PanelCollapseRequested += OnPanelCollapseRequested;
                 viewModel.SuccessOverlayRequested += OnSuccessOverlayRequested;
                 viewModel.ProgressReported += OnProgressReported;
             }
@@ -314,10 +315,10 @@ public partial class TransferTabView : UserControl
                 viewModel.SearchCommand.Execute(null);
 
                 // Auto-collapse panel after successful search
-                if (_transferConfigPanel != null && _transferConfigPanel.IsExpanded)
+                if (_searchConfigPanel != null && _searchConfigPanel.IsExpanded)
                 {
                     await Task.Delay(500); // Allow search to complete
-                    _transferConfigPanel.IsExpanded = false;
+                    _searchConfigPanel.IsExpanded = false;
                     _logger?.LogDebug("Transfer config panel auto-collapsed after search");
                 }
             }
@@ -341,10 +342,10 @@ public partial class TransferTabView : UserControl
                 viewModel.ResetCommand.Execute(null);
 
                 // Auto-expand panel after reset
-                if (_transferConfigPanel != null && !_transferConfigPanel.IsExpanded)
+                if (_searchConfigPanel != null && !_searchConfigPanel.IsExpanded)
                 {
                     await Task.Delay(200); // Allow reset to complete
-                    _transferConfigPanel.IsExpanded = true;
+                    _searchConfigPanel.IsExpanded = true;
                     _logger?.LogDebug("Transfer config panel auto-expanded after reset");
                 }
             }
@@ -399,15 +400,34 @@ public partial class TransferTabView : UserControl
     {
         try
         {
-            if (_transferConfigPanel != null && !_transferConfigPanel.IsExpanded)
+            if (_searchConfigPanel != null && !_searchConfigPanel.IsExpanded)
             {
-                _transferConfigPanel.IsExpanded = true;
+                _searchConfigPanel.IsExpanded = true;
                 _logger?.LogDebug("Panel expand requested and executed");
             }
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling panel expand request");
+        }
+    }
+
+    /// <summary>
+    /// Handle panel collapse request from ViewModel (after successful search)
+    /// </summary>
+    private void OnPanelCollapseRequested(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (_searchConfigPanel != null && _searchConfigPanel.IsExpanded)
+            {
+                _searchConfigPanel.IsExpanded = false;
+                _logger?.LogDebug("Panel collapse requested and executed after successful search");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling panel collapse request");
         }
     }
 
@@ -745,6 +765,7 @@ public partial class TransferTabView : UserControl
             if (DataContext is TransferItemViewModel viewModel)
             {
                 viewModel.PanelExpandRequested -= OnPanelExpandRequested;
+                viewModel.PanelCollapseRequested -= OnPanelCollapseRequested;
                 viewModel.SuccessOverlayRequested -= OnSuccessOverlayRequested;
                 viewModel.ProgressReported -= OnProgressReported;
             }
@@ -760,9 +781,9 @@ public partial class TransferTabView : UserControl
                 _resetButton.Click -= OnResetButtonClick;
             }
 
-            if (_transferConfigPanel != null)
+            if (_searchConfigPanel != null)
             {
-                _transferConfigPanel.ExpandedChanged -= OnTransferConfigPanelExpandedChanged;
+                _searchConfigPanel.ExpandedChanged -= OnTransferConfigPanelExpandedChanged;
             }
 
             // Unsubscribe from TextBox events
