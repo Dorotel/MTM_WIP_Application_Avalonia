@@ -129,6 +129,11 @@ Following MTM architectural patterns and Avalonia 11.3.4 conventions
 <CornerRadius x:Key="ThemeV2.BorderRadius.LG">12</CornerRadius>
 <CornerRadius x:Key="ThemeV2.BorderRadius.Full">9999</CornerRadius> <!-- For pills/circles -->
 
+<!-- Corner radius tokens (alternative naming for BaseStyles compatibility) -->
+<CornerRadius x:Key="ThemeV2.CornerRadius.Small">4</CornerRadius>
+<CornerRadius x:Key="ThemeV2.CornerRadius.Medium">8</CornerRadius>
+<CornerRadius x:Key="ThemeV2.CornerRadius.Large">12</CornerRadius>
+
 <!-- ===========================================
      TYPOGRAPHY TOKENS
      =========================================== -->

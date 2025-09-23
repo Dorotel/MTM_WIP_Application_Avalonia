@@ -1,11 +1,11 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher"
+             x:Class="MTM_WIP_Application_Avalonia.Views.MainForm.Overlays.ThemeQuickSwitcher"
              x:Name="ThemeQuickSwitcherRoot">
 
-    <!-- Theme Quick Switcher Component -->
-    <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+    <!-- Theme Quick Switcher Component - Updated for Theme V2 -->
+    <Border Background="{DynamicResource ThemeV2.Surface.Card}"
+            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
             BorderThickness="1"
             CornerRadius="6"
             Padding="8">
@@ -21,7 +21,7 @@
                         Width="24"
                         Height="24"
                         VerticalAlignment="Center"
-                        ToolTip.Tip="Edit current theme colors"
+                        ToolTip.Tip="Edit current theme colors - Opens full theme editor"
                         Cursor="Hand">
                     <Button.Styles>
                         <Style Selector="Button.mtm-icon-button">
@@ -31,25 +31,48 @@
                             <Setter Property="CornerRadius" Value="4"/>
                         </Style>
                         <Style Selector="Button.mtm-icon-button:pointerover">
-                            <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ThemeV2.Surface.Hover}"/>
                         </Style>
                         <Style Selector="Button.mtm-icon-button:pressed">
-                            <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ThemeV2.Accent.Primary}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.OnAccent}"/>
                         </Style>
                     </Button.Styles>
                 </Button>
             </StackPanel>
 
-            <!-- Theme Selector -->
-            <ComboBox x:Name="ThemeComboBox"
-                      MinWidth="180"
-                      FontSize="12"
-                      Padding="6,4"
-                      VerticalAlignment="Center"
-                      ToolTip.Tip="Select application theme">
-                <!-- Items will be populated dynamically from code-behind -->
-            </ComboBox>
+            <!-- Light/Dark Theme Toggle Switch -->
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <TextBlock Text="Light"
+                           Foreground="{DynamicResource ThemeV2.Text.Secondary}"
+                           FontSize="11"
+                           VerticalAlignment="Center" />
+                <ToggleSwitch x:Name="ThemeToggleSwitch"
+                              OffContent=""
+                              OnContent=""
+                              MinWidth="48"
+                              MinHeight="24"
+                              VerticalAlignment="Center"
+                              ToolTip.Tip="Toggle between Light and Dark theme"
+                              Cursor="Hand" />
+                <TextBlock Text="Dark"
+                           Foreground="{DynamicResource ThemeV2.Text.Secondary}"
+                           FontSize="11"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Accent Color Preview Button -->
+            <Button x:Name="AccentColorButton"
+                    Background="{DynamicResource ThemeV2.Accent.Primary}"
+                    BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Width="32"
+                    Height="24"
+                    VerticalAlignment="Center"
+                    ToolTip.Tip="Current accent color - Click to change"
+                    Cursor="Hand">
+            </Button>
 
             <!-- Quick Apply Button -->
             <Button x:Name="ApplyButton"
@@ -59,7 +82,10 @@
                     Padding="8,4"
                     MinHeight="28"
                     VerticalAlignment="Center"
-                    ToolTip.Tip="Apply selected theme"/>
+                    ToolTip.Tip="Apply theme changes"
+                    Background="{DynamicResource ThemeV2.Surface.Panel}"
+                    BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                    Foreground="{DynamicResource ThemeV2.Text.Primary}" />
         </StackPanel>
     </Border>
 

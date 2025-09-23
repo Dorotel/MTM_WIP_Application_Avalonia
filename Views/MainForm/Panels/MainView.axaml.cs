@@ -62,8 +62,8 @@ namespace MTM_WIP_Application_Avalonia.Views
                 try
                 {
                     // Find the ThemeQuickSwitcher control
-                    var themeQuickSwitcher = this.FindControl<Views.ThemeQuickSwitcher>("ThemeQuickSwitcher") ??
-                                           FindControlInVisualTree<Views.ThemeQuickSwitcher>(this, "ThemeQuickSwitcher");
+                    var themeQuickSwitcher = this.FindControl<Views.MainForm.Overlays.ThemeQuickSwitcher>("ThemeQuickSwitcher") ??
+                                           FindControlInVisualTree<Views.MainForm.Overlays.ThemeQuickSwitcher>(this, "ThemeQuickSwitcher");
 
                     if (themeQuickSwitcher != null)
                     {
