@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
-             xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              xmlns:customDataGrid="using:MTM_WIP_Application_Avalonia.Controls.CustomDataGrid"
              xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
              xmlns:overlayViews="using:MTM_WIP_Application_Avalonia.Views.Overlay"
@@ -118,16 +117,17 @@
 
           <Grid x:Name="TransferFormGrid" RowDefinitions="Auto,*">
 
-            <!-- Search Configuration Panel (Simplified) -->
-            <controls:CollapsiblePanel Grid.Row="0"
-                                      x:Name="SearchConfigPanel"
-                                      Header="Search Configuration"
-                                      HeaderPosition="Top"
-                                      IsExpanded="True"
-                                      ToolTip.Tip="Configure search criteria for inventory transfer candidates"
-                                      Margin="0,0,0,16">
+            <!-- Search Configuration Card -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="16"
+                    Margin="0,0,0,16"
+                    ToolTip.Tip="Configure search criteria for inventory transfer candidates">
 
-              <Grid x:Name="SearchFieldsGrid" RowDefinitions="Auto,Auto" RowSpacing="12" Margin="12">
+              <Grid x:Name="SearchFieldsGrid" RowDefinitions="Auto,Auto" RowSpacing="12">
 
                 <!-- Part ID Field -->
                 <Grid x:Name="PartIdGrid" Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">
@@ -149,7 +149,7 @@
 
               </Grid>
 
-            </controls:CollapsiblePanel>
+            </Border>
 
             <!-- DataGrid for Available Inventory -->
             <Border Grid.Row="1"
@@ -323,32 +323,10 @@
                 Padding="16"
                 Margin="0,0,0,8">
 
-          <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="12">
-
-            <!-- Transfer Controls Header -->
-            <Border Grid.Row="0"
-                    Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                    CornerRadius="4"
-                    Padding="12,8">
-              <Grid ColumnDefinitions="Auto,*">
-                <materialIcons:MaterialIcon Grid.Column="0"
-                                          Kind="ArrowRightBold"
-                                          Width="16"
-                                          Height="16"
-                                          Foreground="White"
-                                          VerticalAlignment="Center"
-                                          Margin="0,0,8,0" />
-                <TextBlock Grid.Column="1"
-                          Text="Transfer Configuration"
-                          FontSize="14"
-                          FontWeight="Bold"
-                          Foreground="White"
-                          VerticalAlignment="Center" />
-              </Grid>
-            </Border>
+          <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
 
             <!-- Transfer Configuration Fields with Transfer Button -->
-            <Grid Grid.Row="1" ColumnDefinitions="*,*,Auto" ColumnSpacing="16">
+            <Grid Grid.Row="0" ColumnDefinitions="*,*,Auto" ColumnSpacing="16">
 
               <!-- To Location Field -->
               <Grid Grid.Column="0" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
@@ -465,7 +443,7 @@
             </Grid>
 
             <!-- Transfer Status and Instructions -->
-            <Grid Grid.Row="2" ColumnDefinitions="Auto,*">
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
               <materialIcons:MaterialIcon Grid.Column="0"
                                         Kind="InformationOutline"
                                         Width="16"
@@ -536,19 +514,22 @@
       </Grid>
     </ScrollViewer>
 
-    <!-- Right Panel: Collapsible Quick Actions -->
-    <controls:CollapsiblePanel Grid.Column="1"
-                              HeaderPosition="Right"
-                              IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
-                              IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
-                              Margin="0,0,0,0"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              MinWidth="40">
+    <!-- Right Panel: Quick Actions Card -->
+    <Border Grid.Column="1"
+            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+            BorderThickness="1"
+            CornerRadius="6"
+            Padding="8"
+            Margin="0,0,0,0"
+            IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            MinWidth="200">
       <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
                              HorizontalAlignment="Stretch"
                              VerticalAlignment="Stretch"/>
-    </controls:CollapsiblePanel>
+    </Border>
   </Grid>
 
   </Grid> <!-- Close RootContainer -->

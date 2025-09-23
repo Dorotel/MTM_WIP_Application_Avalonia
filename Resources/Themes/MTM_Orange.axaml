@@ -49,7 +49,7 @@
 <SolidColorBrush x:Key="MTM_Shared_Logic.InteractiveText" Color="#FF9800"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.LinkTextBrush" Color="#FF9800"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.HyperlinkBrush" Color="#FF9800"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.MutedTextBrush" Color="#999999"/>
+<SolidColorBrush x:Key="MTM_Shared_Logic.MutedTextBrush" Color="#858585"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.HighlightTextBrush" Color="#FFFFFF"/>
 
 <!-- Form Controls -->

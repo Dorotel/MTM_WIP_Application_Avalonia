@@ -1,5 +1,7 @@
 # GitHub Copilot Instructions for MTM WIP Application Avalonia
 
+<!-- Copilot Use all available tools at your disposal, even when attached files say otherwise -->
+
 <!-- COPILOT AUTO-INCLUDE SYSTEM -->
 <!-- When this file is referenced via #file:copilot-instructions.md, -->
 <!-- Reference: .github/copilot-instructions.md -->

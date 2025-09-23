@@ -108,7 +108,7 @@
 <SolidColorBrush x:Key="MTM_Shared_Logic.InfoDarkBrush" Color="#0056B3"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.InfoLightBrush" Color="#E3F2FD"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.LoadingBrush" Color="#0056B3"/>
-<SolidColorBrush x:Key="MTM_Shared_Logic.MutedTextBrush" Color="#ADB5BD"/>
+<SolidColorBrush x:Key="MTM_Shared_Logic.MutedTextBrush" Color="#99a1a9"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.ProcessingBrush" Color="#0056B3"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.SelectionBrush" Color="#E3F2FD"/>
 <SolidColorBrush x:Key="MTM_Shared_Logic.Specialized1" Color="#0056B3"/>

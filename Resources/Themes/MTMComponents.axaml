@@ -263,16 +263,104 @@
 		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
 		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
 		<Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
-		<Setter Property="BorderThickness" Value="1"/>
+		<Setter Property="BorderThickness" Value="0"/>
 		<Setter Property="CornerRadius" Value="6"/>
-		<Setter Property="Padding" Value="8"/>
+		<Setter Property="Padding" Value="8,14,8,6"/>
 		<Setter Property="MinHeight" Value="32"/>
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Grid>
+					<!-- Background plate (kept subtle for theming) -->
+					<Border Name="BackgroundPlate"
+							Background="{TemplateBinding Background}"
+							CornerRadius="{TemplateBinding CornerRadius}"/>
+
+					<!-- Floating label uses Watermark text -->
+					<TextBlock Name="FloatingLabel"
+							   Text="{TemplateBinding Watermark}"
+							   Margin="8,10,8,0"
+							   Foreground="{DynamicResource MTM_Shared_Logic.MutedTextBrush}"
+							   FontSize="12"
+							   Opacity="0"
+							   IsHitTestVisible="False">
+						<TextBlock.Transitions>
+							<Transitions>
+								<ThicknessTransition Property="Margin" Duration="0:0:0.12" Easing="CircularEaseOut"/>
+								<DoubleTransition Property="FontSize" Duration="0:0:0.12" Easing="CircularEaseOut"/>
+								<DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
+							</Transitions>
+						</TextBlock.Transitions>
+					</TextBlock>
+
+					<!-- Text content -->
+					<ScrollViewer Name="PART_ScrollViewer"
+								  HorizontalScrollBarVisibility="Disabled"
+								  VerticalScrollBarVisibility="Disabled"
+								  Margin="{TemplateBinding Padding}">
+						<TextPresenter Name="PART_TextPresenter"
+								   Text="{TemplateBinding Text}"
+									   CaretBrush="{TemplateBinding Foreground}"
+									   SelectionBrush="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+									   Background="Transparent"/>
+					</ScrollViewer>
+
+					<!-- Underlines: inactive + active focus line -->
+					<Border Name="InactiveLine" Height="1" VerticalAlignment="Bottom" Margin="4,0,4,0"
+							Background="{TemplateBinding BorderBrush}" Opacity="0.6"/>
+					<Border Name="ActiveLine" Height="2" VerticalAlignment="Bottom" Margin="4,0,4,0"
+							Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}" Opacity="0">
+						<Border.Transitions>
+							<Transitions>
+								<DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
+							</Transitions>
+						</Border.Transitions>
+					</Border>
+				</Grid>
+			</ControlTemplate>
+		</Setter>
 	</Style>
 
 	<!-- TextBox Focus -->
 	<Style Selector="TextBox:focus">
-		<Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-		<Setter Property="BorderThickness" Value="2"/>
+		<!-- Underline animation handled via template elements -->
+	</Style>
+
+	<!-- Floating label + underline interactions -->
+	<Style Selector="TextBox:focus /template/ Border#ActiveLine">
+		<Setter Property="Opacity" Value="1"/>
+	</Style>
+	<Style Selector="TextBox:focus /template/ Border#InactiveLine">
+		<Setter Property="Opacity" Value="0.15"/>
+	</Style>
+	<Style Selector="TextBox:not(:empty) /template/ Border#InactiveLine">
+		<Setter Property="Opacity" Value="0.3"/>
+	</Style>
+	<Style Selector="TextBox:not(:empty):not(:focus) /template/ Border#ActiveLine">
+		<Setter Property="Opacity" Value="0"/>
+	</Style>
+
+	<!-- Watermark visible when field is empty (not focused) -->
+	<Style Selector="TextBox:empty:not(:focus) /template/ TextBlock#FloatingLabel">
+		<Setter Property="FontSize" Value="12"/>
+		<Setter Property="Margin" Value="8,10,8,0"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.MutedTextBrush}"/>
+		<Setter Property="Opacity" Value="0.7"/>
+	</Style>
+
+	<!-- Floating label when field is empty and focused -->
+	<Style Selector="TextBox:empty:focus /template/ TextBlock#FloatingLabel">
+		<Setter Property="FontSize" Value="10"/>
+		<Setter Property="Margin" Value="8,0,8,18"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+		<Setter Property="Opacity" Value="1"/>
+	</Style>
+
+	<!-- Hide label when field has content -->
+	<Style Selector="TextBox:not(:empty) /template/ TextBlock#FloatingLabel">
+		<Setter Property="Opacity" Value="0"/>
+		<Setter Property="FontSize" Value="12"/>
+		<Setter Property="Margin" Value="8,10,8,0"/>
+		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.MutedTextBrush}"/>
 	</Style>
 
 	<!-- Global AutoCompleteBox styling -->
