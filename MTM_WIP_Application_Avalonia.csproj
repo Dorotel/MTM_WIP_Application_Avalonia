@@ -88,6 +88,13 @@
     <AvaloniaResource Include="Resources\Themes\MTM_Indigo_Dark.axaml" />
     <AvaloniaResource Include="Resources\Themes\MTM_Rose.axaml" />
     <AvaloniaResource Include="Resources\Themes\MTM_Emerald.axaml" />
+
+    <!-- Theme V2 Foundation Files - Avalonia 11.3.4 compatible semantic token system -->
+    <AvaloniaResource Include="Resources\ThemesV2\Tokens.axaml" />
+    <AvaloniaResource Include="Resources\ThemesV2\Semantic.axaml" />
+    <AvaloniaResource Include="Resources\ThemesV2\Theme.Light.axaml" />
+    <AvaloniaResource Include="Resources\ThemesV2\Theme.Dark.axaml" />
+    <AvaloniaResource Include="Resources\ThemesV2\BaseStyles.axaml" />
   </ItemGroup>
 
   <ItemGroup>

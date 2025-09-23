@@ -10,6 +10,7 @@ using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 using MTM_WIP_Application_Avalonia.ViewModels.Overlay;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using API.ViewModels.MainForm;
 
 namespace MTM_WIP_Application_Avalonia.Extensions;
@@ -46,6 +47,7 @@ public static class ServiceCollectionExtensions
 
         // Theme and Settings services
         services.TryAddSingleton<IThemeService, ThemeService>();
+        services.TryAddSingleton<IThemeServiceV2, ThemeServiceV2>();  // Theme V2 service with Avalonia 11.3.4 support
         services.TryAddSingleton<ISettingsService, SettingsService>();
 
         // SettingsForm services
@@ -116,6 +118,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<DatabaseSettingsViewModel>();
         services.TryAddTransient<AddUserViewModel>();
         services.TryAddTransient<EditUserViewModel>();
+        services.TryAddTransient<ThemeSettingsViewModel>();  // Theme V2 settings ViewModel
         services.TryAddTransient<RemoveUserViewModel>();
         services.TryAddTransient<AddPartViewModel>();
         services.TryAddTransient<EditPartViewModel>();

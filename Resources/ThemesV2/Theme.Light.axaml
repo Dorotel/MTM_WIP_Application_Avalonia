@@ -1,0 +1,203 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:ClassModifier="internal">
+
+<!-- Include foundation layers -->
+<ResourceDictionary.MergedDictionaries>
+    <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/Tokens.axaml"/>
+    <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/Semantic.axaml"/>
+</ResourceDictionary.MergedDictionaries>
+
+<!--
+Theme V2 Light Variant Implementation
+====================================
+Avalonia 11.3.4 ThemeVariant="Light" compatible theme
+Implements semantic tokens for light mode appearance
+Following MTM architectural patterns and WCAG 2.1 AA compliance
+-->
+
+<ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+
+        <!-- ===========================================
+             BACKGROUND THEME ASSIGNMENTS (LIGHT)
+             =========================================== -->
+
+        <!-- Primary surfaces use light colors -->
+        <SolidColorBrush x:Key="ThemeV2.Background.Canvas" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <SolidColorBrush x:Key="ThemeV2.Background.Surface" Color="{StaticResource ThemeV2.Color.Gray.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.Background.Card" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+
+        <!-- Secondary surfaces -->
+        <SolidColorBrush x:Key="ThemeV2.Background.Subtle" Color="{StaticResource ThemeV2.Color.Gray.100}"/>
+        <SolidColorBrush x:Key="ThemeV2.Background.Muted" Color="{StaticResource ThemeV2.Color.Gray.200}"/>
+
+        <!-- Interactive states for light theme -->
+        <SolidColorBrush x:Key="ThemeV2.Background.Hover" Color="{StaticResource ThemeV2.Color.Gray.100}"/>
+        <SolidColorBrush x:Key="ThemeV2.Background.Pressed" Color="{StaticResource ThemeV2.Color.Gray.200}"/>
+        <SolidColorBrush x:Key="ThemeV2.Background.Selected" Color="{StaticResource ThemeV2.Color.Blue.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.Background.Focus" Color="{StaticResource ThemeV2.Color.Blue.100}"/>
+
+        <!-- ===========================================
+             CONTENT/TEXT THEME ASSIGNMENTS (LIGHT)
+             =========================================== -->
+
+        <!-- High contrast text on light backgrounds -->
+        <SolidColorBrush x:Key="ThemeV2.Content.Primary" Color="{StaticResource ThemeV2.Color.Gray.900}"/>
+        <SolidColorBrush x:Key="ThemeV2.Content.Secondary" Color="{StaticResource ThemeV2.Color.Gray.700}"/>
+        <SolidColorBrush x:Key="ThemeV2.Content.Tertiary" Color="{StaticResource ThemeV2.Color.Gray.500}"/>
+
+        <!-- Muted and disabled states -->
+        <SolidColorBrush x:Key="ThemeV2.Content.Disabled" Color="{StaticResource ThemeV2.Color.Gray.400}"/>
+        <SolidColorBrush x:Key="ThemeV2.Content.Placeholder" Color="{StaticResource ThemeV2.Color.Gray.400}"/>
+
+        <!-- Text for dark surfaces -->
+        <SolidColorBrush x:Key="ThemeV2.Content.OnDark" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <SolidColorBrush x:Key="ThemeV2.Content.OnColor" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+
+        <!-- ===========================================
+             ACTION/INTERACTIVE THEME ASSIGNMENTS (LIGHT)
+             =========================================== -->
+
+        <!-- Primary actions -->
+        <SolidColorBrush x:Key="ThemeV2.Action.Primary" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Action.Primary.Hover" Color="{StaticResource ThemeV2.Color.Blue.700}"/>
+        <SolidColorBrush x:Key="ThemeV2.Action.Primary.Pressed" Color="{StaticResource ThemeV2.Color.Blue.800}"/>
+        <SolidColorBrush x:Key="ThemeV2.Action.Primary.Disabled" Color="{StaticResource ThemeV2.Color.Gray.300}"/>
+
+        <!-- Secondary actions -->
+        <SolidColorBrush x:Key="ThemeV2.Action.Secondary" Color="{StaticResource ThemeV2.Color.Gray.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Action.Secondary.Hover" Color="{StaticResource ThemeV2.Color.Gray.700}"/>
+        <SolidColorBrush x:Key="ThemeV2.Action.Secondary.Pressed" Color="{StaticResource ThemeV2.Color.Gray.800}"/>
+        <SolidColorBrush x:Key="ThemeV2.Action.Secondary.Disabled" Color="{StaticResource ThemeV2.Color.Gray.300}"/>
+
+        <!-- ===========================================
+             BORDER/OUTLINE THEME ASSIGNMENTS (LIGHT)
+             =========================================== -->
+
+        <!-- Subtle borders on light backgrounds -->
+        <SolidColorBrush x:Key="ThemeV2.Border.Default" Color="{StaticResource ThemeV2.Color.Gray.300}"/>
+        <SolidColorBrush x:Key="ThemeV2.Border.Subtle" Color="{StaticResource ThemeV2.Color.Gray.200}"/>
+        <SolidColorBrush x:Key="ThemeV2.Border.Strong" Color="{StaticResource ThemeV2.Color.Gray.400}"/>
+
+        <!-- Interactive border states -->
+        <SolidColorBrush x:Key="ThemeV2.Border.Hover" Color="{StaticResource ThemeV2.Color.Gray.400}"/>
+        <SolidColorBrush x:Key="ThemeV2.Border.Focus" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Border.Pressed" Color="{StaticResource ThemeV2.Color.Gray.500}"/>
+        <SolidColorBrush x:Key="ThemeV2.Border.Disabled" Color="{StaticResource ThemeV2.Color.Gray.200}"/>
+
+        <!-- ===========================================
+             INPUT FIELD THEME ASSIGNMENTS (LIGHT)
+             =========================================== -->
+
+        <!-- Clean white inputs with subtle borders -->
+        <SolidColorBrush x:Key="ThemeV2.Input.Background" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <SolidColorBrush x:Key="ThemeV2.Input.Background.Hover" Color="{StaticResource ThemeV2.Color.Gray.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.Input.Background.Focus" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <SolidColorBrush x:Key="ThemeV2.Input.Background.Disabled" Color="{StaticResource ThemeV2.Color.Gray.100}"/>
+
+        <SolidColorBrush x:Key="ThemeV2.Input.Border" Color="{StaticResource ThemeV2.Color.Gray.300}"/>
+        <SolidColorBrush x:Key="ThemeV2.Input.Border.Hover" Color="{StaticResource ThemeV2.Color.Gray.400}"/>
+        <SolidColorBrush x:Key="ThemeV2.Input.Border.Focus" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Input.Border.Error" Color="{StaticResource ThemeV2.Color.Red.600}"/>
+
+        <SolidColorBrush x:Key="ThemeV2.Input.Content" Color="{StaticResource ThemeV2.Color.Gray.900}"/>
+        <SolidColorBrush x:Key="ThemeV2.Input.Placeholder" Color="{StaticResource ThemeV2.Color.Gray.500}"/>
+
+        <!-- ===========================================
+             NAVIGATION THEME ASSIGNMENTS (LIGHT)
+             =========================================== -->
+
+        <!-- Dark navigation sidebar (maintains MTM branding) -->
+        <SolidColorBrush x:Key="ThemeV2.Navigation.Background" Color="{StaticResource ThemeV2.Color.Gray.900}"/>
+        <SolidColorBrush x:Key="ThemeV2.Navigation.Item" Color="Transparent"/>
+        <SolidColorBrush x:Key="ThemeV2.Navigation.Item.Hover" Color="{StaticResource ThemeV2.Color.Gray.800}"/>
+        <SolidColorBrush x:Key="ThemeV2.Navigation.Item.Selected" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Navigation.Content" Color="{StaticResource ThemeV2.Color.Gray.100}"/>
+
+        <!-- ===========================================
+             TABLE/DATAGRID THEME ASSIGNMENTS (LIGHT)
+             =========================================== -->
+
+        <!-- Clean table appearance -->
+        <SolidColorBrush x:Key="ThemeV2.Table.Background" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <SolidColorBrush x:Key="ThemeV2.Table.Header.Background" Color="{StaticResource ThemeV2.Color.Gray.100}"/>
+        <SolidColorBrush x:Key="ThemeV2.Table.Row.Alternate" Color="{StaticResource ThemeV2.Color.Gray.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.Table.Row.Hover" Color="{StaticResource ThemeV2.Color.Blue.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.Table.Row.Selected" Color="{StaticResource ThemeV2.Color.Blue.100}"/>
+
+        <SolidColorBrush x:Key="ThemeV2.Table.Border" Color="{StaticResource ThemeV2.Color.Gray.200}"/>
+        <SolidColorBrush x:Key="ThemeV2.Table.Border.Strong" Color="{StaticResource ThemeV2.Color.Gray.300}"/>
+
+        <!-- ===========================================
+             STATUS STATE THEME ASSIGNMENTS (LIGHT)
+             =========================================== -->
+
+        <!-- Success states -->
+        <SolidColorBrush x:Key="ThemeV2.Status.Success" Color="{StaticResource ThemeV2.Color.Green.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Status.Success.Background" Color="{StaticResource ThemeV2.Color.Green.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.Status.Success.Border" Color="{StaticResource ThemeV2.Color.Green.200}"/>
+
+        <!-- Warning states -->
+        <SolidColorBrush x:Key="ThemeV2.Status.Warning" Color="{StaticResource ThemeV2.Color.Yellow.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Status.Warning.Background" Color="{StaticResource ThemeV2.Color.Yellow.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.Status.Warning.Border" Color="{StaticResource ThemeV2.Color.Yellow.200}"/>
+
+        <!-- Error states -->
+        <SolidColorBrush x:Key="ThemeV2.Status.Error" Color="{StaticResource ThemeV2.Color.Red.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Status.Error.Background" Color="{StaticResource ThemeV2.Color.Red.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.Status.Error.Border" Color="{StaticResource ThemeV2.Color.Red.200}"/>
+
+        <!-- Info states -->
+        <SolidColorBrush x:Key="ThemeV2.Status.Info" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Status.Info.Background" Color="{StaticResource ThemeV2.Color.Blue.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.Status.Info.Border" Color="{StaticResource ThemeV2.Color.Blue.200}"/>
+
+        <!-- ===========================================
+             MTM COMPONENT THEME ASSIGNMENTS (LIGHT)
+             =========================================== -->
+
+        <!-- CollapsiblePanel appearance -->
+        <SolidColorBrush x:Key="ThemeV2.CollapsiblePanel.Header" Color="{StaticResource ThemeV2.Color.Gray.100}"/>
+        <SolidColorBrush x:Key="ThemeV2.CollapsiblePanel.Content" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <SolidColorBrush x:Key="ThemeV2.CollapsiblePanel.Border" Color="{StaticResource ThemeV2.Color.Gray.200}"/>
+
+        <!-- Session history panel -->
+        <SolidColorBrush x:Key="ThemeV2.SessionHistory.Background" Color="{StaticResource ThemeV2.Color.Gray.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.SessionHistory.Item" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <SolidColorBrush x:Key="ThemeV2.SessionHistory.Item.Hover" Color="{StaticResource ThemeV2.Color.Gray.100}"/>
+
+        <!-- Success overlay -->
+        <SolidColorBrush x:Key="ThemeV2.SuccessOverlay.Background" Color="{StaticResource ThemeV2.Color.Green.50}"/>
+        <SolidColorBrush x:Key="ThemeV2.SuccessOverlay.Border" Color="{StaticResource ThemeV2.Color.Green.200}"/>
+        <SolidColorBrush x:Key="ThemeV2.SuccessOverlay.Content" Color="{StaticResource ThemeV2.Color.Green.800}"/>
+
+        <!-- MTM Manufacturing context -->
+        <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.In" Color="{StaticResource ThemeV2.Color.Green.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.Out" Color="{StaticResource ThemeV2.Color.Red.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.Transfer" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
+
+        <!-- Quick buttons -->
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background.Hover" Color="{StaticResource ThemeV2.Color.Blue.700}"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Content" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+
+    </ResourceDictionary>
+</ResourceDictionary.ThemeDictionaries>
+
+<!-- ===========================================
+     AVALONIA SYSTEM THEME INTEGRATION
+     =========================================== -->
+
+<!-- Default to light theme values outside of theme dictionaries -->
+<SolidColorBrush x:Key="SystemAccentColor" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
+<SolidColorBrush x:Key="SystemAccentColorLight1" Color="{StaticResource ThemeV2.Color.Blue.500}"/>
+<SolidColorBrush x:Key="SystemAccentColorLight2" Color="{StaticResource ThemeV2.Color.Blue.400}"/>
+<SolidColorBrush x:Key="SystemAccentColorLight3" Color="{StaticResource ThemeV2.Color.Blue.300}"/>
+
+<!-- Default control colors -->
+<SolidColorBrush x:Key="SystemControlForegroundBaseHighBrush" Color="{StaticResource ThemeV2.Color.Gray.900}"/>
+<SolidColorBrush x:Key="SystemControlBackgroundBaseLowBrush" Color="{StaticResource ThemeV2.Color.Gray.50}"/>
+<SolidColorBrush x:Key="SystemControlBackgroundBaseMediumBrush" Color="{StaticResource ThemeV2.Color.Gray.100}"/>
+
+</ResourceDictionary>

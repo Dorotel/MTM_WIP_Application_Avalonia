@@ -1,0 +1,153 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+<!--
+Theme V2 Foundation - Color Primitives & Design Tokens
+========================================================
+HSL-based tonal ramps for consistent interactive states
+WCAG 2.1 AA compliant contrast ratios (4.5:1 normal, 3:1 large text)
+Following MTM architectural patterns and Avalonia 11.3.4 conventions
+-->
+
+<!-- ===========================================
+     BLUE FAMILY (Primary Brand Colors)
+     =========================================== -->
+<Color x:Key="ThemeV2.Color.Blue.50">#EFF6FF</Color>   <!-- Lightest blue -->
+<Color x:Key="ThemeV2.Color.Blue.100">#DBEAFE</Color>  <!-- Very light blue -->
+<Color x:Key="ThemeV2.Color.Blue.200">#BFDBFE</Color>  <!-- Light blue -->
+<Color x:Key="ThemeV2.Color.Blue.300">#93C5FD</Color>  <!-- Medium light blue -->
+<Color x:Key="ThemeV2.Color.Blue.400">#60A5FA</Color>  <!-- Medium blue -->
+<Color x:Key="ThemeV2.Color.Blue.500">#3B82F6</Color>  <!-- Base blue -->
+<Color x:Key="ThemeV2.Color.Blue.600">#2563EB</Color>  <!-- Medium dark blue -->
+<Color x:Key="ThemeV2.Color.Blue.700">#1D4ED8</Color>  <!-- Dark blue -->
+<Color x:Key="ThemeV2.Color.Blue.800">#1E40AF</Color>  <!-- Very dark blue -->
+<Color x:Key="ThemeV2.Color.Blue.900">#1E3A8A</Color>  <!-- Darkest blue -->
+
+<!-- ===========================================
+     GRAY FAMILY (Neutral Colors)
+     =========================================== -->
+<Color x:Key="ThemeV2.Color.Gray.50">#F9FAFB</Color>   <!-- Lightest gray -->
+<Color x:Key="ThemeV2.Color.Gray.100">#F3F4F6</Color>  <!-- Very light gray -->
+<Color x:Key="ThemeV2.Color.Gray.200">#E5E7EB</Color>  <!-- Light gray -->
+<Color x:Key="ThemeV2.Color.Gray.300">#D1D5DB</Color>  <!-- Medium light gray -->
+<Color x:Key="ThemeV2.Color.Gray.400">#9CA3AF</Color>  <!-- Medium gray -->
+<Color x:Key="ThemeV2.Color.Gray.500">#6B7280</Color>  <!-- Base gray -->
+<Color x:Key="ThemeV2.Color.Gray.600">#4B5563</Color>  <!-- Medium dark gray -->
+<Color x:Key="ThemeV2.Color.Gray.700">#374151</Color>  <!-- Dark gray -->
+<Color x:Key="ThemeV2.Color.Gray.800">#1F2937</Color>  <!-- Very dark gray -->
+<Color x:Key="ThemeV2.Color.Gray.900">#111827</Color>  <!-- Darkest gray -->
+
+<!-- ===========================================
+     RED FAMILY (Error/Critical States)
+     =========================================== -->
+<Color x:Key="ThemeV2.Color.Red.50">#FEF2F2</Color>    <!-- Lightest red -->
+<Color x:Key="ThemeV2.Color.Red.100">#FEE2E2</Color>   <!-- Very light red -->
+<Color x:Key="ThemeV2.Color.Red.200">#FECACA</Color>   <!-- Light red -->
+<Color x:Key="ThemeV2.Color.Red.300">#FCA5A5</Color>   <!-- Medium light red -->
+<Color x:Key="ThemeV2.Color.Red.400">#F87171</Color>   <!-- Medium red -->
+<Color x:Key="ThemeV2.Color.Red.500">#EF4444</Color>   <!-- Base red -->
+<Color x:Key="ThemeV2.Color.Red.600">#DC2626</Color>   <!-- Medium dark red -->
+<Color x:Key="ThemeV2.Color.Red.700">#B91C1C</Color>   <!-- Dark red -->
+<Color x:Key="ThemeV2.Color.Red.800">#991B1B</Color>   <!-- Very dark red -->
+<Color x:Key="ThemeV2.Color.Red.900">#7F1D1D</Color>   <!-- Darkest red -->
+
+<!-- ===========================================
+     GREEN FAMILY (Success States)
+     =========================================== -->
+<Color x:Key="ThemeV2.Color.Green.50">#F0FDF4</Color>  <!-- Lightest green -->
+<Color x:Key="ThemeV2.Color.Green.100">#DCFCE7</Color> <!-- Very light green -->
+<Color x:Key="ThemeV2.Color.Green.200">#BBF7D0</Color> <!-- Light green -->
+<Color x:Key="ThemeV2.Color.Green.300">#86EFAC</Color> <!-- Medium light green -->
+<Color x:Key="ThemeV2.Color.Green.400">#4ADE80</Color> <!-- Medium green -->
+<Color x:Key="ThemeV2.Color.Green.500">#22C55E</Color> <!-- Base green -->
+<Color x:Key="ThemeV2.Color.Green.600">#16A34A</Color> <!-- Medium dark green -->
+<Color x:Key="ThemeV2.Color.Green.700">#15803D</Color> <!-- Dark green -->
+<Color x:Key="ThemeV2.Color.Green.800">#166534</Color> <!-- Very dark green -->
+<Color x:Key="ThemeV2.Color.Green.900">#14532D</Color> <!-- Darkest green -->
+
+<!-- ===========================================
+     YELLOW FAMILY (Warning States)
+     =========================================== -->
+<Color x:Key="ThemeV2.Color.Yellow.50">#FEFCE8</Color> <!-- Lightest yellow -->
+<Color x:Key="ThemeV2.Color.Yellow.100">#FEF3C7</Color><!-- Very light yellow -->
+<Color x:Key="ThemeV2.Color.Yellow.200">#FDE68A</Color><!-- Light yellow -->
+<Color x:Key="ThemeV2.Color.Yellow.300">#FCD34D</Color><!-- Medium light yellow -->
+<Color x:Key="ThemeV2.Color.Yellow.400">#FBBF24</Color><!-- Medium yellow -->
+<Color x:Key="ThemeV2.Color.Yellow.500">#F59E0B</Color><!-- Base yellow -->
+<Color x:Key="ThemeV2.Color.Yellow.600">#D97706</Color><!-- Medium dark yellow -->
+<Color x:Key="ThemeV2.Color.Yellow.700">#B45309</Color><!-- Dark yellow -->
+<Color x:Key="ThemeV2.Color.Yellow.800">#92400E</Color><!-- Very dark yellow -->
+<Color x:Key="ThemeV2.Color.Yellow.900">#78350F</Color><!-- Darkest yellow -->
+
+<!-- ===========================================
+     SPECIAL PURPOSE COLORS
+     =========================================== -->
+
+<!-- Pure Colors for absolute boundaries -->
+<Color x:Key="ThemeV2.Color.Pure.White">#FFFFFF</Color>
+<Color x:Key="ThemeV2.Color.Pure.Black">#000000</Color>
+
+<!-- Transparent Colors for overlays and states -->
+<Color x:Key="ThemeV2.Color.Transparent">#00FFFFFF</Color>
+<Color x:Key="ThemeV2.Color.Overlay.Light">#80FFFFFF</Color>    <!-- 50% white overlay -->
+<Color x:Key="ThemeV2.Color.Overlay.Dark">#80000000</Color>     <!-- 50% black overlay -->
+
+<!-- Focus and Selection Colors -->
+<Color x:Key="ThemeV2.Color.Focus">#0078D4</Color>             <!-- Windows 11 focus blue -->
+<Color x:Key="ThemeV2.Color.Selection">#0078D440</Color>        <!-- 25% focus blue for selections -->
+
+<!-- ===========================================
+     OPACITY MODIFIERS FOR INTERACTIVE STATES
+     =========================================== -->
+
+<!-- Standard opacity levels for consistent visual hierarchy -->
+<x:Double x:Key="ThemeV2.Opacity.Disabled">0.4</x:Double>      <!-- 40% opacity for disabled states -->
+<x:Double x:Key="ThemeV2.Opacity.Muted">0.6</x:Double>         <!-- 60% opacity for muted content -->
+<x:Double x:Key="ThemeV2.Opacity.Secondary">0.8</x:Double>     <!-- 80% opacity for secondary content -->
+<x:Double x:Key="ThemeV2.Opacity.Full">1.0</x:Double>          <!-- 100% opacity for primary content -->
+
+<!-- Interactive state opacity modifiers -->
+<x:Double x:Key="ThemeV2.Opacity.Hover">0.9</x:Double>         <!-- 90% opacity for hover states -->
+<x:Double x:Key="ThemeV2.Opacity.Pressed">0.7</x:Double>       <!-- 70% opacity for pressed states -->
+
+<!-- ===========================================
+     SPACING AND SIZING TOKENS
+     =========================================== -->
+
+<!-- Consistent spacing scale (4px base unit) -->
+<x:Double x:Key="ThemeV2.Space.XS">4</x:Double>    <!-- 4px - Extra small spacing -->
+<x:Double x:Key="ThemeV2.Space.SM">8</x:Double>    <!-- 8px - Small spacing -->
+<x:Double x:Key="ThemeV2.Space.MD">16</x:Double>   <!-- 16px - Medium spacing -->
+<x:Double x:Key="ThemeV2.Space.LG">24</x:Double>   <!-- 24px - Large spacing -->
+<x:Double x:Key="ThemeV2.Space.XL">32</x:Double>   <!-- 32px - Extra large spacing -->
+<x:Double x:Key="ThemeV2.Space.XXL">48</x:Double>  <!-- 48px - Extra extra large spacing -->
+
+<!-- Border radius tokens -->
+<CornerRadius x:Key="ThemeV2.BorderRadius.None">0</CornerRadius>
+<CornerRadius x:Key="ThemeV2.BorderRadius.SM">4</CornerRadius>
+<CornerRadius x:Key="ThemeV2.BorderRadius.MD">8</CornerRadius>
+<CornerRadius x:Key="ThemeV2.BorderRadius.LG">12</CornerRadius>
+<CornerRadius x:Key="ThemeV2.BorderRadius.Full">9999</CornerRadius> <!-- For pills/circles -->
+
+<!-- ===========================================
+     TYPOGRAPHY TOKENS
+     =========================================== -->
+
+<!-- Font weights -->
+<FontWeight x:Key="ThemeV2.FontWeight.Light">Light</FontWeight>
+<FontWeight x:Key="ThemeV2.FontWeight.Regular">Normal</FontWeight>
+<FontWeight x:Key="ThemeV2.FontWeight.Medium">Medium</FontWeight>
+<FontWeight x:Key="ThemeV2.FontWeight.SemiBold">SemiBold</FontWeight>
+<FontWeight x:Key="ThemeV2.FontWeight.Bold">Bold</FontWeight>
+
+<!-- Font sizes following type scale -->
+<x:Double x:Key="ThemeV2.FontSize.XS">12</x:Double>  <!-- Extra small text -->
+<x:Double x:Key="ThemeV2.FontSize.SM">14</x:Double>  <!-- Small text -->
+<x:Double x:Key="ThemeV2.FontSize.MD">16</x:Double>  <!-- Base/medium text -->
+<x:Double x:Key="ThemeV2.FontSize.LG">18</x:Double>  <!-- Large text -->
+<x:Double x:Key="ThemeV2.FontSize.XL">20</x:Double>  <!-- Extra large text -->
+<x:Double x:Key="ThemeV2.FontSize.H1">32</x:Double>  <!-- Heading 1 -->
+<x:Double x:Key="ThemeV2.FontSize.H2">24</x:Double>  <!-- Heading 2 -->
+<x:Double x:Key="ThemeV2.FontSize.H3">20</x:Double>  <!-- Heading 3 -->
+
+</ResourceDictionary>
