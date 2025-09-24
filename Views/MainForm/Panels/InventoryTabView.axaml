@@ -34,13 +34,14 @@
       <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background}" />
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="CornerRadius" Value="12" />
       <Setter Property="Padding" Value="12" />
       <Setter Property="Margin" Value="2" />
       <Setter Property="MinHeight" Value="80" />
       <Setter Property="MinWidth" Value="200" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="VerticalAlignment" Value="Stretch" />
+      <Setter Property="ClipToBounds" Value="True" />
     </Style>
 
     <!-- Hover state for field containers -->
@@ -66,296 +67,301 @@
   </UserControl.Styles>
 
   <!-- Main Layout Container with theme-responsive background -->
-  <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                VerticalScrollBarVisibility="Auto"
-                Background="{DynamicResource ThemeV2.Background.Canvas}">
+<Border CornerRadius="0,0,12,12"
+                Background="{DynamicResource ThemeV2.Background.Canvas}"
+                ClipToBounds="True">
 
     <Grid x:Name="MainContainer"
-          RowDefinitions="*,Auto"
-          MinWidth="600"
-          MinHeight="400"
-          Margin="8">
+                RowDefinitions="*,Auto"
+                MinWidth="600"
+                MinHeight="400"
+                Margin="8"
+                ClipToBounds="True">
 
-      <!-- Header Card - Form Entry Panel with proper theming -->
-      <Border Grid.Row="0"
-              Classes="Card HeaderPanel"
-              Background="{DynamicResource ThemeV2.Background.Card}"
-              BorderBrush="{DynamicResource ThemeV2.Border.Default}"
-              BorderThickness="1"
-              Margin="0,0,0,12"
-              CornerRadius="12"
-              Padding="20">
+        <!-- Header Card - Form Entry Panel with proper theming -->
+        <Border Grid.Row="0"
+                        Classes="Card HeaderPanel"
+                        CornerRadius="12"
 
-        <StackPanel Spacing="20">
-          <!-- Beautiful Form Title with icon -->
-          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Left">
-            <Border Background="{DynamicResource ThemeV2.Action.Primary}"
-                    CornerRadius="6"
-                    Padding="8">
-              <Border.Effect>
-                <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
-                                  BlurRadius="6"
-                                  OffsetX="0"
-                                  OffsetY="2"
-                                  Opacity="0.3"/>
-              </Border.Effect>
-              <materialIcons:MaterialIcon Kind="Package"
-                                          Width="20"
-                                          Height="20"
-                                          Foreground="White" />
-            </Border>
-            <TextBlock Classes="form-title"
-                       Text="Add Inventory Item"
-                       VerticalAlignment="Center" />
-          </StackPanel>
+                        Background="{DynamicResource ThemeV2.Background.Card}"
+                        BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                        BorderThickness="1"
+                        Margin="0,0,0,12"
+                        Padding="20"
+                        ClipToBounds="True">
 
-          <!-- Beautiful Compact Form Grid Layout -->
-          <Grid RowDefinitions="Auto,Auto,Auto"
-                RowSpacing="16">
-
-            <!-- Row 1: Part ID + Operation with enhanced containers -->
-            <Grid Grid.Row="0"
-                  Classes="FormField"
-                  ColumnDefinitions="*,16,*">
-
-              <!-- Part ID Field with beautiful container -->
-              <Border Grid.Column="0"
-                      Classes="field-container">
-                <StackPanel Spacing="8">
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <materialIcons:MaterialIcon Kind="Identifier" Classes="field-icon" />
-                    <TextBlock Classes="Label"
-                               Text="Part ID"
-                               FontWeight="Medium"
-                               Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
-                    <TextBlock Text="*"
-                               Foreground="{DynamicResource ThemeV2.Status.Error}"
-                               FontWeight="Bold" />
-                  </StackPanel>
-                  <TextBox x:Name="PartTextBox"
-                           Classes="InputField Search"
-                           Text="{Binding SelectedPart, Mode=TwoWay}"
-                           Watermark="{Binding PartWatermark}"
-                           ToolTip.Tip="Select or enter a part number"
-                           TabIndex="1"
-                           CornerRadius="6" />
+            <StackPanel Spacing="20">
+                <!-- Beautiful Form Title with icon -->
+                <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Left">
+                    <Border Background="{DynamicResource ThemeV2.Action.Primary}"
+                                    CornerRadius="6"
+                                    Padding="8"
+                                    ClipToBounds="True">
+                        <Border.Effect>
+                            <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
+                                                                BlurRadius="6"
+                                                                OffsetX="0"
+                                                                OffsetY="2"
+                                                                Opacity="0.3"/>
+                        </Border.Effect>
+                        <materialIcons:MaterialIcon Kind="Package"
+                                                                                Width="20"
+                                                                                Height="20"
+                                                                                Foreground="White" />
+                    </Border>
+                    <TextBlock Classes="form-title"
+                                         Text="Add Inventory Item"
+                                         VerticalAlignment="Center" />
                 </StackPanel>
-              </Border>
 
-              <!-- Operation Field with beautiful container -->
-              <Border Grid.Column="2"
-                      Classes="field-container">
-                <StackPanel Spacing="8">
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <materialIcons:MaterialIcon Kind="Cog" Classes="field-icon" />
-                    <TextBlock Classes="Label"
-                               Text="Operation"
-                               FontWeight="Medium"
-                               Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
-                    <TextBlock Text="*"
-                               Foreground="{DynamicResource ThemeV2.Status.Error}"
-                               FontWeight="Bold" />
-                  </StackPanel>
-                  <TextBox x:Name="OperationTextBox"
-                           Classes="InputField Search"
-                           Text="{Binding SelectedOperation, Mode=TwoWay}"
-                           Watermark="{Binding OperationWatermark}"
-                           ToolTip.Tip="Select or enter an operation number"
-                           TabIndex="2"
-                           CornerRadius="6" />
+                <!-- Beautiful Compact Form Grid Layout -->
+                <Grid RowDefinitions="Auto,Auto,Auto"
+                            RowSpacing="16">
+
+                    <!-- Row 1: Part ID + Operation with enhanced containers -->
+                    <Grid Grid.Row="0"
+                                Classes="FormField"
+                                ColumnDefinitions="*,16,*">
+
+                        <!-- Part ID Field with beautiful container -->
+                        <Border Grid.Column="0"
+                                        Classes="field-container">
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <materialIcons:MaterialIcon Kind="Identifier" Classes="field-icon" />
+                                    <TextBlock Classes="Label"
+                                                         Text="Part ID"
+                                                         FontWeight="Medium"
+                                                         Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
+                                    <TextBlock Text="*"
+                                                         Foreground="{DynamicResource ThemeV2.Status.Error}"
+                                                         FontWeight="Bold" />
+                                </StackPanel>
+                                <TextBox x:Name="PartTextBox"
+                                                 Classes="InputField Search"
+                                                 Text="{Binding SelectedPart, Mode=TwoWay}"
+                                                 Watermark="{Binding PartWatermark}"
+                                                 ToolTip.Tip="Select or enter a part number"
+                                                 TabIndex="1"
+                                                 CornerRadius="6" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Operation Field with beautiful container -->
+                        <Border Grid.Column="2"
+                                        Classes="field-container">
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <materialIcons:MaterialIcon Kind="Cog" Classes="field-icon" />
+                                    <TextBlock Classes="Label"
+                                                         Text="Operation"
+                                                         FontWeight="Medium"
+                                                         Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
+                                    <TextBlock Text="*"
+                                                         Foreground="{DynamicResource ThemeV2.Status.Error}"
+                                                         FontWeight="Bold" />
+                                </StackPanel>
+                                <TextBox x:Name="OperationTextBox"
+                                                 Classes="InputField Search"
+                                                 Text="{Binding SelectedOperation, Mode=TwoWay}"
+                                                 Watermark="{Binding OperationWatermark}"
+                                                 ToolTip.Tip="Select or enter an operation number"
+                                                 TabIndex="2"
+                                                 CornerRadius="6" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Row 2: Location + Quantity with enhanced styling -->
+                    <Grid Grid.Row="1"
+                                Classes="FormField"
+                                ColumnDefinitions="*,16,*">
+
+                        <!-- Location Field with beautiful container -->
+                        <Border Grid.Column="0"
+                                        Classes="field-container">
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <materialIcons:MaterialIcon Kind="MapMarker" Classes="field-icon" />
+                                    <TextBlock Classes="Label"
+                                                         Text="Location"
+                                                         FontWeight="Medium"
+                                                         Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
+                                    <TextBlock Text="*"
+                                                         Foreground="{DynamicResource ThemeV2.Status.Error}"
+                                                         FontWeight="Bold" />
+                                </StackPanel>
+                                <TextBox x:Name="LocationTextBox"
+                                                 Classes="InputField Search"
+                                                 Text="{Binding SelectedLocation, Mode=TwoWay}"
+                                                 Watermark="{Binding LocationWatermark}"
+                                                 ToolTip.Tip="Select or enter a location"
+                                                 TabIndex="3"
+                                                 CornerRadius="6" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Quantity Field with success/error styling -->
+                        <Border Grid.Column="2"
+                                        Classes="field-container">
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <materialIcons:MaterialIcon Kind="Counter" Classes="field-icon" />
+                                    <TextBlock Classes="Label"
+                                                         Text="Quantity"
+                                                         FontWeight="Medium"
+                                                         Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
+                                    <TextBlock Text="*"
+                                                         Foreground="{DynamicResource ThemeV2.Status.Error}"
+                                                         FontWeight="Bold" />
+                                </StackPanel>
+                                <TextBox x:Name="QuantityTextBox"
+                                                 Classes="InputField"
+                                                 Classes.Success="{Binding IsQuantityValid}"
+                                                 Classes.Error="{Binding !IsQuantityValid}"
+                                                 Text="{Binding QuantityText, Mode=TwoWay}"
+                                                 Watermark="{Binding QuantityWatermark}"
+                                                 ToolTip.Tip="Enter numeric quantity"
+                                                 TabIndex="4"
+                                                 CornerRadius="6" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Row 3: Notes (Full Width) with beautiful styling -->
+                    <Border Grid.Row="2"
+                                    Classes="field-container">
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <materialIcons:MaterialIcon Kind="NoteText" Classes="field-icon" />
+                                <TextBlock Classes="Label"
+                                                     Text="Notes"
+                                                     FontWeight="Medium"
+                                                     Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
+                                <TextBlock Text="(Optional)"
+                                                     Foreground="{DynamicResource ThemeV2.Content.Tertiary}"
+                                                     FontStyle="Italic"
+                                                     FontSize="12" />
+                            </StackPanel>
+                            <TextBox x:Name="NotesTextBox"
+                                             Classes="InputField Multiline"
+                                             Text="{Binding Notes, Mode=TwoWay}"
+                                             Watermark="{Binding NotesWatermark}"
+                                             AcceptsReturn="True"
+                                             TextWrapping="Wrap"
+                                             Height="70"
+                                             VerticalContentAlignment="Top"
+                                             ToolTip.Tip="Optional notes or comments"
+                                             TabIndex="5"
+                                             CornerRadius="6" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Footer Card - Action Buttons Panel with proper theming -->
+        <Border Grid.Row="1"
+                        Classes="Card FooterPanel"
+                        Background="{DynamicResource ThemeV2.Background.Surface}"
+                        BorderBrush="{DynamicResource ThemeV2.Border.Subtle}"
+                        BorderThickness="1"
+                        Margin="0,0,0,0"
+                        CornerRadius="12"
+                        Padding="16"
+                        ClipToBounds="True">
+
+            <Grid Classes="FormActions"
+                        ColumnDefinitions="Auto,*,Auto">
+
+                <!-- Primary Actions (Left) with enhanced styling -->
+                <StackPanel Grid.Column="0"
+                                        Orientation="Horizontal"
+                                        Spacing="12"
+                                        HorizontalAlignment="Left">
+
+                    <!-- Beautiful Save Button with gradient -->
+                    <Button x:Name="SaveButton"
+                                    Classes="Primary QuickAction"
+                                    MinWidth="120"
+                                    Height="44"
+                                    Command="{Binding SaveCommand}"
+                                    IsEnabled="{Binding CanSave}"
+                                    ToolTip.Tip="Save inventory item (Enter to execute)"
+                                    TabIndex="6"
+                                    CornerRadius="8">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
+                                <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Spacing="8">
+                            <materialIcons:MaterialIcon Kind="ContentSave"
+                                                                                    Width="18"
+                                                                                    Height="18"
+                                                                                    Foreground="White" />
+                            <TextBlock Text="Save Item"
+                                                 Classes="Body"
+                                                 Foreground="White"
+                                                 FontWeight="SemiBold" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Elegant Reset Button -->
+                    <Button Classes="Secondary Outline"
+                                    MinWidth="100"
+                                    Height="44"
+                                    Command="{Binding ResetCommand}"
+                                    CommandParameter="False"
+                                    ToolTip.Tip="Reset form (F5 for soft reset, Shift+F5 for hard reset)"
+                                    CornerRadius="8">
+                        <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Spacing="8">
+                            <materialIcons:MaterialIcon Kind="Refresh"
+                                                                                    Width="16"
+                                                                                    Height="16" />
+                            <TextBlock Text="Reset"
+                                                 Classes="Body"
+                                                 FontWeight="Medium" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
-              </Border>
+
+                <!-- Advanced Actions (Right) with beautiful styling -->
+                <Button Grid.Column="2"
+                                Classes="Icon"
+                                Width="48"
+                                Height="48"
+                                Command="{Binding AdvancedEntryCommand}"
+                                ToolTip.Tip="Open advanced inventory features"
+                                CornerRadius="24">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Color="{DynamicResource ThemeV2.Color.Gray.200}" Offset="0" />
+                            <GradientStop Color="{DynamicResource ThemeV2.Color.Gray.100}" Offset="1" />
+                        </LinearGradientBrush>
+                    </Button.Background>
+                    <materialIcons:MaterialIcon Kind="Settings"
+                                                                            Width="22"
+                                                                            Height="22">
+                        <materialIcons:MaterialIcon.Foreground>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Color="{DynamicResource ThemeV2.Color.Gray.600}" Offset="0" />
+                                <GradientStop Color="{DynamicResource ThemeV2.Color.Gray.500}" Offset="1" />
+                            </LinearGradientBrush>
+                        </materialIcons:MaterialIcon.Foreground>
+                    </materialIcons:MaterialIcon>
+                </Button>
             </Grid>
-
-            <!-- Row 2: Location + Quantity with enhanced styling -->
-            <Grid Grid.Row="1"
-                  Classes="FormField"
-                  ColumnDefinitions="*,16,*">
-
-              <!-- Location Field with beautiful container -->
-              <Border Grid.Column="0"
-                      Classes="field-container">
-                <StackPanel Spacing="8">
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <materialIcons:MaterialIcon Kind="MapMarker" Classes="field-icon" />
-                    <TextBlock Classes="Label"
-                               Text="Location"
-                               FontWeight="Medium"
-                               Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
-                    <TextBlock Text="*"
-                               Foreground="{DynamicResource ThemeV2.Status.Error}"
-                               FontWeight="Bold" />
-                  </StackPanel>
-                  <TextBox x:Name="LocationTextBox"
-                           Classes="InputField Search"
-                           Text="{Binding SelectedLocation, Mode=TwoWay}"
-                           Watermark="{Binding LocationWatermark}"
-                           ToolTip.Tip="Select or enter a location"
-                           TabIndex="3"
-                           CornerRadius="6" />
-                </StackPanel>
-              </Border>
-
-              <!-- Quantity Field with success/error styling -->
-              <Border Grid.Column="2"
-                      Classes="field-container">
-                <StackPanel Spacing="8">
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <materialIcons:MaterialIcon Kind="Counter" Classes="field-icon" />
-                    <TextBlock Classes="Label"
-                               Text="Quantity"
-                               FontWeight="Medium"
-                               Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
-                    <TextBlock Text="*"
-                               Foreground="{DynamicResource ThemeV2.Status.Error}"
-                               FontWeight="Bold" />
-                  </StackPanel>
-                  <TextBox x:Name="QuantityTextBox"
-                           Classes="InputField"
-                           Classes.Success="{Binding IsQuantityValid}"
-                           Classes.Error="{Binding !IsQuantityValid}"
-                           Text="{Binding QuantityText, Mode=TwoWay}"
-                           Watermark="{Binding QuantityWatermark}"
-                           ToolTip.Tip="Enter numeric quantity"
-                           TabIndex="4"
-                           CornerRadius="6" />
-                </StackPanel>
-              </Border>
-            </Grid>
-
-            <!-- Row 3: Notes (Full Width) with beautiful styling -->
-            <Border Grid.Row="2"
-                    Classes="field-container">
-              <StackPanel Spacing="8">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                  <materialIcons:MaterialIcon Kind="NoteText" Classes="field-icon" />
-                  <TextBlock Classes="Label"
-                             Text="Notes"
-                             FontWeight="Medium"
-                             Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
-                  <TextBlock Text="(Optional)"
-                             Foreground="{DynamicResource ThemeV2.Content.Tertiary}"
-                             FontStyle="Italic"
-                             FontSize="12" />
-                </StackPanel>
-                <TextBox x:Name="NotesTextBox"
-                         Classes="InputField Multiline"
-                         Text="{Binding Notes, Mode=TwoWay}"
-                         Watermark="{Binding NotesWatermark}"
-                         AcceptsReturn="True"
-                         TextWrapping="Wrap"
-                         Height="70"
-                         VerticalContentAlignment="Top"
-                         ToolTip.Tip="Optional notes or comments"
-                         TabIndex="5"
-                         CornerRadius="6" />
-              </StackPanel>
-            </Border>
-          </Grid>
-        </StackPanel>
-      </Border>
-
-      <!-- Footer Card - Action Buttons Panel with proper theming -->
-      <Border Grid.Row="1"
-              Classes="Card FooterPanel"
-              Background="{DynamicResource ThemeV2.Background.Surface}"
-              BorderBrush="{DynamicResource ThemeV2.Border.Subtle}"
-              BorderThickness="1"
-              Margin="0,0,0,0"
-              CornerRadius="12"
-              Padding="16">
-
-        <Grid Classes="FormActions"
-              ColumnDefinitions="Auto,*,Auto">
-
-          <!-- Primary Actions (Left) with enhanced styling -->
-          <StackPanel Grid.Column="0"
-                      Orientation="Horizontal"
-                      Spacing="12"
-                      HorizontalAlignment="Left">
-
-            <!-- Beautiful Save Button with gradient -->
-            <Button x:Name="SaveButton"
-                    Classes="Primary QuickAction"
-                    MinWidth="120"
-                    Height="44"
-                    Command="{Binding SaveCommand}"
-                    IsEnabled="{Binding CanSave}"
-                    ToolTip.Tip="Save inventory item (Enter to execute)"
-                    TabIndex="6"
-                    CornerRadius="8">
-              <Button.Background>
-                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                  <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
-                  <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
-                </LinearGradientBrush>
-              </Button.Background>
-              <StackPanel Orientation="Horizontal"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"
-                          Spacing="8">
-                <materialIcons:MaterialIcon Kind="ContentSave"
-                                            Width="18"
-                                            Height="18"
-                                            Foreground="White" />
-                <TextBlock Text="Save Item"
-                           Classes="Body"
-                           Foreground="White"
-                           FontWeight="SemiBold" />
-              </StackPanel>
-            </Button>
-
-            <!-- Elegant Reset Button -->
-            <Button Classes="Secondary Outline"
-                    MinWidth="100"
-                    Height="44"
-                    Command="{Binding ResetCommand}"
-                    CommandParameter="False"
-                    ToolTip.Tip="Reset form (F5 for soft reset, Shift+F5 for hard reset)"
-                    CornerRadius="8">
-              <StackPanel Orientation="Horizontal"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"
-                          Spacing="8">
-                <materialIcons:MaterialIcon Kind="Refresh"
-                                            Width="16"
-                                            Height="16" />
-                <TextBlock Text="Reset"
-                           Classes="Body"
-                           FontWeight="Medium" />
-              </StackPanel>
-            </Button>
-          </StackPanel>
-
-          <!-- Advanced Actions (Right) with beautiful styling -->
-          <Button Grid.Column="2"
-                  Classes="Icon"
-                  Width="48"
-                  Height="48"
-                  Command="{Binding AdvancedEntryCommand}"
-                  ToolTip.Tip="Open advanced inventory features"
-                  CornerRadius="24">
-            <Button.Background>
-              <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Color="{DynamicResource ThemeV2.Color.Gray.200}" Offset="0" />
-                <GradientStop Color="{DynamicResource ThemeV2.Color.Gray.100}" Offset="1" />
-              </LinearGradientBrush>
-            </Button.Background>
-            <materialIcons:MaterialIcon Kind="Settings"
-                                        Width="22"
-                                        Height="22">
-              <materialIcons:MaterialIcon.Foreground>
-                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                  <GradientStop Color="{DynamicResource ThemeV2.Color.Gray.600}" Offset="0" />
-                  <GradientStop Color="{DynamicResource ThemeV2.Color.Gray.500}" Offset="1" />
-                </LinearGradientBrush>
-              </materialIcons:MaterialIcon.Foreground>
-            </materialIcons:MaterialIcon>
-          </Button>
-        </Grid>
-      </Border>
+        </Border>
 
     </Grid>
-  </ScrollViewer>
+</Border>
 </UserControl>
 

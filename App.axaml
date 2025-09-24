@@ -15,6 +15,12 @@
         <!-- Theme V2 Control Styles - Avalonia 11.3.4 compatible semantic token system -->
         <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/BaseStyles.axaml"/>
 
+        <!-- MTM Style System - Component-specific styles -->
+        <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/StyleSystem.axaml"/>
+
+        <!-- Custom Controls Styles -->
+        <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Controls/CollapsiblePanel/CollapsiblePanel.axaml"/>
+
     </Application.Styles>
 
     <Application.Resources>

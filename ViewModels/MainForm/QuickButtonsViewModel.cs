@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using Avalonia;
 using Avalonia.Threading;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels;
@@ -26,6 +27,7 @@ public partial class QuickButtonsViewModel : BaseViewModel
     private readonly IProgressService _progressService;
     private readonly IProgressOverlayService _progressOverlayService;
     private readonly IApplicationStateService _applicationState;
+    private readonly IResolutionIndependentSizingService _sizingService;
     private bool _isUpdatingFromService = false; // Flag to prevent reload loops
 
     // Observable collections
@@ -80,17 +82,39 @@ public partial class QuickButtonsViewModel : BaseViewModel
     /// </summary>
     public int SessionTransactionCount => SessionTransactionHistory.Count;
 
+    /// <summary>
+    /// Manufacturing touch target size for professional UI (48dp minimum)
+    /// </summary>
+    public double ManufacturingTouchTargetSize => _sizingService.GetManufacturingTouchTargetSize();
+
+    /// <summary>
+    /// Standard control height scaled for current display
+    /// </summary>
+    public double StandardControlHeight => _sizingService.GetStandardControlHeight();
+
+    /// <summary>
+    /// Standard font size scaled for current display
+    /// </summary>
+    public double StandardFontSize => _sizingService.GetStandardFontSize();
+
+    /// <summary>
+    /// Standard padding for consistent spacing
+    /// </summary>
+    public Thickness StandardPadding => _sizingService.GetStandardPadding();
+
     public QuickButtonsViewModel(
         IQuickButtonsService quickButtonsService,
         IProgressService progressService,
         IProgressOverlayService progressOverlayService,
         IApplicationStateService applicationState,
+        IResolutionIndependentSizingService sizingService,
         ILogger<QuickButtonsViewModel> logger) : base(logger)
     {
         _quickButtonsService = quickButtonsService ?? throw new ArgumentNullException(nameof(quickButtonsService));
         _progressService = progressService ?? throw new ArgumentNullException(nameof(progressService));
         _progressOverlayService = progressOverlayService ?? throw new ArgumentNullException(nameof(progressOverlayService));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        _sizingService = sizingService ?? throw new ArgumentNullException(nameof(sizingService));
 
         // Add console output to ensure we can see constructor execution
         Console.WriteLine("🔧🔧🔧 QuickButtonsViewModel constructor STARTED");
@@ -680,13 +704,13 @@ public partial class QuickButtonsViewModel : BaseViewModel
     /// Adds a new quick button based on a successful operation
     /// This is called when an inventory operation is completed to update the quick buttons
     /// </summary>
-    public async Task AddQuickButtonFromOperationAsync(string partId, string operation, int quantity)
+    public async Task AddQuickButtonFromOperationAsync(string partId, string operation, int quantity, string location = "")
     {
         try
         {
             // First, add to the sys_last_10_transactions table
             var success = await _quickButtonsService.AddTransactionToLast10Async(
-                _applicationState.CurrentUser, partId, operation, quantity);
+                _applicationState.CurrentUser, partId, operation, quantity, "IN", location);
 
             if (success)
             {

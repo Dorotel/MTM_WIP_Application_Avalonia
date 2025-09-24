@@ -301,6 +301,18 @@ WCAG 2.1 AA compliant with 4.5:1 contrast ratios
     <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
 </Style>
 
+<Style Selector="TabItem TextBlock">
+    <Setter Property="TextDecorations" Value="{x:Null}"/>
+</Style>
+
+<Style Selector="TabItem TextBlock.main-title">
+    <Setter Property="TextDecorations" Value="{x:Null}"/>
+</Style>
+
+<Style Selector="TabItem StackPanel TextBlock">
+    <Setter Property="TextDecorations" Value="{x:Null}"/>
+</Style>
+
 <!-- ===========================================
      SCROLLVIEWER CONTROL STYLES
      =========================================== -->

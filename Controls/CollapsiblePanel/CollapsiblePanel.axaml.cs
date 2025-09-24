@@ -6,6 +6,7 @@ using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Media;
 using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -27,8 +28,9 @@ public enum HeaderPosition
 /// <summary>
 /// Manufacturing-grade collapsible panel with professional MTM styling and ResolutionIndependentSizing integration.
 /// Features responsive design, touch-friendly controls, and comprehensive accessibility support.
+/// Now inherits from HeaderedContentControl to eliminate TabItem styling conflicts.
 /// </summary>
-public partial class CollapsiblePanel : UserControl
+public partial class CollapsiblePanel : HeaderedContentControl
 {
     // Styled properties
     public static readonly StyledProperty<bool> IsExpandedProperty =
@@ -37,8 +39,12 @@ public partial class CollapsiblePanel : UserControl
     public static readonly StyledProperty<HeaderPosition> HeaderPositionProperty =
         AvaloniaProperty.Register<CollapsiblePanel, HeaderPosition>(nameof(HeaderPosition), HeaderPosition.Top);
 
-    public static readonly StyledProperty<object?> HeaderProperty =
-        AvaloniaProperty.Register<CollapsiblePanel, object?>(nameof(Header));
+    // Additional properties for styling compatibility (HeaderedContentControl provides Header and Content)
+    public static readonly StyledProperty<IBrush?> HeaderBackgroundProperty =
+        AvaloniaProperty.Register<CollapsiblePanel, IBrush?>(nameof(HeaderBackground));
+
+    public static readonly StyledProperty<IBrush?> ExpanderBackgroundProperty =
+        AvaloniaProperty.Register<CollapsiblePanel, IBrush?>(nameof(ExpanderBackground));
 
     // ResolutionIndependentSizing integration
     private IResolutionIndependentSizingService? _sizingService;
@@ -57,10 +63,17 @@ public partial class CollapsiblePanel : UserControl
         set => SetValue(HeaderPositionProperty, value);
     }
 
-    public object? Header
+    // HeaderedContentControl provides Header and Content properties
+    public IBrush? HeaderBackground
     {
-        get => GetValue(HeaderProperty);
-        set => SetValue(HeaderProperty, value);
+        get => GetValue(HeaderBackgroundProperty);
+        set => SetValue(HeaderBackgroundProperty, value);
+    }
+
+    public IBrush? ExpanderBackground
+    {
+        get => GetValue(ExpanderBackgroundProperty);
+        set => SetValue(ExpanderBackgroundProperty, value);
     }
 
     // Legacy property for backward compatibility
@@ -73,11 +86,9 @@ public partial class CollapsiblePanel : UserControl
     // Events
     public event EventHandler<bool>? ExpandedChanged;
 
-    // Internal references
-    private ContentPresenter? _contentPresenter;
+    // Internal references for HeaderedContentControl template
     private Border? _contentArea;
     private Border? _headerArea;
-    private Grid? _headerContentGrid;
     private Material.Icons.Avalonia.MaterialIcon? _toggleIcon;
     private Button? _toggleButton;
     private Grid? _rootGrid;
@@ -85,7 +96,6 @@ public partial class CollapsiblePanel : UserControl
 
     public CollapsiblePanel()
     {
-        InitializeComponent();
         InitializeServices();
     }
 
@@ -122,14 +132,24 @@ public partial class CollapsiblePanel : UserControl
     {
         base.OnApplyTemplate(e);
 
-        // Get references to controls from the template
-        _contentPresenter = e.NameScope.Find<ContentPresenter>("ContentPresenter");
-        _contentArea = e.NameScope.Find<Border>("ContentArea");
-        _headerArea = e.NameScope.Find<Border>("HeaderArea");
-        _headerContentGrid = e.NameScope.Find<Grid>("HeaderContentGrid");
-        _toggleIcon = e.NameScope.Find<Material.Icons.Avalonia.MaterialIcon>("ToggleIcon");
-        _toggleButton = e.NameScope.Find<Button>("ToggleButton");
-        _rootGrid = e.NameScope.Find<Grid>("RootGrid");
+        // Unsubscribe from old button events if they exist
+        if (_toggleButton != null)
+        {
+            _toggleButton.Click -= OnToggleClick;
+        }
+
+        // Get references to controls from the HeaderedContentControl template
+        _contentArea = e.NameScope.Find<Border>("PART_ContentArea");
+        _headerArea = e.NameScope.Find<Border>("PART_HeaderArea");
+        _toggleIcon = e.NameScope.Find<Material.Icons.Avalonia.MaterialIcon>("PART_ToggleIcon");
+        _toggleButton = e.NameScope.Find<Button>("PART_ToggleButton");
+        _rootGrid = e.NameScope.Find<Grid>("PART_RootGrid");
+
+        // Subscribe to new button events
+        if (_toggleButton != null)
+        {
+            _toggleButton.Click += OnToggleClick;
+        }
 
         _isTemplateApplied = true;
 
@@ -145,13 +165,11 @@ public partial class CollapsiblePanel : UserControl
         // If template wasn't applied yet, try to get references now
         if (!_isTemplateApplied)
         {
-            _contentPresenter = this.FindControl<ContentPresenter>("ContentPresenter");
-            _contentArea = this.FindControl<Border>("ContentArea");
-            _headerArea = this.FindControl<Border>("HeaderArea");
-            _headerContentGrid = this.FindControl<Grid>("HeaderContentGrid");
-            _toggleIcon = this.FindControl<Material.Icons.Avalonia.MaterialIcon>("ToggleIcon");
-            _toggleButton = this.FindControl<Button>("ToggleButton");
-            _rootGrid = this.FindControl<Grid>("RootGrid");
+            _contentArea = this.FindControl<Border>("PART_ContentArea");
+            _headerArea = this.FindControl<Border>("PART_HeaderArea");
+            _toggleIcon = this.FindControl<Material.Icons.Avalonia.MaterialIcon>("PART_ToggleIcon");
+            _toggleButton = this.FindControl<Button>("PART_ToggleButton");
+            _rootGrid = this.FindControl<Grid>("PART_RootGrid");
 
             UpdateLayout();
             UpdateDisplay();

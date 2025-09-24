@@ -17,29 +17,56 @@ WCAG 2.1 AA compliant navigation patterns
     <Setter Property="Padding" Value="0"/>
 </Style>
 
-<!-- Enhanced TabItem styling -->
+<!-- Enhanced TabItem styling with custom template for proper bottom border positioning -->
 <Style Selector="TabControl.MTMTabs TabItem">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
-    <Setter Property="BorderBrush" Value="Transparent"/>
-    <Setter Property="BorderThickness" Value="0,0,0,2"/>
     <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Medium}"/>
     <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
     <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Body.FontWeight}"/>
-    <Setter Property="Margin" Value="0,0,8,0"/>
-    <Setter Property="CornerRadius" Value="6,6,0,0"/>
+    <Setter Property="Margin" Value="0,0,0,0"/>
+    <Setter Property="Template">
+        <ControlTemplate>
+            <Grid>
+                <!-- Main tab content area that fills the entire TabItem -->
+                <Border x:Name="PART_Root"
+                        Background="{TemplateBinding Background}"
+                        Padding="{TemplateBinding Padding}">
+                    <ContentPresenter x:Name="PART_ContentPresenter"
+                                      Content="{TemplateBinding Header}"
+                                      ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      RecognizesAccessKey="True" />
+                </Border>
+
+                <!-- Bottom selection indicator positioned at absolute bottom -->
+                <Border x:Name="PART_SelectionIndicator"
+                        Height="2"
+                        Background="Transparent"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom" />
+            </Grid>
+        </ControlTemplate>
+    </Setter>
+</Style>
+
+<Style Selector="TabControl.MTMTabs TabItem:selected /template/ Border#PART_SelectionIndicator">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
 </Style>
 
 <Style Selector="TabControl.MTMTabs TabItem:selected">
-    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
     <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
-    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
     <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Heading6.FontWeight}"/>
 </Style>
 
 <Style Selector="TabControl.MTMTabs TabItem:pointerover">
-    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
     <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+</Style>
+
+<Style Selector="TabControl.MTMTabs TabItem:pointerover /template/ Border#PART_SelectionIndicator">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Border.Default}"/>
 </Style>
 
 <!-- Tab header with icon and text -->
@@ -58,6 +85,26 @@ WCAG 2.1 AA compliant navigation patterns
     <Setter Property="FontSize" Value="15"/>
     <Setter Property="FontWeight" Value="SemiBold"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="TextDecorations" Value="{x:Null}"/>
+</Style>
+
+<!-- Ensure no borders or underlines on tab content -->
+<Style Selector="TabControl.MTMTabs TabItem StackPanel">
+    <Setter Property="Background" Value="Transparent"/>
+</Style>
+
+<Style Selector="TabControl.MTMTabs TabItem Border">
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+</Style>
+
+<Style Selector="TabControl.MTMTabs TabItem TextBlock">
+    <Setter Property="TextDecorations" Value="{x:Null}"/>
+</Style>
+
+<!-- Override any template-level text decorations -->
+<Style Selector="TabControl.MTMTabs TabItem /template/ TextBlock">
+    <Setter Property="TextDecorations" Value="{x:Null}"/>
 </Style>
 
 <!-- Menu styling -->

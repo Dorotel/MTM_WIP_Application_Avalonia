@@ -56,14 +56,26 @@
       </Setter>
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="FontSize" Value="24" />
+      <Setter Property="TextDecorations" Value="{x:Null}" />
     </Style>
   </UserControl.Styles>
 
   <UserControl.Styles>
-    <!-- TabControl styling is now handled globally by MTMComponents.axaml -->
-  </UserControl.Styles>
-
-  <!-- Keyboard shortcuts -->
+    <!-- TabControl now inherits from MTMTabs global styles -->
+    <!-- Keep only local overrides for text decorations -->
+    <Style Selector="TabItem TextBlock.main-title">
+      <Setter Property="TextDecorations" Value="{x:Null}"/>
+    </Style>
+    <Style Selector="TabItem StackPanel TextBlock">
+      <Setter Property="TextDecorations" Value="{x:Null}"/>
+    </Style>
+    <Style Selector="TabItem /template/ TextBlock">
+      <Setter Property="TextDecorations" Value="{x:Null}"/>
+    </Style>
+    <Style Selector="StackPanel TextBlock.main-title">
+      <Setter Property="TextDecorations" Value="{x:Null}"/>
+    </Style>
+  </UserControl.Styles>  <!-- Keyboard shortcuts -->
   <UserControl.KeyBindings>
     <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}"/>
     <KeyBinding Gesture="Ctrl+S" Command="{Binding OpenSettingsCommand}"/>
@@ -84,7 +96,8 @@
     <!-- Header Menu with MTM Branding and beautiful styling -->
     <Border DockPanel.Dock="Top"
             Padding="24,8"
-            HorizontalAlignment="Stretch">
+            HorizontalAlignment="Stretch"
+            ClipToBounds="True">
       <Border.Background>
         <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
           <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
@@ -137,7 +150,8 @@
             HorizontalAlignment="Stretch"
             MinHeight="48"
             BorderBrush="{DynamicResource ThemeV2.Border.Subtle}"
-            BorderThickness="0,1,0,0">
+            BorderThickness="0,1,0,0"
+            ClipToBounds="True">
       <Border.Effect>
         <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
                           BlurRadius="4"
@@ -189,7 +203,8 @@
         <Border Grid.Column="3"
                 CornerRadius="16"
                 Padding="16,8"
-                HorizontalAlignment="Right">
+                HorizontalAlignment="Right"
+                ClipToBounds="True">
           <Border.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
               <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
@@ -228,9 +243,10 @@
                 BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                 BorderThickness="1"
                 CornerRadius="12"
-                Margin="8"
+                Margin="8,8,4,8"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch">
+                VerticalAlignment="Stretch"
+                ClipToBounds="True">
           <Border.Effect>
             <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
                               BlurRadius="12"
@@ -239,6 +255,7 @@
                               Opacity="0.15"/>
           </Border.Effect>
           <TabControl x:Name="MainForm_TabControl"
+                      Classes="MTMTabs"
                       SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay, FallbackValue=0}"
                       SelectionChanged="OnTabSelectionChanged"
                       PointerPressed="OnTabControlPointerPressed"
@@ -251,12 +268,15 @@
           <!-- Beautiful Inventory Tab with Material Design icons -->
           <TabItem>
             <TabItem.Header>
-              <StackPanel Orientation="Horizontal" Spacing="12">
-                <Border Background="{DynamicResource ThemeV2.Action.Primary}"
+              <StackPanel Classes="TabHeader" Orientation="Horizontal" Spacing="12">
+                <Border Classes="TabIcon"
+                        Background="{DynamicResource ThemeV2.Action.Primary}"
+                        BorderThickness="0"
                         CornerRadius="6"
                         Width="28"
                         Height="28"
-                        Padding="4">
+                        Padding="4"
+                        ClipToBounds="True">
                   <materialIcons:MaterialIcon Kind="Archive"
                                               Classes="nav-icon"
                                               Foreground="White"
@@ -264,9 +284,7 @@
                                               VerticalAlignment="Center"/>
                 </Border>
                 <TextBlock Text="Inventory"
-                           Classes="main-title"
-                           FontSize="16"
-                           FontWeight="SemiBold"
+                           Classes="TabTitle"
                            VerticalAlignment="Center"/>
               </StackPanel>
             </TabItem.Header>
@@ -285,6 +303,7 @@
             <TabItem.Header>
               <StackPanel Orientation="Horizontal" Spacing="12">
                 <Border Background="{DynamicResource ThemeV2.Status.Warning}"
+                        BorderThickness="0"
                         CornerRadius="6"
                         Width="28"
                         Height="28"
@@ -318,6 +337,7 @@
             <TabItem.Header>
               <StackPanel Orientation="Horizontal" Spacing="12">
                 <Border Background="{DynamicResource ThemeV2.Status.Success}"
+                        BorderThickness="0"
                         CornerRadius="6"
                         Width="28"
                         Height="28"
@@ -356,7 +376,8 @@
                 VerticalAlignment="Stretch"
                 Margin="8"
                 CornerRadius="12"
-                ZIndex="1003">
+                ZIndex="1003"
+                ClipToBounds="True">
           <!-- Centered overlay container with enhanced styling -->
           <Border Padding="20"
                   HorizontalAlignment="Stretch"
@@ -364,7 +385,8 @@
                   Background="{DynamicResource ThemeV2.Background.Card}"
                   BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                   BorderThickness="1"
-                  CornerRadius="16">
+                  CornerRadius="16"
+                  ClipToBounds="True">
             <Border.Effect>
               <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.500}"
                                 BlurRadius="20"
@@ -389,7 +411,8 @@
                 VerticalAlignment="Stretch"
                 Margin="8"
                 CornerRadius="12"
-                ZIndex="1001">
+                ZIndex="1001"
+                ClipToBounds="True">
           <!-- Success overlay content will be dynamically set -->
           <ContentControl x:Name="SuccessOverlayContent"
                           HorizontalAlignment="Stretch"
@@ -404,7 +427,6 @@
                 Background="{DynamicResource ThemeV2.Overlay.Background}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Margin="8"
                 CornerRadius="12"
                 ZIndex="1002">
           <!-- NewQuickButton view content -->
@@ -417,20 +439,31 @@
         </Border>
       </Grid>
 
-      <!-- Right Panel: Collapsible Quick Actions with increased width -->
-      <controls:CollapsiblePanel Grid.Column="1"
-                                HeaderPosition="Right"
-                                IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
-                                IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
-                                Margin="0,8,8,8"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Stretch"
-                                MinWidth="280"
-                                MaxWidth="320">
-        <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
-                               HorizontalAlignment="Stretch"
-                               VerticalAlignment="Stretch"/>
-      </controls:CollapsiblePanel>
+      <!-- Right Panel: Collapsible Quick Actions with increased width and matching drop shadow -->
+      <Border Grid.Column="1"
+              Background="Transparent"
+              Margin="4,8,8,8"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Stretch"
+              MaxWidth="320"
+              IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}">
+        <Border.Effect>
+          <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
+                            BlurRadius="12"
+                            OffsetX="0"
+                            OffsetY="4"
+                            Opacity="0.15"/>
+        </Border.Effect>
+        <controls:CollapsiblePanel HeaderPosition="Right"
+                                  IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
+                                  IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Stretch">
+          <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Stretch"/>
+        </controls:CollapsiblePanel>
+      </Border>
     </Grid>
   </DockPanel>
 

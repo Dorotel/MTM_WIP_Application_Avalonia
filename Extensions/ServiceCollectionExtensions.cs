@@ -89,6 +89,9 @@ public static class ServiceCollectionExtensions
         // Register Inventory Editing service - singleton for comprehensive inventory editing operations
         services.TryAddSingleton<IInventoryEditingService, InventoryEditingService>();
 
+        // Register Resolution Independent Sizing service - singleton for consistent UI scaling across platforms
+        services.TryAddSingleton<IResolutionIndependentSizingService, ResolutionIndependentSizingService>();
+
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
         services.TryAddTransient<MainViewViewModel>();
