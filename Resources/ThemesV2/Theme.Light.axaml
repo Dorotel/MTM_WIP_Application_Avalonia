@@ -190,10 +190,11 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
      =========================================== -->
 
 <!-- Default to light theme values outside of theme dictionaries -->
-<SolidColorBrush x:Key="SystemAccentColor" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
-<SolidColorBrush x:Key="SystemAccentColorLight1" Color="{StaticResource ThemeV2.Color.Blue.500}"/>
-<SolidColorBrush x:Key="SystemAccentColorLight2" Color="{StaticResource ThemeV2.Color.Blue.400}"/>
-<SolidColorBrush x:Key="SystemAccentColorLight3" Color="{StaticResource ThemeV2.Color.Blue.300}"/>
+<!-- SystemAccent colors MUST be Color resources for Fluent theme compatibility -->
+<Color x:Key="SystemAccentColor">#2563EB</Color>       <!-- ThemeV2.Color.Blue.600 -->
+<Color x:Key="SystemAccentColorLight1">#3B82F6</Color> <!-- ThemeV2.Color.Blue.500 -->
+<Color x:Key="SystemAccentColorLight2">#60A5FA</Color> <!-- ThemeV2.Color.Blue.400 -->
+<Color x:Key="SystemAccentColorLight3">#93C5FD</Color> <!-- ThemeV2.Color.Blue.300 -->
 
 <!-- Default control colors -->
 <SolidColorBrush x:Key="SystemControlForegroundBaseHighBrush" Color="{StaticResource ThemeV2.Color.Gray.900}"/>

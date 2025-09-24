@@ -190,10 +190,11 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
      =========================================== -->
 
 <!-- Dark theme system colors -->
-<SolidColorBrush x:Key="SystemAccentColor" Color="{StaticResource ThemeV2.Color.Blue.500}"/>
-<SolidColorBrush x:Key="SystemAccentColorLight1" Color="{StaticResource ThemeV2.Color.Blue.400}"/>
-<SolidColorBrush x:Key="SystemAccentColorLight2" Color="{StaticResource ThemeV2.Color.Blue.300}"/>
-<SolidColorBrush x:Key="SystemAccentColorLight3" Color="{StaticResource ThemeV2.Color.Blue.200}"/>
+<!-- SystemAccent colors MUST be Color resources for Fluent theme compatibility -->
+<Color x:Key="SystemAccentColor">#3B82F6</Color>       <!-- ThemeV2.Color.Blue.500 -->
+<Color x:Key="SystemAccentColorLight1">#60A5FA</Color> <!-- ThemeV2.Color.Blue.400 -->
+<Color x:Key="SystemAccentColorLight2">#93C5FD</Color> <!-- ThemeV2.Color.Blue.300 -->
+<Color x:Key="SystemAccentColorLight3">#BFDBFE</Color> <!-- ThemeV2.Color.Blue.200 -->
 
 <!-- Default control colors for dark mode -->
 <SolidColorBrush x:Key="SystemControlForegroundBaseHighBrush" Color="{StaticResource ThemeV2.Color.Gray.100}"/>

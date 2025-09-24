@@ -14,7 +14,6 @@
       <Setter Property="Padding" Value="6,3" />
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
       <Setter Property="FontSize" Value="10" />
-      <Setter Property="MinHeight" Value="24" />
       <Setter Property="Margin" Value="2" />
     </Style>
 
@@ -25,7 +24,6 @@
       <Setter Property="Padding" Value="6,3" />
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
       <Setter Property="FontSize" Value="10" />
-      <Setter Property="MinHeight" Value="24" />
       <Setter Property="Margin" Value="2" />
     </Style>
 
@@ -36,12 +34,11 @@
       <Setter Property="FontSize" Value="10" />
       <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="CornerRadius" Value="3" />
-      <Setter Property="MinHeight" Value="24" />
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
-    
+
     <Style Selector="Button.primary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
@@ -88,7 +85,7 @@
 
   <!-- Main Layout Container - ScrollViewer for overflow handling -->
 
-    
+
     <Grid x:Name="MainContainer" RowDefinitions="*,Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="600" MinHeight="400" Margin="8">
 
       <!-- Main Entry Panel -->
@@ -99,13 +96,13 @@
           <ColumnDefinition Width="*" />      <!-- Center Panel: Stretches to fill available space -->
           <ColumnDefinition Width="Auto" />   <!-- Right Panel: Auto-sizes based on CollapsiblePanel state -->
         </Grid.ColumnDefinitions>
-        
+
         <!-- Left Panel: Search Criteria using CollapsiblePanel -->
         <!-- HeaderPosition options: Left, Right, Top, Bottom -->
         <controls:CollapsiblePanel Grid.Column="0" IsExpanded="{Binding IsFilterPanelExpanded, Mode=TwoWay}" HeaderPosition="Left">
           <!-- Filter Content -->
           <StackPanel Spacing="6">
-            
+
             <!-- Part ID -->
             <StackPanel>
               <Grid ColumnDefinitions="Auto,*" ColumnSpacing="3" Margin="0,0,0,1">
@@ -190,7 +187,7 @@
                     </Button>
                   </Grid>
                 </Border>
-                
+
                 <!-- End Date -->
                 <Border Grid.Column="2" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" CornerRadius="3" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" Cursor="Hand">
                   <Grid>
@@ -234,7 +231,7 @@
                 </StackPanel>
               </Grid>
             </Border>
-            
+
             <!-- Data Grid -->
             <DataGrid Grid.Row="1" ItemsSource="{Binding RemovalHistoryGrid}" SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}" AutoGenerateColumns="False" FontSize="9" RowHeight="20">
               <DataGrid.Columns>
@@ -255,7 +252,7 @@
         <controls:CollapsiblePanel Grid.Column="2" IsExpanded="True" HeaderPosition="Right">
           <!-- Details Content -->
           <StackPanel Spacing="8">
-            
+
             <!-- Selected Item Details -->
             <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="8">
               <StackPanel Spacing="6">
@@ -264,7 +261,7 @@
                   <materialIcons:MaterialIcon Grid.Column="0" Kind="InformationOutline" Width="12" Height="12" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1" Text="Selected Item Details" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                 </Grid>
-                
+
                 <!-- Details when item is selected -->
                 <StackPanel Spacing="4" IsVisible="{Binding SelectedHistoryItem, Converter={x:Static ObjectConverters.IsNotNull}}">
                   <Grid ColumnDefinitions="60,*" ColumnSpacing="6">
@@ -292,7 +289,7 @@
                     <TextBlock Grid.Column="1" Text="{Binding SelectedHistoryItem.TransactionTime, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" FontSize="9" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                   </Grid>
                 </StackPanel>
-                
+
                 <!-- No selection message -->
                 <TextBlock Text="Select an item to view details" FontSize="9" FontStyle="Italic" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" HorizontalAlignment="Center" IsVisible="{Binding SelectedHistoryItem, Converter={x:Static ObjectConverters.IsNull}}" />
               </StackPanel>
@@ -306,7 +303,7 @@
                   <materialIcons:MaterialIcon Grid.Column="0" Kind="FlashOutline" Width="12" Height="12" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1" Text="Quick Actions" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                 </Grid>
-                
+
                 <!-- Action Buttons -->
                 <StackPanel Spacing="4">
                   <Button Classes="action-button secondary" Height="28" Command="{Binding UndoRemovalCommand}" IsEnabled="{Binding CanUndo}" ToolTip.Tip="Undo this removal">
@@ -315,14 +312,14 @@
                       <TextBlock Text="Undo Removal" FontSize="9" />
                     </StackPanel>
                   </Button>
-                  
+
                   <Button Classes="action-button secondary" Height="28" ToolTip.Tip="View detailed information">
                     <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center" VerticalAlignment="Center">
                       <materialIcons:MaterialIcon Kind="Eye" Width="12" Height="12" />
                       <TextBlock Text="View Details" FontSize="9" />
                     </StackPanel>
                   </Button>
-                  
+
                   <Button Classes="action-button secondary" Height="28" ToolTip.Tip="Export selected item">
                     <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center" VerticalAlignment="Center">
                       <materialIcons:MaterialIcon Kind="Export" Width="12" Height="12" />
@@ -341,7 +338,7 @@
                   <materialIcons:MaterialIcon Grid.Column="0" Kind="ChartLine" Width="12" Height="12" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1" Text="Summary" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
                 </Grid>
-                
+
                 <!-- Statistics -->
                 <StackPanel Spacing="3">
                   <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">

@@ -9,7 +9,7 @@
              Focusable="True"
              IsTabStop="True"
              KeyDown="OnUserControlKeyDown">
-  
+
   <UserControl.Resources>
     <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
   </UserControl.Resources>
@@ -22,30 +22,29 @@
       <Setter Property="FontSize" Value="11"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
       <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="MinHeight" Value="28"/>
       <Setter Property="Cursor" Value="Hand"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
-    
+
     <Style Selector="Button.primary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
     </Style>
-    
+
     <Style Selector="Button.primary:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
     </Style>
-    
+
     <Style Selector="Button.secondary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
     </Style>
-    
+
     <Style Selector="Button.secondary:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
@@ -104,15 +103,15 @@
   </UserControl.Styles>
 
   <!-- Main container with MTM modern panel layout -->
-  <Grid RowDefinitions="Auto,*,Auto" 
-        HorizontalAlignment="Stretch" 
+  <Grid RowDefinitions="Auto,*,Auto"
+        HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         Margin="4"
         MinWidth="500"
         MinHeight="300">
 
     <!-- Header Panel with gradient and top rounded corners -->
-    <Border Grid.Row="0" 
+    <Border Grid.Row="0"
             Classes="header-panel"
             Padding="16,12">
       <Grid ColumnDefinitions="Auto,*,Auto">
@@ -152,29 +151,29 @@
             Classes="content-panel"
             Padding="16">
       <Grid RowDefinitions="Auto,Auto,*">
-        
+
         <!-- Item Info -->
         <Grid Grid.Row="0" ColumnDefinitions="*,*,*" ColumnSpacing="16" Margin="0,0,0,12">
           <StackPanel Grid.Column="0">
-            <TextBlock Text="Part ID" FontSize="11" FontWeight="SemiBold" 
+            <TextBlock Text="Part ID" FontSize="11" FontWeight="SemiBold"
                        Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
-            <TextBlock Text="{Binding PartId}" FontSize="12" 
+            <TextBlock Text="{Binding PartId}" FontSize="12"
                        Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
           </StackPanel>
           <StackPanel Grid.Column="1">
-            <TextBlock Text="Operation" FontSize="11" FontWeight="SemiBold" 
+            <TextBlock Text="Operation" FontSize="11" FontWeight="SemiBold"
                        Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
-            <TextBlock Text="{Binding Operation}" FontSize="12" 
+            <TextBlock Text="{Binding Operation}" FontSize="12"
                        Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
           </StackPanel>
           <StackPanel Grid.Column="2">
-            <TextBlock Text="Location" FontSize="11" FontWeight="SemiBold" 
+            <TextBlock Text="Location" FontSize="11" FontWeight="SemiBold"
                        Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
-            <TextBlock Text="{Binding Location}" FontSize="12" 
+            <TextBlock Text="{Binding Location}" FontSize="12"
                        Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
           </StackPanel>
         </Grid>
-        
+
         <!-- Note Label -->
         <TextBlock Grid.Row="1"
                    Text="Note:"
@@ -213,11 +212,11 @@
             Classes="action-panel"
             Padding="12">
       <Grid ColumnDefinitions="*,Auto">
-        
+
         <!-- Left side - help text -->
-        <StackPanel Grid.Column="0" 
-                    Orientation="Horizontal" 
-                    VerticalAlignment="Center" 
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
                     Spacing="6">
           <materialIcons:MaterialIcon Kind="Information"
                                       Width="14"
@@ -229,20 +228,20 @@
         </StackPanel>
 
         <!-- Right side buttons -->
-        <StackPanel Grid.Column="1" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
                     Spacing="8">
           <Button Classes="action-button secondary"
-                  Content="Cancel" 
-                  Command="{Binding CancelCommand}" 
+                  Content="Cancel"
+                  Command="{Binding CancelCommand}"
                   Width="80"
                   Height="32"
                   IsEnabled="True">
           </Button>
           <Button x:Name="SaveButton"
                   Classes="action-button primary"
-                  Command="{Binding SaveCommand}" 
+                  Command="{Binding SaveCommand}"
                   Width="80"
                   Height="32"
                   IsEnabled="{Binding !IsLoading}"

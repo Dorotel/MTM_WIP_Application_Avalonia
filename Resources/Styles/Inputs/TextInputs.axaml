@@ -1,0 +1,112 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+<!--
+MTM Input Field Styles - Theme V2 Compatible
+==========================================
+TextBox, AutoCompleteBox styling for form inputs
+Uses Theme V2 semantic tokens for consistent theming
+WCAG 2.1 AA compliant with proper focus indicators
+-->
+
+<!-- Standard Input Field - Base TextBox style -->
+<Style Selector="TextBox.InputField">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Input.Content}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="TextBox.InputField:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border.Hover}"/>
+</Style>
+
+<Style Selector="TextBox.InputField:focus">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background.Focus}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border.Focus}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+</Style>
+
+<Style Selector="TextBox.InputField:disabled">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background.Disabled}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Disabled}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Disabled}"/>
+    <Setter Property="Opacity" Value="{StaticResource ThemeV2.Opacity.Disabled}"/>
+</Style>
+
+<!-- Error state for validation -->
+<Style Selector="TextBox.InputField.Error">
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border.Error}"/>
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Error.Background}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+</Style>
+
+<Style Selector="TextBox.InputField.Error:focus">
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Error}"/>
+</Style>
+
+<!-- Success state for validation -->
+<Style Selector="TextBox.InputField.Success">
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Success.Border}"/>
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Success.Background}"/>
+</Style>
+
+<!-- Large Input Field variant -->
+<Style Selector="TextBox.InputField.Large">
+    <Setter Property="Padding" Value="12,8"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Heading6.FontSize}"/>
+</Style>
+
+<!-- Small Input Field variant -->
+<Style Selector="TextBox.InputField.Small">
+    <Setter Property="Padding" Value="6,4"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+</Style>
+
+<!-- Multiline TextBox for Notes -->
+<Style Selector="TextBox.InputField.Multiline">
+    <Setter Property="AcceptsReturn" Value="True"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+    <Setter Property="VerticalContentAlignment" Value="Top"/>
+    <Setter Property="MaxHeight" Value="200"/>
+</Style>
+
+<!-- AutoCompleteBox styling to match TextBox -->
+<Style Selector="AutoCompleteBox.InputField">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Input.Content}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+</Style>
+
+<Style Selector="AutoCompleteBox.InputField:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border.Hover}"/>
+</Style>
+
+<Style Selector="AutoCompleteBox.InputField:focus">
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border.Focus}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+</Style>
+
+<!-- Watermark/placeholder styling -->
+<Style Selector="TextBox.InputField /template/ TextBlock#PART_Watermark">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Input.Placeholder}"/>
+    <Setter Property="FontStyle" Value="Italic"/>
+</Style>
+
+<Style Selector="AutoCompleteBox.InputField /template/ TextBox#PART_TextBox /template/ TextBlock#PART_Watermark">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Input.Placeholder}"/>
+    <Setter Property="FontStyle" Value="Italic"/>
+</Style>
+
+</Styles>

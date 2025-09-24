@@ -10,6 +10,7 @@ using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.Core.Startup;
 using Avalonia.Controls.ApplicationLifetimes;
 using ZstdSharp.Unsafe;
@@ -56,12 +57,12 @@ public static class Program
             _logger?.LogInformation("Starting Avalonia application with {ArgCount} arguments", args.Length);
 
             var appStopwatch = Stopwatch.StartNew();
-            
+
             // For now, all platforms use classic desktop lifetime
             // Mobile support can be added later when creating dedicated mobile projects
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Starting with classic desktop lifetime (cross-platform compatible)");
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            
+
             appStopwatch.Stop();
 
             mainStopwatch.Stop();
@@ -94,7 +95,7 @@ public static class Program
                 .UsePlatformDetect()
                 .WithInterFont()
                 .LogToTrace();
-                
+
             // Platform-specific configurations
             if (OperatingSystem.IsAndroid())
             {
@@ -121,7 +122,7 @@ public static class Program
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Configuring for Linux platform");
                 // Linux-specific configuration would go here if needed
             }
-            
+
             return builder;
         }
         catch (Exception ex)
@@ -177,6 +178,30 @@ public static class Program
 
             // Get logger after service provider is available
             _logger = _serviceProvider.GetService<ILogger<object>>();
+
+            // Initialize Theme V2 service for automatic theme management
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Initializing Theme V2 service...");
+            try
+            {
+                var themeServiceV2 = _serviceProvider.GetService<IThemeServiceV2>();
+                if (themeServiceV2 != null)
+                {
+                    await themeServiceV2.InitializeAsync();
+                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Theme V2 service initialized successfully");
+                    _logger?.LogInformation("Theme V2 service initialized successfully");
+                }
+                else
+                {
+                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Warning: Theme V2 service not available");
+                    _logger?.LogWarning("Theme V2 service not available in service provider");
+                }
+            }
+            catch (Exception themeEx)
+            {
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Warning: Theme V2 initialization failed: {themeEx.Message}");
+                _logger?.LogError(themeEx, "Theme V2 service initialization failed");
+                // Continue startup - theme service failure shouldn't block the application
+            }
 
             configureStopwatch.Stop();
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Service configuration completed in {configureStopwatch.ElapsedMilliseconds}ms");

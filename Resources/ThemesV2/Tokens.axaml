@@ -122,6 +122,23 @@ Following MTM architectural patterns and Avalonia 11.3.4 conventions
 <x:Double x:Key="ThemeV2.Space.XL">32</x:Double>   <!-- 32px - Extra large spacing -->
 <x:Double x:Key="ThemeV2.Space.XXL">48</x:Double>  <!-- 48px - Extra extra large spacing -->
 
+<!-- Thickness resources for Padding and Margin properties -->
+<Thickness x:Key="ThemeV2.Thickness.XS">4</Thickness>
+<Thickness x:Key="ThemeV2.Thickness.SM">8</Thickness>
+<Thickness x:Key="ThemeV2.Thickness.MD">16</Thickness>
+<Thickness x:Key="ThemeV2.Thickness.LG">24</Thickness>
+<Thickness x:Key="ThemeV2.Thickness.XL">32</Thickness>
+<Thickness x:Key="ThemeV2.Thickness.XXL">48</Thickness>
+
+<!-- Alternative naming for BaseStyles compatibility - MUST be Thickness for Padding property -->
+<Thickness x:Key="ThemeV2.Spacing.Small">8</Thickness>
+<Thickness x:Key="ThemeV2.Spacing.Medium">16</Thickness>
+<Thickness x:Key="ThemeV2.Spacing.Large">24</Thickness>
+<Thickness x:Key="ThemeV2.Spacing.XLarge">32</Thickness>
+
+<!-- Additional opacity levels needed by BaseStyles -->
+<x:Double x:Key="ThemeV2.Opacity.Medium">0.8</x:Double>
+
 <!-- Border radius tokens -->
 <CornerRadius x:Key="ThemeV2.BorderRadius.None">0</CornerRadius>
 <CornerRadius x:Key="ThemeV2.BorderRadius.SM">4</CornerRadius>
@@ -154,5 +171,44 @@ Following MTM architectural patterns and Avalonia 11.3.4 conventions
 <x:Double x:Key="ThemeV2.FontSize.H1">32</x:Double>  <!-- Heading 1 -->
 <x:Double x:Key="ThemeV2.FontSize.H2">24</x:Double>  <!-- Heading 2 -->
 <x:Double x:Key="ThemeV2.FontSize.H3">20</x:Double>  <!-- Heading 3 -->
+
+<!-- ===========================================
+     TYPOGRAPHY SEMANTIC TOKENS
+     =========================================== -->
+
+<!-- Typography token system compatible with BaseStyles.axaml -->
+<x:Double x:Key="ThemeV2.Typography.Body.FontSize">16</x:Double>
+<FontWeight x:Key="ThemeV2.Typography.Body.FontWeight">Normal</FontWeight>
+<!-- LineHeight removed - let Avalonia use default line height -->
+
+<!-- Heading styles -->
+<x:Double x:Key="ThemeV2.Typography.Heading1.FontSize">32</x:Double>
+<FontWeight x:Key="ThemeV2.Typography.Heading1.FontWeight">Bold</FontWeight>
+<!-- LineHeight removed - let Avalonia use default line height -->
+
+<x:Double x:Key="ThemeV2.Typography.Heading2.FontSize">24</x:Double>
+<FontWeight x:Key="ThemeV2.Typography.Heading2.FontWeight">Bold</FontWeight>
+<!-- LineHeight removed - let Avalonia use default line height -->
+
+<x:Double x:Key="ThemeV2.Typography.Heading3.FontSize">20</x:Double>
+<FontWeight x:Key="ThemeV2.Typography.Heading3.FontWeight">SemiBold</FontWeight>
+<!-- LineHeight removed - let Avalonia use default line height -->
+
+<x:Double x:Key="ThemeV2.Typography.Heading4.FontSize">18</x:Double>
+<FontWeight x:Key="ThemeV2.Typography.Heading4.FontWeight">SemiBold</FontWeight>
+<!-- LineHeight removed - let Avalonia use default line height -->
+
+<x:Double x:Key="ThemeV2.Typography.Heading5.FontSize">16</x:Double>
+<FontWeight x:Key="ThemeV2.Typography.Heading5.FontWeight">SemiBold</FontWeight>
+<!-- LineHeight removed - let Avalonia use default line height -->
+
+<x:Double x:Key="ThemeV2.Typography.Heading6.FontSize">14</x:Double>
+<FontWeight x:Key="ThemeV2.Typography.Heading6.FontWeight">SemiBold</FontWeight>
+<!-- LineHeight removed - let Avalonia use default line height -->
+
+<!-- Caption and small text -->
+<x:Double x:Key="ThemeV2.Typography.Caption.FontSize">12</x:Double>
+<FontWeight x:Key="ThemeV2.Typography.Caption.FontWeight">Normal</FontWeight>
+<!-- LineHeight removed - let Avalonia use default line height -->
 
 </ResourceDictionary>

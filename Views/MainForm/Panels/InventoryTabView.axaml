@@ -9,7 +9,6 @@
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="Padding" Value="8,6" />
-      <Setter Property="MinHeight" Value="32" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
@@ -34,7 +33,6 @@
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="Padding" Value="8,6" />
-      <Setter Property="MinHeight" Value="32" />
     </Style>
 
     <!-- Material Icons global styling -->
@@ -53,7 +51,6 @@
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="MinHeight" Value="32" />
       <Setter Property="Padding" Value="12,6" />
     </Style>
 
@@ -64,7 +61,6 @@
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
       <Setter Property="BorderThickness" Value="1.5" />
       <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="MinHeight" Value="32" />
       <Setter Property="Padding" Value="12,6" />
     </Style>
 

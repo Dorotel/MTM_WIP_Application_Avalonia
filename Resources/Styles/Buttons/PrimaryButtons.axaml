@@ -1,0 +1,67 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+<!--
+MTM Primary Button Styles - Theme V2 Compatible
+===============================================
+Primary action buttons following MTM design system
+Uses Theme V2 semantic tokens for consistent theming
+WCAG 2.1 AA compliant with 4.5:1 contrast ratios
+-->
+
+<!-- Primary Button - Main CTAs and Save actions -->
+<Style Selector="Button.Primary">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Heading6.FontWeight}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Cursor" Value="Hand"/>
+</Style>
+
+<Style Selector="Button.Primary:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+</Style>
+
+<Style Selector="Button.Primary:pressed">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Pressed}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Pressed}"/>
+</Style>
+
+<Style Selector="Button.Primary:disabled">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Disabled}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Disabled}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Disabled}"/>
+    <Setter Property="Opacity" Value="{StaticResource ThemeV2.Opacity.Disabled}"/>
+    <Setter Property="Cursor" Value="Arrow"/>
+</Style>
+
+<!-- Large Primary Button variant -->
+<Style Selector="Button.Primary.Large">
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Medium}"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Heading6.FontSize}"/>
+</Style>
+
+<!-- Small Primary Button variant -->
+<Style Selector="Button.Primary.Small">
+    <Setter Property="Padding" Value="8,4"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+</Style>
+
+<!-- Icon + Text Primary Button -->
+<Style Selector="Button.Primary.WithIcon">
+    <Setter Property="Padding" Value="12,6"/>
+</Style>
+
+<Style Selector="Button.Primary.WithIcon > StackPanel">
+    <Setter Property="Spacing" Value="8"/>
+    <Setter Property="Orientation" Value="Horizontal"/>
+</Style>
+
+</Styles>

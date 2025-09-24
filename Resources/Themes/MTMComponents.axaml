@@ -205,7 +205,6 @@
 		<Setter Property="FontWeight" Value="SemiBold"/>
 		<Setter Property="FontSize" Value="14"/>
 		<Setter Property="BorderThickness" Value="2"/>
-		<Setter Property="MinHeight" Value="40"/>
 		<Setter Property="Cursor" Value="Hand"/>
 	</Style>
 
@@ -226,7 +225,6 @@
 		<Setter Property="FontWeight" Value="SemiBold"/>
 		<Setter Property="FontSize" Value="14"/>
 		<Setter Property="BorderThickness" Value="2"/>
-		<Setter Property="MinHeight" Value="40"/>
 		<Setter Property="Cursor" Value="Hand"/>
 	</Style>
 
@@ -266,7 +264,6 @@
 		<Setter Property="BorderThickness" Value="0"/>
 		<Setter Property="CornerRadius" Value="6"/>
 		<Setter Property="Padding" Value="8,14,8,6"/>
-		<Setter Property="MinHeight" Value="32"/>
 		<Setter Property="Template">
 			<ControlTemplate>
 				<Grid>
@@ -371,8 +368,7 @@
 		<Setter Property="BorderThickness" Value="1"/>
 		<Setter Property="CornerRadius" Value="6"/>
 		<Setter Property="Padding" Value="8"/>
-		<Setter Property="MinHeight" Value="32"/>
-	</Style>
+    </Style>
 
 	<!-- AutoCompleteBox Focus -->
 	<Style Selector="AutoCompleteBox:focus">
@@ -402,7 +398,6 @@
 		<Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
 		<Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
 		<Setter Property="Padding" Value="8,6"/>
-		<Setter Property="MinHeight" Value="32"/>
 		<Setter Property="BorderThickness" Value="0"/>
 		<Setter Property="CornerRadius" Value="4"/>
 		<Setter Property="Margin" Value="1"/>

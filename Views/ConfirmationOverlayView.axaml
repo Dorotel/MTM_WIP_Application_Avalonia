@@ -10,7 +10,7 @@
              Focusable="True"
              IsTabStop="True"
              KeyDown="OnUserControlKeyDown">
-  
+
   <UserControl.Resources>
     <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
   </UserControl.Resources>
@@ -23,45 +23,43 @@
       <Setter Property="FontSize" Value="14"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
       <Setter Property="CornerRadius" Value="6"/>
-      <Setter Property="MinHeight" Value="36"/>
-      <Setter Property="MinWidth" Value="100"/>
       <Setter Property="Cursor" Value="Hand"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
-    
+
     <!-- Primary Action Button (Confirm/Delete/OK) -->
     <Style Selector="Button.primary-action">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="Foreground" Value="White"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
     </Style>
-    
+
     <Style Selector="Button.primary-action:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
     </Style>
-    
+
     <!-- Warning/Delete Action Button -->
     <Style Selector="Button.warning-action">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
       <Setter Property="Foreground" Value="White"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
     </Style>
-    
+
     <Style Selector="Button.warning-action:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.Critical}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.Critical}"/>
     </Style>
-    
+
     <!-- Secondary Action Button (Cancel) -->
     <Style Selector="Button.secondary-action">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
     </Style>
-    
+
     <Style Selector="Button.secondary-action:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
       <Setter Property="Foreground" Value="White"/>
@@ -76,7 +74,7 @@
       <Setter Property="CornerRadius" Value="4"/>
       <Setter Property="Cursor" Value="Hand"/>
     </Style>
-    
+
     <Style Selector="Button.close-button:pointerover">
       <Setter Property="Background" Value="#20000000"/>
     </Style>
@@ -128,10 +126,10 @@
   </UserControl.Styles>
 
   <!-- Semi-transparent background overlay -->
-  <Border Background="#CC000000" 
+  <Border Background="#CC000000"
           IsVisible="{Binding IsVisible}"
           PointerPressed="OnBackgroundClicked">
-    
+
     <!-- Main dialog container -->
     <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
             BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
@@ -145,16 +143,16 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             BoxShadow="0 8 32 8 #40000000">
-      
+
       <Grid RowDefinitions="Auto,*,Auto">
 
         <!-- Header Panel with default styling -->
-        <Border Grid.Row="0" 
+        <Border Grid.Row="0"
                 x:Name="HeaderPanel"
                 Classes="header-confirmation"
                 CornerRadius="12,12,0,0"
                 Padding="20,16">
-          
+
           <Grid ColumnDefinitions="Auto,*,Auto">
             <!-- Icon -->
             <materialIcons:MaterialIcon x:Name="HeaderIcon"
@@ -163,7 +161,7 @@
                                         Height="24"
                                         Margin="0,0,16,0"
                                         Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"/>
-            
+
             <!-- Title -->
             <TextBlock Grid.Column="1"
                        Text="{Binding Title}"
@@ -171,7 +169,7 @@
                        FontSize="18"
                        Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
                        VerticalAlignment="Center"/>
-            
+
             <!-- Close Button -->
             <Button Grid.Column="2"
                     Classes="close-button"
@@ -191,14 +189,13 @@
           <ScrollViewer VerticalScrollBarVisibility="Auto"
                         HorizontalScrollBarVisibility="Disabled">
             <StackPanel Spacing="12">
-              
+
               <!-- Main Message -->
               <TextBlock Text="{Binding Message}"
                          FontSize="16"
                          TextWrapping="Wrap"
-                         Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
-                         LineHeight="24"/>
-              
+                         Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+
               <!-- Details (if provided) -->
               <Border IsVisible="{Binding Details, Converter={StaticResource NullToBoolConverter}}"
                       Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
@@ -210,10 +207,9 @@
                 <TextBlock Text="{Binding Details}"
                            FontSize="13"
                            TextWrapping="Wrap"
-                           Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
-                           LineHeight="18"/>
+                           Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"/>
               </Border>
-              
+
             </StackPanel>
           </ScrollViewer>
         </Border>
@@ -223,11 +219,11 @@
                 Classes="action-panel"
                 Padding="16">
           <Grid ColumnDefinitions="*,Auto">
-            
+
             <!-- Left side - Additional info or help text for warnings -->
-            <StackPanel Grid.Column="0" 
-                        Orientation="Horizontal" 
-                        VerticalAlignment="Center" 
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
                         Spacing="8"
                         x:Name="WarningHelpText"
                         IsVisible="False">
@@ -241,11 +237,11 @@
             </StackPanel>
 
             <!-- Right side - Action buttons -->
-            <StackPanel Grid.Column="1" 
-                        Orientation="Horizontal" 
-                        HorizontalAlignment="Right" 
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
                         Spacing="12">
-              
+
               <!-- Secondary Button (Cancel) -->
               <Button Classes="overlay-button secondary-action"
                       Content="{Binding SecondaryButtonText}"
@@ -253,7 +249,7 @@
                       IsVisible="{Binding ShowSecondaryButton}"
                       IsEnabled="{Binding !IsLoading}"
                       Width="100"/>
-              
+
               <!-- Primary Button (Confirm/OK/Delete) -->
               <Button x:Name="PrimaryActionButton"
                       Classes="overlay-button primary-action"
@@ -261,7 +257,7 @@
                       Command="{Binding ConfirmCommand}"
                       IsEnabled="{Binding !IsLoading}"
                       Width="100"/>
-              
+
             </StackPanel>
           </Grid>
         </Border>
@@ -270,15 +266,15 @@
         <Border Grid.RowSpan="3"
                 Classes="loading-overlay"
                 CornerRadius="12">
-          <StackPanel HorizontalAlignment="Center" 
+          <StackPanel HorizontalAlignment="Center"
                       VerticalAlignment="Center"
                       Spacing="12">
-            <ProgressBar IsIndeterminate="True" 
-                         Width="200" 
-                         Height="4" 
+            <ProgressBar IsIndeterminate="True"
+                         Width="200"
+                         Height="4"
                          Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-            <TextBlock Text="Processing..." 
-                       HorizontalAlignment="Center" 
+            <TextBlock Text="Processing..."
+                       HorizontalAlignment="Center"
                        Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
                        FontWeight="SemiBold" />
           </StackPanel>

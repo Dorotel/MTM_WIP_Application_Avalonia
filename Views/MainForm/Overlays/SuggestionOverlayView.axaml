@@ -10,7 +10,7 @@
              IsTabStop="True"
              KeyDown="OnUserControlKeyDown"
              KeyUp="OnUserControlKeyUp">
-  
+
   <UserControl.Resources>
     <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
   </UserControl.Resources>
@@ -23,24 +23,23 @@
       <Setter Property="FontSize" Value="11"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
       <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="MinHeight" Value="28"/>
       <Setter Property="Cursor" Value="Hand"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
-    
+
     <Style Selector="Button.primary">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
     </Style>
-    
+
     <Style Selector="Button.primary:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
     </Style>
-    
+
     <Style Selector="Button.primary:pressed">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryPressedBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryPressedBrush}"/>
@@ -51,13 +50,13 @@
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
     </Style>
-    
+
     <Style Selector="Button.secondary:pointerover">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
     </Style>
-    
+
     <Style Selector="Button.secondary:pressed">
       <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryPressedBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
@@ -146,14 +145,14 @@
   </UserControl.Styles>
 
   <!-- Main container with MTM modern panel layout -->
-  
-  <Grid RowDefinitions="Auto,*,Auto" 
-        HorizontalAlignment="Stretch" 
+
+  <Grid RowDefinitions="Auto,*,Auto"
+        HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         Margin="4">
 
     <!-- Header Panel with gradient and top rounded corners -->
-    <Border Grid.Row="0" 
+    <Border Grid.Row="0"
             Classes="header-panel"
             Padding="16,12">
       <Grid ColumnDefinitions="Auto,*,Auto">
@@ -232,9 +231,9 @@
             Padding="12">
       <Grid ColumnDefinitions="*,Auto">
         <!-- Left side - help text -->
-        <StackPanel Grid.Column="0" 
-                    Orientation="Horizontal" 
-                    VerticalAlignment="Center" 
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
                     Spacing="6">
           <materialIcons:MaterialIcon Kind="Information"
                                       Width="14"
@@ -246,19 +245,19 @@
         </StackPanel>
 
         <!-- Right side buttons -->
-        <StackPanel Grid.Column="1" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
                     Spacing="8">
           <Button Classes="action-button secondary"
-                  Content="Cancel" 
-                  Command="{Binding CancelCommand}" 
+                  Content="Cancel"
+                  Command="{Binding CancelCommand}"
                   Width="70"
                   Height="28">
           </Button>
           <Button x:Name="SelectButton"
                   Classes="action-button primary"
-                  Command="{Binding SelectCommand}" 
+                  Command="{Binding SelectCommand}"
                   Width="70"
                   Height="28"
                   IsEnabled="{Binding SelectedSuggestion, Converter={StaticResource NullToBoolConverter}}">

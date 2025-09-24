@@ -448,7 +448,6 @@ public partial class RemoveTabView : UserControl
                 TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                 Margin = new Thickness(0, 0, 0, 24),
                 FontSize = 14,
-                LineHeight = 20,
                 Foreground = Avalonia.Media.Brushes.Black
             };
 

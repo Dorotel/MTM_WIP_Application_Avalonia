@@ -1,0 +1,149 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+<!--
+MTM Form Layout Styles - Theme V2 Compatible
+===========================================
+Form field layouts and grids following MTM patterns
+Uses consistent spacing and alignment standards
+WCAG 2.1 AA compliant structure
+-->
+
+<!-- Form Field Container - Standard two-column layout -->
+<Style Selector="Grid.FormField">
+    <Setter Property="ColumnSpacing" Value="12"/>
+    <Setter Property="Margin" Value="0,0,0,12"/>
+</Style>
+
+<!-- Form Field Label Column -->
+<Style Selector="Grid.FormField > StackPanel.FieldLabel">
+    <Setter Property="Orientation" Value="Horizontal"/>
+    <Setter Property="Spacing" Value="6"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Width" Value="90"/>
+</Style>
+
+<!-- Form Field Label Text -->
+<Style Selector="Grid.FormField TextBlock.FieldLabel">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Body.FontWeight}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+</Style>
+
+<!-- Form Section Container -->
+<Style Selector="Grid.FormSection">
+    <Setter Property="RowSpacing" Value="12"/>
+    <Setter Property="Margin" Value="0,0,0,24"/>
+</Style>
+
+<!-- Form Actions Panel - Standard button layout -->
+<Style Selector="Grid.FormActions">
+    <Setter Property="ColumnSpacing" Value="8"/>
+    <Setter Property="Margin" Value="0,16,0,0"/>
+</Style>
+
+<Style Selector="Grid.FormActions > StackPanel.ActionButtons">
+    <Setter Property="Orientation" Value="Horizontal"/>
+    <Setter Property="HorizontalAlignment" Value="Left"/>
+    <Setter Property="Spacing" Value="8"/>
+</Style>
+
+<Style Selector="Grid.FormActions > StackPanel.SecondaryActions">
+    <Setter Property="Orientation" Value="Horizontal"/>
+    <Setter Property="HorizontalAlignment" Value="Right"/>
+    <Setter Property="Spacing" Value="8"/>
+</Style>
+
+<!-- Standard Tab Content Layout -->
+<Style Selector="ScrollViewer.TabContent">
+    <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+    <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Canvas}"/>
+</Style>
+
+<Style Selector="ScrollViewer.TabContent > Grid.TabContainer">
+    <Setter Property="Margin" Value="8"/>
+</Style>
+
+<!-- Two-Panel Layout - Main content + side panel -->
+<Style Selector="Grid.TwoPanel">
+    <Setter Property="ColumnSpacing" Value="8"/>
+</Style>
+
+<Style Selector="Grid.TwoPanel > Border.MainPanel">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Medium}"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Medium}"/>
+</Style>
+
+<Style Selector="Grid.TwoPanel > Border.SidePanel">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Subtle}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Medium}"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Medium}"/>
+</Style>
+
+<!-- Master-Detail Layout -->
+<Style Selector="Grid.MasterDetail">
+    <Setter Property="ColumnSpacing" Value="1"/>
+</Style>
+
+<Style Selector="Grid.MasterDetail > Border.MasterPanel">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Strong}"/>
+    <Setter Property="BorderThickness" Value="0,0,1,0"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Medium}"/>
+</Style>
+
+<Style Selector="Grid.MasterDetail > Border.DetailPanel">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Large}"/>
+</Style>
+
+<!-- Header-Content-Footer Layout -->
+<Style Selector="Grid.HeaderContentFooter">
+    <Setter Property="RowSpacing" Value="0"/>
+</Style>
+
+<Style Selector="Grid.HeaderContentFooter > Border.HeaderArea">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="Padding" Value="24,12"/>
+    <Setter Property="CornerRadius" Value="8,8,0,0"/>
+</Style>
+
+<Style Selector="Grid.HeaderContentFooter > Border.ContentArea">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Large}"/>
+</Style>
+
+<Style Selector="Grid.HeaderContentFooter > Border.FooterArea">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Subtle}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="0,1,0,0"/>
+    <Setter Property="Padding" Value="24,12"/>
+    <Setter Property="CornerRadius" Value="0,0,8,8"/>
+</Style>
+
+<!-- Responsive Grid - Auto-adjusting columns -->
+<Style Selector="Grid.ResponsiveForm">
+    <Setter Property="ColumnSpacing" Value="16"/>
+    <Setter Property="RowSpacing" Value="16"/>
+</Style>
+
+<!-- Compact Form Layout -->
+<Style Selector="Grid.CompactForm">
+    <Setter Property="RowSpacing" Value="8"/>
+    <Setter Property="ColumnSpacing" Value="8"/>
+    <Setter Property="Margin" Value="8"/>
+</Style>
+
+<Style Selector="Grid.CompactForm TextBlock.FieldLabel">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+    <Setter Property="Margin" Value="0,0,0,4"/>
+</Style>
+
+</Styles>

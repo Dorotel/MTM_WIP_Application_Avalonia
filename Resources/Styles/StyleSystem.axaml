@@ -1,0 +1,38 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+<!--
+MTM Style System - Master Include File
+=====================================
+Centralized inclusion of all MTM style resources.
+This file provides a single point to include the complete style system.
+All styles are Theme V2 compatible with semantic tokens.
+WCAG 2.1 AA compliant throughout.
+
+Usage: Include this file to get access to all MTM styles
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/StyleSystem.axaml"/>
+-->
+
+<!-- Button Styles -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Buttons/PrimaryButtons.axaml"/>
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Buttons/SecondaryButtons.axaml"/>
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Buttons/IconButtons.axaml"/>
+
+<!-- Manufacturing-Specific Buttons -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Manufacturing/ActionButtons.axaml"/>
+
+<!-- Input Controls -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Inputs/TextInputs.axaml"/>
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Inputs/ComboBoxes.axaml"/>
+
+<!-- Layout Components -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Layout/Cards.axaml"/>
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Layout/Forms.axaml"/>
+
+<!-- Navigation Controls -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Navigation/Tabs.axaml"/>
+
+<!-- Typography System -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Typography/TextStyles.axaml"/>
+
+</Styles>
