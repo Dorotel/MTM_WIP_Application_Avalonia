@@ -12,9 +12,6 @@
         <!-- Material Icons Styles - REQUIRED for Material.Icons.Avalonia -->
         <materialIcons:MaterialIconStyles />
 
-        <!-- MTM Component Styles - PRIORITIZED for complete theme control -->
-        <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponents.axaml"/>
-
         <!-- Theme V2 Control Styles - Avalonia 11.3.4 compatible semantic token system -->
         <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/BaseStyles.axaml"/>
 

@@ -13,184 +13,276 @@
              x:CompileBindings="True"
              x:DataType="vm:QuickButtonsViewModel">
 
-  <UserControl.Resources>
-    <!-- Resources are now provided by DynamicResource bindings from MTM_Amber.axaml -->
-  </UserControl.Resources>
-
   <UserControl.Styles>
-    <!-- MTM Amber Theme Quick Button Styles -->
+    <!-- Theme V2 Professional Quick Action Button Styles with Enhanced Gradients -->
     <Style Selector="Button.quick-button">
-      <Setter Property="Padding" Value="8,8"/>
-      <Setter Property="Margin" Value="3,2"/>
+      <Setter Property="Padding" Value="14,12"/>
+      <Setter Property="Margin" Value="6,4"/>
       <Setter Property="HorizontalAlignment" Value="Stretch"/>
       <Setter Property="VerticalAlignment" Value="Stretch"/>
       <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
-      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="CornerRadius" Value="10"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
-      <Setter Property="MinHeight" Value="36"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}"/>
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Gray.25}" Offset="0" />
+            <GradientStop Color="{DynamicResource ThemeV2.Background.Card}" Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Primary}"/>
+      <Setter Property="MinHeight" Value="48"/>
       <Setter Property="Cursor" Value="Hand"/>
-      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+        </Transitions>
+      </Setter>
     </Style>
 
+    <!-- Beautiful Enhanced Hover State with Dynamic Gradient -->
     <Style Selector="Button.quick-button:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.75}" Offset="0" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.150}" Offset="0.5" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.100}" Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+      <Setter Property="BorderBrush">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.400}" Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
       <Setter Property="BorderThickness" Value="2"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
     </Style>
 
+    <!-- Professional Pressed State with Vibrant Active Gradient -->
     <Style Selector="Button.quick-button:pressed">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryAction}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0.3" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="BorderThickness" Value="3"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="FontWeight" Value="Bold"/>
     </Style>
 
-    <!-- MTM Position indicator style -->
+    <!-- Enhanced Position Indicator with Professional Gradient -->
     <Style Selector="Border.position-indicator">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
-      <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="Width" Value="24"/>
-      <Setter Property="Height" Value="24"/>
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0.3" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="0.7" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.400}" Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Width" Value="32"/>
+      <Setter Property="Height" Value="32"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
-    <!-- MTM Content text styles -->
+    <Style Selector="Border.position-indicator:pointerover">
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.800}" Offset="0" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0.5" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- Professional Enhanced Text Styles for Better Readability -->
     <Style Selector="TextBlock.primary-text">
       <Setter Property="FontWeight" Value="SemiBold"/>
-      <Setter Property="FontSize" Value="12"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Primary}"/>
       <Setter Property="TextWrapping" Value="Wrap"/>
       <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+      <Setter Property="LineHeight" Value="1.2"/>
     </Style>
 
     <Style Selector="TextBlock.secondary-text">
-      <Setter Property="FontSize" Value="10"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Secondary}"/>
       <Setter Property="TextWrapping" Value="Wrap"/>
       <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
     </Style>
 
     <Style Selector="TextBlock.operation-text">
-      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="FontSize" Value="11"/>
       <Setter Property="FontWeight" Value="Bold"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="White"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
-      <Setter Property="Margin" Value="4,0,0,0"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="TextAlignment" Value="Center"/>
     </Style>
 
-    <!-- Header panel styling -->
+    <!-- Beautiful Header Panel with Professional Styling -->
     <Style Selector="Border.header-panel">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"/>
-      <Setter Property="CornerRadius" Value="6,6,0,0"/>
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+      <Setter Property="CornerRadius" Value="8,8,0,0"/>
     </Style>
 
-    <!-- Context menu styling -->
+    <Style Selector="Border.header-panel:pointerover">
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- Enhanced Context Menu Styling -->
     <Style Selector="ContextMenu">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Accent}"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="CornerRadius" Value="6"/>
     </Style>
 
     <Style Selector="MenuItem">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Primary}"/>
       <Setter Property="Background" Value="Transparent"/>
     </Style>
 
     <Style Selector="MenuItem:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="Foreground" Value="White"/>
     </Style>
 
-    <!-- Header Toggle Button Styles - Swapped selected/unselected with inverted hover -->
+    <!-- Beautiful Header Toggle Button Styles with Professional Gradients -->
     <Style Selector="Button.header-toggle-button">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TooltipForeground}"/>
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
+            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Accent}"/>
+      <Setter Property="Foreground" Value="White"/>
       <Setter Property="BorderThickness" Value="2"/>
-      <Setter Property="CornerRadius" Value="6"/>
-      <Setter Property="Padding" Value="12,8"/>
-      <Setter Property="Margin" Value="4,2"/>
-      <Setter Property="MinHeight" Value="36"/>
-      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="16,10"/>
+      <Setter Property="Margin" Value="6,4"/>
+      <Setter Property="MinHeight" Value="44"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
 
+    <!-- Enhanced hover state for header toggle buttons -->
     <Style Selector="Button.header-toggle-button:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Primary}"/>
+      <Setter Property="BorderThickness" Value="3"/>
     </Style>
 
+    <!-- Active state for header toggle buttons -->
     <Style Selector="Button.header-toggle-button.active">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="BorderThickness" Value="3"/>
     </Style>
 
-    <!-- Icon color matching for header toggle buttons -->
+    <!-- Icon styling for header toggle buttons -->
     <Style Selector="Button.header-toggle-button materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="White"/>
     </Style>
 
     <Style Selector="Button.header-toggle-button:pointerover materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
     </Style>
 
     <Style Selector="Button.header-toggle-button.active materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
     </Style>
 
-    <!-- TextBlock color matching for header toggle buttons -->
+    <!-- Text styling for header toggle buttons -->
     <Style Selector="Button.header-toggle-button TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="White"/>
     </Style>
 
     <Style Selector="Button.header-toggle-button:pointerover TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Primary}"/>
     </Style>
 
     <Style Selector="Button.header-toggle-button.active TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
     </Style>
 
-    <!-- Footer Toggle Button Styles - Swapped coloring with inverted hover -->
+    <!-- Elegant Footer Toggle Button Styles -->
     <Style Selector="Button.toggle-button">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.TooltipForeground}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="Foreground" Value="White"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="Padding" Value="6,4"/>
-      <Setter Property="Margin" Value="2,0"/>
-      <Setter Property="MinHeight" Value="28"/>
-      <Setter Property="MinWidth" Value="28"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Padding" Value="8,6"/>
+      <Setter Property="Margin" Value="3,0"/>
+      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="MinWidth" Value="32"/>
+      <Setter Property="FontWeight" Value="Medium"/>
     </Style>
 
     <Style Selector="Button.toggle-button:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
     <Style Selector="Button.toggle-button.active">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
+    <!-- Icon styling for toggle buttons -->
     <Style Selector="Button.toggle-button materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="White"/>
     </Style>
 
     <Style Selector="Button.toggle-button:pointerover materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
     </Style>
 
     <Style Selector="Button.toggle-button.active materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
     </Style>
   </UserControl.Styles>
 
@@ -198,11 +290,18 @@
   <Grid Margin="4" Background="Transparent">
     <!-- Main content with header, content, and footer -->
     <Grid x:Name="MainContentGrid" RowDefinitions="Auto,*,Auto">
-      <!-- Simplified Header with Toggle Buttons -->
+      <!-- Simplified Header with Toggle Buttons and Professional Effects -->
       <Border Grid.Row="0"
               Classes="header-panel"
-              Padding="12,8"
-              Margin="0,0,0,8">
+              Padding="16,12"
+              Margin="0,0,0,12">
+        <Border.Effect>
+          <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
+                            BlurRadius="8"
+                            OffsetX="0"
+                            OffsetY="3"
+                            Opacity="0.4"/>
+        </Border.Effect>
         <Grid ColumnDefinitions="*,Auto,*">
           <!-- Left: Quick Actions Button -->
           <Button Grid.Column="0"
@@ -212,9 +311,9 @@
                   HorizontalAlignment="Left"
                   VerticalAlignment="Center"
                   ToolTip.Tip="Show Quick Actions">
-            <StackPanel Orientation="Horizontal" Spacing="6">
-              <materialIcons:MaterialIcon Kind="Flash" Width="14" Height="14"/>
-              <TextBlock Text="Quick Actions" FontSize="11" FontWeight="Medium"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <materialIcons:MaterialIcon Kind="Flash" Width="16" Height="16"/>
+              <TextBlock Text="Quick Actions" FontSize="12" FontWeight="SemiBold"/>
             </StackPanel>
           </Button>
 
@@ -226,9 +325,9 @@
                   HorizontalAlignment="Right"
                   VerticalAlignment="Center"
                   ToolTip.Tip="Show Transaction History">
-            <StackPanel Orientation="Horizontal" Spacing="6">
-              <materialIcons:MaterialIcon Kind="ClockOutline" Width="14" Height="14"/>
-              <TextBlock Text="History" FontSize="11" FontWeight="Medium"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <materialIcons:MaterialIcon Kind="ClockOutline" Width="16" Height="16"/>
+              <TextBlock Text="History" FontSize="12" FontWeight="SemiBold"/>
             </StackPanel>
           </Button>
         </Grid>
@@ -256,6 +355,13 @@
                         Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ExecuteQuickActionCommand}"
                         CommandParameter="{Binding}"
                         ToolTip.Tip="{Binding ToolTipText}">
+                  <Button.Effect>
+                    <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
+                                      BlurRadius="6"
+                                      OffsetX="0"
+                                      OffsetY="3"
+                                      Opacity="0.25"/>
+                  </Button.Effect>
                   <Button.ContextMenu>
                     <ContextMenu>
                       <MenuItem Header="🗑️ Remove Button"
@@ -282,54 +388,85 @@
                                 ToolTip.Tip="Restore default button order"/>
                     </ContextMenu>
                   </Button.ContextMenu>
-                  <Grid ColumnDefinitions="Auto,8,*,Auto,Auto">
-                    <!-- MTM Industrial position indicator -->
+                  <Grid ColumnDefinitions="Auto,16,*,Auto,Auto">
+                    <!-- Enhanced position indicator with professional gradient and shadow -->
                     <Border Grid.Column="0" Classes="position-indicator">
+                      <Border.Effect>
+                        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.600}"
+                                          BlurRadius="3"
+                                          OffsetX="0"
+                                          OffsetY="2"
+                                          Opacity="0.4"/>
+                      </Border.Effect>
                       <TextBlock Text="{Binding Position}"
-                                 Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                                 FontSize="11"
+                                 Foreground="White"
+                                 FontSize="13"
                                  FontWeight="Bold"
                                  HorizontalAlignment="Center"
                                  VerticalAlignment="Center"/>
                     </Border>
 
-                    <!-- Button content with MTM typography - Only Part ID -->
-                    <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
+                    <!-- Enhanced Part ID Display with Better Typography -->
+                    <StackPanel Grid.Column="2" Spacing="3" VerticalAlignment="Center">
                       <TextBlock Text="{Binding DisplayText}"
-                                 Classes="primary-text"/>
+                                 Classes="primary-text"
+                                 MaxLines="2"/>
                     </StackPanel>
 
-                    <!-- Quantity indicator with lighter background -->
+                    <!-- Professional Quantity Indicator with Enhanced Styling -->
                     <Border Grid.Column="3"
-                            Background="Transparent"
-                            CornerRadius="4"
-                            Padding="6,2"
-                            Margin="0,0,4,0"
+                            Background="{DynamicResource ThemeV2.Background.Card}"
+                            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="10,6"
+                            Margin="0,0,8,0"
                             VerticalAlignment="Center">
-                      <TextBlock FontSize="10"
-                                 FontWeight="Bold"
-                                 Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                      <Border.Effect>
+                        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
+                                          BlurRadius="2"
+                                          OffsetX="0"
+                                          OffsetY="1"
+                                          Opacity="0.15"/>
+                      </Border.Effect>
+                      <TextBlock FontSize="12"
+                                 FontWeight="SemiBold"
+                                 Foreground="{DynamicResource ThemeV2.Text.Secondary}"
                                  ToolTip.Tip="Quantity">
-                        <Run Text="x "/>
-                        <Run Text="{Binding Quantity}"/>
+                        <Run Text="× "/>
+                        <Run Text="{Binding Quantity}" FontWeight="Bold"/>
                       </TextBlock>
                     </Border>
 
-                    <!-- Operation indicator with lighter background and Op. label -->
+                    <!-- Ultra-Professional Operation Indicator with Multi-Layer Gradient -->
                     <Border Grid.Column="4"
-                            Background="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"
-                            CornerRadius="4"
-                            Padding="6,2"
+                            CornerRadius="8"
+                            Padding="10,6"
                             VerticalAlignment="Center">
-                      <StackPanel Spacing="1" HorizontalAlignment="Center">
+                      <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                          <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0" />
+                          <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0.4" />
+                          <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
+                        </LinearGradientBrush>
+                      </Border.Background>
+                      <Border.Effect>
+                        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.500}"
+                                          BlurRadius="3"
+                                          OffsetX="0"
+                                          OffsetY="2"
+                                          Opacity="0.3"/>
+                      </Border.Effect>
+                      <StackPanel Spacing="2" HorizontalAlignment="Center">
                         <TextBlock Text="Op."
-                                   FontSize="8"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                                   HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding Operation}"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                                    FontSize="10"
+                                   FontWeight="SemiBold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   Opacity="0.9"/>
+                        <TextBlock Text="{Binding Operation}"
+                                   Foreground="White"
+                                   FontSize="12"
                                    FontWeight="Bold"
                                    HorizontalAlignment="Center"
                                    ToolTip.Tip="Operation Number"/>
@@ -378,62 +515,69 @@
 
       </Grid>
 
-      <!-- Comprehensive Footer Section with QoL Buttons and Debug Information -->
+      <!-- Enhanced Footer Section with Professional QoL Buttons -->
       <Border Grid.Row="2"
               Classes="header-panel"
-              Padding="8"
-              Margin="0,8,0,0">
-        <!-- QoL Buttons Row - Icon-only with tooltips for compact layout -->
+              Padding="12,8"
+              Margin="0,12,0,0">
+        <Border.Effect>
+          <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
+                            BlurRadius="6"
+                            OffsetX="0"
+                            OffsetY="-2"
+                            Opacity="0.3"/>
+        </Border.Effect>
+        <!-- Professional QoL Buttons Row with enhanced icons -->
         <StackPanel Orientation="Horizontal"
-                    Spacing="2"
+                    Spacing="4"
                     HorizontalAlignment="Center">
 
-          <!-- New Button -->
+          <!-- Enhanced New Button -->
           <Button Classes="toggle-button"
                   Command="{Binding NewQuickButtonCommand}"
                   ToolTip.Tip="Create new quick button">
-            <materialIcons:MaterialIcon Kind="Plus" Width="14" Height="14"/>
+            <materialIcons:MaterialIcon Kind="Plus" Width="16" Height="16"/>
           </Button>
 
-          <!-- Refresh All Button -->
+          <!-- Enhanced Refresh All Button -->
           <Button Classes="toggle-button"
                   Command="{Binding RefreshButtonsCommand}"
                   ToolTip.Tip="Refresh quick buttons from database">
-            <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14"/>
+            <materialIcons:MaterialIcon Kind="Refresh" Width="16" Height="16"/>
           </Button>
 
-          <!-- Clear All Button -->
+          <!-- Enhanced Clear All Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ClearAllButtonsCommand}"
                   ToolTip.Tip="Remove all quick actions">
-            <materialIcons:MaterialIcon Kind="DeleteSweep" Width="14" Height="14"/>
+            <materialIcons:MaterialIcon Kind="DeleteSweep" Width="16" Height="16"/>
           </Button>
 
-          <!-- Reset Order Button -->
+          <!-- Enhanced Reset Order Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ResetOrderCommand}"
                   ToolTip.Tip="Reset button order to default">
-            <materialIcons:MaterialIcon Kind="SortAlphabeticalAscending" Width="14" Height="14"/>
+            <materialIcons:MaterialIcon Kind="SortAlphabeticalAscending" Width="16" Height="16"/>
           </Button>
 
-          <!-- Export Settings Button -->
+          <!-- Enhanced Export Settings Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ExportQuickButtonsCommand}"
                   ToolTip.Tip="Export quick buttons configuration">
-            <materialIcons:MaterialIcon Kind="Export" Width="14" Height="14"/>
+            <materialIcons:MaterialIcon Kind="Export" Width="16" Height="16"/>
           </Button>
 
-          <!-- Import Settings Button -->
+          <!-- Enhanced Import Settings Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ImportQuickButtonsCommand}"
                   ToolTip.Tip="Import quick buttons configuration">
-            <materialIcons:MaterialIcon Kind="Import" Width="14" Height="14"/>
+            <materialIcons:MaterialIcon Kind="Import" Width="16" Height="16"/>
           </Button>
 
-          <!-- Help/Info Button -->
+          <!-- Enhanced Help/Info Button -->
           <Button Classes="toggle-button"
                   ToolTip.Tip="Show quick buttons help and keyboard shortcuts">
-            <materialIcons:MaterialIcon Kind="HelpCircleOutline" Width="14" Height="14"/>
+            <materialIcons:MaterialIcon Kind="HelpCircleOutline" Width="16" Height="16"/>
           </Button>
 
         </StackPanel>

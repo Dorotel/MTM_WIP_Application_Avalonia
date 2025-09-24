@@ -47,9 +47,9 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
         <SolidColorBrush x:Key="ThemeV2.Content.Secondary" Color="{StaticResource ThemeV2.Color.Gray.700}"/>
         <SolidColorBrush x:Key="ThemeV2.Content.Tertiary" Color="{StaticResource ThemeV2.Color.Gray.500}"/>
 
-        <!-- Muted and disabled states -->
+        <!-- Muted and disabled states with better visibility -->
         <SolidColorBrush x:Key="ThemeV2.Content.Disabled" Color="{StaticResource ThemeV2.Color.Gray.400}"/>
-        <SolidColorBrush x:Key="ThemeV2.Content.Placeholder" Color="{StaticResource ThemeV2.Color.Gray.400}"/>
+        <SolidColorBrush x:Key="ThemeV2.Content.Placeholder" Color="{StaticResource ThemeV2.Color.Gray.600}"/>
 
         <!-- Text for dark surfaces -->
         <SolidColorBrush x:Key="ThemeV2.Content.OnDark" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
@@ -90,8 +90,8 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
              INPUT FIELD THEME ASSIGNMENTS (LIGHT)
              =========================================== -->
 
-        <!-- Clean white inputs with subtle borders -->
-        <SolidColorBrush x:Key="ThemeV2.Input.Background" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <!-- Subtly tinted inputs with enhanced watermark visibility -->
+        <SolidColorBrush x:Key="ThemeV2.Input.Background" Color="{StaticResource ThemeV2.Color.Gray.25}"/>
         <SolidColorBrush x:Key="ThemeV2.Input.Background.Hover" Color="{StaticResource ThemeV2.Color.Gray.50}"/>
         <SolidColorBrush x:Key="ThemeV2.Input.Background.Focus" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
         <SolidColorBrush x:Key="ThemeV2.Input.Background.Disabled" Color="{StaticResource ThemeV2.Color.Gray.100}"/>
@@ -102,7 +102,7 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
         <SolidColorBrush x:Key="ThemeV2.Input.Border.Error" Color="{StaticResource ThemeV2.Color.Red.600}"/>
 
         <SolidColorBrush x:Key="ThemeV2.Input.Content" Color="{StaticResource ThemeV2.Color.Gray.900}"/>
-        <SolidColorBrush x:Key="ThemeV2.Input.Placeholder" Color="{StaticResource ThemeV2.Color.Gray.500}"/>
+        <SolidColorBrush x:Key="ThemeV2.Input.Placeholder" Color="{StaticResource ThemeV2.Color.Gray.600}"/>
 
         <!-- ===========================================
              NAVIGATION THEME ASSIGNMENTS (LIGHT)

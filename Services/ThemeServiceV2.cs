@@ -103,10 +103,13 @@ namespace MTM_WIP_Application_Avalonia.Services
                 // Determine system following state
                 _isSystemThemeEnabled = themeVariant == ThemeVariant.Default;
 
-                // Apply theme to Avalonia application
+                // Apply theme to Avalonia application on UI thread
                 if (Application.Current is not null)
                 {
-                    Application.Current.RequestedThemeVariant = themeVariant;
+                    await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Application.Current.RequestedThemeVariant = themeVariant;
+                    });
                     _logger.LogInformation("Applied theme variant to Avalonia application: {ThemeVariant}", themeVariant);
                 }
 
