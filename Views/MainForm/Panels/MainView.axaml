@@ -243,7 +243,7 @@
                 BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                 BorderThickness="1"
                 CornerRadius="12"
-                Margin="8,8,4,8"
+                Margin="8,8,8,8"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 ClipToBounds="True">
@@ -442,7 +442,8 @@
       <!-- Right Panel: Collapsible Quick Actions with increased width and matching drop shadow -->
       <Border Grid.Column="1"
               Background="Transparent"
-              Margin="4,8,8,8"
+              Margin="8,8,8,8"
+              ClipToBounds="false"
               HorizontalAlignment="Right"
               VerticalAlignment="Stretch"
               MaxWidth="320"
