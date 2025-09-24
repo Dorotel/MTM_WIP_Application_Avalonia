@@ -16,25 +16,25 @@
   <UserControl.Styles>
     <!-- Success Overlay Styles -->
     <Style Selector="Border.success-overlay">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SuccessLightBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+      <Setter Property="Background" Value="#C8E6C9" />
+      <Setter Property="BorderBrush" Value="#4CAF50" />
       <Setter Property="BorderThickness" Value="2" />
       <Setter Property="CornerRadius" Value="12" />
-      <Setter Property="BoxShadow" Value="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,8,24,0'}" />
+      <Setter Property="BoxShadow" Value="{Binding Source=#EEEEEE, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,8,24,0'}" />
     </Style>
 
     <!-- Error Overlay Styles -->
     <Style Selector="Border.error-overlay">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="Background" Value="#FFCDD2" />
+      <Setter Property="BorderBrush" Value="#F44336" />
       <Setter Property="BorderThickness" Value="2" />
       <Setter Property="CornerRadius" Value="12" />
-      <Setter Property="BoxShadow" Value="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,8,24,0'}" />
+      <Setter Property="BoxShadow" Value="{Binding Source=#EEEEEE, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,8,24,0'}" />
     </Style>
 
     <!-- Success Icon Styling -->
     <Style Selector="materialIcons|MaterialIcon.success-icon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+      <Setter Property="Foreground" Value="#4CAF50" />
       <Setter Property="Width" Value="48" />
       <Setter Property="Height" Value="48" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -43,7 +43,7 @@
 
     <!-- Error Icon Styling -->
     <Style Selector="materialIcons|MaterialIcon.error-icon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="Foreground" Value="#F44336" />
       <Setter Property="Width" Value="48" />
       <Setter Property="Height" Value="48" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -52,7 +52,7 @@
 
     <!-- Success Message Styling -->
     <Style Selector="TextBlock.success-title">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessDarkBrush}" />
+      <Setter Property="Foreground" Value="#388E3C" />
       <Setter Property="FontSize" Value="18" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -62,7 +62,7 @@
 
     <!-- Error Message Styling -->
     <Style Selector="TextBlock.error-title">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="Foreground" Value="#F44336" />
       <Setter Property="FontSize" Value="18" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -72,7 +72,7 @@
 
     <!-- Error Details Styling -->
     <Style Selector="TextBlock.error-details">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="Foreground" Value="#424242" />
       <Setter Property="FontSize" Value="12" />
       <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -83,7 +83,7 @@
 
     <!-- Success Details Styling -->
     <Style Selector="TextBlock.success-details">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="Foreground" Value="#424242" />
       <Setter Property="FontSize" Value="12" />
       <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -94,8 +94,8 @@
 
     <!-- Error Progress Bar Styling -->
     <Style Selector="ProgressBar.error-progress">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="Foreground" Value="#F44336" />
+      <Setter Property="Background" Value="#EEEEEE" />
       <Setter Property="Height" Value="3" />
       <Setter Property="CornerRadius" Value="2" />
       <Setter Property="Margin" Value="0,8,0,0" />
@@ -103,8 +103,8 @@
 
     <!-- Progress Bar Styling -->
     <Style Selector="ProgressBar.success-progress">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="Foreground" Value="#4CAF50" />
+      <Setter Property="Background" Value="#EEEEEE" />
       <Setter Property="Height" Value="3" />
       <Setter Property="CornerRadius" Value="2" />
       <Setter Property="Margin" Value="0,8,0,0" />
@@ -112,7 +112,7 @@
 
     <!-- Error Action Button Styling -->
     <Style Selector="Button.error-action">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="Background" Value="#F44336" />
       <Setter Property="Foreground" Value="White" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="FontSize" Value="12" />
@@ -124,12 +124,12 @@
     </Style>
 
     <Style Selector="Button.error-action:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorDarkBrush}" />
+      <Setter Property="Background" Value="#D32F2F" />
     </Style>
 
     <!-- Continue Button Styling -->
     <Style Selector="Button.continue-action">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryBrush}" />
+      <Setter Property="Background" Value="#0078D4" />
       <Setter Property="Foreground" Value="White" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="FontSize" Value="12" />
@@ -141,14 +141,14 @@
     </Style>
 
     <Style Selector="Button.continue-action:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryDarkBrush}" />
+      <Setter Property="Background" Value="#106EBE" />
     </Style>
 
     <!-- Dismiss Button Styling -->
     <Style Selector="Button.dismiss-button">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="Foreground" Value="#424242" />
       <Setter Property="FontSize" Value="10" />
       <Setter Property="Padding" Value="8,4" />
       <Setter Property="CornerRadius" Value="4" />
@@ -156,7 +156,7 @@
     </Style>
 
     <Style Selector="Button.dismiss-button:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+      <Setter Property="Background" Value="#F5F5F5" />
       <Setter Property="Opacity" Value="1.0" />
     </Style>
 
@@ -230,7 +230,7 @@
         <TextBlock Grid.Row="4"
                    Text="Dismissing automatically..."
                    FontSize="10"
-                   Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                   Foreground="#424242"
                    HorizontalAlignment="Center"
                    Opacity="0.6"
                    IsVisible="{Binding IsAnimating}" />
@@ -239,7 +239,7 @@
         <TextBlock Grid.Row="5"
                    Text="Emergency shutdown in 30s if unresponsive • Ctrl+Alt+Q (Exit) • Ctrl+Alt+C (Continue)"
                    FontSize="8"
-                   Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                   Foreground="#424242"
                    HorizontalAlignment="Center"
                    Opacity="0.6"
                    FontStyle="Italic"

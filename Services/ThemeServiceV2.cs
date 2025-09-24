@@ -396,5 +396,30 @@ namespace MTM_WIP_Application_Avalonia.Services
                 throw;
             }
         }
+
+        /// <summary>
+        /// Initializes the theme system with comprehensive setup
+        /// Legacy method for compatibility with old theme system references
+        /// Delegates to InitializeAsync() for consistency
+        /// </summary>
+        /// <returns>Task representing the async initialization</returns>
+        public async Task InitializeThemeSystemAsync()
+        {
+            _logger.LogDebug("InitializeThemeSystemAsync called - delegating to InitializeAsync");
+            await InitializeAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Applies custom colors to the current theme
+        /// Legacy method for compatibility with old theme system references
+        /// No-op in V2 system as custom colors are not supported
+        /// </summary>
+        /// <param name="colors">Color dictionary (ignored in V2 system)</param>
+        /// <returns>Completed task</returns>
+        public Task ApplyCustomColorsAsync(Dictionary<string, object> colors)
+        {
+            _logger.LogInformation("ApplyCustomColorsAsync called - no-op in Theme V2 system. Custom colors not supported.");
+            return Task.CompletedTask;
+        }
     }
 }

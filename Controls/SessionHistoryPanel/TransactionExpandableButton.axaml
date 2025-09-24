@@ -11,31 +11,31 @@
   <UserControl.Styles>
     <!-- Transaction Type Colors -->
     <Style Selector="Border.transaction-in">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionInBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.TransactionInBrush}"/>
+      <Setter Property="Background" Value="#4CAF50"/>
+      <Setter Property="BorderBrush" Value="#4CAF50"/>
     </Style>
     
     <Style Selector="Border.transaction-out">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionOutBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.TransactionOutBrush}"/>
+      <Setter Property="Background" Value="#F44336"/>
+      <Setter Property="BorderBrush" Value="#F44336"/>
     </Style>
     
     <Style Selector="Border.transaction-transfer">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionTransferBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.TransactionTransferBrush}"/>
+      <Setter Property="Background" Value="#FFB74D"/>
+      <Setter Property="BorderBrush" Value="#FFB74D"/>
     </Style>
 
     <!-- Light background variants for content area -->
     <Style Selector="Border.transaction-in-light">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionInLightBrush}"/>
+      <Setter Property="Background" Value="#C8E6C9"/>
     </Style>
     
     <Style Selector="Border.transaction-out-light">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionOutLightBrush}"/>
+      <Setter Property="Background" Value="#FFCDD2"/>
     </Style>
     
     <Style Selector="Border.transaction-transfer-light">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.TransactionTransferLightBrush}"/>
+      <Setter Property="Background" Value="#FFE0B2"/>
     </Style>
 
     <!-- Header text style -->
@@ -50,12 +50,12 @@
     <Style Selector="TextBlock.content-label">
       <Setter Property="FontWeight" Value="Medium"/>
       <Setter Property="FontSize" Value="11"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+      <Setter Property="Foreground" Value="#212121"/>
     </Style>
     
     <Style Selector="TextBlock.content-value">
       <Setter Property="FontSize" Value="11"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+      <Setter Property="Foreground" Value="#424242"/>
     </Style>
   </UserControl.Styles>
 
@@ -79,7 +79,7 @@
           
           <!-- Transaction Type Icon -->
           <Border Grid.Column="0"
-                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+                  Background="#FFFFFF"
                   CornerRadius="12"
                   Width="24"
                   Height="24"
@@ -102,7 +102,7 @@
             <TextBlock x:Name="OperationText"
                        Text="Operation 100"
                        FontSize="10"
-                       Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
+                       Foreground="#FFFFFF"
                        Opacity="0.9"/>
           </StackPanel>
           
@@ -116,7 +116,7 @@
                        HorizontalAlignment="Center"/>
             <TextBlock Text="qty"
                        FontSize="9"
-                       Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
+                       Foreground="#FFFFFF"
                        Opacity="0.8"
                        HorizontalAlignment="Center"/>
           </StackPanel>
@@ -127,7 +127,7 @@
                                  Kind="ChevronRight"
                                  Width="16"
                                  Height="16"
-                                 Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
+                                 Foreground="#FFFFFF"
                                  VerticalAlignment="Center"/>
         </Grid>
       </Border>
@@ -145,7 +145,7 @@
           <!-- Left Column - Location and Time -->
           <Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
             <material:MaterialIcon Grid.Column="0" Kind="MapMarker" Width="16" Height="16" 
-                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                                   Foreground="#1976D2"/>
             <TextBlock Grid.Column="2" Text="Location:" Classes="content-label" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="4" x:Name="LocationText" Text="WC01" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
@@ -153,7 +153,7 @@
           <!-- Right Column - User -->
           <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
             <material:MaterialIcon Grid.Column="0" Kind="Account" Width="16" Height="16" 
-                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                                   Foreground="#1976D2"/>
             <TextBlock Grid.Column="2" Text="User:" Classes="content-label" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="4" x:Name="UserText" Text="admin" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
@@ -161,7 +161,7 @@
           <!-- Left Column - Transaction Time -->
           <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
             <material:MaterialIcon Grid.Column="0" Kind="Clock" Width="16" Height="16" 
-                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                                   Foreground="#1976D2"/>
             <TextBlock Grid.Column="2" Text="Time:" Classes="content-label" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="4" x:Name="TransactionTimeText" Text="14:30:22" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
@@ -169,7 +169,7 @@
           <!-- Right Column - Status -->
           <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
             <material:MaterialIcon Grid.Column="0" Kind="CheckCircle" Width="16" Height="16" 
-                                   Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
+                                   Foreground="#4CAF50"/>
             <TextBlock Grid.Column="2" Text="Status:" Classes="content-label" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="4" x:Name="StatusText" Text="Completed" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
@@ -177,7 +177,7 @@
           <!-- Left Column - Item Type -->
           <Grid Grid.Row="2" Grid.Column="0" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
             <material:MaterialIcon Grid.Column="0" Kind="Package" Width="16" Height="16" 
-                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                                   Foreground="#1976D2"/>
             <TextBlock Grid.Column="2" Text="Type:" Classes="content-label" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="4" x:Name="ItemTypeText" Text="WIP" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
@@ -185,7 +185,7 @@
           <!-- Right Column - Transaction ID -->
           <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
             <material:MaterialIcon Grid.Column="0" Kind="Identifier" Width="16" Height="16" 
-                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                                   Foreground="#1976D2"/>
             <TextBlock Grid.Column="2" Text="ID:" Classes="content-label" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="4" x:Name="TransactionIdText" Text="12345" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
@@ -194,7 +194,7 @@
           <Grid Grid.Row="3" Grid.ColumnSpan="2" ColumnDefinitions="Auto,8,Auto,4,*" 
                 x:Name="NotesPanel" IsVisible="False" VerticalAlignment="Top">
             <material:MaterialIcon Grid.Column="0" Kind="NoteText" Width="16" Height="16" 
-                                   Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" 
+                                   Foreground="#1976D2" 
                                    VerticalAlignment="Top" Margin="0,2,0,0"/>
             <TextBlock Grid.Column="2" Text="Notes:" Classes="content-label" VerticalAlignment="Top"/>
             <TextBlock Grid.Column="4" x:Name="NotesText" Text="" Classes="content-value" 

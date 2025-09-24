@@ -11,7 +11,7 @@
         Title="MTM WIP Application"
         Width="1200"
         Height="850"
-        Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+        Background="#FAFAFA">
 
     <!-- Root Grid required for overlay support -->
     <Grid>

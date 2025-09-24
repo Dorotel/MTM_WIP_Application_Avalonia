@@ -12,26 +12,26 @@
         <StackPanel Spacing="16">
             
             <!-- Header Section -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
+            <Border Background="#2196F3"
                     CornerRadius="8"
                     Padding="16">
                 <StackPanel>
                     <TextBlock Text="💾 Backup &amp; Recovery"
                                FontSize="20"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                               Foreground="#FFFFFF"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Protect your data with automated backups and recovery options"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                               Foreground="#FFFFFF"
                                HorizontalAlignment="Center"
                                Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
 
             <!-- Quick Actions Section -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="16">
@@ -41,7 +41,7 @@
                                Text="⚡ Quick Actions"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,16"/>
                     
                     <UniformGrid Grid.Row="1" Columns="2" Rows="2">
@@ -101,8 +101,8 @@
             </Border>
 
             <!-- Backup Status -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="16">
@@ -112,23 +112,23 @@
                                Text="📊 Backup Status"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,12"/>
                     
                     <Grid Grid.Row="1" ColumnDefinitions="*,*" Margin="0,0,0,12">
                         <StackPanel Grid.Column="0" Spacing="4">
                             <TextBlock Text="🕒 Last Backup"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                                       Foreground="#424242"/>
                             <TextBlock Text="{Binding LastBackupDate}"
                                        FontSize="14"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                                       Foreground="#212121"/>
                         </StackPanel>
                         
                         <StackPanel Grid.Column="1" Spacing="4">
                             <TextBlock Text="📍 Backup Location"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                                       Foreground="#424242"/>
                             <TextBox Text="{Binding BackupLocation}"
                                      IsReadOnly="False"
                                      FontSize="12"
@@ -140,14 +140,14 @@
                     <TextBlock Grid.Row="2"
                                Text="{Binding BackupStatus}"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"
+                               Foreground="#2196F3"
                                FontWeight="SemiBold"/>
                 </Grid>
             </Border>
 
             <!-- Backup Configuration -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="16">
@@ -157,7 +157,7 @@
                                Text="⚙️ Backup Configuration"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,16"/>
                     
                     <Grid Grid.Row="1" ColumnDefinitions="*,*,Auto" RowDefinitions="Auto,Auto">
@@ -165,7 +165,7 @@
                         <StackPanel Grid.Column="0" Grid.Row="0" Spacing="8">
                             <TextBlock Text="🔄 Automatic Backup"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                                       Foreground="#424242"/>
                             <CheckBox IsChecked="{Binding AutoBackupEnabled}"
                                       Content="Enable automatic backups"/>
                         </StackPanel>
@@ -174,7 +174,7 @@
                         <StackPanel Grid.Column="1" Grid.Row="0" Spacing="8">
                             <TextBlock Text="📅 Retention Period"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                                       Foreground="#424242"/>
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <NumericUpDown Value="{Binding BackupRetentionDays}"
                                                Minimum="1"
@@ -196,8 +196,8 @@
             </Border>
 
             <!-- Backup History -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="16">
@@ -207,15 +207,15 @@
                                Text="📋 Backup History"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,12"/>
                     
                     <ScrollViewer Grid.Row="1" Height="200" VerticalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding BackupHistory}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-                                            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                                    <Border Background="#F5F5F5"
+                                            BorderBrush="#E0E0E0"
                                             BorderThickness="0,0,0,1"
                                             Padding="12,8">
                                         
@@ -224,42 +224,42 @@
                                             <StackPanel Grid.Column="0">
                                                 <TextBlock Text="{Binding FileName}"
                                                            FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                                                           Foreground="#212121"/>
                                                 <TextBlock Text="{Binding FormattedDate}"
                                                            FontSize="12"
-                                                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                                                           Foreground="#424242"/>
                                             </StackPanel>
                                             
                                             <!-- Size -->
                                             <TextBlock Grid.Column="1"
                                                        Text="{Binding Size}"
                                                        FontSize="12"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                                                       Foreground="#424242"
                                                        VerticalAlignment="Center"
                                                        Margin="8,0"/>
                                             
                                             <!-- Type -->
                                             <Border Grid.Column="2"
-                                                    Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
+                                                    Background="#2196F3"
                                                     CornerRadius="4"
                                                     Padding="6,2"
                                                     Margin="4,0">
                                                 <TextBlock Text="{Binding Type}"
                                                            FontSize="10"
                                                            FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                                                           Foreground="#FFFFFF"/>
                                             </Border>
                                             
                                             <!-- Status -->
                                             <Border Grid.Column="3"
-                                                    Background="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                                                    Background="#4CAF50"
                                                     CornerRadius="4"
                                                     Padding="6,2"
                                                     Margin="4,0">
                                                 <TextBlock Text="{Binding Status}"
                                                            FontSize="10"
                                                            FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                                                           Foreground="#FFFFFF"/>
                                             </Border>
                                             
                                             <!-- Delete Button -->
@@ -281,8 +281,8 @@
             </Border>
 
             <!-- Scheduled Backups -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="16">
@@ -292,14 +292,14 @@
                                Text="⏰ Scheduled Backups"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,12"/>
                     
                     <ItemsControl Grid.Row="1" ItemsSource="{Binding ScheduledBackups}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-                                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+                                <Border Background="#F5F5F5"
+                                        BorderBrush="#E0E0E0"
                                         BorderThickness="1"
                                         CornerRadius="6"
                                         Padding="12"
@@ -316,33 +316,33 @@
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Text="{Binding Name}"
                                                        FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                                                       Foreground="#212121"/>
                                             <TextBlock Text="{Binding Schedule}"
                                                        FontSize="12"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                                                       Foreground="#424242"/>
                                         </StackPanel>
                                         
                                         <!-- Next Run -->
                                         <StackPanel Grid.Column="2" HorizontalAlignment="Right" Margin="8,0">
                                             <TextBlock Text="Next Run:"
                                                        FontSize="10"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                                                       Foreground="#424242"/>
                                             <TextBlock Text="{Binding FormattedNextRun}"
                                                        FontSize="12"
                                                        FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"/>
+                                                       Foreground="#2196F3"/>
                                         </StackPanel>
                                         
                                         <!-- Type Badge -->
                                         <Border Grid.Column="3"
-                                                Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}"
+                                                Background="#757575"
                                                 CornerRadius="4"
                                                 Padding="6,4"
                                                 Margin="8,0,0,0">
                                             <TextBlock Text="{Binding Type}"
                                                        FontSize="10"
                                                        FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                                                       Foreground="#FFFFFF"/>
                                         </Border>
                                     </Grid>
                                 </Border>
@@ -353,7 +353,7 @@
             </Border>
 
             <!-- Loading Indicator -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+            <Border Background="#FF9800"
                     CornerRadius="8"
                     Padding="12"
                     IsVisible="{Binding IsBackupInProgress}">
@@ -365,7 +365,7 @@
                                  Width="120"
                                  Height="6"/>
                     <TextBlock Text="Processing backup operation..."
-                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                               Foreground="#FFFFFF"
                                FontWeight="SemiBold"/>
                 </StackPanel>
             </Border>

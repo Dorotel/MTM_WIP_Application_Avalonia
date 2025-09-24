@@ -16,7 +16,7 @@
   <UserControl.Styles>
     <!-- Compact Processing Icon with Animation -->
     <Style Selector="materialIcons|MaterialIcon.compact-processing-icon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="Foreground" Value="#2196F3" />
       <Setter Property="Width" Value="16" />
       <Setter Property="Height" Value="16" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -35,7 +35,7 @@
 
     <!-- Compact Success Icon -->
     <Style Selector="materialIcons|MaterialIcon.compact-success-icon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+      <Setter Property="Foreground" Value="#4CAF50" />
       <Setter Property="Width" Value="16" />
       <Setter Property="Height" Value="16" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -44,7 +44,7 @@
 
     <!-- Compact Error Icon -->
     <Style Selector="materialIcons|MaterialIcon.compact-error-icon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="Foreground" Value="#F44336" />
       <Setter Property="Width" Value="16" />
       <Setter Property="Height" Value="16" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -53,7 +53,7 @@
 
     <!-- Compact Progress Text -->
     <Style Selector="TextBlock.compact-progress-text">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+      <Setter Property="Foreground" Value="#212121" />
       <Setter Property="FontSize" Value="12" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="VerticalAlignment" Value="Center" />
@@ -63,7 +63,7 @@
 
     <!-- Compact Ready Text -->
     <Style Selector="TextBlock.compact-ready-text">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+      <Setter Property="Foreground" Value="#4CAF50" />
       <Setter Property="FontSize" Value="12" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="VerticalAlignment" Value="Center" />
@@ -72,8 +72,8 @@
 
     <!-- Compact Determinate Progress Bar -->
     <Style Selector="ProgressBar.compact-progress-bar">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ProcessingBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="Foreground" Value="#2196F3" />
+      <Setter Property="Background" Value="#EEEEEE" />
       <Setter Property="Height" Value="4" />
       <Setter Property="CornerRadius" Value="2" />
       <Setter Property="Margin" Value="8,0,0,0" />
@@ -84,8 +84,8 @@
 
     <!-- Compact Indeterminate Progress Bar -->
     <Style Selector="ProgressBar.compact-indeterminate-progress">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ProcessingBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="Foreground" Value="#2196F3" />
+      <Setter Property="Background" Value="#EEEEEE" />
       <Setter Property="Height" Value="4" />
       <Setter Property="CornerRadius" Value="2" />
       <Setter Property="IsIndeterminate" Value="True" />
@@ -139,7 +139,7 @@
 
       <!-- Ready Icon -->
       <materialIcons:MaterialIcon Kind="CheckCircle"
-                                 Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                                 Foreground="#4CAF50"
                                  Width="16" Height="16"
                                  VerticalAlignment="Center" />
 

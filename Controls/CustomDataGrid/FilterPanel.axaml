@@ -5,8 +5,8 @@
     <!-- Phase 5 Feature - Filter Panel -->
     <!-- Currently disabled - placeholder implementation -->
     
-    <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+    <Border Background="#FFFFFF"
+            BorderBrush="#EEEEEE"
             BorderThickness="1"
             CornerRadius="8"
             Padding="16"
@@ -18,16 +18,16 @@
             <TextBlock Text="Data Filtering"
                        FontSize="16"
                        FontWeight="Bold"
-                       Foreground="{DynamicResource MTM_Shared_Logic.ForegroundBrush}" />
+                       Foreground="#1F1F1F" />
             
             <!-- Placeholder Content -->
             <TextBlock Text="Phase 5 Feature - Not yet implemented"
                        FontStyle="Italic"
-                       Foreground="{DynamicResource MTM_Shared_Logic.SecondaryForegroundBrush}" />
+                       Foreground="#666666" />
             
             <!-- Future Implementation Area -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            <Border Background="#F5F5F5"
+                    BorderBrush="#EEEEEE"
                     BorderThickness="1"
                     CornerRadius="4"
                     Padding="12"
@@ -37,7 +37,7 @@
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"
                            TextAlignment="Center"
-                           Foreground="{DynamicResource MTM_Shared_Logic.SecondaryForegroundBrush}" />
+                           Foreground="#666666" />
                 
             </Border>
             

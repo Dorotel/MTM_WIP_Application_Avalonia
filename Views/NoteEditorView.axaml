@@ -5,7 +5,7 @@
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              x:Class="MTM_WIP_Application_Avalonia.Views.NoteEditorView"
              x:DataType="vm:NoteEditorViewModel"
-             Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
+             Background="#FFFFFF"
              Focusable="True"
              IsTabStop="True"
              KeyDown="OnUserControlKeyDown">
@@ -29,40 +29,40 @@
     </Style>
 
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Background" Value="#2196F3"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="BorderBrush" Value="#2196F3"/>
     </Style>
 
     <Style Selector="Button.primary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
+      <Setter Property="Background" Value="#1976D2"/>
+      <Setter Property="BorderBrush" Value="#1976D2"/>
     </Style>
 
     <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"/>
+      <Setter Property="Background" Value="#FFFFFF"/>
+      <Setter Property="Foreground" Value="#1976D2"/>
+      <Setter Property="BorderBrush" Value="#BDBDBD"/>
     </Style>
 
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
+      <Setter Property="Background" Value="#616161"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="BorderBrush" Value="#616161"/>
     </Style>
 
     <!-- Header panel styling -->
     <Style Selector="Border.header-panel">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"/>
+      <Setter Property="Background" Value="#EEEEEE"/>
       <Setter Property="CornerRadius" Value="12,12,0,0"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="BorderBrush" Value="#2196F3"/>
       <Setter Property="BorderThickness" Value="1,1,1,0"/>
     </Style>
 
     <!-- Content panel styling -->
     <Style Selector="Border.content-panel">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="Background" Value="#F5F5F5"/>
+      <Setter Property="BorderBrush" Value="#2196F3"/>
       <Setter Property="BorderThickness" Value="1,0,1,0"/>
       <Setter Property="CornerRadius" Value="0"/>
       <Setter Property="Margin" Value="0,1,0,1"/>
@@ -70,33 +70,33 @@
 
     <!-- Action panel styling -->
     <Style Selector="Border.action-panel">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="Background" Value="#F5F5F5"/>
+      <Setter Property="BorderBrush" Value="#2196F3"/>
       <Setter Property="BorderThickness" Value="1,0,1,1"/>
       <Setter Property="CornerRadius" Value="0,0,12,12"/>
     </Style>
 
     <!-- TextBox styling -->
     <Style Selector="TextBox.note-editor">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="Background" Value="#FFFFFF"/>
+      <Setter Property="BorderBrush" Value="#2196F3"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+      <Setter Property="Foreground" Value="#424242"/>
       <Setter Property="Padding" Value="8"/>
       <Setter Property="FontFamily" Value="Consolas,Monaco,monospace"/>
       <Setter Property="FontSize" Value="12"/>
     </Style>
 
     <Style Selector="TextBox.note-editor:focus">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}"/>
+      <Setter Property="BorderBrush" Value="#2196F3"/>
+      <Setter Property="Background" Value="#F5F5F5"/>
     </Style>
 
     <!-- Force transparent backgrounds on Material Icons -->
     <Style Selector="materialIcons|MaterialIcon">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+      <Setter Property="Foreground" Value="#1976D2"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
@@ -120,15 +120,15 @@
                                     Width="20"
                                     Height="20"
                                     Margin="0,0,12,0"
-                                    Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                                    Foreground="#1976D2"/>
         <StackPanel Grid.Column="1" VerticalAlignment="Center">
           <TextBlock Text="Edit Note"
                      FontWeight="Bold"
                      FontSize="16"
-                     Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                     Foreground="#FFFFFF"/>
           <TextBlock Text="{Binding PartId, StringFormat='Part: {0}'}"
                      FontSize="12"
-                     Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                     Foreground="#FFFFFF"
                      Opacity="0.8"
                      Margin="0,2,0,0"/>
         </StackPanel>
@@ -141,7 +141,7 @@
           <materialIcons:MaterialIcon Kind="Close"
                                       Width="16"
                                       Height="16"
-                                      Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                                      Foreground="#FFFFFF"/>
         </Button>
       </Grid>
     </Border>
@@ -156,21 +156,21 @@
         <Grid Grid.Row="0" ColumnDefinitions="*,*,*" ColumnSpacing="16" Margin="0,0,0,12">
           <StackPanel Grid.Column="0">
             <TextBlock Text="Part ID" FontSize="11" FontWeight="SemiBold"
-                       Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                       Foreground="#757575" />
             <TextBlock Text="{Binding PartId}" FontSize="12"
-                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                       Foreground="#424242" />
           </StackPanel>
           <StackPanel Grid.Column="1">
             <TextBlock Text="Operation" FontSize="11" FontWeight="SemiBold"
-                       Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                       Foreground="#757575" />
             <TextBlock Text="{Binding Operation}" FontSize="12"
-                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                       Foreground="#424242" />
           </StackPanel>
           <StackPanel Grid.Column="2">
             <TextBlock Text="Location" FontSize="11" FontWeight="SemiBold"
-                       Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                       Foreground="#757575" />
             <TextBlock Text="{Binding Location}" FontSize="12"
-                       Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                       Foreground="#424242" />
           </StackPanel>
         </Grid>
 
@@ -180,7 +180,7 @@
                    FontSize="12"
                    FontWeight="SemiBold"
                    Margin="0,0,0,8"
-                   Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                   Foreground="#212121"/>
 
         <!-- Note TextBox Editor with ScrollViewer -->
         <ScrollViewer Grid.Row="2"
@@ -221,10 +221,10 @@
           <materialIcons:MaterialIcon Kind="Information"
                                       Width="14"
                                       Height="14"
-                                      Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                                      Foreground="#1976D2"/>
           <TextBlock Text="Changes are saved to the database. Press Escape to cancel."
                      FontSize="11"
-                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                     Foreground="#424242"/>
         </StackPanel>
 
         <!-- Right side buttons -->

@@ -12,9 +12,9 @@
   <UserControl.Styles>
     <!-- MTM Theme Input Field Styles -->
     <Style Selector="TextBox.input-field">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="BorderBrush" Value="#BDBDBD" />
+      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="#424242" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="Padding" Value="4,2" />
@@ -25,34 +25,34 @@
 
     <!-- Error state styling -->
     <Style Selector="TextBox.input-field.error">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}" />
+      <Setter Property="BorderBrush" Value="#F44336" />
+      <Setter Property="Background" Value="#FFCDD2" />
     </Style>
 
     <!-- Success state styling -->
     <Style Selector="TextBox.input-field.success">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+      <Setter Property="BorderBrush" Value="#4CAF50" />
     </Style>
 
     <!-- Focus state styling -->
     <Style Selector="TextBox.input-field:focus">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.FocusBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+      <Setter Property="BorderBrush" Value="#1976D2" />
+      <Setter Property="Background" Value="#F5F5F5" />
     </Style>
 
     <!-- Read-only styling -->
     <Style Selector="TextBox.input-field:disabled">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.DisabledBackground}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.DisabledText}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="Background" Value="#F0F0F0" />
+      <Setter Property="Foreground" Value="#999999" />
+      <Setter Property="BorderBrush" Value="#EEEEEE" />
       <Setter Property="Opacity" Value="0.7" />
     </Style>
 
     <!-- ComboBox styling -->
     <Style Selector="ComboBox.input-field">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="BorderBrush" Value="#BDBDBD" />
+      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="#424242" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="Padding" Value="8,6" />
@@ -62,16 +62,16 @@
     <!-- Material Icons global styling -->
     <Style Selector="materialIcons|MaterialIcon">
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
+      <Setter Property="Foreground" Value="#1976D2" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <!-- Primary Button styling -->
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
+      <Setter Property="Background" Value="#2196F3" />
+      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="BorderBrush" Value="#BDBDBD" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="FontWeight" Value="SemiBold" />
@@ -81,9 +81,9 @@
 
     <!-- Secondary Button styling -->
     <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
+      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="#212121" />
+      <Setter Property="BorderBrush" Value="#2196F3" />
       <Setter Property="BorderThickness" Value="1.5" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="MinHeight" Value="28" />
@@ -91,16 +91,16 @@
     </Style>
 
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
+      <Setter Property="Background" Value="#F5F5F5" />
+      <Setter Property="BorderBrush" Value="#2196F3" />
+      <Setter Property="Foreground" Value="#BDBDBD" />
     </Style>
 
     <!-- Warning Button styling -->
     <Style Selector="Button.warning">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}" />
+      <Setter Property="Background" Value="#FF9800" />
+      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="BorderBrush" Value="#FF9800" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="FontWeight" Value="SemiBold" />
@@ -112,7 +112,7 @@
     <Style Selector="TextBlock.field-label">
       <Setter Property="FontSize" Value="12" />
       <Setter Property="FontWeight" Value="Medium" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+      <Setter Property="Foreground" Value="#212121" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
@@ -124,14 +124,14 @@
     </Style>
 
     <Style Selector="Border.status-indicator.has-changes">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.WarningLightBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}" />
+      <Setter Property="Background" Value="#FFE0B2" />
+      <Setter Property="BorderBrush" Value="#FF9800" />
       <Setter Property="BorderThickness" Value="1" />
     </Style>
 
     <Style Selector="Border.status-indicator.validation-error">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="Background" Value="#FFCDD2" />
+      <Setter Property="BorderBrush" Value="#F44336" />
       <Setter Property="BorderThickness" Value="1" />
     </Style>
   </UserControl.Styles>
@@ -145,7 +145,7 @@
 
     <!-- Dialog Header -->
     <Border Grid.Row="0"
-            Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+            Background="#2196F3"
             CornerRadius="8,8,0,0"
             Padding="12,6">
 
@@ -154,12 +154,12 @@
           <TextBlock Text="Edit Inventory Item (Limited Access)"
                      FontSize="14"
                      FontWeight="Bold"
-                     Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}" />
+                     Foreground="#FFFFFF" />
           <TextBox Text="{Binding EditModel.PartId, StringFormat='Part: {0} - Only Operation, Quantity &amp; Notes editable', Mode=OneWay}"
                    FontSize="11"
                    MinHeight="22"
                    Classes="input-field"
-                   Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
+                   Foreground="#FFFFFF"
                    Opacity="0.9"
                    IsReadOnly="True"
                    Background="Transparent"
@@ -181,7 +181,7 @@
                   IsVisible="{Binding EditModel.HasChanges}">
             <TextBlock Text="● Modified"
                        FontSize="11"
-                       Foreground="{DynamicResource MTM_Shared_Logic.WarningBrush}" />
+                       Foreground="#FF9800" />
           </Border>
 
           <!-- Validation Error Indicator -->
@@ -189,7 +189,7 @@
                   IsVisible="{Binding HasValidationErrors}">
             <TextBlock Text="⚠ Errors"
                        FontSize="11"
-                       Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+                       Foreground="#F44336" />
           </Border>
         </StackPanel>
       </Grid>
@@ -197,8 +197,8 @@
 
     <!-- Form Content -->
     <Border Grid.Row="1"
-            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            Background="#FFFFFF"
+            BorderBrush="#EEEEEE"
             BorderThickness="1,0,1,0">
 
       <ScrollViewer VerticalScrollBarVisibility="Auto"
@@ -210,8 +210,8 @@
 
         <!-- Validation Error Display -->
         <Border Grid.Row="0"
-                Background="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                Background="#FFCDD2"
+                BorderBrush="#F44336"
                 BorderThickness="1"
                 CornerRadius="4"
                 Padding="8,4"
@@ -220,18 +220,18 @@
           <StackPanel Spacing="3">
             <StackPanel Orientation="Horizontal" Spacing="6">
               <materialIcons:MaterialIcon Kind="AlertCircle" Width="14" Height="14"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+                                          Foreground="#F44336" />
               <TextBlock Text="Please fix validation errors before saving"
                          FontSize="12" FontWeight="SemiBold"
-                         Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+                         Foreground="#F44336" />
             </StackPanel>
           </StackPanel>
         </Border>
 
         <!-- Permission Error Display -->
         <Border Grid.Row="1"
-                Background="{DynamicResource MTM_Shared_Logic.WarningLightBrush}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                Background="#FFE0B2"
+                BorderBrush="#FF9800"
                 BorderThickness="1"
                 CornerRadius="4"
                 Padding="8,4"
@@ -240,12 +240,12 @@
           <StackPanel Spacing="3">
             <StackPanel Orientation="Horizontal" Spacing="6">
               <materialIcons:MaterialIcon Kind="Lock" Width="14" Height="14"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.WarningBrush}" />
+                                          Foreground="#FF9800" />
               <TextBox Text="{Binding PermissionErrorMessage, Mode=OneWay}"
                        FontSize="11" FontWeight="SemiBold" MinHeight="22"
                                               Classes="input-field"
                        TextWrapping="Wrap"
-                       Foreground="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                       Foreground="#FF9800"
                        IsReadOnly="True"
                        Background="Transparent"
                        BorderThickness="0"
@@ -270,15 +270,15 @@
               </StackPanel>
 
               <Border Grid.Column="1"
-                      Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
-                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                      Background="#F0F0F0"
+                      BorderBrush="#EEEEEE"
                       BorderThickness="1"
                       CornerRadius="4"
                       Padding="4,3"
                       MinHeight="24">
                 <TextBox Text="{Binding EditModel.PartId, Mode=OneWay}"
                          Classes="input-field"
-                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                         Foreground="#212121"
                          FontWeight="SemiBold"
                          FontSize="12"
                          MinHeight="24"
@@ -296,7 +296,7 @@
               <materialIcons:MaterialIcon Grid.Column="2"
                                           Kind="Lock"
                                           Width="12" Height="12"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}" />
+                                          Foreground="#999999" />
             </Grid>
 
             <!-- Location Field (LOCKED) -->
@@ -307,15 +307,15 @@
               </StackPanel>
 
               <Border Grid.Column="1"
-                      Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
-                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                      Background="#F0F0F0"
+                      BorderBrush="#EEEEEE"
                       BorderThickness="1"
                       CornerRadius="4"
                       Padding="4,3"
                       MinHeight="24">
                 <TextBox Text="{Binding EditModel.Location, Mode=OneWay}"
                                        Classes="input-field"
-                         Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                         Foreground="#212121"
                          FontWeight="SemiBold"
                          FontSize="12"
                          MinHeight="24"
@@ -333,7 +333,7 @@
               <materialIcons:MaterialIcon Grid.Column="2"
                                           Kind="Lock"
                                           Width="12" Height="12"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}" />
+                                          Foreground="#999999" />
             </Grid>
           </Grid>
 
@@ -359,13 +359,13 @@
               <materialIcons:MaterialIcon Grid.Column="2"
                                           Kind="CheckCircle"
                                           Width="14" Height="14"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                                          Foreground="#4CAF50"
                                           IsVisible="{Binding IsOperationValid}"
                                           ToolTip.Tip="Valid Operation" />
               <materialIcons:MaterialIcon Grid.Column="2"
                                           Kind="Lock"
                                           Width="14" Height="14"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}"
+                                          Foreground="#999999"
                                           IsVisible="{Binding !CanEditRecord}"
                                           ToolTip.Tip="Field is locked" />
             </Grid>
@@ -389,7 +389,7 @@
                 <!-- Quantity Error Message -->
                 <TextBlock Text="{Binding QuantityErrorMessage}"
                            FontSize="11"
-                           Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                           Foreground="#F44336"
                            Margin="2,2,0,0"
                            IsVisible="{Binding IsQuantityInvalid}" />
               </StackPanel>
@@ -487,14 +487,14 @@
                     <TextBlock Text="Item Type:" Classes="field-label" FontSize="11" />
                   </StackPanel>
                   <Border Grid.Column="1"
-                          Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                          Background="#F0F0F0"
+                          BorderBrush="#EEEEEE"
                           BorderThickness="1"
                           CornerRadius="3"
                           Padding="4,2"
                           MinHeight="24">
                     <TextBox Text="{Binding EditModel.ItemType, Mode=OneWay}"
-                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             Foreground="#424242"
                                                     Classes="input-field"
                        MinHeight="26"
                        FontSize="11"
@@ -508,7 +508,7 @@
                              IsTabStop="False" />
                   </Border>
                   <materialIcons:MaterialIcon Grid.Column="2" Kind="Lock" Width="12" Height="12"
-                                              Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}" />
+                                              Foreground="#999999" />
                 </Grid>
 
                 <!-- Batch Number -->
@@ -518,15 +518,15 @@
                     <TextBlock Text="Batch #:" Classes="field-label" FontSize="11" />
                   </StackPanel>
                   <Border Grid.Column="1"
-                          Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                          Background="#F0F0F0"
+                          BorderBrush="#EEEEEE"
                           BorderThickness="1"
                           CornerRadius="3"
                           Padding="4,2"
                           MinHeight="24">
                     <TextBox Text="{Binding EditModel.BatchNumber, Mode=OneWay}"
                                            Classes="input-field"
-                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             Foreground="#424242"
                                                     MinHeight="26"
                              FontSize="11"
                              VerticalAlignment="Center"
@@ -539,7 +539,7 @@
                              IsTabStop="False" />
                   </Border>
                   <materialIcons:MaterialIcon Grid.Column="2" Kind="Lock" Width="12" Height="12"
-                                              Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}" />
+                                              Foreground="#999999" />
                 </Grid>
               </Grid>
 
@@ -550,8 +550,8 @@
                   <TextBlock Text="User:" Classes="field-label" FontSize="11" />
                 </StackPanel>
                 <Border Grid.Column="1"
-                        Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
-                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                        Background="#F0F0F0"
+                        BorderBrush="#EEEEEE"
                         BorderThickness="1"
                         CornerRadius="3"
                         Padding="4,2"
@@ -559,7 +559,7 @@
                   <TextBox Text="{Binding EditModel.User, Mode=OneWay}"
                                          Classes="input-field"
                                          MinHeight="26"
-                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                           Foreground="#424242"
                            FontSize="11"
                            VerticalAlignment="Center"
                            IsReadOnly="True"
@@ -571,7 +571,7 @@
                            IsTabStop="False" />
                 </Border>
                 <materialIcons:MaterialIcon Grid.Column="2" Kind="Lock" Width="12" Height="12"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.DisabledText}" />
+                                            Foreground="#999999" />
               </Grid>
 
               <!-- Row 3: Timestamps -->
@@ -581,14 +581,14 @@
                   <TextBlock Text="Timestamps:" Classes="field-label" FontSize="11" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Spacing="4">
-                  <Border Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                  <Border Background="#F0F0F0"
+                          BorderBrush="#EEEEEE"
                           BorderThickness="1"
                           CornerRadius="3"
                           Padding="4,2"
                           MinHeight="24">
                     <TextBox Text="{Binding EditModel.ReceiveDate, StringFormat='Created: {0:MM/dd/yyyy HH:mm}', Mode=OneWay}"
-                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             Foreground="#424242"
                              FontSize="11"
                              MinHeight="26"
                                                     Classes="input-field"
@@ -601,14 +601,14 @@
                              Focusable="False"
                              IsTabStop="False" />
                   </Border>
-                  <Border Background="{DynamicResource MTM_Shared_Logic.DisabledBackground}"
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                  <Border Background="#F0F0F0"
+                          BorderBrush="#EEEEEE"
                           BorderThickness="1"
                           CornerRadius="3"
                           Padding="4,2"
                           MinHeight="24">
                     <TextBox Text="{Binding EditModel.LastUpdated, StringFormat='Last Updated: {0:MM/dd/yyyy HH:mm}', Mode=OneWay}"
-                             Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                             Foreground="#424242"
                              FontSize="11"
                                                     Classes="input-field"
                              VerticalAlignment="Center"
@@ -634,8 +634,8 @@
 
     <!-- Dialog Footer with Action Buttons -->
     <Border Grid.Row="2"
-            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            Background="#F5F5F5"
+            BorderBrush="#EEEEEE"
             BorderThickness="1"
             CornerRadius="0,0,8,8"
             Padding="12,6"
@@ -651,10 +651,10 @@
                     VerticalAlignment="Center">
           <materialIcons:MaterialIcon Kind="Loading"
                                       Width="16" Height="16"
-                                      Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                                      Foreground="#2196F3" />
           <TextBlock Text="Saving..."
                      FontSize="12"
-                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                     Foreground="#424242" />
         </StackPanel>
 
         <!-- Spacer -->

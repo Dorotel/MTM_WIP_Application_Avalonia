@@ -434,8 +434,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             }
             else
             {
-                Logger.LogError("Search failed: {Message}", result.Message);
-                throw new InvalidOperationException($"Search failed: {result.Message}");
+                Logger.LogError("Search failed: {Message}", result.ErrorMessage);
+                throw new InvalidOperationException($"Search failed: {result.ErrorMessage}");
             }
         }
         catch (Exception ex)
@@ -474,12 +474,12 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             if (result.IsSuccess)
             {
-                Logger.LogInformation("Reset completed successfully: {Message}", result.Message);
+                Logger.LogInformation("Reset completed successfully");
             }
             else
             {
-                Logger.LogError("Reset failed: {Message}", result.Message);
-                throw new InvalidOperationException($"Reset failed: {result.Message}");
+                Logger.LogError("Reset failed: {Message}", result.ErrorMessage);
+                throw new InvalidOperationException($"Reset failed: {result.ErrorMessage}");
             }
 
             // Reload master data
@@ -600,8 +600,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             }
             else
             {
-                Logger.LogError("Delete operation failed: {Message}", result.Message);
-                throw new InvalidOperationException($"Delete operation failed: {result.Message}");
+                Logger.LogError("Delete operation failed: {Message}", result.ErrorMessage);
+                throw new InvalidOperationException($"Delete operation failed: {result.ErrorMessage}");
             }
         }
         catch (Exception ex)
@@ -645,8 +645,8 @@ public partial class RemoveItemViewModel : BaseViewModel
             }
             else
             {
-                Logger.LogError("Undo operation failed: {Message}", result.Message);
-                throw new InvalidOperationException($"Undo operation failed: {result.Message}");
+                Logger.LogError("Undo operation failed: {Message}", result.ErrorMessage);
+                throw new InvalidOperationException($"Undo operation failed: {result.ErrorMessage}");
             }
         }
         catch (Exception ex)
@@ -740,11 +740,11 @@ public partial class RemoveItemViewModel : BaseViewModel
             }
             else
             {
-                Logger.LogError("Single item delete operation failed: {Message}", result.Message);
+                Logger.LogError("Single item delete operation failed: {Message}", result.ErrorMessage);
 
                 // Handle delete failure gracefully without throwing
                 await ErrorHandling.HandleErrorAsync(
-                    new InvalidOperationException($"Delete operation failed: {result.Message}"),
+                    new InvalidOperationException($"Delete operation failed: {result.ErrorMessage}"),
                     $"Failed to delete inventory item {item.PartId}",
                     _applicationState.CurrentUser
                 ).ConfigureAwait(false);
@@ -755,7 +755,7 @@ public partial class RemoveItemViewModel : BaseViewModel
                     await _successOverlayService.ShowSuccessOverlayInMainViewAsync(
                         null,
                         "Delete Failed",
-                        $"Could not delete {item.PartId}: {result.Message}",
+                        $"Could not delete {item.PartId}: {result.ErrorMessage}",
                         "AlertCircle", // Error icon
                         5000, // 5 seconds
                         true // isError = true
@@ -985,8 +985,8 @@ public partial class RemoveItemViewModel : BaseViewModel
                     else
                     {
                         errorCount++;
-                        errorMessages.Add($"{item.PartId}: {result.Message}");
-                        Logger.LogWarning("Failed to delete item {PartId}: {Message}", item.PartId, result.Message);
+                        errorMessages.Add($"{item.PartId}: {result.ErrorMessage}");
+                        Logger.LogWarning("Failed to delete item {PartId}: {Message}", item.PartId, result.ErrorMessage);
                     }
                 }
                 catch (Exception ex)

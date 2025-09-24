@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 
@@ -19,7 +20,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels;
 public partial class SettingsViewModel : BaseViewModel
 {
     private readonly INavigationService _navigationService;
-    private readonly IThemeService _themeService;
+    private readonly IThemeServiceV2 _themeService;
     private readonly ISettingsService _settingsService;
     private readonly VirtualPanelManager _panelManager;
     private readonly SettingsPanelStateManager _stateManager;
@@ -54,7 +55,7 @@ public partial class SettingsViewModel : BaseViewModel
     /// <exception cref="ArgumentNullException">Thrown when any service parameter is null</exception>
     public SettingsViewModel(
         INavigationService navigationService,
-        IThemeService themeService,
+        IThemeServiceV2 themeService,
         ISettingsService settingsService,
         VirtualPanelManager panelManager,
         SettingsPanelStateManager stateManager,
@@ -124,8 +125,8 @@ public partial class SettingsViewModel : BaseViewModel
             }
             else
             {
-                CurrentStatusMessage = $"Failed to save changes: {result.Message}";
-                Logger.LogWarning("Failed to save all changes: {Message}", result.Message);
+                CurrentStatusMessage = $"Failed to save changes: {result.ErrorMessage}";
+                Logger.LogWarning("Failed to save all changes: {Message}", result.ErrorMessage);
             }
         }
         catch (Exception ex)
@@ -168,8 +169,8 @@ public partial class SettingsViewModel : BaseViewModel
             }
             else
             {
-                CurrentStatusMessage = $"Failed to revert changes: {result.Message}";
-                Logger.LogWarning("Failed to revert all changes: {Message}", result.Message);
+                CurrentStatusMessage = $"Failed to revert changes: {result.ErrorMessage}";
+                Logger.LogWarning("Failed to revert all changes: {Message}", result.ErrorMessage);
             }
         }
         catch (Exception ex)

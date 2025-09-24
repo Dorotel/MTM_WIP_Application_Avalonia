@@ -14,13 +14,13 @@
       <Setter Property="MinHeight" Value="36" />
       <Setter Property="MaxHeight" Value="36" />
       <Setter Property="Padding" Value="8,6" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="Background" Value="#F5F5F5" />
+      <Setter Property="BorderBrush" Value="#EEEEEE" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
     </Style>
 
     <Style Selector="Border.header-cell TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+      <Setter Property="Foreground" Value="#212121" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="FontSize" Value="12" />
       <Setter Property="VerticalAlignment" Value="Center" />
@@ -31,13 +31,13 @@
       <Setter Property="MinHeight" Value="36" />
       <Setter Property="MaxHeight" Value="36" />
       <Setter Property="Padding" Value="8,6" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="BorderBrush" Value="#EEEEEE" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
     </Style>
 
     <Style Selector="Border.data-cell TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="Foreground" Value="#424242" />
       <Setter Property="FontSize" Value="12" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="TextTrimming" Value="CharacterEllipsis" />
@@ -48,20 +48,20 @@
       <Setter Property="MinHeight" Value="36" />
       <Setter Property="MaxHeight" Value="36" />
       <Setter Property="Padding" Value="4,6" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+      <Setter Property="Background" Value="#F5F5F5" />
+      <Setter Property="BorderBrush" Value="#EEEEEE" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
     </Style>
 
     <Style Selector="Border.action-cell">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
+      <Setter Property="Background" Value="#FFFFFF" />
     </Style>
 
     <!-- Action Button Styles -->
     <Style Selector="Border.action-cell Button.primary-action">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="Background" Value="#2196F3" />
       <Setter Property="Foreground" Value="White" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+      <Setter Property="BorderBrush" Value="#2196F3" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="3" />
       <Setter Property="Padding" Value="4,2" />
@@ -73,14 +73,14 @@
     </Style>
 
     <Style Selector="Border.action-cell Button.primary-action:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}" />
+      <Setter Property="Background" Value="#1976D2" />
+      <Setter Property="BorderBrush" Value="#1976D2" />
     </Style>
 
     <Style Selector="Border.action-cell Button.warning-action">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="Background" Value="#F44336" />
       <Setter Property="Foreground" Value="White" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
+      <Setter Property="BorderBrush" Value="#F44336" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="3" />
       <Setter Property="Padding" Value="4,2" />
@@ -92,23 +92,23 @@
     </Style>
 
     <Style Selector="Border.action-cell Button.warning-action:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.Critical}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.Critical}" />
+      <Setter Property="Background" Value="#F44336" />
+      <Setter Property="BorderBrush" Value="#F44336" />
     </Style>
 
     <!-- Interactive States -->
     <Style Selector="Border.data-cell:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
+      <Setter Property="Background" Value="#F5F5F5" />
+      <Setter Property="BorderBrush" Value="#2196F3" />
     </Style>
 
     <!-- Alternating Row Colors -->
     <Style Selector="ListBoxItem:nth-child(2n) Border.data-cell">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.AlternateRowBrush}" />
+      <Setter Property="Background" Value="#F8F8F8" />
     </Style>
 
     <Style Selector="ListBoxItem:nth-child(2n) Border.action-cell">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.AlternateRowBrush}" />
+      <Setter Property="Background" Value="#F8F8F8" />
     </Style>
 
     <!-- Selection State - WinForms DataGridView Style -->
@@ -147,7 +147,7 @@
 
     <!-- Notes Indicator Style -->
     <Style Selector="TextBlock.notes-indicator">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+      <Setter Property="Foreground" Value="#4CAF50" />
       <Setter Property="FontSize" Value="14" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -167,8 +167,8 @@
 
     <!-- Header Section -->
     <Border Grid.Row="0" Grid.Column="0"
-            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            Background="#F5F5F5"
+            BorderBrush="#EEEEEE"
             BorderThickness="1,1,1,0"
             CornerRadius="8,8,0,0">
 
@@ -219,8 +219,8 @@
                   x:Name="DataScrollViewer"
                   HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
-                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                  Background="#FFFFFF"
+                  BorderBrush="#EEEEEE"
                   BorderThickness="1,0,1,1"
                   CornerRadius="0,0,8,8">
 
@@ -312,8 +312,8 @@
 
     <!-- Action Buttons Row -->
     <Border Grid.Row="2" Grid.Column="0"
-            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            Background="#F5F5F5"
+            BorderBrush="#EEEEEE"
             BorderThickness="1,0,1,1"
             CornerRadius="0,0,8,8"
             Padding="16,12">
@@ -332,15 +332,15 @@
 
           <TextBlock x:Name="SelectionInfoText"
                      Text="No items selected"
-                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                     Foreground="#424242"
                      FontSize="12"
                      VerticalAlignment="Center" />
 
-          <Border Width="1" Height="16" Background="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
+          <Border Width="1" Height="16" Background="#EEEEEE" />
 
           <TextBlock x:Name="TotalQuantityText"
                      Text="Total Quantity: 0"
-                     Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                     Foreground="#424242"
                      FontSize="12" FontWeight="Medium"
                      VerticalAlignment="Center"
                      ToolTip.Tip="Total quantity breakdown by Part ID and Operation" />
@@ -356,9 +356,9 @@
           <!-- Edit Button -->
           <Button x:Name="EditButton"
                   Content="✏️ Edit"
-                  Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                  Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
-                  BorderBrush="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                  Background="#2196F3"
+                  Foreground="#FFFFFF"
+                  BorderBrush="#2196F3"
                   BorderThickness="1"
                   CornerRadius="4"
                   Padding="12,6"
@@ -371,9 +371,9 @@
           <!-- Delete Button -->
           <Button x:Name="DeleteButton"
                   Content="🗑️ Delete"
-                  Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
-                  Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
-                  BorderBrush="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                  Background="#F44336"
+                  Foreground="#FFFFFF"
+                  BorderBrush="#F44336"
                   BorderThickness="1"
                   CornerRadius="4"
                   Padding="12,6"
@@ -392,8 +392,8 @@
     <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
             x:Name="ColumnManagementContainer"
             Width="0"
-            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            Background="#F5F5F5"
+            BorderBrush="#EEEEEE"
             BorderThickness="1,1,0,1"
             IsVisible="False">
 
@@ -402,7 +402,7 @@
                  HorizontalAlignment="Center"
                  VerticalAlignment="Center"
                  FontSize="12"
-                 Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                 Foreground="#424242"
                  Opacity="0.7" />
     </Border>
 
@@ -410,8 +410,8 @@
     <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
             x:Name="FilterPanelContainer"
             Width="0"
-            Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+            Background="#F5F5F5"
+            BorderBrush="#EEEEEE"
             BorderThickness="1,1,1,1"
             CornerRadius="0,8,8,0"
             IsVisible="False">
@@ -421,7 +421,7 @@
                  HorizontalAlignment="Center"
                  VerticalAlignment="Center"
                  FontSize="12"
-                 Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                 Foreground="#424242"
                  Opacity="0.7" />
     </Border>
 

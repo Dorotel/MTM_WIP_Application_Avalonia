@@ -3,78 +3,135 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:material="using:Material.Icons.Avalonia"
-             xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
              mc:Ignorable="d"
              d:DesignWidth="400"
              d:DesignHeight="600"
              x:Class="MTM_WIP_Application_Avalonia.Controls.CollapsiblePanel">
 
-  <UserControl.Resources>
-    <!-- Use theme colors instead of hardcoded MTM colors -->
-    <!-- All colors now reference theme resources -->
-    <converters:ColorToBoxShadowConverter x:Key="ColorToBoxShadowConverter"/>
-  </UserControl.Resources>
+  <UserControl.Styles>
+    <!-- Beautiful Professional Styling with Theme V2 -->
 
-  <!-- Use explicit template to ensure proper initialization -->
+    <!-- Elegant Header Styling with Semantic Theme Colors -->
+    <Style Selector="Border.collapsible-header">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="BorderThickness" Value="2"/>
+      <Setter Property="CornerRadius" Value="8,8,0,0"/>
+    </Style>
+
+    <!-- Enhanced Header Hover State -->
+    <Style Selector="Border.collapsible-header:pointerover">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+    </Style>
+
+    <!-- Professional Toggle Button -->
+    <Style Selector="Button.toggle-button">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Width" Value="24"/>
+      <Setter Property="Height" Value="24"/>
+      <Setter Property="Padding" Value="2"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <Style Selector="Button.toggle-button:pointerover">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
+    </Style>
+
+    <Style Selector="Button.toggle-button:pressed">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Pressed}"/>
+    </Style>
+
+    <!-- Beautiful Content Container with Reduced Padding -->
+    <Style Selector="Border.content-container">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+      <Setter Property="BorderThickness" Value="2,0,2,2"/>
+      <Setter Property="CornerRadius" Value="0,0,8,8"/>
+      <Setter Property="Padding" Value="4"/>
+    </Style>
+
+    <!-- Professional Root Container -->
+    <Style Selector="Border.root-container">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="BorderThickness" Value="2"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Effect">
+        <Setter.Value>
+          <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
+                            BlurRadius="8"
+                            OffsetX="0"
+                            OffsetY="4"
+                            Opacity="0.3"/>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+  </UserControl.Styles>
+
+  <!-- Modern Professional Template with Theme V2 Integration -->
   <UserControl.Template>
     <ControlTemplate>
-      <!-- Root container with MTM styling matching the left panel -->
-      <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-              BorderThickness="2"
-              CornerRadius="8"
-              BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.ShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,4,12,0'}">
-        
-        <!-- Empty grid that gets configured dynamically by code -->
+      <!-- Professional Root Container with Enhanced Styling -->
+      <Border Classes="root-container">
+
+        <!-- Dynamic Grid Layout (configured by code) -->
         <Grid x:Name="RootGrid">
-          
-          <!-- Header Bar (position determined by HeaderPosition property) -->
+
+          <!-- Beautiful Header Bar with Gradient Background -->
           <Border x:Name="HeaderArea"
-                  Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
-                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}"
-                  BorderThickness="0"
-                  MinWidth="15"
-                  MinHeight="15">
-            
-            <!-- Simple grid for toggle button and header content -->
+                  Classes="collapsible-header"
+                  MinWidth="20"
+                  MinHeight="20">
+
+            <!-- Enhanced Header Content Layout -->
             <Grid x:Name="HeaderContentGrid">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
               </Grid.ColumnDefinitions>
-              
-              <!-- Toggle Button - positioned dynamically by code -->
+
+              <!-- Professional Toggle Button with Animation -->
               <Button x:Name="ToggleButton"
                       Grid.Column="0"
-                      Background="Transparent"
-                      BorderThickness="0"
-                      Width="20"
-                      Height="20"
+                      Classes="toggle-button"
                       Click="OnToggleClick">
-                      <!-- Cursor="Hand" removed to prevent ICursorFactory issues -->
+
+                <!-- Beautiful Material Icon with Theme Integration -->
                 <material:MaterialIcon x:Name="ToggleIcon"
                                        Kind="ChevronRight"
-                                       Width="12"
-                                       Height="12"
-                                       Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                                       Width="14"
+                                       Height="14"
+                                       Foreground="White"/>
               </Button>
-              
-              <!-- Header Content Presenter -->
+
+              <!-- Enhanced Header Content Presenter -->
               <ContentPresenter x:Name="HeaderPresenter"
                               Grid.Column="1"
                               Content="{TemplateBinding Header}"
                               VerticalAlignment="Center"
-                              Margin="8,0,0,0"/>
-              
+                              HorizontalAlignment="Left"
+                              Margin="8,0,8,0"
+                              TextElement.Foreground="White"
+                              TextElement.FontWeight="SemiBold"/>
+
             </Grid>
           </Border>
 
-          <!-- Content Area (position determined by HeaderPosition property) -->
+          <!-- Beautiful Content Container with Professional Styling -->
           <Border x:Name="ContentArea"
-                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-                  Padding="4">
-            <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
+                  Classes="content-container">
+            <ContentPresenter x:Name="ContentPresenter"
+                            Content="{TemplateBinding Content}"
+                            TextElement.Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
           </Border>
 
         </Grid>

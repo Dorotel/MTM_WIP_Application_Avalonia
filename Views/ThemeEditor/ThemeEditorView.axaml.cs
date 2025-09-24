@@ -15,20 +15,4 @@ public partial class ThemeEditorView : UserControl
         InitializeComponent();
     }
 
-    /// <summary>
-    /// Handles color preview border clicks to open color picker
-    /// </summary>
-    private void ColorPreview_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (sender is Border border && 
-            border.Tag is string colorProperty && 
-            DataContext is ThemeEditorViewModel viewModel)
-        {
-            // Execute the color picker command with the property name
-            if (viewModel.OpenColorPickerCommand.CanExecute(colorProperty))
-            {
-                viewModel.OpenColorPickerCommand.Execute(colorProperty);
-            }
-        }
-    }
 }

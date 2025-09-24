@@ -14,119 +14,75 @@
              x:DataType="vm:QuickButtonsViewModel">
 
   <UserControl.Styles>
-    <!-- Theme V2 Professional Quick Action Button Styles with Enhanced Gradients -->
+    <!-- Theme V2 Professional Quick Action Button Styles with 10% Height Each -->
     <Style Selector="Button.quick-button">
-      <Setter Property="Padding" Value="14,12"/>
-      <Setter Property="Margin" Value="6,4"/>
+      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="Margin" Value="4,1"/>
       <Setter Property="HorizontalAlignment" Value="Stretch"/>
       <Setter Property="VerticalAlignment" Value="Stretch"/>
       <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
-      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+      <Setter Property="CornerRadius" Value="6"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}"/>
-      <Setter Property="Background">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Gray.25}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Background.Card}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Primary}"/>
-      <Setter Property="MinHeight" Value="48"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+      <Setter Property="Height" Value="44"/>
       <Setter Property="Cursor" Value="Hand"/>
-      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="FontSize" Value="12"/>
+
+      <Setter Property="MinHeight" Value="54"/>
+      <Setter Property="MaxHeight" Value="100"/>
       <Setter Property="Transitions">
         <Transitions>
-          <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.15"/>
         </Transitions>
       </Setter>
     </Style>
 
     <!-- Beautiful Enhanced Hover State with Dynamic Gradient -->
     <Style Selector="Button.quick-button:pointerover">
-      <Setter Property="Background">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.75}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.150}" Offset="0.5" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.100}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
-      <Setter Property="BorderBrush">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.400}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background.Hover}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
       <Setter Property="BorderThickness" Value="2"/>
       <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
     </Style>
 
     <!-- Professional Pressed State with Vibrant Active Gradient -->
     <Style Selector="Button.quick-button:pressed">
-      <Setter Property="Background">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0.3" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
       <Setter Property="BorderThickness" Value="3"/>
       <Setter Property="Foreground" Value="White"/>
       <Setter Property="FontWeight" Value="Bold"/>
     </Style>
 
-    <!-- Enhanced Position Indicator with Professional Gradient -->
+    <!-- Balanced Position Indicator -->
     <Style Selector="Border.position-indicator">
-      <Setter Property="Background">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0.3" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="0.7" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.400}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
-      <Setter Property="CornerRadius" Value="8"/>
-      <Setter Property="Width" Value="32"/>
-      <Setter Property="Height" Value="32"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Pressed}"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Width" Value="28"/>
+      <Setter Property="Height" Value="28"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
     <Style Selector="Border.position-indicator:pointerover">
-      <Setter Property="Background">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.800}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0.5" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Disabled}"/>
     </Style>
 
     <!-- Professional Enhanced Text Styles for Better Readability -->
     <Style Selector="TextBlock.primary-text">
       <Setter Property="FontWeight" Value="SemiBold"/>
       <Setter Property="FontSize" Value="14"/>
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Primary}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
       <Setter Property="TextWrapping" Value="Wrap"/>
       <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
-      <Setter Property="LineHeight" Value="1.2"/>
     </Style>
 
     <Style Selector="TextBlock.secondary-text">
       <Setter Property="FontSize" Value="12"/>
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Secondary}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
       <Setter Property="TextWrapping" Value="Wrap"/>
       <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
     </Style>
@@ -142,38 +98,30 @@
 
     <!-- Beautiful Header Panel with Professional Styling -->
     <Style Selector="Border.header-panel">
-      <Setter Property="Background">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
       <Setter Property="CornerRadius" Value="8,8,0,0"/>
     </Style>
 
-    <Style Selector="Border.header-panel:pointerover">
-      <Setter Property="Background">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
+    <!-- Footer Panel with Flat Top -->
+    <Style Selector="Border.footer-panel">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="CornerRadius" Value="0,0,8,8"/>
+    </Style>
+
+    <Style Selector="Border.header-panel:pointerover, Border.footer-panel:pointerover">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
     </Style>
 
     <!-- Enhanced Context Menu Styling -->
     <Style Selector="ContextMenu">
       <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Accent}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="6"/>
     </Style>
 
     <Style Selector="MenuItem">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Primary}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
       <Setter Property="Background" Value="Transparent"/>
     </Style>
 
@@ -182,31 +130,25 @@
       <Setter Property="Foreground" Value="White"/>
     </Style>
 
-    <!-- Beautiful Header Toggle Button Styles with Professional Gradients -->
+    <!-- Compact Header Toggle Button Styles -->
     <Style Selector="Button.header-toggle-button">
-      <Setter Property="Background">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Accent}"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
       <Setter Property="Foreground" Value="White"/>
-      <Setter Property="BorderThickness" Value="2"/>
-      <Setter Property="CornerRadius" Value="8"/>
-      <Setter Property="Padding" Value="16,10"/>
-      <Setter Property="Margin" Value="6,4"/>
-      <Setter Property="MinHeight" Value="44"/>
-      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Padding" Value="10,6"/>
+      <Setter Property="Margin" Value="4,2"/>
+      <Setter Property="MinHeight" Value="28"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="FontSize" Value="11"/>
     </Style>
 
     <!-- Enhanced hover state for header toggle buttons -->
     <Style Selector="Button.header-toggle-button:pointerover">
       <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Primary}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
       <Setter Property="BorderThickness" Value="3"/>
     </Style>
 
@@ -237,24 +179,24 @@
     </Style>
 
     <Style Selector="Button.header-toggle-button:pointerover TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.Primary}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
     </Style>
 
     <Style Selector="Button.header-toggle-button.active TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
     </Style>
 
-    <!-- Elegant Footer Toggle Button Styles -->
+    <!-- Compact Footer Toggle Button Styles -->
     <Style Selector="Button.toggle-button">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
       <Setter Property="Foreground" Value="White"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="6"/>
-      <Setter Property="Padding" Value="8,6"/>
-      <Setter Property="Margin" Value="3,0"/>
-      <Setter Property="MinHeight" Value="32"/>
-      <Setter Property="MinWidth" Value="32"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="Padding" Value="6,4"/>
+      <Setter Property="Margin" Value="2,0"/>
+      <Setter Property="MinHeight" Value="24"/>
+      <Setter Property="MinWidth" Value="24"/>
       <Setter Property="FontWeight" Value="Medium"/>
     </Style>
 
@@ -286,21 +228,22 @@
     </Style>
   </UserControl.Styles>
 
-  <!-- Main container with transparent background to blend with parent -->
-  <Grid Margin="4" Background="Transparent">
-    <!-- Main content with header, content, and footer -->
-    <Grid x:Name="MainContentGrid" RowDefinitions="Auto,*,Auto">
-      <!-- Simplified Header with Toggle Buttons and Professional Effects -->
+  <!-- Main container with Card styling - no outer border -->
+  <Border Background="{DynamicResource ThemeV2.Background.Card}"
+          CornerRadius="8"
+          Margin="0">
+    <Grid x:Name="MainContentGrid" RowDefinitions="Auto,*,Auto" Background="Transparent" Margin="2">
+      <!-- Balanced Header with Toggle Buttons -->
       <Border Grid.Row="0"
               Classes="header-panel"
-              Padding="16,12"
-              Margin="0,0,0,12">
+              Padding="14,10"
+              Margin="0,0,0,8">
         <Border.Effect>
-          <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
-                            BlurRadius="8"
+          <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
+                            BlurRadius="6"
                             OffsetX="0"
-                            OffsetY="3"
-                            Opacity="0.4"/>
+                            OffsetY="2"
+                            Opacity="0.3"/>
         </Border.Effect>
         <Grid ColumnDefinitions="*,Auto,*">
           <!-- Left: Quick Actions Button -->
@@ -311,9 +254,9 @@
                   HorizontalAlignment="Left"
                   VerticalAlignment="Center"
                   ToolTip.Tip="Show Quick Actions">
-            <StackPanel Orientation="Horizontal" Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="6">
               <materialIcons:MaterialIcon Kind="Flash" Width="16" Height="16"/>
-              <TextBlock Text="Quick Actions" FontSize="12" FontWeight="SemiBold"/>
+              <TextBlock Text="Quick Actions" FontSize="11" FontWeight="Medium"/>
             </StackPanel>
           </Button>
 
@@ -325,9 +268,9 @@
                   HorizontalAlignment="Right"
                   VerticalAlignment="Center"
                   ToolTip.Tip="Show Transaction History">
-            <StackPanel Orientation="Horizontal" Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="6">
               <materialIcons:MaterialIcon Kind="ClockOutline" Width="16" Height="16"/>
-              <TextBlock Text="History" FontSize="12" FontWeight="SemiBold"/>
+              <TextBlock Text="History" FontSize="11" FontWeight="Medium"/>
             </StackPanel>
           </Button>
         </Grid>
@@ -337,16 +280,11 @@
       <Grid Grid.Row="1" Background="Transparent">
 
         <!-- Quick Actions Panel -->
-        <ScrollViewer IsVisible="{Binding !IsShowingHistory}"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled"
-                      Background="Transparent"
-                      Padding="4">
+
           <ItemsControl ItemsSource="{Binding NonEmptyQuickButtons}">
-            <!-- Use StackPanel for dynamic vertical layout with drag/drop -->
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <StackPanel Orientation="Vertical" Spacing="4"/>
+                <UniformGrid Rows="10" Columns="1" VerticalAlignment="Stretch"/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
@@ -356,11 +294,11 @@
                         CommandParameter="{Binding}"
                         ToolTip.Tip="{Binding ToolTipText}">
                   <Button.Effect>
-                    <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
-                                      BlurRadius="6"
+                    <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
+                                      BlurRadius="3"
                                       OffsetX="0"
-                                      OffsetY="3"
-                                      Opacity="0.25"/>
+                                      OffsetY="1"
+                                      Opacity="0.2"/>
                   </Button.Effect>
                   <Button.ContextMenu>
                     <ContextMenu>
@@ -392,7 +330,7 @@
                     <!-- Enhanced position indicator with professional gradient and shadow -->
                     <Border Grid.Column="0" Classes="position-indicator">
                       <Border.Effect>
-                        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.600}"
+                        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
                                           BlurRadius="3"
                                           OffsetX="0"
                                           OffsetY="2"
@@ -442,16 +380,10 @@
                     <Border Grid.Column="4"
                             CornerRadius="8"
                             Padding="10,6"
-                            VerticalAlignment="Center">
-                      <Border.Background>
-                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                          <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0" />
-                          <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0.4" />
-                          <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
-                        </LinearGradientBrush>
-                      </Border.Background>
+                            VerticalAlignment="Center"
+                            Background="{DynamicResource ThemeV2.Action.Primary}">
                       <Border.Effect>
-                        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.500}"
+                        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
                                           BlurRadius="3"
                                           OffsetX="0"
                                           OffsetY="2"
@@ -477,7 +409,6 @@
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
-        </ScrollViewer>
 
         <!-- Transaction History Panel -->
         <ScrollViewer IsVisible="{Binding IsShowingHistory}"
@@ -515,73 +446,73 @@
 
       </Grid>
 
-      <!-- Enhanced Footer Section with Professional QoL Buttons -->
+      <!-- Compact Footer Section with QoL Buttons -->
       <Border Grid.Row="2"
-              Classes="header-panel"
-              Padding="12,8"
-              Margin="0,12,0,0">
+              Classes="footer-panel"
+              Padding="8,6"
+              Margin="0,8,0,0">
         <Border.Effect>
-          <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
-                            BlurRadius="6"
+          <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
+                            BlurRadius="4"
                             OffsetX="0"
-                            OffsetY="-2"
-                            Opacity="0.3"/>
+                            OffsetY="-1"
+                            Opacity="0.25"/>
         </Border.Effect>
-        <!-- Professional QoL Buttons Row with enhanced icons -->
+        <!-- Compact QoL Buttons Row -->
         <StackPanel Orientation="Horizontal"
-                    Spacing="4"
+                    Spacing="3"
                     HorizontalAlignment="Center">
 
-          <!-- Enhanced New Button -->
+          <!-- Compact New Button -->
           <Button Classes="toggle-button"
                   Command="{Binding NewQuickButtonCommand}"
                   ToolTip.Tip="Create new quick button">
-            <materialIcons:MaterialIcon Kind="Plus" Width="16" Height="16"/>
+            <materialIcons:MaterialIcon Kind="Plus" Width="14" Height="14"/>
           </Button>
 
-          <!-- Enhanced Refresh All Button -->
+          <!-- Compact Refresh All Button -->
           <Button Classes="toggle-button"
                   Command="{Binding RefreshButtonsCommand}"
                   ToolTip.Tip="Refresh quick buttons from database">
-            <materialIcons:MaterialIcon Kind="Refresh" Width="16" Height="16"/>
+            <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14"/>
           </Button>
 
-          <!-- Enhanced Clear All Button -->
+          <!-- Compact Clear All Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ClearAllButtonsCommand}"
                   ToolTip.Tip="Remove all quick actions">
-            <materialIcons:MaterialIcon Kind="DeleteSweep" Width="16" Height="16"/>
+            <materialIcons:MaterialIcon Kind="DeleteSweep" Width="14" Height="14"/>
           </Button>
 
-          <!-- Enhanced Reset Order Button -->
+          <!-- Compact Reset Order Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ResetOrderCommand}"
                   ToolTip.Tip="Reset button order to default">
-            <materialIcons:MaterialIcon Kind="SortAlphabeticalAscending" Width="16" Height="16"/>
+            <materialIcons:MaterialIcon Kind="SortAlphabeticalAscending" Width="14" Height="14"/>
           </Button>
 
-          <!-- Enhanced Export Settings Button -->
+          <!-- Compact Export Settings Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ExportQuickButtonsCommand}"
                   ToolTip.Tip="Export quick buttons configuration">
-            <materialIcons:MaterialIcon Kind="Export" Width="16" Height="16"/>
+            <materialIcons:MaterialIcon Kind="Export" Width="14" Height="14"/>
           </Button>
 
-          <!-- Enhanced Import Settings Button -->
+          <!-- Compact Import Settings Button -->
           <Button Classes="toggle-button"
                   Command="{Binding ImportQuickButtonsCommand}"
                   ToolTip.Tip="Import quick buttons configuration">
-            <materialIcons:MaterialIcon Kind="Import" Width="16" Height="16"/>
+            <materialIcons:MaterialIcon Kind="Import" Width="14" Height="14"/>
           </Button>
 
-          <!-- Enhanced Help/Info Button -->
+          <!-- Compact Help/Info Button -->
           <Button Classes="toggle-button"
                   ToolTip.Tip="Show quick buttons help and keyboard shortcuts">
-            <materialIcons:MaterialIcon Kind="HelpCircleOutline" Width="16" Height="16"/>
+            <materialIcons:MaterialIcon Kind="HelpCircleOutline" Width="14" Height="14"/>
           </Button>
 
         </StackPanel>
       </Border>
     </Grid>
-  </Grid>
+  </Border>
 </UserControl>

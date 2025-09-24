@@ -46,7 +46,6 @@ public static class ServiceCollectionExtensions
         });
 
         // Theme and Settings services
-        services.TryAddSingleton<IThemeService, ThemeService>();
         services.TryAddSingleton<IThemeServiceV2, ThemeServiceV2>();  // Theme V2 service with Avalonia 11.3.4 support
         services.TryAddSingleton<ISettingsService, SettingsService>();
 
@@ -193,7 +192,7 @@ public static class ServiceCollectionExtensions
             typeof(IApplicationStateService),
             typeof(INavigationService),
             typeof(IFilePathService),
-            typeof(IThemeService),
+            typeof(IThemeServiceV2),
             typeof(ISettingsService),
             typeof(IDatabaseService),
             typeof(IQuickButtonsService),
@@ -232,7 +231,7 @@ public static class ServiceCollectionExtensions
             typeof(IApplicationStateService),
             typeof(INavigationService),
             typeof(IFilePathService),
-            typeof(IThemeService),
+            typeof(IThemeServiceV2),
             typeof(ISettingsService),
             typeof(IDatabaseService),
             typeof(IQuickButtonsService),

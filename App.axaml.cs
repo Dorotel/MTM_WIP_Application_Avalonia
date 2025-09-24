@@ -154,18 +154,11 @@ public partial class App : Application
                     // Initialize theme service after UI is ready
                     try
                     {
-                        var themeService = Program.GetService<IThemeService>();
-                        var themeInitResult = await themeService.InitializeThemeSystemAsync();
-                        if (themeInitResult.IsSuccess)
-                        {
-                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization successful: {themeInitResult.Message}");
-                            _logger?.LogInformation("Deferred theme initialization successful: {Message}", themeInitResult.Message);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization failed: {themeInitResult.Message}");
-                            _logger?.LogWarning("Deferred theme initialization failed: {Message}", themeInitResult.Message);
-                        }
+                        var themeService = Program.GetService<IThemeServiceV2>();
+                        await themeService.InitializeThemeSystemAsync();
+                        // Legacy method call completed successfully
+                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization successful");
+                        _logger?.LogInformation("Deferred theme initialization successful");
 
                         // Initialize Theme V2 service for new semantic token system
                         try

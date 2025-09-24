@@ -31,39 +31,39 @@
 
     <!-- Primary Action Button (Confirm/Delete/OK) -->
     <Style Selector="Button.primary-action">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="Background" Value="#2196F3"/>
       <Setter Property="Foreground" Value="White"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+      <Setter Property="BorderBrush" Value="#2196F3"/>
     </Style>
 
     <Style Selector="Button.primary-action:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryHoverBrush}"/>
+      <Setter Property="Background" Value="#1976D2"/>
+      <Setter Property="BorderBrush" Value="#1976D2"/>
     </Style>
 
     <!-- Warning/Delete Action Button -->
     <Style Selector="Button.warning-action">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
+      <Setter Property="Background" Value="#F44336"/>
       <Setter Property="Foreground" Value="White"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
+      <Setter Property="BorderBrush" Value="#F44336"/>
     </Style>
 
     <Style Selector="Button.warning-action:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.Critical}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.Critical}"/>
+      <Setter Property="Background" Value="#F44336"/>
+      <Setter Property="BorderBrush" Value="#F44336"/>
     </Style>
 
     <!-- Secondary Action Button (Cancel) -->
     <Style Selector="Button.secondary-action">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="Background" Value="#FFFFFF"/>
+      <Setter Property="Foreground" Value="#1976D2"/>
+      <Setter Property="BorderBrush" Value="#2196F3"/>
     </Style>
 
     <Style Selector="Button.secondary-action:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
+      <Setter Property="Background" Value="#616161"/>
       <Setter Property="Foreground" Value="White"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SecondaryHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="#616161"/>
     </Style>
 
     <!-- Close Button Style -->
@@ -81,32 +81,32 @@
 
     <!-- Header panel styling based on overlay type -->
     <Style Selector="Border.header-confirmation">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"/>
+      <Setter Property="Background" Value="#EEEEEE"/>
     </Style>
 
     <Style Selector="Border.header-error">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}"/>
+      <Setter Property="Background" Value="#F44336"/>
     </Style>
 
     <Style Selector="Border.header-warning">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}"/>
+      <Setter Property="Background" Value="#FF9800"/>
     </Style>
 
     <Style Selector="Border.header-success">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}"/>
+      <Setter Property="Background" Value="#4CAF50"/>
     </Style>
 
     <!-- Content panel styling -->
     <Style Selector="Border.content-panel">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="Background" Value="#FFFFFF"/>
+      <Setter Property="BorderBrush" Value="#2196F3"/>
       <Setter Property="BorderThickness" Value="1,0,1,0"/>
     </Style>
 
     <!-- Action panel styling -->
     <Style Selector="Border.action-panel">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"/>
+      <Setter Property="Background" Value="#F5F5F5"/>
+      <Setter Property="BorderBrush" Value="#2196F3"/>
       <Setter Property="BorderThickness" Value="1,0,1,1"/>
       <Setter Property="CornerRadius" Value="0,0,12,12"/>
     </Style>
@@ -131,8 +131,8 @@
           PointerPressed="OnBackgroundClicked">
 
     <!-- Main dialog container -->
-    <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+    <Border Background="#FFFFFF"
+            BorderBrush="#2196F3"
             BorderThickness="2"
             CornerRadius="12"
             MaxWidth="500"
@@ -160,14 +160,14 @@
                                         Width="24"
                                         Height="24"
                                         Margin="0,0,16,0"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"/>
+                                        Foreground="#FFFFFF"/>
 
             <!-- Title -->
             <TextBlock Grid.Column="1"
                        Text="{Binding Title}"
                        FontWeight="Bold"
                        FontSize="18"
-                       Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
+                       Foreground="#FFFFFF"
                        VerticalAlignment="Center"/>
 
             <!-- Close Button -->
@@ -177,7 +177,7 @@
               <materialIcons:MaterialIcon Kind="Close"
                                           Width="16"
                                           Height="16"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"/>
+                                          Foreground="#FFFFFF"/>
             </Button>
           </Grid>
         </Border>
@@ -194,12 +194,12 @@
               <TextBlock Text="{Binding Message}"
                          FontSize="16"
                          TextWrapping="Wrap"
-                         Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"/>
+                         Foreground="#424242"/>
 
               <!-- Details (if provided) -->
               <Border IsVisible="{Binding Details, Converter={StaticResource NullToBoolConverter}}"
-                      Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-                      BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                      Background="#F5F5F5"
+                      BorderBrush="#2196F3"
                       BorderThickness="1"
                       CornerRadius="6"
                       Padding="12"
@@ -207,7 +207,7 @@
                 <TextBlock Text="{Binding Details}"
                            FontSize="13"
                            TextWrapping="Wrap"
-                           Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"/>
+                           Foreground="#757575"/>
               </Border>
 
             </StackPanel>
@@ -230,10 +230,10 @@
               <materialIcons:MaterialIcon Kind="Information"
                                           Width="14"
                                           Height="14"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"/>
+                                          Foreground="#1976D2"/>
               <TextBlock Text="This action cannot be undone."
                          FontSize="12"
-                         Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"/>
+                         Foreground="#757575"/>
             </StackPanel>
 
             <!-- Right side - Action buttons -->
@@ -272,10 +272,10 @@
             <ProgressBar IsIndeterminate="True"
                          Width="200"
                          Height="4"
-                         Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                         Foreground="#2196F3" />
             <TextBlock Text="Processing..."
                        HorizontalAlignment="Center"
-                       Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
+                       Foreground="#FFFFFF"
                        FontWeight="SemiBold" />
           </StackPanel>
         </Border>

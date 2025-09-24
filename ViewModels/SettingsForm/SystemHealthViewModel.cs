@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -19,7 +20,7 @@ public partial class SystemHealthViewModel : BaseViewModel
 {
     private readonly IDatabaseService _databaseService;
     private readonly IConfigurationService _configurationService;
-    private readonly IThemeService _themeService;
+    private readonly IThemeServiceV2 _themeService;
     
     #region Observable Properties
 
@@ -64,7 +65,7 @@ public partial class SystemHealthViewModel : BaseViewModel
     public SystemHealthViewModel(
         IDatabaseService databaseService,
         IConfigurationService configurationService,
-        IThemeService themeService,
+        IThemeServiceV2 themeService,
         ILogger<SystemHealthViewModel> logger) : base(logger)
     {
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));

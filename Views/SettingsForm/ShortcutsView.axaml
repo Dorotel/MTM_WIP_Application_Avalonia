@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.ShortcutsView">
     
@@ -7,26 +7,26 @@
         <StackPanel Spacing="16" MaxWidth="700">
             
             <!-- Header -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.AccentBrush}"
+            <Border Background="#2196F3"
                     CornerRadius="8"
                     Padding="16">
                 <StackPanel>
                     <TextBlock Text="⌨️ Keyboard Shortcuts Configuration"
                                FontSize="20"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                               Foreground="#FFFFFF"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Customize keyboard shortcuts for faster navigation and operations"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                               Foreground="#FFFFFF"
                                HorizontalAlignment="Center"
                                Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
 
             <!-- Search and Filter -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="16">
@@ -50,8 +50,8 @@
             </Border>
 
             <!-- Navigation Shortcuts -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="20">
@@ -60,7 +60,7 @@
                     <TextBlock Text="🧭 Navigation Shortcuts"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,8"/>
                     
                     <!-- Shortcut Items -->
@@ -72,8 +72,8 @@
                         
                         <!-- Navigation Items -->
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Open Main Inventory" VerticalAlignment="Center"/>
-                        <Border Grid.Row="1" Grid.Column="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" 
+                        <Border Grid.Row="1" Grid.Column="1" Background="#F5F5F5" 
+                                BorderBrush="#E0E0E0" BorderThickness="1" 
                                 CornerRadius="4" Padding="8,4">
                             <TextBlock Text="Ctrl+I" FontFamily="Consolas"/>
                         </Border>
@@ -81,8 +81,8 @@
                         <Button Grid.Row="1" Grid.Column="3" Content="✏️" Classes="mtm-light" Width="32" Height="32"/>
                         
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Open Advanced Settings" VerticalAlignment="Center" Margin="0,8,0,0"/>
-                        <Border Grid.Row="2" Grid.Column="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" 
+                        <Border Grid.Row="2" Grid.Column="1" Background="#F5F5F5" 
+                                BorderBrush="#E0E0E0" BorderThickness="1" 
                                 CornerRadius="4" Padding="8,4" Margin="0,8,0,0">
                             <TextBlock Text="Ctrl+Shift+S" FontFamily="Consolas"/>
                         </Border>
@@ -90,8 +90,8 @@
                         <Button Grid.Row="2" Grid.Column="3" Content="✏️" Classes="mtm-light" Width="32" Height="32" Margin="0,8,0,0"/>
                         
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Quick Search" VerticalAlignment="Center" Margin="0,8,0,0"/>
-                        <Border Grid.Row="3" Grid.Column="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" 
+                        <Border Grid.Row="3" Grid.Column="1" Background="#F5F5F5" 
+                                BorderBrush="#E0E0E0" BorderThickness="1" 
                                 CornerRadius="4" Padding="8,4" Margin="0,8,0,0">
                             <TextBlock Text="Ctrl+F" FontFamily="Consolas"/>
                         </Border>
@@ -102,8 +102,8 @@
             </Border>
 
             <!-- Inventory Operations Shortcuts -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="20">
@@ -112,13 +112,13 @@
                     <TextBlock Text="📦 Inventory Operations"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,8"/>
                     
                     <Grid ColumnDefinitions="250,*,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Add New Item" VerticalAlignment="Center"/>
-                        <Border Grid.Row="0" Grid.Column="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" 
+                        <Border Grid.Row="0" Grid.Column="1" Background="#F5F5F5" 
+                                BorderBrush="#E0E0E0" BorderThickness="1" 
                                 CornerRadius="4" Padding="8,4">
                             <TextBlock Text="Ctrl+N" FontFamily="Consolas"/>
                         </Border>
@@ -126,8 +126,8 @@
                         <Button Grid.Row="0" Grid.Column="3" Content="✏️" Classes="mtm-light" Width="32" Height="32"/>
                         
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Remove Item" VerticalAlignment="Center" Margin="0,8,0,0"/>
-                        <Border Grid.Row="1" Grid.Column="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" 
+                        <Border Grid.Row="1" Grid.Column="1" Background="#F5F5F5" 
+                                BorderBrush="#E0E0E0" BorderThickness="1" 
                                 CornerRadius="4" Padding="8,4" Margin="0,8,0,0">
                             <TextBlock Text="Ctrl+D" FontFamily="Consolas"/>
                         </Border>
@@ -135,8 +135,8 @@
                         <Button Grid.Row="1" Grid.Column="3" Content="✏️" Classes="mtm-light" Width="32" Height="32" Margin="0,8,0,0"/>
                         
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Refresh Inventory" VerticalAlignment="Center" Margin="0,8,0,0"/>
-                        <Border Grid.Row="2" Grid.Column="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" 
+                        <Border Grid.Row="2" Grid.Column="1" Background="#F5F5F5" 
+                                BorderBrush="#E0E0E0" BorderThickness="1" 
                                 CornerRadius="4" Padding="8,4" Margin="0,8,0,0">
                             <TextBlock Text="F5" FontFamily="Consolas"/>
                         </Border>
@@ -144,8 +144,8 @@
                         <Button Grid.Row="2" Grid.Column="3" Content="✏️" Classes="mtm-light" Width="32" Height="32" Margin="0,8,0,0"/>
                         
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Print Report" VerticalAlignment="Center" Margin="0,8,0,0"/>
-                        <Border Grid.Row="3" Grid.Column="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" BorderThickness="1" 
+                        <Border Grid.Row="3" Grid.Column="1" Background="#F5F5F5" 
+                                BorderBrush="#E0E0E0" BorderThickness="1" 
                                 CornerRadius="4" Padding="8,4" Margin="0,8,0,0">
                             <TextBlock Text="Ctrl+P" FontFamily="Consolas"/>
                         </Border>
@@ -156,8 +156,8 @@
             </Border>
 
             <!-- Shortcut Conflict Detection -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.WarningLightBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+            <Border Background="#FFE0B2"
+                    BorderBrush="#FF9800"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="16"
@@ -170,18 +170,18 @@
                     <StackPanel>
                         <TextBlock Text="Shortcut Conflict Detected"
                                    FontWeight="SemiBold"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.WarningTextBrush}"/>
+                                   Foreground="#FF6B6B"/>
                         <TextBlock Text="The shortcut 'Ctrl+S' is already assigned to 'Save Settings'. Please choose a different combination."
                                    FontSize="12"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.WarningTextBrush}"
+                                   Foreground="#FF6B6B"
                                    TextWrapping="Wrap"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
 
             <!-- Global Settings -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="20">
@@ -190,7 +190,7 @@
                     <TextBlock Text="⚙️ Global Shortcut Settings"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,8"/>
                     
                     <CheckBox Content="Enable keyboard shortcuts" IsChecked="True"/>
@@ -228,8 +228,8 @@
             </StackPanel>
 
             <!-- Placeholder Notice -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+            <Border Background="#E3F2FD"
+                    BorderBrush="#2196F3"
                     BorderThickness="1"
                     CornerRadius="4"
                     Padding="12"
@@ -240,7 +240,7 @@
                                VerticalAlignment="Center"/>
                     <TextBlock Text="This is a placeholder interface. Full shortcuts configuration will include conflict detection, custom key combination input, and profile management."
                                FontSize="12"
-                               Foreground="{DynamicResource MTM_Shared_Logic.InfoTextBrush}"
+                               Foreground="#1976D2"
                                TextWrapping="Wrap"/>
                 </StackPanel>
             </Border>

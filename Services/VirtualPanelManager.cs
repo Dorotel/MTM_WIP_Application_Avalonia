@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
@@ -17,13 +18,13 @@ namespace MTM_WIP_Application_Avalonia.Services;
 public class VirtualPanelManager
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IThemeService _themeService;
+    private readonly IThemeServiceV2 _themeService;
     private readonly ILogger<VirtualPanelManager> _logger;
     private readonly Dictionary<string, Type> _panelViewTypes;
 
     public VirtualPanelManager(
         IServiceProvider serviceProvider,
-        IThemeService themeService,
+        IThemeServiceV2 themeService,
         ILogger<VirtualPanelManager> logger)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));

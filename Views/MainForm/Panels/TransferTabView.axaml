@@ -22,9 +22,9 @@
   <UserControl.Styles>
     <!-- MTM Theme Input Field Styles -->
     <Style Selector="TextBox.input-field">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="BorderBrush" Value="#BDBDBD" />
+      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="#424242" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="Padding" Value="8,6" />
@@ -35,29 +35,29 @@
 
     <!-- Error state styling -->
     <Style Selector="TextBox.input-field.error">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}" />
+      <Setter Property="BorderBrush" Value="#F44336" />
+      <Setter Property="Background" Value="#FFCDD2" />
     </Style>
 
     <!-- Focus state styling -->
     <Style Selector="TextBox.input-field:focus">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.FocusBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+      <Setter Property="BorderBrush" Value="#1976D2" />
+      <Setter Property="Background" Value="#F5F5F5" />
     </Style>
 
     <!-- Material Icons global styling -->
     <Style Selector="materialIcons|MaterialIcon">
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
+      <Setter Property="Foreground" Value="#1976D2" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <!-- Primary Button styling -->
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
+      <Setter Property="Background" Value="#2196F3" />
+      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="BorderBrush" Value="#BDBDBD" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="FontWeight" Value="SemiBold" />
@@ -67,9 +67,9 @@
 
     <!-- Secondary Button styling - Enhanced border visibility -->
     <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
+      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="#212121" />
+      <Setter Property="BorderBrush" Value="#2196F3" />
       <Setter Property="BorderThickness" Value="1.5" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="MinHeight" Value="32" />
@@ -77,16 +77,16 @@
     </Style>
 
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
+      <Setter Property="Background" Value="#F5F5F5" />
+      <Setter Property="BorderBrush" Value="#2196F3" />
+      <Setter Property="Foreground" Value="#BDBDBD" />
     </Style>
 
     <!-- Transfer Button styling -->
     <Style Selector="Button.transfer">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
+      <Setter Property="Background" Value="#4CAF50" />
+      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="BorderBrush" Value="#4CAF50" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="FontWeight" Value="SemiBold" />
@@ -95,8 +95,8 @@
     </Style>
 
     <Style Selector="Button.transfer:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.SuccessDarkBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.SuccessDarkBrush}" />
+      <Setter Property="Background" Value="#388E3C" />
+      <Setter Property="BorderBrush" Value="#388E3C" />
     </Style>
 
   </UserControl.Styles>
@@ -105,7 +105,7 @@
   <Grid x:Name="RootContainer">
 
     <!-- Main Layout Grid with columns for content and QuickButtons -->
-    <Grid x:Name="LayoutContainer" ColumnDefinitions="*,Auto" Margin="8" Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+    <Grid x:Name="LayoutContainer" ColumnDefinitions="*,Auto" Margin="8" Background="#FAFAFA">
 
     <!-- Left Panel: Main Transfer Content -->
     <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
@@ -113,14 +113,14 @@
       <Grid x:Name="MainContainer" RowDefinitions="*,Auto,Auto" MinWidth="600" MinHeight="400" Margin="0,0,8,0">
 
         <!-- Main Transfer Configuration Panel -->
-        <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,8">
+        <Border Grid.Row="0" Background="#F5F5F5" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,8">
 
           <Grid x:Name="TransferFormGrid" RowDefinitions="Auto,*">
 
             <!-- Search Configuration Card -->
             <Border Grid.Row="0"
-                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                    Background="#FFFFFF"
+                    BorderBrush="#2196F3"
                     BorderThickness="1"
                     CornerRadius="6"
                     Padding="16"
@@ -132,8 +132,8 @@
                 <!-- Part ID Field -->
                 <Grid x:Name="PartIdGrid" Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">
                   <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
-                    <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
-                    <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
+                    <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" Foreground="#1976D2" />
+                    <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" Foreground="#212121" VerticalAlignment="Center" />
                   </StackPanel>
                   <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding PartText, Mode=TwoWay}" Watermark="Enter part ID for transfer..." Classes="input-field" ToolTip.Tip="Select or enter part ID to search for transfer candidates" TabIndex="1" />
                 </Grid>
@@ -141,8 +141,8 @@
                 <!-- Operation Field -->
                 <Grid x:Name="OperationGrid" Grid.Row="1" ColumnDefinitions="90,*" ColumnSpacing="12">
                   <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
-                    <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
-                    <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
+                    <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" Foreground="#1976D2" />
+                    <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="#212121" VerticalAlignment="Center" />
                   </StackPanel>
                   <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding OperationText, Mode=TwoWay}" Watermark="Enter operation number (optional)..." Classes="input-field" ToolTip.Tip="Select or enter operation number to filter transfer candidates" TabIndex="2" />
                 </Grid>
@@ -153,8 +153,8 @@
 
             <!-- DataGrid for Available Inventory -->
             <Border Grid.Row="1"
-                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                    Background="#FFFFFF"
+                    BorderBrush="#2196F3"
                     BorderThickness="1"
                     CornerRadius="6"
                     Padding="8">
@@ -163,7 +163,7 @@
 
                 <!-- DataGrid Header -->
                 <Border Grid.Row="0"
-                        Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
+                        Background="#EEEEEE"
                         CornerRadius="4"
                         Padding="12,8"
                         Margin="0,0,0,8">
@@ -172,29 +172,29 @@
                                               Kind="ViewList"
                                               Width="16"
                                               Height="16"
-                                              Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                                              Foreground="#FFFFFF"
                                               VerticalAlignment="Center"
                                               Margin="0,0,8,0" />
                     <TextBlock Grid.Column="1"
                               Text="Available Inventory for Transfer"
                               FontSize="14"
                               FontWeight="Bold"
-                              Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                              Foreground="#FFFFFF"
                               ToolTip.Tip="Select items to transfer. Use Ctrl+Click for multiple selection."
                               VerticalAlignment="Center" />
                     <Border Grid.Column="2"
-                            Background="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                            Background="#FFFFFF"
                             CornerRadius="8"
                             Padding="8,4">
                       <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock Text="{Binding InventoryItems.Count}"
                                   FontSize="12"
                                   FontWeight="Bold"
-                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+                                  Foreground="#2196F3"
                                   VerticalAlignment="Center" />
                         <TextBlock Text="items"
                                   FontSize="11"
-                                  Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                                  Foreground="#424242"
                                   VerticalAlignment="Center" />
                       </StackPanel>
                     </Border>
@@ -212,8 +212,8 @@
                                                        SelectedItemsCollection="{Binding SelectedInventoryItems}"
                                                        ExecuteTransferCommand="{Binding TransferCommand}"
                                                        IsVisible="{Binding HasInventoryItems}"
-                                                       Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                                                       BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                                                       Background="#FFFFFF"
+                                                       BorderBrush="#EEEEEE"
                                                        BorderThickness="1"
                                                        CornerRadius="4"
                                                        MinHeight="300"
@@ -234,8 +234,8 @@
                   <!-- Nothing Found Indicator -->
                   <Border Grid.Row="0"
                           IsVisible="{Binding ShowNothingFoundIndicator}"
-                          Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                          BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                          Background="#FFFFFF"
+                          BorderBrush="#EEEEEE"
                           BorderThickness="1"
                           CornerRadius="4"
                           Padding="32"
@@ -258,15 +258,15 @@
                       <materialIcons:MaterialIcon Kind="Transfer"
                                                 Width="48"
                                                 Height="48"
-                                                Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"/>
+                                                Foreground="#757575"/>
                       <TextBlock Text="No transfer candidates found"
                                 FontSize="16"
                                 FontWeight="Medium"
-                                Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                                Foreground="#212121"
                                 HorizontalAlignment="Center"/>
                       <TextBlock Text="Enter search criteria above and click Search"
                                 FontSize="12"
-                                Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                                Foreground="#424242"
                                 HorizontalAlignment="Center"/>
                     </StackPanel>
                   </Border>
@@ -293,10 +293,10 @@
                       <ProgressBar IsIndeterminate="True"
                                   Width="200"
                                   Height="4"
-                                  Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}"/>
+                                  Foreground="#2196F3"/>
                       <TextBlock Text="Loading inventory data..."
                                 FontSize="14"
-                                Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
+                                Foreground="#FFFFFF"
                                 HorizontalAlignment="Center"/>
                       <!-- [TRANSFER-DEBUG] Status Message Display -->
                       <TextBlock Text="{Binding StatusMessage, TargetNullValue='Preparing...'}"
@@ -316,8 +316,8 @@
 
         <!-- Transfer Controls Card (Always Visible) -->
         <Border Grid.Row="1"
-                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+                Background="#FFFFFF"
+                BorderBrush="#2196F3"
                 BorderThickness="1"
                 CornerRadius="6"
                 Padding="16"
@@ -335,13 +335,13 @@
                                             Kind="MapMarkerRadius"
                                             Width="14"
                                             Height="14"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
+                                            Foreground="#1976D2"
                                             VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1"
                             Text="Destination Location:"
                             FontSize="12"
                             FontWeight="Medium"
-                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                            Foreground="#212121"
                             VerticalAlignment="Center" />
                 </Grid>
 
@@ -358,7 +358,7 @@
                 <TextBlock Grid.Row="2"
                           Text="Location is required and must be different from source"
                           FontSize="10"
-                          Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                          Foreground="#F44336"
                           IsVisible="{Binding HasLocationValidationError}" />
               </Grid>
 
@@ -369,23 +369,23 @@
                                             Kind="Counter"
                                             Width="14"
                                             Height="14"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
+                                            Foreground="#1976D2"
                                             VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1"
                             Text="Transfer Quantity:"
                             FontSize="12"
                             FontWeight="Medium"
-                            Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                            Foreground="#212121"
                             VerticalAlignment="Center" />
                   <Border Grid.Column="2"
-                          Background="{DynamicResource MTM_Shared_Logic.InteractiveText}"
+                          Background="#1976D2"
                           CornerRadius="4"
                           Padding="6,2"
                           IsVisible="{Binding SelectedInventoryItem, Converter={x:Static ObjectConverters.IsNotNull}}">
                     <TextBlock Text="{Binding MaxTransferQuantity, StringFormat='Max: {0}'}"
                               FontSize="10"
                               FontWeight="SemiBold"
-                              Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                              Foreground="#FFFFFF"
                               ToolTip.Tip="Maximum available quantity for selected item" />
                   </Border>
                 </Grid>
@@ -403,7 +403,7 @@
                 <TextBlock Grid.Row="2"
                           Text="Quantity must be between 1 and maximum available"
                           FontSize="10"
-                          Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                          Foreground="#F44336"
                           IsVisible="{Binding HasQuantityValidationError}" />
               </Grid>
 
@@ -448,13 +448,13 @@
                                         Kind="InformationOutline"
                                         Width="16"
                                         Height="16"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}"
+                                        Foreground="#1976D2"
                                         VerticalAlignment="Top"
                                         Margin="0,2,8,0" />
               <TextBlock Grid.Column="1"
                         Text="Select an item from the table above, enter a destination location and quantity, then click Transfer to complete the operation."
                         FontSize="11"
-                        Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                        Foreground="#424242"
                         TextWrapping="Wrap" />
             </Grid>
 
@@ -462,7 +462,7 @@
         </Border>
 
         <!-- Action Buttons Panel -->
-        <Border Grid.Row="2" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+        <Border Grid.Row="2" Background="#F5F5F5" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,8">
 
           <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="Auto,*">
 
@@ -485,8 +485,8 @@
                 </ToolTip.Tip>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
-                  <materialIcons:MaterialIcon Kind="Magnify" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-                  <TextBlock Text="Search" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
+                  <materialIcons:MaterialIcon Kind="Magnify" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#212121" />
+                  <TextBlock Text="Search" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#FFFFFF" />
                 </StackPanel>
               </Button>
 
@@ -516,8 +516,8 @@
 
     <!-- Right Panel: Quick Actions Card -->
     <Border Grid.Column="1"
-            Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+            Background="#FFFFFF"
+            BorderBrush="#2196F3"
             BorderThickness="1"
             CornerRadius="6"
             Padding="8"

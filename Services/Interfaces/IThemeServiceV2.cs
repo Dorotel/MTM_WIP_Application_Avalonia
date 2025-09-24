@@ -99,6 +99,23 @@ namespace MTM_WIP_Application_Avalonia.Services.Interfaces
         /// </summary>
         /// <returns>Task representing the async operation</returns>
         Task RefreshSystemThemeAsync();
+
+        /// <summary>
+        /// Initializes the theme system with comprehensive setup
+        /// Legacy method for compatibility with old theme system references
+        /// Delegates to InitializeAsync()
+        /// </summary>
+        /// <returns>Task representing the async initialization</returns>
+        Task InitializeThemeSystemAsync();
+
+        /// <summary>
+        /// Applies custom colors to the current theme
+        /// Legacy method for compatibility with old theme system references
+        /// No-op in V2 system as custom colors are not supported
+        /// </summary>
+        /// <param name="colors">Color dictionary (ignored in V2 system)</param>
+        /// <returns>Completed task</returns>
+        Task ApplyCustomColorsAsync(System.Collections.Generic.Dictionary<string, object> colors);
     }
 
     /// <summary>

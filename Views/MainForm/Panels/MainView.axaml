@@ -417,7 +417,7 @@
         </Border>
       </Grid>
 
-      <!-- Right Panel: Collapsible Quick Actions -->
+      <!-- Right Panel: Collapsible Quick Actions with increased width -->
       <controls:CollapsiblePanel Grid.Column="1"
                                 HeaderPosition="Right"
                                 IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
@@ -425,7 +425,8 @@
                                 Margin="0,8,8,8"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Stretch"
-                                MinWidth="40">
+                                MinWidth="280"
+                                MaxWidth="320">
         <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
                                HorizontalAlignment="Stretch"
                                VerticalAlignment="Stretch"/>
