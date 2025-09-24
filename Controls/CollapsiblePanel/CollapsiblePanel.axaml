@@ -6,129 +6,216 @@
              mc:Ignorable="d"
              d:DesignWidth="400"
              d:DesignHeight="600"
-             x:Class="MTM_WIP_Application_Avalonia.Controls.CollapsiblePanel">
+             x:Class="MTM_WIP_Application_Avalonia.Controls.CollapsiblePanel"
+             MinWidth="240"
+             MinHeight="48">
 
+  <!-- Include MTM Professional Style System -->
   <UserControl.Styles>
-    <!-- Beautiful Professional Styling with Theme V2 -->
+    <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/StyleSystem.axaml"/>
 
-    <!-- Elegant Header Styling with Semantic Theme Colors -->
+    <!-- Manufacturing-Grade CollapsiblePanel Styles with ResolutionIndependentSizing -->
+
+    <!-- Professional Header Panel using MTM HeaderPanel Style -->
     <Style Selector="Border.collapsible-header">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <!-- Enhanced professional gradient background -->
+      <Setter Property="Background">
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Offset="0" Color="{DynamicResource ThemeV2.Color.Action.Primary.Light}"/>
+          <GradientStop Offset="0.5" Color="{DynamicResource ThemeV2.Color.Action.Primary}"/>
+          <GradientStop Offset="1" Color="{DynamicResource ThemeV2.Color.Action.Primary.Dark}"/>
+        </LinearGradientBrush>
+      </Setter>
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
       <Setter Property="BorderThickness" Value="2"/>
-      <Setter Property="CornerRadius" Value="8,8,0,0"/>
-    </Style>
-
-    <!-- Enhanced Header Hover State -->
-    <Style Selector="Border.collapsible-header:pointerover">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
-    </Style>
-
-    <!-- Professional Toggle Button -->
-    <Style Selector="Button.toggle-button">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Width" Value="24"/>
-      <Setter Property="Height" Value="24"/>
-      <Setter Property="Padding" Value="2"/>
-      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Large}"/>
+      <!-- Professional drop shadow -->
+      <Setter Property="Effect">
+        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Action.Primary}"
+                          BlurRadius="8"
+                          OffsetX="0"
+                          OffsetY="3"
+                          Opacity="0.4"/>
+      </Setter>
+      <!-- Smooth transitions -->
       <Setter Property="Transitions">
         <Transitions>
-          <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
-          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2"/>
+          <BrushTransition Property="Background" Duration="0:0:0.25"/>
+          <BrushTransition Property="BorderBrush" Duration="0:0:0.25"/>
         </Transitions>
       </Setter>
     </Style>
 
-    <Style Selector="Button.toggle-button:pointerover">
+    <!-- Enhanced Header Hover State with Professional Visual Feedback -->
+    <Style Selector="Border.collapsible-header:pointerover">
+      <Setter Property="Background">
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Offset="0" Color="{DynamicResource ThemeV2.Color.Action.Secondary.Light}"/>
+          <GradientStop Offset="0.5" Color="{DynamicResource ThemeV2.Color.Action.Secondary}"/>
+          <GradientStop Offset="1" Color="{DynamicResource ThemeV2.Color.Action.Secondary.Dark}"/>
+        </LinearGradientBrush>
+      </Setter>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Secondary}"/>
+      <Setter Property="Effect">
+        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Action.Secondary}"
+                          BlurRadius="12"
+                          OffsetX="0"
+                          OffsetY="4"
+                          Opacity="0.5"/>
+      </Setter>
+    </Style>
+
+    <!-- Manufacturing-Grade Toggle Button using MTM Icon Button Style -->
+    <Style Selector="Button.collapsible-toggle">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="2"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Medium}"/>
+      <Setter Property="Padding" Value="8"/>
+      <!-- Manufacturing touch target size will be set via code-behind -->
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <!-- Professional transitions -->
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.25"/>
+          <BrushTransition Property="Background" Duration="0:0:0.2"/>
+          <BrushTransition Property="BorderBrush" Duration="0:0:0.2"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <Style Selector="Button.collapsible-toggle:pointerover">
       <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Hover}"/>
+      <Setter Property="RenderTransform" Value="scale(1.1)"/>
     </Style>
 
-    <Style Selector="Button.toggle-button:pressed">
+    <Style Selector="Button.collapsible-toggle:pressed">
       <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Pressed}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+      <Setter Property="RenderTransform" Value="scale(0.95)"/>
     </Style>
 
-    <!-- Beautiful Content Container with Reduced Padding -->
-    <Style Selector="Border.content-container">
+    <!-- Professional Content Container using MTM Card Style -->
+    <Style Selector="Border.collapsible-content">
       <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
       <Setter Property="BorderThickness" Value="2,0,2,2"/>
       <Setter Property="CornerRadius" Value="0,0,8,8"/>
-      <Setter Property="Padding" Value="4"/>
+      <!-- Reduced padding for better content utilization -->
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}"/>
+      <!-- Subtle content shadow -->
+      <Setter Property="Effect">
+        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.300}"
+                          BlurRadius="6"
+                          OffsetX="0"
+                          OffsetY="2"
+                          Opacity="0.2"/>
+      </Setter>
     </Style>
 
-    <!-- Professional Root Container -->
-    <Style Selector="Border.root-container">
+    <!-- Manufacturing-Grade Root Container using MTM Card Style -->
+    <Style Selector="Border.collapsible-root">
       <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
-      <Setter Property="BorderThickness" Value="2"/>
-      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Large}"/>
+      <!-- Professional elevation shadow -->
       <Setter Property="Effect">
-        <Setter.Value>
-          <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
-                            BlurRadius="8"
-                            OffsetX="0"
-                            OffsetY="4"
-                            Opacity="0.3"/>
-        </Setter.Value>
+        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.500}"
+                          BlurRadius="16"
+                          OffsetX="0"
+                          OffsetY="8"
+                          Opacity="0.25"/>
       </Setter>
+      <!-- Smooth hover transitions -->
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <Style Selector="Border.collapsible-root:pointerover">
+      <Setter Property="Effect">
+        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.500}"
+                          BlurRadius="20"
+                          OffsetX="0"
+                          OffsetY="10"
+                          Opacity="0.3"/>
+      </Setter>
+    </Style>
+
+    <!-- Professional Material Icon styling -->
+    <Style Selector="Button.collapsible-toggle material|MaterialIcon">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+      <!-- Icon size will be set via code-behind based on ResolutionIndependentSizing -->
+    </Style>
+
+    <Style Selector="Button.collapsible-toggle:pointerover material|MaterialIcon">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    </Style>
+
+    <!-- Enhanced Header Text Styling -->
+    <Style Selector="Border.collapsible-header TextBlock, Border.collapsible-header ContentPresenter">
+      <Setter Property="TextElement.Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+      <Setter Property="TextElement.FontWeight" Value="{StaticResource ThemeV2.Typography.Heading6.FontWeight}"/>
+      <!-- Font size will be set via code-behind based on ResolutionIndependentSizing -->
     </Style>
 
   </UserControl.Styles>
 
-  <!-- Modern Professional Template with Theme V2 Integration -->
+  <!-- Manufacturing-Grade Professional Template with MTM Style System Integration -->
   <UserControl.Template>
     <ControlTemplate>
-      <!-- Professional Root Container with Enhanced Styling -->
-      <Border Classes="root-container">
+      <!-- Manufacturing-Grade Root Container with Professional MTM Styling -->
+      <Border x:Name="RootContainer" Classes="collapsible-root">
 
-        <!-- Dynamic Grid Layout (configured by code) -->
+        <!-- Dynamic Responsive Grid Layout (configured by code-behind with ResolutionIndependentSizing) -->
         <Grid x:Name="RootGrid">
 
-          <!-- Beautiful Header Bar with Gradient Background -->
+          <!-- Professional Header Bar with MTM Manufacturing Gradient -->
           <Border x:Name="HeaderArea"
-                  Classes="collapsible-header"
-                  MinWidth="20"
-                  MinHeight="20">
+                  Classes="collapsible-header">
 
-            <!-- Enhanced Header Content Layout -->
+            <!-- Manufacturing-Grade Header Content Layout with Responsive Design -->
             <Grid x:Name="HeaderContentGrid">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
               </Grid.ColumnDefinitions>
 
-              <!-- Professional Toggle Button with Animation -->
+              <!-- Manufacturing Touch Target Toggle Button with Professional Animation -->
               <Button x:Name="ToggleButton"
                       Grid.Column="0"
-                      Classes="toggle-button"
-                      Click="OnToggleClick">
+                      Classes="collapsible-toggle"
+                      Click="OnToggleClick"
+                      ToolTip.Tip="Expand/Collapse Panel">
 
-                <!-- Beautiful Material Icon with Theme Integration -->
+                <!-- Professional Material Icon with Manufacturing Visual Feedback -->
                 <material:MaterialIcon x:Name="ToggleIcon"
                                        Kind="ChevronRight"
-                                       Width="14"
-                                       Height="14"
-                                       Foreground="White"/>
+                                       Foreground="{DynamicResource ThemeV2.Content.OnColor}"/>
               </Button>
 
-              <!-- Enhanced Header Content Presenter -->
+              <!-- Professional Header Content Presenter with Enhanced Typography -->
               <ContentPresenter x:Name="HeaderPresenter"
                               Grid.Column="1"
                               Content="{TemplateBinding Header}"
                               VerticalAlignment="Center"
                               HorizontalAlignment="Left"
-                              Margin="8,0,8,0"
-                              TextElement.Foreground="White"
-                              TextElement.FontWeight="SemiBold"/>
+                              Margin="12,0,12,0"/>
 
             </Grid>
           </Border>
 
-          <!-- Beautiful Content Container with Professional Styling -->
+          <!-- Professional Content Container with MTM Card Styling -->
           <Border x:Name="ContentArea"
-                  Classes="content-container">
+                  Classes="collapsible-content">
+            <!-- Enhanced Content Presenter with Professional Typography -->
             <ContentPresenter x:Name="ContentPresenter"
                             Content="{TemplateBinding Content}"
                             TextElement.Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
