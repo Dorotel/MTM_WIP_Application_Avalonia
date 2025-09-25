@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
@@ -48,6 +49,9 @@ public partial class ThemeQuickSwitcher : UserControl
             _logger?.LogDebug("Services resolved for ThemeQuickSwitcher V2");
 
             InitializeEventHandlers();
+
+            // Small delay to ensure theme service initialization is complete
+            await Task.Delay(100);
             await InitializeThemeV2ComponentsAsync();
 
             _logger?.LogDebug("ThemeQuickSwitcher V2 initialized successfully");
@@ -89,27 +93,29 @@ public partial class ThemeQuickSwitcher : UserControl
         {
             if (_themeServiceV2 != null)
             {
-                // Get current theme variant and update toggle switch
-                var currentVariant = _themeServiceV2.CurrentTheme;
+                // Get resolved theme variant (never Default) and update toggle switch
+                var resolvedVariant = _themeServiceV2.GetResolvedThemeVariant();
                 if (ThemeToggleSwitch != null)
                 {
                     // Set toggle switch: Dark mode = true, Light mode = false
-                    ThemeToggleSwitch.IsChecked = currentVariant == ThemeVariant.Dark;
+                    ThemeToggleSwitch.IsChecked = resolvedVariant == ThemeVariant.Dark;
                 }
 
                 // Subscribe to theme changes from service V2
                 _themeServiceV2.ThemeChanged += OnThemeServiceV2Changed;
 
-                _logger?.LogDebug("Theme V2 components initialized with current theme: {CurrentTheme}", currentVariant);
+                _logger?.LogDebug("Theme V2 components initialized with resolved theme: {ResolvedTheme}", resolvedVariant);
             }
             else
             {
-                _logger?.LogWarning("ThemeServiceV2 not available - Theme V2 features disabled");
+                _logger?.LogWarning("ThemeServiceV2 not available - using Application.Current theme");
 
-                // Set default state if service not available
+                // Fallback to Application.Current theme if service not available
                 if (ThemeToggleSwitch != null)
                 {
-                    ThemeToggleSwitch.IsChecked = false; // Default to Light mode
+                    var appTheme = Application.Current?.ActualThemeVariant ?? ThemeVariant.Light;
+                    ThemeToggleSwitch.IsChecked = appTheme == ThemeVariant.Dark;
+                    _logger?.LogDebug("Toggle initialized from Application theme: {AppTheme}", appTheme);
                 }
             }
 

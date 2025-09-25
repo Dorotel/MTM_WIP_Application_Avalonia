@@ -198,9 +198,9 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
         <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.Out" Color="{StaticResource ThemeV2.Color.Red.400}"/>
         <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.Transfer" Color="{StaticResource ThemeV2.Color.Blue.400}"/>
 
-        <!-- Quick buttons -->
-        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
-        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background.Hover" Color="{StaticResource ThemeV2.Color.Blue.500}"/>
+        <!-- Quick buttons - Enhanced visibility for Dark theme -->
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background" Color="{StaticResource ThemeV2.Color.Blue.500}"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background.Hover" Color="{StaticResource ThemeV2.Color.Blue.400}"/>
         <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Content" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
 
     </ResourceDictionary>

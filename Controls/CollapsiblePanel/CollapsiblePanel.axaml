@@ -33,20 +33,25 @@
                 <Button x:Name="PART_ToggleButton"
                         Grid.Column="0"
                         Classes="Icon Small Primary"
-                        ToolTip.Tip="Expand/Collapse Panel">
+                        ToolTip.Tip="Expand/Collapse Panel"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Margin="0,0">
 
                   <!-- Professional Material Icon with MTM Theme V2 Integration -->
                   <material:MaterialIcon x:Name="PART_ToggleIcon"
-                                         Kind="ChevronRight"/>
+                                         Kind="ChevronRight"
+                                         VerticalAlignment="Center"
+                                         HorizontalAlignment="Center"/>
                 </Button>
 
-                <!-- Professional Header Content Presenter with Enhanced Typography -->
+                <!-- Header Content Presenter using Theme V2 spacing -->
                 <ContentPresenter x:Name="PART_HeaderPresenter"
                                 Grid.Column="1"
                                 Content="{TemplateBinding Header}"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Left"
-                                Margin="12,0,12,0"/>
+                                Margin="{StaticResource ThemeV2.Spacing.Medium}"/>
 
               </Grid>
             </Border>
@@ -68,83 +73,88 @@
 
   <!-- Manufacturing-Grade CollapsiblePanel Styles with ResolutionIndependentSizing -->
 
-  <!-- Professional Header Panel using MTM HeaderPanel Style -->
+  <!-- Header Panel using StyleSystem HeaderPanel -->
   <Style Selector="Border.collapsible-header">
-    <!-- Enhanced professional gradient background using proper theme tokens -->
     <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
-    <!-- No border on main control to prevent blue line artifacts -->
     <Setter Property="BorderBrush" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Large}"/>
-    <!-- Professional drop shadow - theme aware -->
-    <Setter Property="BoxShadow" Value="{DynamicResource ThemeV2.Shadow.Small}"/>
-    <!-- Smooth transitions -->
+    <Setter Property="CornerRadius" Value="8,8,0,0"/>
     <Setter Property="Transitions">
       <Transitions>
         <BrushTransition Property="Background" Duration="0:0:0.25"/>
-        <BrushTransition Property="BorderBrush" Duration="0:0:0.25"/>
       </Transitions>
     </Setter>
   </Style>
 
-  <!-- Enhanced Header Hover State with Professional Visual Feedback -->
+  <!-- Header Hover State using Theme V2 -->
   <Style Selector="Border.collapsible-header:pointerover">
     <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
-    <!-- Remove border on hover to prevent grey line -->
-    <Setter Property="BorderBrush" Value="Transparent"/>
-    <Setter Property="BoxShadow" Value="{DynamicResource ThemeV2.Shadow.Hover}"/>
   </Style>
 
   <!-- Now using standard MTM Icon Button styles (Button.Icon.Small) -->
   <!-- Custom toggle styles removed to use professional MTM Icon Button system -->
 
-  <!-- Professional Content Container using MTM Card Style -->
+  <!-- Content Container using StyleSystem Card -->
   <Style Selector="Border.collapsible-content">
     <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
-    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
-    <Setter Property="BorderThickness" Value="2,0,2,2"/>
-    <Setter Property="CornerRadius" Value="0,0,8,8"/>
-    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}"/>
-    <!-- Subtle content shadow - theme aware -->
-    <Setter Property="BoxShadow" Value="{DynamicResource ThemeV2.Shadow.Card}"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="CornerRadius" Value="8,8,8,8"/>
   </Style>
 
-  <!-- Manufacturing-Grade Root Container using MTM Card Style -->
+  <!-- Root Container using StyleSystem Card -->
   <Style Selector="Border.collapsible-root">
-    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+    <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Large}"/>
-    <!-- Professional elevation shadow - theme aware -->
-    <Setter Property="BoxShadow" Value="{DynamicResource ThemeV2.Shadow.Large}"/>
-    <!-- Smooth hover transitions -->
+    <Setter Property="CornerRadius" Value="8"/>
     <Setter Property="Transitions">
       <Transitions>
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.25"/>
         <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3"/>
       </Transitions>
     </Setter>
   </Style>
 
   <Style Selector="Border.collapsible-root:pointerover">
-    <Setter Property="BoxShadow" Value="{DynamicResource ThemeV2.Shadow.Modal}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
   </Style>
 
   <!-- Material Icon styling now handled by MTM Icon Button styles -->
 
-  <!-- Enhanced Header Text Styling - Adaptive Colors -->
+  <!-- Header Text Styling using StyleSystem -->
   <Style Selector="Border.collapsible-header TextBlock, Border.collapsible-header ContentPresenter">
     <Setter Property="TextElement.Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
-    <Setter Property="TextElement.FontWeight" Value="{StaticResource ThemeV2.Typography.Heading6.FontWeight}"/>
+    <Setter Property="TextElement.FontWeight" Value="SemiBold"/>
+    <Setter Property="TextElement.FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+  </Style>
+
+  <!-- Toggle Button Styling within Header -->
+  <Style Selector="Border.collapsible-header Button">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="Width" Value="32"/>
+    <Setter Property="Height" Value="32"/>
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.15"/>
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Toggle Button Hover State -->
+  <Style Selector="Border.collapsible-header Button:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
   </Style>
 
   <!-- Ensure MaterialIcon in header buttons gets proper adaptive theming -->
-  <Style Selector="Border.collapsible-header Button.Icon.Primary material|MaterialIcon">
-    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
-  </Style>
-
-  <!-- Fix for light mode - ensure header content uses proper adaptive colors -->
   <Style Selector="Border.collapsible-header Button material|MaterialIcon">
     <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+    <Setter Property="Width" Value="16"/>
+    <Setter Property="Height" Value="16"/>
   </Style>
 
 </Styles>

@@ -30,50 +30,48 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <!-- Beautiful MTM icon styling with gradient effects -->
+    <!-- Navigation icon styling using Theme V2 semantic tokens -->
     <Style Selector="materialIcons|MaterialIcon.nav-icon">
-      <Setter Property="Foreground">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.400}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
       <Setter Property="Width" Value="20" />
       <Setter Property="Height" Value="20" />
     </Style>
 
-    <!-- Beautiful form title styling with professional gradient -->
-    <Style Selector="TextBlock.main-title">
-      <Setter Property="Foreground">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.700}" Offset="0" />
-            <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
-      <Setter Property="FontWeight" Value="Bold" />
-      <Setter Property="FontSize" Value="24" />
-      <Setter Property="TextDecorations" Value="{x:Null}" />
+    <!-- Tab titles using Theme V2 tokens -->
+    <Style Selector="TextBlock.TabTitle">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+      <Setter Property="TextDecorations" Value="{x:Null}"/>
     </Style>
   </UserControl.Styles>
 
   <UserControl.Styles>
-    <!-- TabControl now inherits from MTMTabs global styles -->
-    <!-- Keep only local overrides for text decorations -->
-    <Style Selector="TabItem TextBlock.main-title">
+    <!-- Tab text styling using StyleSystem Typography classes -->
+    <Style Selector="TabItem TextBlock">
       <Setter Property="TextDecorations" Value="{x:Null}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
     </Style>
+
     <Style Selector="TabItem StackPanel TextBlock">
+      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
       <Setter Property="TextDecorations" Value="{x:Null}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
     </Style>
-    <Style Selector="TabItem /template/ TextBlock">
-      <Setter Property="TextDecorations" Value="{x:Null}"/>
+
+    <!-- Menu styling with Theme V2 tokens -->
+    <Style Selector="Menu">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
     </Style>
-    <Style Selector="StackPanel TextBlock.main-title">
-      <Setter Property="TextDecorations" Value="{x:Null}"/>
+
+    <Style Selector="MenuItem">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <Style Selector="MenuItem MenuItem">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+      <Setter Property="FontWeight" Value="Normal"/>
     </Style>
   </UserControl.Styles>  <!-- Keyboard shortcuts -->
   <UserControl.KeyBindings>
@@ -93,17 +91,15 @@
                VerticalAlignment="Stretch"
                LastChildFill="True">
 
-    <!-- Header Menu with MTM Branding and beautiful styling -->
-    <Border DockPanel.Dock="Top"
-            Padding="24,8"
+    <!-- Header Menu - Increased height for proper content fitting -->
+    <Border Classes="HeaderPanel"
+            DockPanel.Dock="Top"
+            Background="{DynamicResource ThemeV2.Action.Primary}"
+            Padding="16,12"
             HorizontalAlignment="Stretch"
+            MinHeight="64"
+            MaxHeight="84"
             ClipToBounds="True">
-      <Border.Background>
-        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
-          <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
-          <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
-        </LinearGradientBrush>
-      </Border.Background>
       <Border.Effect>
         <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
                           BlurRadius="8"
@@ -112,25 +108,22 @@
                           Opacity="0.3"/>
       </Border.Effect>
       <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
-        <!-- Left side: Beautiful Menu with professional styling -->
+        <!-- Left side: Main Menu using StyleSystem -->
         <Menu Grid.Column="0"
               Background="Transparent"
-              Foreground="White"
               HorizontalAlignment="Left">
-          <MenuItem Header="_File" Foreground="White" FontWeight="SemiBold">
-            <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}" Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+          <MenuItem Header="_File">
+            <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
             <Separator/>
-            <MenuItem Header="E_xit" Command="{Binding ExitCommand}" Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+            <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
           </MenuItem>
-          <MenuItem Header="_View" Foreground="White" FontWeight="SemiBold">
-            <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}" Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+          <MenuItem Header="_View">
+            <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
           </MenuItem>
           <!-- Development builds only -->
           <MenuItem Header="_Help"
-                    Foreground="White"
-                    FontWeight="SemiBold"
                     IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
-            <MenuItem Header="_About" Command="{Binding OpenAboutCommand}" Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+            <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
           </MenuItem>
         </Menu>
 
@@ -143,15 +136,16 @@
       </Grid>
     </Border>
 
-    <!-- Enhanced Status Bar with beautiful theming -->
-    <Border DockPanel.Dock="Bottom"
+    <!-- Status Bar - Increased height for proper content fitting -->
+    <Border Classes="FooterPanel"
+            DockPanel.Dock="Bottom"
             Background="{DynamicResource ThemeV2.Background.Surface}"
-            Padding="24,12"
+            Padding="12,8"
             HorizontalAlignment="Stretch"
             MinHeight="48"
+            MaxHeight="68"
             BorderBrush="{DynamicResource ThemeV2.Border.Subtle}"
-            BorderThickness="0,1,0,0"
-            ClipToBounds="True">
+            BorderThickness="0,1,0,0">
       <Border.Effect>
         <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
                           BlurRadius="4"
@@ -174,13 +168,14 @@
         <!-- Spacer -->
         <Border Grid.Column="1" Background="Transparent"/>
 
-        <!-- Enhanced Status Text Box with beautiful styling -->
-        <Border Grid.Column="2"
+        <!-- Status Text Box using StyleSystem Card -->
+        <Border Classes="Card"
+                Grid.Column="2"
                 Background="{DynamicResource ThemeV2.Background.Card}"
                 BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                 BorderThickness="1"
-                Padding="16,10"
-                CornerRadius="8"
+                Padding="{StaticResource ThemeV2.Spacing.Medium}"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Medium}"
                 MinWidth="140"
                 HorizontalAlignment="Right">
           <Border.Effect>
@@ -190,27 +185,22 @@
                               OffsetY="1"
                               Opacity="0.2"/>
           </Border.Effect>
-          <TextBlock Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
+          <TextBlock Classes="Caption"
+                     Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
                      Foreground="{DynamicResource ThemeV2.Content.Primary}"
-                     FontSize="12"
                      FontWeight="SemiBold"
                      VerticalAlignment="Center"
                      TextTrimming="CharacterEllipsis"
                      ToolTip.Tip="{Binding StatusText}"/>
         </Border>
 
-        <!-- Enhanced Version Display with professional gradient -->
+        <!-- Version Display Badge using StyleSystem -->
         <Border Grid.Column="3"
-                CornerRadius="16"
-                Padding="16,8"
+                Background="{DynamicResource ThemeV2.Action.Primary}"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
+                Padding="{StaticResource ThemeV2.Spacing.Medium}"
                 HorizontalAlignment="Right"
                 ClipToBounds="True">
-          <Border.Background>
-            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-              <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.600}" Offset="0" />
-              <GradientStop Color="{DynamicResource ThemeV2.Color.Blue.500}" Offset="1" />
-            </LinearGradientBrush>
-          </Border.Background>
           <Border.Effect>
             <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
                               BlurRadius="6"
@@ -218,9 +208,9 @@
                               OffsetY="2"
                               Opacity="0.3"/>
           </Border.Effect>
-          <TextBlock Text="Ver. 5.0"
-                     Foreground="White"
-                     FontSize="11"
+          <TextBlock Classes="Caption"
+                     Text="Ver. 5.0"
+                     Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                      FontWeight="Bold"
                      VerticalAlignment="Center"/>
         </Border>
@@ -238,12 +228,13 @@
 
       <!-- Left Panel: Tab Control - Stretches fully -->
       <Grid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <!-- Beautiful Main Tab Control with enhanced visual design -->
-        <Border Background="{DynamicResource ThemeV2.Background.Card}"
+        <!-- Main Tab Control using StyleSystem Card.Elevated -->
+        <Border Classes="Card Elevated"
+                Background="{DynamicResource ThemeV2.Background.Card}"
                 BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                 BorderThickness="1"
-                CornerRadius="12"
-                Margin="8,8,8,8"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
+                Margin="{StaticResource ThemeV2.Spacing.Small}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 ClipToBounds="True">
@@ -265,21 +256,19 @@
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch">
 
-          <!-- Beautiful Inventory Tab with Material Design icons -->
+          <!-- Inventory Tab with StyleSystem classes -->
           <TabItem>
             <TabItem.Header>
-              <StackPanel Classes="TabHeader" Orientation="Horizontal" Spacing="12">
-                <Border Classes="TabIcon"
-                        Background="{DynamicResource ThemeV2.Action.Primary}"
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}">
+                <Border Background="{DynamicResource ThemeV2.Action.Primary}"
                         BorderThickness="0"
-                        CornerRadius="6"
+                        CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
                         Width="28"
                         Height="28"
-                        Padding="4"
-                        ClipToBounds="True">
+                        Padding="4">
                   <materialIcons:MaterialIcon Kind="Archive"
                                               Classes="nav-icon"
-                                              Foreground="White"
+                                              Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                                               HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
                 </Border>
@@ -298,27 +287,25 @@
             </DockPanel>
           </TabItem>
 
-          <!-- Beautiful Remove Tab with Material Design -->
+          <!-- Remove Tab with StyleSystem classes -->
           <TabItem>
             <TabItem.Header>
-              <StackPanel Orientation="Horizontal" Spacing="12">
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}">
                 <Border Background="{DynamicResource ThemeV2.Status.Warning}"
                         BorderThickness="0"
-                        CornerRadius="6"
+                        CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
                         Width="28"
                         Height="28"
                         Padding="4">
                   <materialIcons:MaterialIcon Kind="Delete"
-                                              Foreground="White"
+                                              Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                                               Width="18"
                                               Height="18"
                                               HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
                 </Border>
                 <TextBlock Text="Remove"
-                           Classes="main-title"
-                           FontSize="16"
-                           FontWeight="SemiBold"
+                           Classes="TabTitle"
                            VerticalAlignment="Center"/>
               </StackPanel>
             </TabItem.Header>
@@ -332,27 +319,25 @@
             </DockPanel>
           </TabItem>
 
-          <!-- Beautiful Transfer Tab with Material Design -->
+          <!-- Transfer Tab with StyleSystem classes -->
           <TabItem>
             <TabItem.Header>
-              <StackPanel Orientation="Horizontal" Spacing="12">
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}">
                 <Border Background="{DynamicResource ThemeV2.Status.Success}"
                         BorderThickness="0"
-                        CornerRadius="6"
+                        CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
                         Width="28"
                         Height="28"
                         Padding="4">
                   <materialIcons:MaterialIcon Kind="SwapHorizontal"
-                                              Foreground="White"
+                                              Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                                               Width="18"
                                               Height="18"
                                               HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
                 </Border>
                 <TextBlock Text="Transfer"
-                           Classes="main-title"
-                           FontSize="16"
-                           FontWeight="SemiBold"
+                           Classes="TabTitle"
                            VerticalAlignment="Center"/>
               </StackPanel>
             </TabItem.Header>
@@ -368,24 +353,26 @@
         </TabControl>
         </Border>
 
-        <!-- Enhanced Suggestion Overlay Panel with beautiful theming -->
+        <!-- Suggestion Overlay Panel using StyleSystem -->
         <Border x:Name="SuggestionOverlayPanel"
+                Classes="Card Elevated"
                 IsVisible="False"
                 Background="{DynamicResource ThemeV2.Overlay.Background}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Margin="8"
-                CornerRadius="12"
+                Margin="{StaticResource ThemeV2.Spacing.Small}"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
                 ZIndex="1003"
                 ClipToBounds="True">
-          <!-- Centered overlay container with enhanced styling -->
-          <Border Padding="20"
+          <!-- Overlay container -->
+          <Border Classes="Card"
+                  Padding="{StaticResource ThemeV2.Spacing.Large}"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   Background="{DynamicResource ThemeV2.Background.Card}"
                   BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                   BorderThickness="1"
-                  CornerRadius="16"
+                  CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
                   ClipToBounds="True">
             <Border.Effect>
               <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.500}"
@@ -394,7 +381,6 @@
                                 OffsetY="8"
                                 Opacity="0.25"/>
             </Border.Effect>
-            <!-- Overlay content will be dynamically set -->
             <ContentControl x:Name="SuggestionOverlayContent"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
@@ -403,17 +389,17 @@
           </Border>
         </Border>
 
-        <!-- Enhanced Success Overlay Panel with professional design -->
+        <!-- Success Overlay Panel using StyleSystem -->
         <Border x:Name="SuccessOverlayPanel"
+                Classes="Card Elevated"
                 IsVisible="False"
                 Background="{DynamicResource ThemeV2.Overlay.Background}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Margin="8"
-                CornerRadius="12"
+                Margin="{StaticResource ThemeV2.Spacing.Small}"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
                 ZIndex="1001"
                 ClipToBounds="True">
-          <!-- Success overlay content will be dynamically set -->
           <ContentControl x:Name="SuccessOverlayContent"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
@@ -421,15 +407,15 @@
                           VerticalContentAlignment="Stretch"/>
         </Border>
 
-        <!-- Enhanced NewQuickButton View Panel with beautiful overlay -->
+        <!-- NewQuickButton Overlay Panel using StyleSystem -->
         <Border x:Name="NewQuickButtonOverlayPanel"
+                Classes="Card Elevated"
                 IsVisible="False"
                 Background="{DynamicResource ThemeV2.Overlay.Background}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                CornerRadius="12"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
                 ZIndex="1002">
-          <!-- NewQuickButton view content -->
           <views:NewQuickButtonView x:Name="NewQuickButtonView"
                                         DataContext="{x:Null}"
                                         HorizontalAlignment="Center"
@@ -439,10 +425,10 @@
         </Border>
       </Grid>
 
-      <!-- Right Panel: Collapsible Quick Actions with increased width and matching drop shadow -->
+      <!-- Right Panel: Collapsible Quick Actions using StyleSystem -->
       <Border Grid.Column="1"
               Background="Transparent"
-              Margin="8,8,8,8"
+              Margin="{StaticResource ThemeV2.Spacing.Small}"
               ClipToBounds="false"
               HorizontalAlignment="Right"
               VerticalAlignment="Stretch"

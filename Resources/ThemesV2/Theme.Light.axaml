@@ -59,10 +59,10 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
              ACTION/INTERACTIVE THEME ASSIGNMENTS (LIGHT)
              =========================================== -->
 
-        <!-- Primary actions -->
-        <SolidColorBrush x:Key="ThemeV2.Action.Primary" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
-        <SolidColorBrush x:Key="ThemeV2.Action.Primary.Hover" Color="{StaticResource ThemeV2.Color.Blue.700}"/>
-        <SolidColorBrush x:Key="ThemeV2.Action.Primary.Pressed" Color="{StaticResource ThemeV2.Color.Blue.800}"/>
+        <!-- Primary actions - Enhanced contrast for Light theme -->
+        <SolidColorBrush x:Key="ThemeV2.Action.Primary" Color="{StaticResource ThemeV2.Color.Blue.700}"/>
+        <SolidColorBrush x:Key="ThemeV2.Action.Primary.Hover" Color="{StaticResource ThemeV2.Color.Blue.800}"/>
+        <SolidColorBrush x:Key="ThemeV2.Action.Primary.Pressed" Color="{StaticResource ThemeV2.Color.Blue.900}"/>
         <SolidColorBrush x:Key="ThemeV2.Action.Primary.Disabled" Color="{StaticResource ThemeV2.Color.Gray.300}"/>
 
         <!-- Secondary actions -->
@@ -198,9 +198,9 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
         <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.Out" Color="{StaticResource ThemeV2.Color.Red.600}"/>
         <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.Transfer" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
 
-        <!-- Quick buttons -->
-        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
-        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background.Hover" Color="{StaticResource ThemeV2.Color.Blue.700}"/>
+        <!-- Quick buttons - Enhanced contrast for Light theme -->
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background" Color="{StaticResource ThemeV2.Color.Blue.700}"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background.Hover" Color="{StaticResource ThemeV2.Color.Blue.800}"/>
         <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Content" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
 
     </ResourceDictionary>

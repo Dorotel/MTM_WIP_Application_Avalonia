@@ -3,50 +3,37 @@
              x:Class="MTM_WIP_Application_Avalonia.Views.MainForm.Overlays.ThemeQuickSwitcher"
              x:Name="ThemeQuickSwitcherRoot">
 
-    <!-- Theme Quick Switcher Component - Updated for Theme V2 -->
-    <Border Background="{DynamicResource ThemeV2.Surface.Card}"
+    <!-- Theme Quick Switcher Component - Theme V2 + StyleSystem -->
+    <Border Classes="Card"
+            Background="{DynamicResource ThemeV2.Background.Card}"
             BorderBrush="{DynamicResource ThemeV2.Border.Default}"
             BorderThickness="1"
-            CornerRadius="6"
-            Padding="8">
+            CornerRadius="{StaticResource ThemeV2.CornerRadius.Medium}"
+            Padding="{StaticResource ThemeV2.Spacing.Small}">
 
-        <StackPanel Orientation="Horizontal" Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}">
 
             <!-- Theme Icon with Edit Button -->
-            <StackPanel Orientation="Horizontal" Spacing="4">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.XS}">
                 <Button x:Name="EditThemeButton"
+                        Classes="Icon.Small"
                         Content="🎨"
-                        Classes="mtm-icon-button"
+                        Background="Transparent"
+                        Foreground="{DynamicResource ThemeV2.Content.Primary}"
                         FontSize="12"
                         Width="24"
                         Height="24"
                         VerticalAlignment="Center"
                         ToolTip.Tip="Edit current theme colors - Opens full theme editor"
-                        Cursor="Hand">
-                    <Button.Styles>
-                        <Style Selector="Button.mtm-icon-button">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Padding" Value="2"/>
-                            <Setter Property="CornerRadius" Value="4"/>
-                        </Style>
-                        <Style Selector="Button.mtm-icon-button:pointerover">
-                            <Setter Property="Background" Value="{DynamicResource ThemeV2.Surface.Hover}"/>
-                        </Style>
-                        <Style Selector="Button.mtm-icon-button:pressed">
-                            <Setter Property="Background" Value="{DynamicResource ThemeV2.Accent.Primary}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Text.OnAccent}"/>
-                        </Style>
-                    </Button.Styles>
-                </Button>
+                        Cursor="Hand"/>
             </StackPanel>
 
             <!-- Light/Dark Theme Toggle Switch -->
-            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <TextBlock Text="Light"
-                           Foreground="{DynamicResource ThemeV2.Text.Secondary}"
-                           FontSize="11"
-                           VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}" VerticalAlignment="Center">
+                <TextBlock Classes="Caption"
+                           Text="Light"
+                           Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                           VerticalAlignment="Center"/>
                 <ToggleSwitch x:Name="ThemeToggleSwitch"
                               OffContent=""
                               OnContent=""
@@ -54,38 +41,37 @@
                               MinHeight="24"
                               VerticalAlignment="Center"
                               ToolTip.Tip="Toggle between Light and Dark theme"
-                              Cursor="Hand" />
-                <TextBlock Text="Dark"
-                           Foreground="{DynamicResource ThemeV2.Text.Secondary}"
-                           FontSize="11"
-                           VerticalAlignment="Center" />
+                              Cursor="Hand"/>
+                <TextBlock Classes="Caption"
+                           Text="Dark"
+                           Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                           VerticalAlignment="Center"/>
             </StackPanel>
 
             <!-- Accent Color Preview Button -->
             <Button x:Name="AccentColorButton"
-                    Background="{DynamicResource ThemeV2.Accent.Primary}"
+                    Classes="Icon"
+                    Background="{DynamicResource ThemeV2.Action.Primary}"
                     BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                     BorderThickness="1"
-                    CornerRadius="4"
+                    CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
                     Width="32"
                     Height="24"
                     VerticalAlignment="Center"
                     ToolTip.Tip="Current accent color - Click to change"
-                    Cursor="Hand">
-            </Button>
+                    Cursor="Hand"/>
 
             <!-- Quick Apply Button -->
             <Button x:Name="ApplyButton"
+                    Classes="Secondary"
                     Content="Apply"
-                    Classes="mtm-secondary"
+                    Background="{DynamicResource ThemeV2.Action.Secondary}"
+                    Foreground="{DynamicResource ThemeV2.Content.Primary}"
                     FontSize="11"
-                    Padding="8,4"
+                    Padding="{StaticResource ThemeV2.Spacing.Small}"
                     MinHeight="28"
                     VerticalAlignment="Center"
-                    ToolTip.Tip="Apply theme changes"
-                    Background="{DynamicResource ThemeV2.Surface.Panel}"
-                    BorderBrush="{DynamicResource ThemeV2.Border.Default}"
-                    Foreground="{DynamicResource ThemeV2.Text.Primary}" />
+                    ToolTip.Tip="Apply theme changes"/>
         </StackPanel>
     </Border>
 
