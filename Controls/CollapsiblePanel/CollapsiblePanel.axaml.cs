@@ -7,6 +7,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
+using Avalonia.Metadata;
 using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -28,9 +29,9 @@ public enum HeaderPosition
 /// <summary>
 /// Manufacturing-grade collapsible panel with professional MTM styling and ResolutionIndependentSizing integration.
 /// Features responsive design, touch-friendly controls, and comprehensive accessibility support.
-/// Now inherits from HeaderedContentControl to eliminate TabItem styling conflicts.
+/// Now inherits from ContentControl to eliminate TabItem styling inheritance while maintaining content properties.
 /// </summary>
-public partial class CollapsiblePanel : HeaderedContentControl
+public partial class CollapsiblePanel : ContentControl
 {
     // Styled properties
     public static readonly StyledProperty<bool> IsExpandedProperty =
@@ -39,7 +40,11 @@ public partial class CollapsiblePanel : HeaderedContentControl
     public static readonly StyledProperty<HeaderPosition> HeaderPositionProperty =
         AvaloniaProperty.Register<CollapsiblePanel, HeaderPosition>(nameof(HeaderPosition), HeaderPosition.Top);
 
-    // Additional properties for styling compatibility (HeaderedContentControl provides Header and Content)
+    // Header property (ContentControl provides Content property)
+    public static readonly StyledProperty<object?> HeaderProperty =
+        AvaloniaProperty.Register<CollapsiblePanel, object?>(nameof(Header));
+
+    // Additional properties for styling compatibility
     public static readonly StyledProperty<IBrush?> HeaderBackgroundProperty =
         AvaloniaProperty.Register<CollapsiblePanel, IBrush?>(nameof(HeaderBackground));
 
@@ -63,7 +68,13 @@ public partial class CollapsiblePanel : HeaderedContentControl
         set => SetValue(HeaderPositionProperty, value);
     }
 
-    // HeaderedContentControl provides Header and Content properties
+    // Header property (ContentControl provides Content property)
+    public object? Header
+    {
+        get => GetValue(HeaderProperty);
+        set => SetValue(HeaderProperty, value);
+    }
+
     public IBrush? HeaderBackground
     {
         get => GetValue(HeaderBackgroundProperty);
@@ -232,6 +243,9 @@ public partial class CollapsiblePanel : HeaderedContentControl
         // Update button positioning
         UpdateButtonPositioning();
 
+        // Ensure header maintains consistent size
+        UpdateHeaderSize();
+
         // Update header corner radius based on current expanded state
         UpdateHeaderCornerRadius(!IsExpanded);
     }
@@ -384,8 +398,8 @@ public partial class CollapsiblePanel : HeaderedContentControl
             this.Width = double.NaN; // Auto width when expanded
             this.Height = double.NaN; // Auto height when expanded
 
-            // Restore header to normal size when expanded
-            UpdateHeaderSize(false);
+            // Ensure header maintains consistent size
+            UpdateHeaderSize();
 
             switch (HeaderPosition)
             {
@@ -403,8 +417,8 @@ public partial class CollapsiblePanel : HeaderedContentControl
         }
         else
         {
-            // Shrink header to fit collapsed panel
-            UpdateHeaderSize(true);
+            // Ensure header maintains consistent size even when collapsed
+            UpdateHeaderSize();
 
             switch (HeaderPosition)
             {
@@ -457,50 +471,29 @@ public partial class CollapsiblePanel : HeaderedContentControl
         }
     }
 
-    private void UpdateHeaderSize(bool isCollapsed)
+    private void UpdateHeaderSize()
     {
         if (_headerArea == null)
             return;
 
+        // Header should maintain consistent size regardless of expanded/collapsed state
         switch (HeaderPosition)
         {
             case HeaderPosition.Left:
             case HeaderPosition.Right:
-                if (isCollapsed)
-                {
-                    // When collapsed, make header fill the entire collapsed panel width
-                    _headerArea.Width = double.NaN; // Fill available width
-                    _headerArea.Height = double.NaN;
-                    _headerArea.ClearValue(MaxWidthProperty);
-                    _headerArea.ClearValue(MaxHeightProperty);
-                }
-                else
-                {
-                    // When expanded, use normal header width
-                    _headerArea.Width = 32;
-                    _headerArea.Height = double.NaN;
-                    _headerArea.ClearValue(MaxWidthProperty);
-                    _headerArea.ClearValue(MaxHeightProperty);
-                }
+                // Always use consistent header width for vertical headers
+                _headerArea.Width = 34; // Consistent 34px width
+                _headerArea.Height = double.NaN; // Fill available height
+                _headerArea.ClearValue(MaxWidthProperty);
+                _headerArea.ClearValue(MaxHeightProperty);
                 break;
             case HeaderPosition.Top:
             case HeaderPosition.Bottom:
-                if (isCollapsed)
-                {
-                    // When collapsed, make header fill the entire collapsed panel height
-                    _headerArea.Width = double.NaN;
-                    _headerArea.Height = double.NaN; // Fill available height
-                    _headerArea.ClearValue(MaxWidthProperty);
-                    _headerArea.ClearValue(MaxHeightProperty);
-                }
-                else
-                {
-                    // When expanded, use normal header height
-                    _headerArea.Width = double.NaN;
-                    _headerArea.Height = 32;
-                    _headerArea.ClearValue(MaxWidthProperty);
-                    _headerArea.ClearValue(MaxHeightProperty);
-                }
+                // Always use consistent header height for horizontal headers
+                _headerArea.Width = double.NaN; // Fill available width
+                _headerArea.Height = 34; // Consistent 34px height
+                _headerArea.ClearValue(MaxWidthProperty);
+                _headerArea.ClearValue(MaxHeightProperty);
                 break;
         }
     }

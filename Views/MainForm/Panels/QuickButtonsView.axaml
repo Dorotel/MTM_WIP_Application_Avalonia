@@ -227,9 +227,9 @@
       <Setter Property="BorderThickness" Value="3"/>
     </Style>
 
-    <!-- Icon styling for header toggle buttons -->
+    <!-- Icon styling for header toggle buttons - Adaptive colors -->
     <Style Selector="Button.header-toggle-button materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
     </Style>
 
     <Style Selector="Button.header-toggle-button:pointerover materialIcons|MaterialIcon">
@@ -240,9 +240,9 @@
       <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
     </Style>
 
-    <!-- Text styling for header toggle buttons -->
+    <!-- Text styling for header toggle buttons - Adaptive colors -->
     <Style Selector="Button.header-toggle-button TextBlock">
-      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
     </Style>
 
     <Style Selector="Button.header-toggle-button:pointerover TextBlock">
@@ -257,7 +257,7 @@
     <Style Selector="Button.toggle-button">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
-      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="Padding" Value="4,3"/>
@@ -281,9 +281,9 @@
       <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
-    <!-- Icon styling for toggle buttons -->
+    <!-- Icon styling for toggle buttons - Adaptive colors -->
     <Style Selector="Button.toggle-button materialIcons|MaterialIcon">
-      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
     </Style>
 
     <Style Selector="Button.toggle-button:pointerover materialIcons|MaterialIcon">
@@ -479,12 +479,12 @@
                           <TextBlock Text="OP"
                                      FontSize="7"
                                      FontWeight="Medium"
-                                     Foreground="White"
+                                     Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                                      TextAlignment="Center"/>
                           <TextBlock Text="{Binding Operation}"
                                      FontSize="11"
                                      FontWeight="Bold"
-                                     Foreground="White"
+                                     Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                                      TextAlignment="Center"/>
                         </StackPanel>
                       </Border>

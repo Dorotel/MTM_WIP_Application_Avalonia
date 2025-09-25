@@ -107,7 +107,7 @@
                         <materialIcons:MaterialIcon Kind="Package"
                                                                                 Width="20"
                                                                                 Height="20"
-                                                                                Foreground="White" />
+                                                                                Foreground="{DynamicResource ThemeV2.Content.OnColor}" />
                     </Border>
                     <TextBlock Classes="form-title"
                                          Text="Add Inventory Item"
@@ -303,10 +303,10 @@
                             <materialIcons:MaterialIcon Kind="ContentSave"
                                                                                     Width="18"
                                                                                     Height="18"
-                                                                                    Foreground="White" />
+                                                                                    Foreground="{DynamicResource ThemeV2.Content.OnColor}" />
                             <TextBlock Text="Save Item"
                                                  Classes="Body"
-                                                 Foreground="White"
+                                                 Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                                                  FontWeight="SemiBold" />
                         </StackPanel>
                     </Button>

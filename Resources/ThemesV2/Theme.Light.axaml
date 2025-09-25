@@ -172,6 +172,27 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
         <SolidColorBrush x:Key="ThemeV2.SuccessOverlay.Border" Color="{StaticResource ThemeV2.Color.Green.200}"/>
         <SolidColorBrush x:Key="ThemeV2.SuccessOverlay.Content" Color="{StaticResource ThemeV2.Color.Green.800}"/>
 
+        <!-- ===========================================
+             SHADOW SYSTEM (LIGHT THEME)
+             =========================================== -->
+
+        <!-- Shadows for light theme - softer for visibility on light backgrounds -->
+        <BoxShadows x:Key="ThemeV2.Shadow.Small">0 2 8 0 #1A000000</BoxShadows>
+        <BoxShadows x:Key="ThemeV2.Shadow.Medium">0 4 12 0 #25000000</BoxShadows>
+        <BoxShadows x:Key="ThemeV2.Shadow.Large">0 8 16 0 #30000000</BoxShadows>
+        <BoxShadows x:Key="ThemeV2.Shadow.ExtraLarge">0 12 24 0 #40000000</BoxShadows>
+
+        <!-- Specialized shadows for different UI elements -->
+        <BoxShadows x:Key="ThemeV2.Shadow.Card">0 2 6 0 #0D000000</BoxShadows>
+        <BoxShadows x:Key="ThemeV2.Shadow.Hover">0 4 12 0 #2A000000</BoxShadows>
+        <BoxShadows x:Key="ThemeV2.Shadow.Focus">0 6 16 0 #35000000</BoxShadows>
+        <BoxShadows x:Key="ThemeV2.Shadow.Modal">0 10 20 0 #4D000000</BoxShadows>
+
+        <!-- Overlay backgrounds for light theme -->
+        <SolidColorBrush x:Key="ThemeV2.Overlay.Light" Color="#20000000"/>
+        <SolidColorBrush x:Key="ThemeV2.Overlay.Medium" Color="#40000000"/>
+        <SolidColorBrush x:Key="ThemeV2.Overlay.Heavy" Color="#60000000"/>
+
         <!-- MTM Manufacturing context -->
         <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.In" Color="{StaticResource ThemeV2.Color.Green.600}"/>
         <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.Out" Color="{StaticResource ThemeV2.Color.Red.600}"/>
