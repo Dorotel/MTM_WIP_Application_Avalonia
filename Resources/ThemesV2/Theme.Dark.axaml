@@ -203,6 +203,33 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
         <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background.Hover" Color="{StaticResource ThemeV2.Color.Blue.400}"/>
         <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Content" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
 
+        <!-- Quick button badges and labels -->
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Badge.Background" Color="{StaticResource ThemeV2.Color.Gray.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Badge.Border" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Badge.Content" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Position.Background" Color="Transparent"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Position.Border" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+        <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Position.Content" Color="{StaticResource ThemeV2.Color.Pure.White}"/>
+
+        <!-- ===========================================
+             MISSING TOKENS FOR MAINVIEW TRANSFORMATION
+             =========================================== -->
+
+        <!-- Navigation Tab Icon Backgrounds -->
+        <SolidColorBrush x:Key="ThemeV2.Navigation.TabIcon.Background" Color="{StaticResource ThemeV2.Color.Blue.400}"/>
+
+        <!-- Overlay Background -->
+        <SolidColorBrush x:Key="ThemeV2.Overlay.Background" Color="#99000000"/>
+
+        <!-- Shadow Colors for Effects -->
+        <Color x:Key="ThemeV2.Shadow.Color.Header">#1E40AF</Color>
+        <Color x:Key="ThemeV2.Shadow.Color.Footer">#374151</Color>
+        <Color x:Key="ThemeV2.Shadow.Color.Card">#1F2937</Color>
+
+        <!-- Opacity Values -->
+        <x:Double x:Key="ThemeV2.Opacity.Overlay">0.6</x:Double>
+        <x:Double x:Key="ThemeV2.Opacity.Shadow">0.12</x:Double>
+
     </ResourceDictionary>
 </ResourceDictionary.ThemeDictionaries>
 

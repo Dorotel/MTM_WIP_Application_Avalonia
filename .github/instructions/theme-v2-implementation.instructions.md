@@ -14,10 +14,11 @@ applyTo: '**/*.axaml'
 ```text
 App.axaml
 ├── FluentTheme (Avalonia base)
-├── BaseStyles.axaml (control defaults)
-├── Theme.Light.axaml & Theme.Dark.axaml (semantic tokens)
-├── Tokens.axaml (primitive color/typography tokens)
-└── StyleSystem.axaml (component-specific styles)
+├── Resources/ThemesV2/BaseStyles.axaml (control defaults)
+├── Resources/ThemesV2/Theme.Light.axaml & Theme.Dark.axaml (semantic tokens)
+├── Resources/ThemesV2/Tokens.axaml (primitive color/typography tokens)
+├── Resources/ThemesV2/Semantic.axaml (legacy compatibility)
+└── Resources/Styles/StyleSystem.axaml (component-specific styles)
 ```
 
 ### Token Categories
@@ -169,7 +170,11 @@ App.axaml
 ### **No Manual Theme Includes**
 
 - **DO NOT** include theme files manually in individual AXAML files
-- App.axaml handles all theme system integration
+- App.axaml handles all theme system integration via:
+  - `Resources/ThemesV2/BaseStyles.axaml`
+  - `Resources/ThemesV2/Theme.Light.axaml`
+  - `Resources/ThemesV2/Theme.Dark.axaml`
+  - `Resources/Styles/StyleSystem.axaml`
 - Individual files only reference tokens via `{DynamicResource}`
 
 ### **Local Styles (When Needed)**

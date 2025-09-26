@@ -1,0 +1,459 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
+             xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
+             xmlns:overlayViews="using:MTM_WIP_Application_Avalonia.Views.Overlay"
+             xmlns:overlays="using:MTM_WIP_Application_Avalonia.Views.MainForm.Overlays"
+             xmlns:panelViews="using:MTM_WIP_Application_Avalonia.Views.MainForm.Panels"
+             xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
+             xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
+             mc:Ignorable="d"
+             d:DesignWidth="1200"
+             d:DesignHeight="700"
+             x:Class="MTM_WIP_Application_Avalonia.Views.MainView"
+             x:CompileBindings="True"
+             x:DataType="vm:MainViewViewModel"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"
+             VerticalContentAlignment="Stretch"
+             HorizontalContentAlignment="Stretch"
+             Background="{DynamicResource ThemeV2.Background.Canvas}">
+
+  <UserControl.Resources>
+    <!-- Theme V2 Resources - Professional gradient effects and modern styling -->
+    <ResourceDictionary>
+      <converters:ColorToBoxShadowConverter x:Key="ColorToBoxShadowConverter"/>
+    </ResourceDictionary>
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <!-- Navigation icon styling using Theme V2 semantic tokens -->
+    <Style Selector="materialIcons|MaterialIcon.nav-icon">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+      <Setter Property="Width" Value="20" />
+      <Setter Property="Height" Value="20" />
+    </Style>
+
+    <!-- Tab titles using Theme V2 tokens -->
+    <Style Selector="TextBlock.TabTitle">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+      <Setter Property="TextDecorations" Value="{x:Null}"/>
+    </Style>
+  </UserControl.Styles>
+
+  <UserControl.Styles>
+    <!-- Tab text styling using StyleSystem Typography classes -->
+    <Style Selector="TabItem TextBlock">
+      <Setter Property="TextDecorations" Value="{x:Null}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    </Style>
+
+    <Style Selector="TabItem StackPanel TextBlock">
+      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+      <Setter Property="TextDecorations" Value="{x:Null}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    </Style>
+
+    <!-- Menu styling with Theme V2 tokens -->
+    <Style Selector="Menu">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+    </Style>
+
+    <Style Selector="MenuItem">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <Style Selector="MenuItem MenuItem">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+      <Setter Property="FontWeight" Value="Normal"/>
+    </Style>
+  </UserControl.Styles>  <!-- Keyboard shortcuts -->
+  <UserControl.KeyBindings>
+    <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}"/>
+    <KeyBinding Gesture="Ctrl+S" Command="{Binding OpenSettingsCommand}"/>
+    <KeyBinding Gesture="Ctrl+H" Command="{Binding OpenPersonalHistoryCommand}"/>
+    <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
+    <!-- Remove tab specific shortcuts -->
+    <KeyBinding Gesture="Delete" Command="{Binding RemoveItemViewModel.DeleteCommand}"/>
+    <KeyBinding Gesture="Ctrl+Z" Command="{Binding RemoveItemViewModel.UndoCommand}"/>
+    <KeyBinding Gesture="Ctrl+P" Command="{Binding RemoveItemViewModel.PrintCommand}"/>
+  </UserControl.KeyBindings>
+
+  <!-- Main container that stretches to fill entire available space -->
+  <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <DockPanel HorizontalAlignment="Stretch"
+               VerticalAlignment="Stretch"
+               LastChildFill="True">
+
+    <!-- Header Menu - Increased height for proper content fitting -->
+    <Border Classes="HeaderPanel"
+            DockPanel.Dock="Top"
+            Background="{DynamicResource ThemeV2.Action.Primary}"
+            Padding="16,12"
+            HorizontalAlignment="Stretch"
+            MinHeight="64"
+            MaxHeight="84"
+            ClipToBounds="True">
+      <Border.Effect>
+        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
+                          BlurRadius="8"
+                          OffsetX="0"
+                          OffsetY="2"
+                          Opacity="0.3"/>
+      </Border.Effect>
+      <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
+        <!-- Left side: Main Menu using StyleSystem -->
+        <Menu Grid.Column="0"
+              Background="Transparent"
+              HorizontalAlignment="Left">
+          <MenuItem Header="_File">
+            <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
+            <Separator/>
+            <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
+          </MenuItem>
+          <MenuItem Header="_View">
+            <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
+          </MenuItem>
+          <!-- Development builds only -->
+          <MenuItem Header="_Help"
+                    IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
+            <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
+          </MenuItem>
+        </Menu>
+
+        <!-- Right side: Theme Quick Switcher -->
+        <overlays:ThemeQuickSwitcher x:Name="ThemeQuickSwitcher"
+                                 Grid.Column="1"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Center"
+                                 Margin="16,0,0,0"/>
+      </Grid>
+    </Border>
+
+    <!-- Status Bar - Increased height for proper content fitting -->
+    <Border Classes="FooterPanel"
+            DockPanel.Dock="Bottom"
+            Background="{DynamicResource ThemeV2.Background.Surface}"
+            Padding="12,8"
+            HorizontalAlignment="Stretch"
+            MinHeight="48"
+            MaxHeight="68"
+            BorderBrush="{DynamicResource ThemeV2.Border.Subtle}"
+            BorderThickness="0,1,0,0">
+      <Border.Effect>
+        <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
+                          BlurRadius="4"
+                          OffsetX="0"
+                          OffsetY="-1"
+                          Opacity="0.2"/>
+      </Border.Effect>
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto"
+            ColumnSpacing="16"
+            HorizontalAlignment="Stretch">
+
+        <!-- Progress Overlay Display -->
+        <overlayViews:ProgressOverlayView Grid.Column="0"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Center"
+                                         DataContext="{Binding ProgressOverlayService.CurrentProgressOverlay}"
+                                         MinWidth="200"
+                                         MaxWidth="280" />
+
+        <!-- Spacer -->
+        <Border Grid.Column="1" Background="Transparent"/>
+
+        <!-- Status Text Box using StyleSystem Card -->
+        <Border Classes="Card"
+                Grid.Column="2"
+                Background="{DynamicResource ThemeV2.Background.Card}"
+                BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                BorderThickness="1"
+                Padding="{StaticResource ThemeV2.Spacing.Medium}"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Medium}"
+                MinWidth="140"
+                HorizontalAlignment="Right">
+          <Border.Effect>
+            <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.300}"
+                              BlurRadius="4"
+                              OffsetX="0"
+                              OffsetY="1"
+                              Opacity="0.2"/>
+          </Border.Effect>
+          <TextBlock Classes="Caption"
+                     Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
+                     Foreground="{DynamicResource ThemeV2.Content.Primary}"
+                     FontWeight="SemiBold"
+                     VerticalAlignment="Center"
+                     TextTrimming="CharacterEllipsis"
+                     ToolTip.Tip="{Binding StatusText}"/>
+        </Border>
+
+        <!-- Version Display Badge using StyleSystem -->
+        <Border Grid.Column="3"
+                Background="{DynamicResource ThemeV2.Action.Primary}"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
+                Padding="{StaticResource ThemeV2.Spacing.Medium}"
+                HorizontalAlignment="Right"
+                ClipToBounds="True">
+          <Border.Effect>
+            <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Blue.400}"
+                              BlurRadius="6"
+                              OffsetX="0"
+                              OffsetY="2"
+                              Opacity="0.3"/>
+          </Border.Effect>
+          <TextBlock Classes="Caption"
+                     Text="Ver. 5.0"
+                     Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                     FontWeight="Bold"
+                     VerticalAlignment="Center"/>
+        </Border>
+      </Grid>
+    </Border>
+
+    <!-- Main Content Area - Fills remaining space -->
+    <Grid HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch"
+          Margin="8">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" MinWidth="400"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+
+      <!-- Left Panel: Tab Control - Stretches fully -->
+      <Grid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <!-- Main Tab Control using StyleSystem Card.Elevated -->
+        <Border Classes="Card Elevated"
+                Background="{DynamicResource ThemeV2.Background.Card}"
+                BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
+                Margin="{StaticResource ThemeV2.Spacing.Small}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                ClipToBounds="True">
+          <Border.Effect>
+            <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
+                              BlurRadius="12"
+                              OffsetX="0"
+                              OffsetY="4"
+                              Opacity="0.15"/>
+          </Border.Effect>
+          <TabControl x:Name="MainForm_TabControl"
+                      Classes="MTMTabs"
+                      SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay, FallbackValue=0}"
+                      SelectionChanged="OnTabSelectionChanged"
+                      PointerPressed="OnTabControlPointerPressed"
+                      Background="Transparent"
+                      HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch">
+
+          <!-- Inventory Tab with StyleSystem classes -->
+          <TabItem>
+            <TabItem.Header>
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}">
+                <Border Background="{DynamicResource ThemeV2.Action.Primary}"
+                        BorderThickness="0"
+                        CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
+                        Width="28"
+                        Height="28"
+                        Padding="4">
+                  <materialIcons:MaterialIcon Kind="Archive"
+                                              Classes="nav-icon"
+                                              Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="Inventory"
+                           Classes="TabTitle"
+                           VerticalAlignment="Center"/>
+              </StackPanel>
+            </TabItem.Header>
+            <!-- Content container that stretches to fill all available space -->
+            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+              <ContentControl Content="{Binding InventoryContent}"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              VerticalContentAlignment="Stretch"/>
+            </DockPanel>
+          </TabItem>
+
+          <!-- Remove Tab with StyleSystem classes -->
+          <TabItem>
+            <TabItem.Header>
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}">
+                <Border Background="{DynamicResource ThemeV2.Status.Warning}"
+                        BorderThickness="0"
+                        CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
+                        Width="28"
+                        Height="28"
+                        Padding="4">
+                  <materialIcons:MaterialIcon Kind="Delete"
+                                              Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                                              Width="18"
+                                              Height="18"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="Remove"
+                           Classes="TabTitle"
+                           VerticalAlignment="Center"/>
+              </StackPanel>
+            </TabItem.Header>
+            <!-- Content container that stretches to fill all available space -->
+            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+              <ContentControl Content="{Binding RemoveContent}"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              VerticalContentAlignment="Stretch"/>
+            </DockPanel>
+          </TabItem>
+
+          <!-- Transfer Tab with StyleSystem classes -->
+          <TabItem>
+            <TabItem.Header>
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}">
+                <Border Background="{DynamicResource ThemeV2.Status.Success}"
+                        BorderThickness="0"
+                        CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
+                        Width="28"
+                        Height="28"
+                        Padding="4">
+                  <materialIcons:MaterialIcon Kind="SwapHorizontal"
+                                              Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                                              Width="18"
+                                              Height="18"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="Transfer"
+                           Classes="TabTitle"
+                           VerticalAlignment="Center"/>
+              </StackPanel>
+            </TabItem.Header>
+            <!-- Content container that stretches to fill all available space -->
+            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+              <ContentControl Content="{Binding TransferContent}"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              VerticalContentAlignment="Stretch"/>
+            </DockPanel>
+          </TabItem>
+        </TabControl>
+        </Border>
+
+        <!-- Suggestion Overlay Panel using StyleSystem -->
+        <Border x:Name="SuggestionOverlayPanel"
+                Classes="Card Elevated"
+                IsVisible="False"
+                Background="{DynamicResource ThemeV2.Overlay.Background}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Margin="{StaticResource ThemeV2.Spacing.Small}"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
+                ZIndex="1003"
+                ClipToBounds="True">
+          <!-- Overlay container -->
+          <Border Classes="Card"
+                  Padding="{StaticResource ThemeV2.Spacing.Large}"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  Background="{DynamicResource ThemeV2.Background.Card}"
+                  BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                  BorderThickness="1"
+                  CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
+                  ClipToBounds="True">
+            <Border.Effect>
+              <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.500}"
+                                BlurRadius="20"
+                                OffsetX="0"
+                                OffsetY="8"
+                                Opacity="0.25"/>
+            </Border.Effect>
+            <ContentControl x:Name="SuggestionOverlayContent"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"/>
+          </Border>
+        </Border>
+
+        <!-- Success Overlay Panel using StyleSystem -->
+        <Border x:Name="SuccessOverlayPanel"
+                Classes="Card Elevated"
+                IsVisible="False"
+                Background="{DynamicResource ThemeV2.Overlay.Background}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Margin="{StaticResource ThemeV2.Spacing.Small}"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
+                ZIndex="1001"
+                ClipToBounds="True">
+          <ContentControl x:Name="SuccessOverlayContent"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
+                          VerticalContentAlignment="Stretch"/>
+        </Border>
+
+        <!-- NewQuickButton Overlay Panel using StyleSystem -->
+        <Border x:Name="NewQuickButtonOverlayPanel"
+                Classes="Card Elevated"
+                IsVisible="False"
+                Background="{DynamicResource ThemeV2.Overlay.Background}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
+                ZIndex="1002">
+          <views:NewQuickButtonView x:Name="NewQuickButtonView"
+                                        DataContext="{x:Null}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        MaxWidth="600"
+                                        MaxHeight="500"/>
+        </Border>
+      </Grid>
+
+      <!-- Right Panel: Collapsible Quick Actions using StyleSystem -->
+      <Border Grid.Column="1"
+              Background="Transparent"
+              Margin="{StaticResource ThemeV2.Spacing.Small}"
+              ClipToBounds="false"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Stretch"
+              MaxWidth="320"
+              IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}">
+        <Border.Effect>
+          <DropShadowEffect Color="{DynamicResource ThemeV2.Color.Gray.400}"
+                            BlurRadius="12"
+                            OffsetX="0"
+                            OffsetY="4"
+                            Opacity="0.15"/>
+        </Border.Effect>
+        <controls:CollapsiblePanel HeaderPosition="Right"
+                                  IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
+                                  IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Stretch">
+          <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Stretch"/>
+        </controls:CollapsiblePanel>
+      </Border>
+    </Grid>
+  </DockPanel>
+
+  <!-- SuggestionOverlayView removed for overlay ViewModel reset -->
+  </Grid>
+</UserControl>

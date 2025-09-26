@@ -1,0 +1,102 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+<!--
+MTM Status Badge Styles
+=======================
+Theme V2 compliant status indicator styles for consistent status visualization
+Replaces hardcoded status colors with semantic tokens
+WCAG 2.1 AA compliant with proper contrast ratios
+Automatic theme switching support
+
+Usage:
+<Border Classes="Status.Success">
+    <TextBlock Text="Success" Classes="Status.Text" />
+</Border>
+-->
+
+<!-- Base Status Badge Style -->
+<Style Selector="Border.Status">
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="8,4" />
+    <Setter Property="Margin" Value="4,2" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+</Style>
+
+<!-- Success Status Badge -->
+<Style Selector="Border.Status.Success">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Success.Background}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Success.Border}" />
+</Style>
+
+<!-- Error Status Badge -->
+<Style Selector="Border.Status.Error">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Error.Background}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Error.Border}" />
+</Style>
+
+<!-- Warning Status Badge -->
+<Style Selector="Border.Status.Warning">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Warning.Background}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Warning.Border}" />
+</Style>
+
+<!-- Info Status Badge -->
+<Style Selector="Border.Status.Info">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Info.Background}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Info.Border}" />
+</Style>
+
+<!-- Status Badge Text Styles -->
+<Style Selector="Border.Status TextBlock.Status.Text">
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+</Style>
+
+<!-- Success Text Color -->
+<Style Selector="Border.Status.Success TextBlock.Status.Text">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Success}" />
+</Style>
+
+<!-- Error Text Color -->
+<Style Selector="Border.Status.Error TextBlock.Status.Text">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Error}" />
+</Style>
+
+<!-- Warning Text Color -->
+<Style Selector="Border.Status.Warning TextBlock.Status.Text">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Warning}" />
+</Style>
+
+<!-- Info Text Color -->
+<Style Selector="Border.Status.Info TextBlock.Status.Text">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Info}" />
+</Style>
+
+<!-- Alternative compact badge style -->
+<Style Selector="Border.Status.Compact">
+    <Setter Property="Padding" Value="4,2" />
+    <Setter Property="Margin" Value="2,1" />
+    <Setter Property="CornerRadius" Value="2" />
+</Style>
+
+<Style Selector="Border.Status.Compact TextBlock.Status.Text">
+    <Setter Property="FontSize" Value="10" />
+    <Setter Property="FontWeight" Value="Bold" />
+</Style>
+
+<!-- Hover states for interactive badges -->
+<Style Selector="Border.Status:pointerover">
+    <Setter Property="Opacity" Value="0.9" />
+</Style>
+
+<!-- Focus states for accessibility -->
+<Style Selector="Border.Status:focus">
+    <Setter Property="BorderThickness" Value="2" />
+</Style>
+
+</Styles>

@@ -108,48 +108,49 @@
 
 ## 🎨 MTM Design System Implementation
 
-### Theme Resource Usage (MANDATORY)
+### Theme Resource Usage (MANDATORY - Theme V2 System)
 
 ```xml
-<!-- All UI elements MUST use MTM theme resources -->
+<!-- All UI elements MUST use Theme V2 semantic tokens -->
 
 <!-- Primary Action Buttons -->
-<Button Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-        Foreground="White"
-        Padding="16,8"
-        CornerRadius="4"
+<Button Background="{DynamicResource ThemeV2.Action.Primary}"
+        Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+        Classes="Primary"
         Content="Save Changes" />
 
 <!-- Secondary Action Buttons -->
-<Button Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}"
-        Foreground="White"
-        Padding="12,6"
-        CornerRadius="4"
+<Button Background="{DynamicResource ThemeV2.Action.Secondary}"
+        Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+        Classes="Secondary"
         Content="Cancel" />
 
 <!-- Card-Based Layout System -->
-<Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+<Border Background="{DynamicResource ThemeV2.Background.Card}"
+        BorderBrush="{DynamicResource ThemeV2.Border.Default}"
         BorderThickness="1"
-        CornerRadius="8"
-        Padding="16"
-        Margin="8">
+        CornerRadius="{StaticResource ThemeV2.CornerRadius.Medium}"
+        Padding="{StaticResource ThemeV2.Spacing.Medium}"
+        Margin="{StaticResource ThemeV2.Spacing.Small}">
     
     <!-- Card Header -->
     <Grid RowDefinitions="Auto,*">
         <Border Grid.Row="0" 
-                Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}" 
+                Background="{DynamicResource ThemeV2.Action.Primary}" 
                 CornerRadius="8,8,0,0" 
-                Padding="16,8">
+                Padding="{StaticResource ThemeV2.Spacing.Small}">
             <TextBlock Text="Card Title" 
-                      Foreground="White" 
-                      FontWeight="Bold" />
+                      Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                      Classes="Heading3" />
         </Border>
         
         <!-- Card Content -->
-        <StackPanel Grid.Row="1" Margin="16" Spacing="8">
+        <StackPanel Grid.Row="1" 
+                    Margin="{StaticResource ThemeV2.Spacing.Medium}" 
+                    Spacing="8">
             <TextBlock Text="Card content goes here"
-                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                      Foreground="{DynamicResource ThemeV2.Content.Primary}"
+                      Classes="Body" />
         </StackPanel>
     </Grid>
 </Border>
@@ -157,37 +158,48 @@
 <!-- Form Input Fields -->
 <TextBox Text="{Binding PartId}"
          Watermark="Enter Part ID"
-         Background="{DynamicResource MTM_Shared_Logic.ContentAreas}"
-         BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
-         Margin="8,4" />
+         Background="{DynamicResource ThemeV2.Input.Background}"
+         BorderBrush="{DynamicResource ThemeV2.Input.Border}"
+         Foreground="{DynamicResource ThemeV2.Input.Content}"
+         Classes="Standard"
+         Margin="{StaticResource ThemeV2.Spacing.Small}" />
 
 <!-- Status and Feedback Colors -->
-<Border Background="{DynamicResource MTM_Shared_Logic.SuccessBrush}" 
-        CornerRadius="4" 
-        Padding="8">
-    <TextBlock Text="Success message" Foreground="White" />
+<Border Background="{DynamicResource ThemeV2.Status.Success.Background}" 
+        BorderBrush="{DynamicResource ThemeV2.Status.Success.Border}"
+        BorderThickness="1"
+        CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}" 
+        Padding="{StaticResource ThemeV2.Spacing.Small}">
+    <TextBlock Text="Success message" 
+               Foreground="{DynamicResource ThemeV2.Status.Success}"
+               Classes="Body" />
 </Border>
 
-<Border Background="{DynamicResource MTM_Shared_Logic.ErrorBrush}" 
-        CornerRadius="4" 
-        Padding="8">
-    <TextBlock Text="Error message" Foreground="White" />
+<Border Background="{DynamicResource ThemeV2.Status.Error.Background}" 
+        BorderBrush="{DynamicResource ThemeV2.Status.Error.Border}"
+        BorderThickness="1"
+        CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}" 
+        Padding="{StaticResource ThemeV2.Spacing.Small}">
+    <TextBlock Text="Error message" 
+               Foreground="{DynamicResource ThemeV2.Status.Error}"
+               Classes="Body" />
 </Border>
 ```
 
-### MTM Color Palette Reference
+### Theme V2 Token Reference
 
 ```xml
-<!-- Core MTM Brand Colors -->
-MTM_Shared_Logic.PrimaryAction: #0078D4 (Windows 11 Blue)
-MTM_Shared_Logic.SecondaryAction: #106EBE (Darker Blue)
-MTM_Shared_Logic.Warning: #FFB900 (Amber Warning)
-MTM_Shared_Logic.Critical: #D13438 (Red Alert)
-MTM_Shared_Logic.Highlight: #005A9E (Selected State)
+<!-- Core Action Colors (Semantic Tokens) -->
+ThemeV2.Action.Primary: Maps to Blue.700 (#1D4ED8) in Light theme
+ThemeV2.Action.Secondary: Maps to Gray.600 (#4B5563) in Light theme
+ThemeV2.Status.Success: Maps to Green.600 (#16A34A) for success states
+ThemeV2.Status.Error: Maps to Red.600 (#DC2626) for error states
+ThemeV2.Status.Warning: Maps to Yellow.600 (#D97706) for warning states
 
-<!-- Background and Layout Colors -->
-MTM_Shared_Logic.MainBackground: #FAFAFA (Light Gray)
-MTM_Shared_Logic.ContentAreas: #FFFFFF (Pure White)
+<!-- Background Semantic Tokens -->
+ThemeV2.Background.Canvas: Main app background (Pure White in Light)
+ThemeV2.Background.Card: Card/panel backgrounds (Pure White in Light)
+ThemeV2.Background.Surface: Secondary surfaces (Gray.50 in Light)
 MTM_Shared_Logic.CardBackgroundBrush: #F3F2F1 (Card Background)
 MTM_Shared_Logic.BorderBrush: #E1DFDD (Light Border)
 

@@ -1,78 +1,23 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
              x:Class="MTM_WIP_Application_Avalonia.Views.MainForm.Overlays.ThemeQuickSwitcher"
              x:Name="ThemeQuickSwitcherRoot">
 
-    <!-- Theme Quick Switcher Component - Theme V2 + StyleSystem -->
-    <Border Classes="Card"
-            Background="{DynamicResource ThemeV2.Background.Card}"
-            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource ThemeV2.CornerRadius.Medium}"
-            Padding="{StaticResource ThemeV2.Spacing.Small}">
-
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}">
-
-            <!-- Theme Icon with Edit Button -->
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.XS}">
-                <Button x:Name="EditThemeButton"
-                        Classes="Icon.Small"
-                        Content="🎨"
-                        Background="Transparent"
-                        Foreground="{DynamicResource ThemeV2.Content.Primary}"
-                        FontSize="12"
-                        Width="24"
-                        Height="24"
-                        VerticalAlignment="Center"
-                        ToolTip.Tip="Edit current theme colors - Opens full theme editor"
-                        Cursor="Hand"/>
-            </StackPanel>
-
-            <!-- Light/Dark Theme Toggle Switch -->
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}" VerticalAlignment="Center">
-                <TextBlock Classes="Caption"
-                           Text="Light"
-                           Foreground="{DynamicResource ThemeV2.Content.Secondary}"
-                           VerticalAlignment="Center"/>
-                <ToggleSwitch x:Name="ThemeToggleSwitch"
-                              OffContent=""
-                              OnContent=""
-                              MinWidth="48"
-                              MinHeight="24"
-                              VerticalAlignment="Center"
-                              ToolTip.Tip="Toggle between Light and Dark theme"
-                              Cursor="Hand"/>
-                <TextBlock Classes="Caption"
-                           Text="Dark"
-                           Foreground="{DynamicResource ThemeV2.Content.Secondary}"
-                           VerticalAlignment="Center"/>
-            </StackPanel>
-
-            <!-- Accent Color Preview Button -->
-            <Button x:Name="AccentColorButton"
-                    Classes="Icon"
-                    Background="{DynamicResource ThemeV2.Action.Primary}"
-                    BorderBrush="{DynamicResource ThemeV2.Border.Default}"
-                    BorderThickness="1"
-                    CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
-                    Width="32"
-                    Height="24"
-                    VerticalAlignment="Center"
-                    ToolTip.Tip="Current accent color - Click to change"
-                    Cursor="Hand"/>
-
-            <!-- Quick Apply Button -->
-            <Button x:Name="ApplyButton"
-                    Classes="Secondary"
-                    Content="Apply"
-                    Background="{DynamicResource ThemeV2.Action.Secondary}"
-                    Foreground="{DynamicResource ThemeV2.Content.Primary}"
-                    FontSize="11"
-                    Padding="{StaticResource ThemeV2.Spacing.Small}"
-                    MinHeight="28"
-                    VerticalAlignment="Center"
-                    ToolTip.Tip="Apply theme changes"/>
-        </StackPanel>
-    </Border>
-
-</UserControl>
+    <!-- Theme Quick Switcher - Just the Icon Button -->
+    <Button x:Name="ThemeIconButton"
+            Classes="Icon"
+            Background="Transparent"
+            BorderBrush="Transparent"
+            BorderThickness="0"
+            Width="32"
+            Height="32"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            ToolTip.Tip="Theme Settings - Click to open theme options"
+            Cursor="Hand">
+        <materialIcons:MaterialIcon Kind="Palette"
+                                   Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                                   Width="20"
+                                   Height="20"/>
+    </Button></UserControl>

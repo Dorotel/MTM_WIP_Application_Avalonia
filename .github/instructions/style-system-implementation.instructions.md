@@ -12,17 +12,24 @@ applyTo: '**/*.axaml'
 ### Component Organization
 
 ```text
-StyleSystem.axaml (master include)
-├── PrimaryButtons.axaml          <!-- Main action buttons -->
-├── SecondaryButtons.axaml        <!-- Secondary/cancel buttons -->
-├── IconButtons.axaml             <!-- Icon-only buttons -->
+Resources/Styles/StyleSystem.axaml (master include)
+├── Buttons/
+│   ├── PrimaryButtons.axaml          <!-- Main action buttons -->
+│   ├── SecondaryButtons.axaml        <!-- Secondary/cancel buttons -->
+│   └── IconButtons.axaml             <!-- Icon-only buttons -->
 ├── Manufacturing/
-│   └── ActionButtons.axaml       <!-- MTM-specific buttons -->
-├── TextInputs.axaml              <!-- TextBox styling -->
-├── ComboBoxes.axaml              <!-- ComboBox styling -->
-├── Cards.axaml                   <!-- Card/panel layouts -->
-├── Forms.axaml                   <!-- Form-specific styles -->
-└── Typography.axaml              <!-- Text and heading styles -->
+│   └── ActionButtons.axaml           <!-- MTM-specific buttons -->
+├── Inputs/
+│   ├── TextInputs.axaml              <!-- TextBox styling -->
+│   └── ComboBoxes.axaml              <!-- ComboBox styling -->
+├── Layout/
+│   ├── Cards.axaml                   <!-- Card/panel layouts -->
+│   └── Forms.axaml                   <!-- Form-specific styles -->
+├── Navigation/
+│   └── Tabs.axaml                    <!-- Tab control styles -->
+├── Typography/
+│   └── TextStyles.axaml              <!-- Text and heading styles -->
+└── Icons/                            <!-- Icon-specific styles -->
 ```
 
 ### Usage in AXAML Files

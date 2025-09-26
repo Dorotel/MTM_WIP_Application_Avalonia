@@ -13,16 +13,16 @@
     <Style Selector="Border.header-cell">
       <Setter Property="MinHeight" Value="36" />
       <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="8,6" />
-      <Setter Property="Background" Value="#F5F5F5" />
-      <Setter Property="BorderBrush" Value="#EEEEEE" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
     </Style>
 
     <Style Selector="Border.header-cell TextBlock">
-      <Setter Property="Foreground" Value="#212121" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
@@ -30,15 +30,15 @@
     <Style Selector="Border.data-cell">
       <Setter Property="MinHeight" Value="36" />
       <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="8,6" />
-      <Setter Property="Background" Value="#FFFFFF" />
-      <Setter Property="BorderBrush" Value="#EEEEEE" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
     </Style>
 
     <Style Selector="Border.data-cell TextBlock">
-      <Setter Property="Foreground" Value="#424242" />
-      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}" />
+      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
@@ -47,23 +47,23 @@
     <Style Selector="Border.arrow-cell">
       <Setter Property="MinHeight" Value="36" />
       <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="4,6" />
-      <Setter Property="Background" Value="#FFFFFF" />
-      <Setter Property="BorderBrush" Value="#EEEEEE" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
     </Style>
 
     <Style Selector="Border.arrow-header-cell">
       <Setter Property="MinHeight" Value="36" />
       <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="4,6" />
-      <Setter Property="Background" Value="#F5F5F5" />
-      <Setter Property="BorderBrush" Value="#EEEEEE" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
     </Style>
 
     <Style Selector="TextBlock.transfer-arrow">
-      <Setter Property="Foreground" Value="#2196F3" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}" />
       <Setter Property="FontSize" Value="16" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -74,113 +74,113 @@
     <Style Selector="Border.action-cell, Border.action-header-cell">
       <Setter Property="MinHeight" Value="36" />
       <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="4,6" />
-      <Setter Property="Background" Value="#F5F5F5" />
-      <Setter Property="BorderBrush" Value="#EEEEEE" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
       <Setter Property="BorderThickness" Value="0,0,1,1" />
     </Style>
 
     <Style Selector="Border.action-cell">
-      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}" />
     </Style>
 
     <!-- Transfer Button Styles -->
     <Style Selector="Border.action-cell Button.transfer-action">
-      <Setter Property="Background" Value="#2196F3" />
-      <Setter Property="Foreground" Value="White" />
-      <Setter Property="BorderBrush" Value="#2196F3" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}" />
       <Setter Property="Padding" Value="4,2" />
       <Setter Property="FontSize" Value="10" />
-      <Setter Property="Width" Value="24" />
-      <Setter Property="Height" Value="24" />
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="28" />
       <Setter Property="Margin" Value="1" />
       <Setter Property="Cursor" Value="Hand" />
     </Style>
 
     <Style Selector="Border.action-cell Button.transfer-action:pointerover">
-      <Setter Property="Background" Value="#1976D2" />
-      <Setter Property="BorderBrush" Value="#1976D2" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Hover}" />
     </Style>
 
     <Style Selector="Border.action-cell Button.edit-action">
-      <Setter Property="Background" Value="#757575" />
-      <Setter Property="Foreground" Value="White" />
-      <Setter Property="BorderBrush" Value="#757575" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Secondary}" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Secondary}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}" />
       <Setter Property="Padding" Value="4,2" />
       <Setter Property="FontSize" Value="10" />
-      <Setter Property="Width" Value="24" />
-      <Setter Property="Height" Value="24" />
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="28" />
       <Setter Property="Margin" Value="1" />
       <Setter Property="Cursor" Value="Hand" />
     </Style>
 
     <Style Selector="Border.action-cell Button.edit-action:pointerover">
-      <Setter Property="Background" Value="#616161" />
-      <Setter Property="BorderBrush" Value="#616161" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Secondary.Hover}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Secondary.Hover}" />
     </Style>
 
     <!-- Interactive States -->
     <Style Selector="Border.data-cell:pointerover, Border.arrow-cell:pointerover">
-      <Setter Property="Background" Value="#F5F5F5" />
-      <Setter Property="BorderBrush" Value="#2196F3" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
     </Style>
 
     <!-- Alternating Row Colors -->
     <Style Selector="ListBoxItem:nth-child(2n) Border.data-cell">
-      <Setter Property="Background" Value="#F8F8F8" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
     </Style>
 
     <Style Selector="ListBoxItem:nth-child(2n) Border.arrow-cell">
-      <Setter Property="Background" Value="#F8F8F8" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
     </Style>
 
     <Style Selector="ListBoxItem:nth-child(2n) Border.action-cell">
-      <Setter Property="Background" Value="#F8F8F8" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
     </Style>
 
-    <!-- Selection State - WinForms DataGridView Style -->
+    <!-- Selection State - Theme V2 Adaptive -->
     <Style Selector="ListBoxItem:selected Border.data-cell">
-      <Setter Property="Background" Value="#3390FF" />
-      <Setter Property="BorderBrush" Value="#2080EF" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
     </Style>
 
     <Style Selector="ListBoxItem:selected Border.arrow-cell">
-      <Setter Property="Background" Value="#3390FF" />
-      <Setter Property="BorderBrush" Value="#2080EF" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
     </Style>
 
     <Style Selector="ListBoxItem:selected Border.action-cell">
-      <Setter Property="Background" Value="#3390FF" />
-      <Setter Property="BorderBrush" Value="#2080EF" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
     </Style>
 
-    <!-- Selected row text color override for visibility on blue background -->
+    <!-- Selected row text color override for visibility on selected background -->
     <Style Selector="ListBoxItem:selected Border.data-cell TextBlock">
-      <Setter Property="Foreground" Value="White" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
       <Setter Property="FontWeight" Value="Medium" />
     </Style>
 
     <Style Selector="ListBoxItem:selected TextBlock.transfer-arrow">
-      <Setter Property="Foreground" Value="White" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
     </Style>
 
-    <!-- Selection when control loses focus (gray like WinForms) -->
+    <!-- Selection when control loses focus -->
     <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.data-cell">
-      <Setter Property="Background" Value="#D0D0D0" />
-      <Setter Property="BorderBrush" Value="#C0C0C0" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Subtle}" />
     </Style>
 
     <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.data-cell TextBlock">
-      <Setter Property="Foreground" Value="Black" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}" />
     </Style>
 
     <!-- Notes Indicator Style -->
     <Style Selector="TextBlock.notes-indicator">
-      <Setter Property="Foreground" Value="#4CAF50" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Success}" />
       <Setter Property="FontSize" Value="14" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="HorizontalAlignment" Value="Center" />
@@ -200,8 +200,8 @@
 
     <!-- Header Section -->
     <Border Grid.Row="0" Grid.Column="0"
-            Background="#F5F5F5"
-            BorderBrush="#EEEEEE"
+            Background="{DynamicResource ThemeV2.Background.Surface}"
+            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
             BorderThickness="1,1,1,0"
             CornerRadius="8,8,0,0">
 
@@ -274,8 +274,8 @@
                   x:Name="DataScrollViewer"
                   HorizontalScrollBarVisibility="Auto"
           VerticalScrollBarVisibility="Disabled"
-                  Background="#FFFFFF"
-                  BorderBrush="#EEEEEE"
+                  Background="{DynamicResource ThemeV2.Background.Card}"
+                  BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                   BorderThickness="1,0,1,1"
                   CornerRadius="0,0,8,8">
 
@@ -392,7 +392,7 @@
 
   <!-- Nothing Found Panel (disabled here; outer view manages empty-state UI) -->
   <Border x:Name="NothingFoundPanel"
-    Background="#FFFFFF"
+    Background="{DynamicResource ThemeV2.Background.Card}"
     BorderThickness="0"
     Padding="64"
     MinHeight="120"
@@ -403,7 +403,7 @@
                       Spacing="16">
 
             <!-- Transfer Icon -->
-            <Border Background="#F5F5F5"
+            <Border Background="{DynamicResource ThemeV2.Background.Surface}"
                     CornerRadius="32"
                     Width="64"
                     Height="64"
@@ -411,7 +411,7 @@
               <TextBlock Text="➜"
                          FontSize="24"
                          FontWeight="Bold"
-                         Foreground="#757575"
+                         Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                          HorizontalAlignment="Center"
                          VerticalAlignment="Center" />
             </Border>
@@ -420,22 +420,22 @@
             <TextBlock Text="No transfer candidates found"
                        FontSize="18"
                        FontWeight="Medium"
-                       Foreground="#212121"
+                       Foreground="{DynamicResource ThemeV2.Content.Primary}"
                        HorizontalAlignment="Center"
                        TextAlignment="Center" />
 
             <!-- Help Text -->
             <TextBlock Text="Enter search criteria in the transfer form above and click Search to find items available for transfer."
                        FontSize="14"
-                       Foreground="#424242"
+                       Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                        HorizontalAlignment="Center"
                        TextAlignment="Center"
                        TextWrapping="Wrap"
                        MaxWidth="400" />
 
             <!-- Additional Instructions -->
-            <Border Background="#F5F5F5"
-                    BorderBrush="#EEEEEE"
+            <Border Background="{DynamicResource ThemeV2.Background.Surface}"
+                    BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                     BorderThickness="1"
                     CornerRadius="6"
                     Padding="16,12"
@@ -444,17 +444,17 @@
                 <TextBlock Text="Search Tips:"
                            FontSize="12"
                            FontWeight="SemiBold"
-                           Foreground="#212121"
+                           Foreground="{DynamicResource ThemeV2.Content.Primary}"
                            HorizontalAlignment="Center" />
                 <TextBlock Text="• Enter Part ID to find all locations for that part"
                            FontSize="11"
-                           Foreground="#424242" />
+                           Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
                 <TextBlock Text="• Add Operation number to filter by specific operation"
                            FontSize="11"
-                           Foreground="#424242" />
+                           Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
                 <TextBlock Text="• Select destination location before transferring"
                            FontSize="11"
-                           Foreground="#424242" />
+                           Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
               </StackPanel>
             </Border>
 
@@ -466,8 +466,8 @@
 
     <!-- Action Buttons Row -->
     <Border Grid.Row="2" Grid.Column="0"
-            Background="#F5F5F5"
-            BorderBrush="#EEEEEE"
+            Background="{DynamicResource ThemeV2.Background.Surface}"
+            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
             BorderThickness="1,0,1,1"
             CornerRadius="0,0,8,8"
             Padding="16,12">
@@ -486,15 +486,15 @@
 
           <TextBlock x:Name="SelectionInfoText"
                      Text="No items selected for transfer"
-                     Foreground="#424242"
+                     Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                      FontSize="12"
                      VerticalAlignment="Center" />
 
-          <Border Width="1" Height="16" Background="#EEEEEE" />
+          <Border Width="1" Height="16" Background="{DynamicResource ThemeV2.Border.Default}" />
 
           <TextBlock x:Name="TotalTransferQuantityText"
                      Text="Total Transfer Quantity: 0"
-                     Foreground="#424242"
+                     Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                      FontSize="12" FontWeight="Medium"
                      VerticalAlignment="Center"
                      ToolTip.Tip="Total quantity planned for transfer by Part ID and Operation" />
@@ -510,13 +510,13 @@
           <!-- Edit Transfer Button -->
           <Button x:Name="EditTransferButton"
                   Content="✏️ Edit"
-                  Background="#757575"
-                  Foreground="#FFFFFF"
-                  BorderBrush="#757575"
+                  Background="{DynamicResource ThemeV2.Action.Secondary}"
+                  Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                  BorderBrush="{DynamicResource ThemeV2.Action.Secondary}"
                   BorderThickness="1"
-                  CornerRadius="4"
+                  CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
                   Padding="12,6"
-                  FontSize="12"
+                  FontSize="{StaticResource ThemeV2.Typography.Caption.FontSize}"
                   Cursor="Hand"
                   IsEnabled="False"
                   Command="{Binding EditTransferCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -525,13 +525,13 @@
           <!-- Execute Transfer Button -->
           <Button x:Name="ExecuteTransferButton"
                   Content="➜ Transfer"
-                  Background="#2196F3"
-                  Foreground="#FFFFFF"
-                  BorderBrush="#2196F3"
+                  Background="{DynamicResource ThemeV2.MTM.Inventory.Transfer}"
+                  Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                  BorderBrush="{DynamicResource ThemeV2.MTM.Inventory.Transfer}"
                   BorderThickness="1"
-                  CornerRadius="4"
+                  CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
                   Padding="12,6"
-                  FontSize="12"
+                  FontSize="{StaticResource ThemeV2.Typography.Caption.FontSize}"
                   Cursor="Hand"
                   IsEnabled="False"
                   Command="{Binding ExecuteTransferCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -546,8 +546,8 @@
     <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
             x:Name="ColumnManagementContainer"
             Width="0"
-            Background="#F5F5F5"
-            BorderBrush="#EEEEEE"
+            Background="{DynamicResource ThemeV2.Background.Surface}"
+            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
             BorderThickness="1,1,0,1"
             IsVisible="False">
 
@@ -556,7 +556,7 @@
                  HorizontalAlignment="Center"
                  VerticalAlignment="Center"
                  FontSize="12"
-                 Foreground="#424242"
+                 Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                  Opacity="0.7" />
     </Border>
 
@@ -564,8 +564,8 @@
     <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
             x:Name="FilterPanelContainer"
             Width="0"
-            Background="#F5F5F5"
-            BorderBrush="#EEEEEE"
+            Background="{DynamicResource ThemeV2.Background.Surface}"
+            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
             BorderThickness="1,1,1,1"
             CornerRadius="0,8,8,0"
             IsVisible="False">
@@ -575,7 +575,7 @@
                  HorizontalAlignment="Center"
                  VerticalAlignment="Center"
                  FontSize="12"
-                 Foreground="#424242"
+                 Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                  Opacity="0.7" />
     </Border>
 

@@ -126,6 +126,10 @@ Following MTM architectural patterns and Avalonia 11.3.4 conventions
 <x:Double x:Key="ThemeV2.Opacity.Hover">0.9</x:Double>         <!-- 90% opacity for hover states -->
 <x:Double x:Key="ThemeV2.Opacity.Pressed">0.7</x:Double>       <!-- 70% opacity for pressed states -->
 
+<!-- Shadow and overlay opacity -->
+<x:Double x:Key="ThemeV2.Opacity.Shadow">0.15</x:Double>       <!-- 15% opacity for shadow effects -->
+<x:Double x:Key="ThemeV2.Opacity.Overlay">0.4</x:Double>       <!-- 40% opacity for overlay backgrounds -->
+
 <!-- ===========================================
      SPACING AND SIZING TOKENS
      =========================================== -->
@@ -147,10 +151,16 @@ Following MTM architectural patterns and Avalonia 11.3.4 conventions
 <Thickness x:Key="ThemeV2.Thickness.XXL">48</Thickness>
 
 <!-- Alternative naming for BaseStyles compatibility - MUST be Thickness for Padding property -->
+<Thickness x:Key="ThemeV2.Spacing.XSmall">4</Thickness>
 <Thickness x:Key="ThemeV2.Spacing.Small">8</Thickness>
 <Thickness x:Key="ThemeV2.Spacing.Medium">16</Thickness>
 <Thickness x:Key="ThemeV2.Spacing.Large">24</Thickness>
 <Thickness x:Key="ThemeV2.Spacing.XLarge">32</Thickness>
+
+<!-- Control height tokens -->
+<x:Double x:Key="ThemeV2.ControlHeight.Standard">32</x:Double>
+<x:Double x:Key="ThemeV2.ControlHeight.Large">52</x:Double>
+<x:Double x:Key="ThemeV2.ControlHeight.XLarge">64</x:Double>
 
 <!-- Additional opacity levels needed by BaseStyles -->
 <x:Double x:Key="ThemeV2.Opacity.Medium">0.8</x:Double>
@@ -163,6 +173,7 @@ Following MTM architectural patterns and Avalonia 11.3.4 conventions
 <CornerRadius x:Key="ThemeV2.BorderRadius.Full">9999</CornerRadius> <!-- For pills/circles -->
 
 <!-- Corner radius tokens (alternative naming for BaseStyles compatibility) -->
+<CornerRadius x:Key="ThemeV2.CornerRadius.XSmall">2</CornerRadius>
 <CornerRadius x:Key="ThemeV2.CornerRadius.Small">4</CornerRadius>
 <CornerRadius x:Key="ThemeV2.CornerRadius.Medium">8</CornerRadius>
 <CornerRadius x:Key="ThemeV2.CornerRadius.Large">12</CornerRadius>

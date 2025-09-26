@@ -21,7 +21,7 @@ WCAG 2.1 AA compliant with high visibility indicators
     <Setter Property="HorizontalAlignment" Value="Stretch"/>
     <Setter Property="VerticalAlignment" Value="Stretch"/>
     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
     <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Body.FontWeight}"/>
     <Setter Property="Cursor" Value="Hand"/>
 </Style>

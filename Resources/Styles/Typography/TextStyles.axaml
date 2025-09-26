@@ -190,4 +190,41 @@ WCAG 2.1 AA compliant typography with proper contrast
     <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.SemiBold}"/>
 </Style>
 
+<!-- Quick Button Badge Text Styles -->
+<Style Selector="TextBlock.BadgeLabel">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.Medium}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.QuickButton.Badge.Content}"/>
+    <Setter Property="TextAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="TextBlock.BadgeValue">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.FontSize.SM}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.Bold}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.QuickButton.Badge.Content}"/>
+    <Setter Property="TextAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="TextBlock.PositionIndicator">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.FontSize.SM}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.Bold}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.QuickButton.Position.Content}"/>
+    <Setter Property="TextAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="TextBlock.QuickButtonMain">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.FontSize.MD}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.SemiBold}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.QuickButton.Content}"/>
+    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+</Style>
+
+<Style Selector="TextBlock.QuickButtonSub">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Body.FontWeight}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.QuickButton.Content}"/>
+    <Setter Property="Opacity" Value="0.85"/>
+    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+</Style>
+
 </Styles>

@@ -28,11 +28,21 @@ Usage: Include this file to get access to all MTM styles
 <!-- Layout Components -->
 <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Layout/Cards.axaml"/>
 <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Layout/Forms.axaml"/>
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Layout/StatusBadges.axaml"/>
 
 <!-- Navigation Controls -->
-<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Navigation/Tabs.axaml"/>
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Navigation/TabStyles.axaml"/>
+
+<!-- Layout Components (Extended) -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Layout/HeaderFooterPanels.axaml"/>
+
+<!-- Overlay Components -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Overlays/OverlayPanels.axaml"/>
 
 <!-- Typography System -->
 <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Typography/TextStyles.axaml"/>
+
+<!-- Component Controls -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Components/CollapsiblePanels.axaml"/>
 
 </Styles>

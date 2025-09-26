@@ -20,14 +20,14 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <!-- MTM Theme Input Field Styles -->
+    <!-- Theme V2 + StyleSystem Input Field Overrides -->
     <Style Selector="TextBox.input-field">
-      <Setter Property="BorderBrush" Value="#BDBDBD" />
-      <Setter Property="Background" Value="#FFFFFF" />
-      <Setter Property="Foreground" Value="#424242" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background}" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Input.Content}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
       <Setter Property="MinHeight" Value="32" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -35,68 +35,39 @@
 
     <!-- Error state styling -->
     <Style Selector="TextBox.input-field.error">
-      <Setter Property="BorderBrush" Value="#F44336" />
-      <Setter Property="Background" Value="#FFCDD2" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Error}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
     </Style>
 
     <!-- Focus state styling -->
     <Style Selector="TextBox.input-field:focus">
-      <Setter Property="BorderBrush" Value="#1976D2" />
-      <Setter Property="Background" Value="#F5F5F5" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}" />
     </Style>
 
     <!-- Material Icons global styling -->
     <Style Selector="materialIcons|MaterialIcon">
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Foreground" Value="#1976D2" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <!-- Primary Button styling -->
-    <Style Selector="Button.primary">
-      <Setter Property="Background" Value="#2196F3" />
-      <Setter Property="Foreground" Value="#FFFFFF" />
-      <Setter Property="BorderBrush" Value="#BDBDBD" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="12,6" />
-    </Style>
-
-    <!-- Secondary Button styling - Enhanced border visibility -->
-    <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="#FFFFFF" />
-      <Setter Property="Foreground" Value="#212121" />
-      <Setter Property="BorderBrush" Value="#2196F3" />
-      <Setter Property="BorderThickness" Value="1.5" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="12,6" />
-    </Style>
-
-    <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="#F5F5F5" />
-      <Setter Property="BorderBrush" Value="#2196F3" />
-      <Setter Property="Foreground" Value="#BDBDBD" />
-    </Style>
-
-    <!-- Transfer Button styling -->
+    <!-- MTM Transfer Button Styling -->
     <Style Selector="Button.transfer">
-      <Setter Property="Background" Value="#4CAF50" />
-      <Setter Property="Foreground" Value="#FFFFFF" />
-      <Setter Property="BorderBrush" Value="#4CAF50" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Medium}" />
     </Style>
 
     <Style Selector="Button.transfer:pointerover">
-      <Setter Property="Background" Value="#388E3C" />
-      <Setter Property="BorderBrush" Value="#388E3C" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Hover}" />
     </Style>
 
   </UserControl.Styles>
@@ -105,7 +76,7 @@
   <Grid x:Name="RootContainer">
 
     <!-- Main Layout Grid with columns for content and QuickButtons -->
-    <Grid x:Name="LayoutContainer" ColumnDefinitions="*,Auto" Margin="8" Background="#FAFAFA">
+    <Grid x:Name="LayoutContainer" ColumnDefinitions="*,Auto" Margin="8" Background="{DynamicResource ThemeV2.Background.Canvas}">
 
     <!-- Left Panel: Main Transfer Content -->
     <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
@@ -113,14 +84,14 @@
       <Grid x:Name="MainContainer" RowDefinitions="*,Auto,Auto" MinWidth="600" MinHeight="400" Margin="0,0,8,0">
 
         <!-- Main Transfer Configuration Panel -->
-        <Border Grid.Row="0" Background="#F5F5F5" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,8">
+        <Border Grid.Row="0" Background="{DynamicResource ThemeV2.Background.Surface}" BorderBrush="{DynamicResource ThemeV2.Action.Primary}" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,8">
 
           <Grid x:Name="TransferFormGrid" RowDefinitions="Auto,*">
 
             <!-- Search Configuration Card -->
             <Border Grid.Row="0"
-                    Background="#FFFFFF"
-                    BorderBrush="#2196F3"
+                    Background="{DynamicResource ThemeV2.Background.Card}"
+                    BorderBrush="{DynamicResource ThemeV2.Action.Primary}"
                     BorderThickness="1"
                     CornerRadius="6"
                     Padding="16"
@@ -132,8 +103,8 @@
                 <!-- Part ID Field -->
                 <Grid x:Name="PartIdGrid" Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">
                   <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
-                    <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" Foreground="#1976D2" />
-                    <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" Foreground="#212121" VerticalAlignment="Center" />
+                    <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" Foreground="{DynamicResource ThemeV2.Action.Primary}" />
+                    <TextBlock Classes="Form.Label" Text="Part ID:" VerticalAlignment="Center" />
                   </StackPanel>
                   <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding PartText, Mode=TwoWay}" Watermark="Enter part ID for transfer..." Classes="input-field" ToolTip.Tip="Select or enter part ID to search for transfer candidates" TabIndex="1" />
                 </Grid>
@@ -141,8 +112,8 @@
                 <!-- Operation Field -->
                 <Grid x:Name="OperationGrid" Grid.Row="1" ColumnDefinitions="90,*" ColumnSpacing="12">
                   <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
-                    <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" Foreground="#1976D2" />
-                    <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="#212121" VerticalAlignment="Center" />
+                    <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" Foreground="{DynamicResource ThemeV2.Action.Primary}" />
+                    <TextBlock Classes="Form.Label" Text="Operation:" VerticalAlignment="Center" />
                   </StackPanel>
                   <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding OperationText, Mode=TwoWay}" Watermark="Enter operation number (optional)..." Classes="input-field" ToolTip.Tip="Select or enter operation number to filter transfer candidates" TabIndex="2" />
                 </Grid>
@@ -153,48 +124,44 @@
 
             <!-- DataGrid for Available Inventory -->
             <Border Grid.Row="1"
-                    Background="#FFFFFF"
-                    BorderBrush="#2196F3"
-                    BorderThickness="1"
-                    CornerRadius="6"
+                    Classes="Card"
                     Padding="8">
 
               <Grid RowDefinitions="Auto,*">
 
                 <!-- DataGrid Header -->
                 <Border Grid.Row="0"
-                        Background="#EEEEEE"
-                        CornerRadius="4"
-                        Padding="12,8"
+                        Background="{DynamicResource ThemeV2.Background.Surface}"
+                        CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
+                        Padding="{StaticResource ThemeV2.Spacing.Medium}"
                         Margin="0,0,0,8">
                   <Grid ColumnDefinitions="Auto,*,Auto">
                     <materialIcons:MaterialIcon Grid.Column="0"
                                               Kind="ViewList"
                                               Width="16"
                                               Height="16"
-                                              Foreground="#FFFFFF"
+                                              Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                                               VerticalAlignment="Center"
                                               Margin="0,0,8,0" />
                     <TextBlock Grid.Column="1"
+                              Classes="Heading3"
                               Text="Available Inventory for Transfer"
-                              FontSize="14"
-                              FontWeight="Bold"
-                              Foreground="#FFFFFF"
+                              Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                               ToolTip.Tip="Select items to transfer. Use Ctrl+Click for multiple selection."
                               VerticalAlignment="Center" />
                     <Border Grid.Column="2"
-                            Background="#FFFFFF"
-                            CornerRadius="8"
-                            Padding="8,4">
+                            Background="{DynamicResource ThemeV2.Background.Card}"
+                            CornerRadius="{StaticResource ThemeV2.CornerRadius.Medium}"
+                            Padding="{StaticResource ThemeV2.Spacing.Small}">
                       <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock Text="{Binding InventoryItems.Count}"
-                                  FontSize="12"
+                                  Classes="Caption"
                                   FontWeight="Bold"
-                                  Foreground="#2196F3"
+                                  Foreground="{DynamicResource ThemeV2.Action.Primary}"
                                   VerticalAlignment="Center" />
                         <TextBlock Text="items"
-                                  FontSize="11"
-                                  Foreground="#424242"
+                                  Classes="Caption"
+                                  Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                                   VerticalAlignment="Center" />
                       </StackPanel>
                     </Border>
@@ -212,10 +179,10 @@
                                                        SelectedItemsCollection="{Binding SelectedInventoryItems}"
                                                        ExecuteTransferCommand="{Binding TransferCommand}"
                                                        IsVisible="{Binding HasInventoryItems}"
-                                                       Background="#FFFFFF"
-                                                       BorderBrush="#EEEEEE"
+                                                       Background="{DynamicResource ThemeV2.Background.Card}"
+                                                       BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                                                        BorderThickness="1"
-                                                       CornerRadius="4"
+                                                       CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
                                                        MinHeight="300"
                                                        MaxHeight="600">
 
@@ -234,11 +201,8 @@
                   <!-- Nothing Found Indicator -->
                   <Border Grid.Row="0"
                           IsVisible="{Binding ShowNothingFoundIndicator}"
-                          Background="#FFFFFF"
-                          BorderBrush="#EEEEEE"
-                          BorderThickness="1"
-                          CornerRadius="4"
-                          Padding="32"
+                          Classes="Card"
+                          Padding="{StaticResource ThemeV2.Spacing.Large}"
                           MinHeight="200">
 
                     <!-- [TRANSFER-DEBUG] Nothing Found Debug Info -->
@@ -258,15 +222,15 @@
                       <materialIcons:MaterialIcon Kind="Transfer"
                                                 Width="48"
                                                 Height="48"
-                                                Foreground="#757575"/>
-                      <TextBlock Text="No transfer candidates found"
-                                FontSize="16"
-                                FontWeight="Medium"
-                                Foreground="#212121"
+                                                Foreground="{DynamicResource ThemeV2.Content.Tertiary}"/>
+                      <TextBlock Classes="Heading3"
+                                Text="No transfer candidates found"
+                                Foreground="{DynamicResource ThemeV2.Content.Primary}"
                                 HorizontalAlignment="Center"/>
                       <TextBlock Text="Enter search criteria above and click Search"
                                 FontSize="12"
-                                Foreground="#424242"
+                                Classes="Body"
+                                Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                                 HorizontalAlignment="Center"/>
                     </StackPanel>
                   </Border>
@@ -293,15 +257,15 @@
                       <ProgressBar IsIndeterminate="True"
                                   Width="200"
                                   Height="4"
-                                  Foreground="#2196F3"/>
-                      <TextBlock Text="Loading inventory data..."
-                                FontSize="14"
-                                Foreground="#FFFFFF"
+                                  Foreground="{DynamicResource ThemeV2.Action.Primary}"/>
+                      <TextBlock Classes="Body"
+                                Text="Loading inventory data..."
+                                Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                                 HorizontalAlignment="Center"/>
                       <!-- [TRANSFER-DEBUG] Status Message Display -->
-                      <TextBlock Text="{Binding StatusMessage, TargetNullValue='Preparing...'}"
-                                FontSize="12"
-                                Foreground="LightGray"
+                      <TextBlock Classes="Caption"
+                                Text="{Binding StatusMessage, TargetNullValue='Preparing...'}"
+                                Foreground="{DynamicResource ThemeV2.Content.Tertiary}"
                                 HorizontalAlignment="Center"/>
                     </StackPanel>
                   </Border>
@@ -316,11 +280,7 @@
 
         <!-- Transfer Controls Card (Always Visible) -->
         <Border Grid.Row="1"
-                Background="#FFFFFF"
-                BorderBrush="#2196F3"
-                BorderThickness="1"
-                CornerRadius="6"
-                Padding="16"
+                Classes="Card"
                 Margin="0,0,0,8">
 
           <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
@@ -335,13 +295,11 @@
                                             Kind="MapMarkerRadius"
                                             Width="14"
                                             Height="14"
-                                            Foreground="#1976D2"
+                                            Foreground="{DynamicResource ThemeV2.Action.Primary}"
                                             VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1"
+                            Classes="Form.Label"
                             Text="Destination Location:"
-                            FontSize="12"
-                            FontWeight="Medium"
-                            Foreground="#212121"
                             VerticalAlignment="Center" />
                 </Grid>
 
@@ -356,9 +314,8 @@
 
                 <!-- Location Validation Message -->
                 <TextBlock Grid.Row="2"
+                          Classes="Error Caption"
                           Text="Location is required and must be different from source"
-                          FontSize="10"
-                          Foreground="#F44336"
                           IsVisible="{Binding HasLocationValidationError}" />
               </Grid>
 
@@ -369,23 +326,21 @@
                                             Kind="Counter"
                                             Width="14"
                                             Height="14"
-                                            Foreground="#1976D2"
+                                            Foreground="{DynamicResource ThemeV2.Action.Primary}"
                                             VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1"
+                            Classes="Form.Label"
                             Text="Transfer Quantity:"
-                            FontSize="12"
-                            FontWeight="Medium"
-                            Foreground="#212121"
                             VerticalAlignment="Center" />
                   <Border Grid.Column="2"
-                          Background="#1976D2"
-                          CornerRadius="4"
+                          Background="{DynamicResource ThemeV2.Action.Primary}"
+                          CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
                           Padding="6,2"
                           IsVisible="{Binding SelectedInventoryItem, Converter={x:Static ObjectConverters.IsNotNull}}">
-                    <TextBlock Text="{Binding MaxTransferQuantity, StringFormat='Max: {0}'}"
-                              FontSize="10"
+                    <TextBlock Classes="Caption"
+                              Text="{Binding MaxTransferQuantity, StringFormat='Max: {0}'}"
                               FontWeight="SemiBold"
-                              Foreground="#FFFFFF"
+                              Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                               ToolTip.Tip="Maximum available quantity for selected item" />
                   </Border>
                 </Grid>
@@ -401,9 +356,8 @@
 
                 <!-- Quantity Validation Message -->
                 <TextBlock Grid.Row="2"
+                          Classes="Error Caption"
                           Text="Quantity must be between 1 and maximum available"
-                          FontSize="10"
-                          Foreground="#F44336"
                           IsVisible="{Binding HasQuantityValidationError}" />
               </Grid>
 
@@ -412,7 +366,7 @@
                 <Button x:Name="TransferButton"
                         Classes="transfer"
                         Width="120"
-                        Height="40"
+                        Height="32"
                         Command="{Binding TransferCommand}"
                         IsEnabled="{Binding CanTransfer}"
                         TabIndex="5">
@@ -448,13 +402,13 @@
                                         Kind="InformationOutline"
                                         Width="16"
                                         Height="16"
-                                        Foreground="#1976D2"
+                                        Foreground="{DynamicResource ThemeV2.Status.Info}"
                                         VerticalAlignment="Top"
                                         Margin="0,2,8,0" />
               <TextBlock Grid.Column="1"
+                        Classes="Caption"
                         Text="Select an item from the table above, enter a destination location and quantity, then click Transfer to complete the operation."
-                        FontSize="11"
-                        Foreground="#424242"
+                        Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                         TextWrapping="Wrap" />
             </Grid>
 
@@ -462,16 +416,16 @@
         </Border>
 
         <!-- Action Buttons Panel -->
-        <Border Grid.Row="2" Background="#F5F5F5" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+        <Border Grid.Row="2"
+                Classes="Form.Actions"
+                Margin="0,0,0,8">
 
           <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="Auto,*">
 
             <!-- Action buttons -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
 
-              <Button x:Name="SearchButton" Classes="primary" Width="100" Command="{Binding SearchCommand}" IsEnabled="{Binding CanSearch}" TabIndex="6">
-
-                <!-- [TRANSFER-DEBUG] Search Button Debug Info -->
+              <Button x:Name="SearchButton" Classes="Primary" Width="100" Height="32" Command="{Binding SearchCommand}" IsEnabled="{Binding CanSearch}" TabIndex="6">                <!-- [TRANSFER-DEBUG] Search Button Debug Info -->
                 <ToolTip.Tip>
                   <StackPanel>
                     <TextBlock Text="Search for transfer candidates (F5)" FontWeight="Bold" />
@@ -485,12 +439,12 @@
                 </ToolTip.Tip>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
-                  <materialIcons:MaterialIcon Kind="Magnify" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#212121" />
-                  <TextBlock Text="Search" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#FFFFFF" />
+                  <materialIcons:MaterialIcon Kind="Magnify" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  <TextBlock Text="Search" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" />
                 </StackPanel>
               </Button>
 
-              <Button Classes="secondary" Width="100" Command="{Binding ResetCommand}" ToolTip.Tip="Reset form (Escape)" TabIndex="7">
+              <Button Classes="Secondary" Width="100" Height="32" Command="{Binding ResetCommand}" ToolTip.Tip="Reset form (Escape)" TabIndex="7">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                   <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
                   <TextBlock Text="Reset" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -500,7 +454,7 @@
             </StackPanel>
 
             <Grid Grid.Column="1" HorizontalAlignment="Right">
-              <Button Classes="secondary" Width="120" Command="{Binding PrintCommand}" ToolTip.Tip="Test print functionality with mock data (Ctrl+P)" TabIndex="8">
+              <Button Classes="Secondary" Width="120" Height="32" Command="{Binding PrintCommand}" ToolTip.Tip="Test print functionality with mock data (Ctrl+P)" TabIndex="8">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                   <materialIcons:MaterialIcon Kind="TestTube" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
                   <TextBlock Text="Test Print" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -516,8 +470,8 @@
 
     <!-- Right Panel: Quick Actions Card -->
     <Border Grid.Column="1"
-            Background="#FFFFFF"
-            BorderBrush="#2196F3"
+            Background="{DynamicResource ThemeV2.Background.Card}"
+            BorderBrush="{DynamicResource ThemeV2.Action.Primary}"
             BorderThickness="1"
             CornerRadius="6"
             Padding="8"
