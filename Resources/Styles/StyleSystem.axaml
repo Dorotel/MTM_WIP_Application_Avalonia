@@ -20,6 +20,7 @@ Usage: Include this file to get access to all MTM styles
 
 <!-- Manufacturing-Specific Buttons -->
 <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Manufacturing/ActionButtons.axaml"/>
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Manufacturing/FormStyles.axaml"/>
 
 <!-- Input Controls -->
 <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Inputs/TextInputs.axaml"/>
@@ -41,6 +42,9 @@ Usage: Include this file to get access to all MTM styles
 
 <!-- Typography System -->
 <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Typography/TextStyles.axaml"/>
+
+<!-- Icon System -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Icons/ManufacturingIcons.axaml"/>
 
 <!-- Component Controls -->
 <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Components/CollapsiblePanels.axaml"/>

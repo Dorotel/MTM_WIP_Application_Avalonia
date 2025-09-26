@@ -12,290 +12,214 @@
              x:CompileBindings="True"
              x:DataType="vm:InventoryTabViewModel">
 
-  <UserControl.Styles>
-    <!-- Field icon styling using Theme V2 semantic tokens -->
-    <Style Selector="materialIcons|MaterialIcon.field-icon">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
-      <Setter Property="HorizontalAlignment" Value="Center"/>
-      <Setter Property="VerticalAlignment" Value="Center"/>
-      <Setter Property="Width" Value="18"/>
-      <Setter Property="Height" Value="18"/>
-    </Style>
+  <!-- Master border container for seamless MainView integration -->
+  <Border x:Name="MasterContainer"
+          Background="Transparent"
+          BorderThickness="0"
+          CornerRadius="0"
+          Padding="8"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch">
 
-    <!-- Form field containers - flexible sizing with proper containment -->
-    <Style Selector="Border.field-container">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Medium}"/>
-      <Setter Property="Padding" Value="8"/>
-      <Setter Property="Margin" Value="4"/>
-      <Setter Property="Height" Value="80"/>
-      <Setter Property="MinHeight" Value="80"/>
-      <Setter Property="MaxHeight" Value="80"/>
-      <Setter Property="HorizontalAlignment" Value="Stretch"/>
-      <Setter Property="VerticalAlignment" Value="Top"/>
-      <Setter Property="ClipToBounds" Value="True"/>
-    </Style>
+    <!-- Direct grid layout for proper parent container fitting -->
+    <Grid x:Name="MainContainer"
+          RowDefinitions="*,Auto"
+          Background="Transparent"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch">
 
-    <!-- Notes field container - stretches to fill available space -->
-    <Style Selector="Border.field-container.notes-field">
-      <Setter Property="VerticalAlignment" Value="Stretch"/>
-    </Style>
-
-    <!-- TextBox specific styling to stay within containers -->
-    <Style Selector="Border.field-container TextBox">
-      <Setter Property="HorizontalAlignment" Value="Stretch"/>
-      <Setter Property="VerticalAlignment" Value="Stretch"/>
-      <Setter Property="Margin" Value="0"/>
-      <Setter Property="Padding" Value="4"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="TextWrapping" Value="NoWrap"/>
-      <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
-      <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
-    </Style>
-
-    <!-- Hover state for field containers -->
-    <Style Selector="Border.field-container:pointerover">
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
-      <Setter Property="BorderThickness" Value="2"/>
-    </Style>
-  </UserControl.Styles>
-
-  <!-- NO ScrollViewer - direct grid layout for proper containment -->
-  <Grid x:Name="MainContainer"
-        RowDefinitions="*,Auto"
-        Background="{DynamicResource ThemeV2.Background.Canvas}"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch">
-
-      <!-- Content Border - optimized for proper containment -->
+      <!-- Content Border using StyleSystem Card class -->
       <Border Grid.Row="0"
               Classes="Card"
-              Background="{DynamicResource ThemeV2.Background.Card}"
-              BorderBrush="{DynamicResource ThemeV2.Border.Default}"
-              BorderThickness="1"
-              CornerRadius="8"
-              Padding="12"
-              Margin="8,8,8,4"
+              Margin="0,0,0,4"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
 
-        <StackPanel Spacing="16" HorizontalAlignment="Stretch">
-          <!-- Form Title with icon using StyleSystem -->
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.MD}" HorizontalAlignment="Left">
-            <Border Classes="Icon"
-                    Background="{DynamicResource ThemeV2.Action.Primary}"
-                    CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
-                    Padding="{StaticResource ThemeV2.Spacing.Small}">
-              <materialIcons:MaterialIcon Kind="Package"
-                                          Width="20"
-                                          Height="20"
-                                          Foreground="{DynamicResource ThemeV2.Content.OnColor}"/>
+      <StackPanel Spacing="16" HorizontalAlignment="Stretch">
+
+        <!-- Form Title using StyleSystem classes -->
+        <StackPanel Classes="ManufacturingFormTitle">
+          <Border Classes="ManufacturingTitleIcon">
+            <materialIcons:MaterialIcon Kind="Package" Classes="ManufacturingTitleIcon"/>
+          </Border>
+          <TextBlock Classes="ManufacturingFormTitle" Text="Add Inventory Item"/>
+        </StackPanel>
+
+        <!-- Manufacturing form grid using StyleSystem -->
+        <Grid Classes="ManufacturingForm"
+              RowDefinitions="80,12,80,12,*"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch">
+
+          <!-- Row 0: Part ID + Operation using StyleSystem -->
+          <Grid Grid.Row="0" Classes="ManufacturingTwoColumn" ColumnDefinitions="1*,12,1*">
+
+            <!-- Part ID Field using Manufacturing StyleSystem -->
+            <Border Grid.Column="0" Classes="ManufacturingField" Tapped="FocusPartTextBox">
+              <StackPanel Classes="ManufacturingFieldContent">
+                <StackPanel Classes="ManufacturingFieldHeader">
+                  <materialIcons:MaterialIcon Kind="Identifier" Classes="ManufacturingFieldIcon"/>
+                  <TextBlock Classes="ManufacturingFieldLabel" Text="Part ID *"/>
+                </StackPanel>
+                <TextBox x:Name="PartTextBox"
+                         Classes="ManufacturingInput"
+                         Text="{Binding SelectedPart, Mode=TwoWay}"
+                         Watermark="{Binding PartWatermark}"
+                         ToolTip.Tip="Select or enter a part number"
+                         TabIndex="1"/>
+              </StackPanel>
             </Border>
-            <TextBlock Classes="Heading3"
-                       Text="Add Inventory Item"
-                       Foreground="{DynamicResource ThemeV2.Content.Primary}"
-                       VerticalAlignment="Center"/>
-          </StackPanel>
 
-          <!-- Form fields grid - flexible layout with stretching Notes section -->
-          <Grid Classes="Form"
-                RowDefinitions="80,12,80,12,*"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch">
-
-            <!-- Row 0: Part ID + Operation - Fixed equal width columns -->
-            <Grid Grid.Row="0" ColumnDefinitions="1*,12,1*" HorizontalAlignment="Stretch">
-
-              <!-- Part ID Field -->
-              <Border Grid.Column="0" Classes="field-container">
-                <StackPanel Spacing="4" VerticalAlignment="Stretch">
-                  <StackPanel Orientation="Horizontal" Spacing="4" Height="20">
-                    <materialIcons:MaterialIcon Kind="Identifier" Classes="field-icon" Width="14" Height="14"/>
-                    <TextBlock Text="Part ID *" FontSize="12" FontWeight="SemiBold"
-                               Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
-                  </StackPanel>
-                  <TextBox x:Name="PartTextBox"
-                           Text="{Binding SelectedPart, Mode=TwoWay}"
-                           Watermark="{Binding PartWatermark}"
-                           ToolTip.Tip="Select or enter a part number"
-                           TabIndex="1"
-                           Height="36"/>
+            <!-- Operation Field using Manufacturing StyleSystem -->
+            <Border Grid.Column="2" Classes="ManufacturingField" Tapped="FocusOperationTextBox">
+              <StackPanel Classes="ManufacturingFieldContent">
+                <StackPanel Classes="ManufacturingFieldHeader">
+                  <materialIcons:MaterialIcon Kind="Cog" Classes="ManufacturingFieldIcon"/>
+                  <TextBlock Classes="ManufacturingFieldLabel" Text="Operation *"/>
                 </StackPanel>
-              </Border>
-
-              <!-- Operation Field -->
-              <Border Grid.Column="2" Classes="field-container">
-                <StackPanel Spacing="4" VerticalAlignment="Stretch">
-                  <StackPanel Orientation="Horizontal" Spacing="4" Height="20">
-                    <materialIcons:MaterialIcon Kind="Cog" Classes="field-icon" Width="14" Height="14"/>
-                    <TextBlock Text="Operation *" FontSize="12" FontWeight="SemiBold"
-                               Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
-                  </StackPanel>
-                  <TextBox x:Name="OperationTextBox"
-                           Text="{Binding SelectedOperation, Mode=TwoWay}"
-                           Watermark="{Binding OperationWatermark}"
-                           ToolTip.Tip="Enter operation number (90, 100, 110)"
-                           TabIndex="2"
-                           Height="36"/>
-                </StackPanel>
-              </Border>
-            </Grid>
-
-            <!-- Row 2: Location + Quantity - Fixed equal width columns -->
-            <Grid Grid.Row="2" ColumnDefinitions="1*,12,1*" HorizontalAlignment="Stretch">
-
-              <!-- Location Field -->
-              <Border Grid.Column="0" Classes="field-container">
-                <StackPanel Spacing="4" VerticalAlignment="Stretch">
-                  <StackPanel Orientation="Horizontal" Spacing="4" Height="20">
-                    <materialIcons:MaterialIcon Kind="MapMarker" Classes="field-icon" Width="14" Height="14"/>
-                    <TextBlock Text="Location *" FontSize="12" FontWeight="SemiBold"
-                               Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
-                  </StackPanel>
-                  <TextBox x:Name="LocationTextBox"
-                           Text="{Binding SelectedLocation, Mode=TwoWay}"
-                           Watermark="{Binding LocationWatermark}"
-                           ToolTip.Tip="Enter location (FLOOR, RECEIVING, etc.)"
-                           TabIndex="3"
-                           Height="36"/>
-                </StackPanel>
-              </Border>
-
-              <!-- Quantity Field -->
-              <Border Grid.Column="2" Classes="field-container">
-                <StackPanel Spacing="4" VerticalAlignment="Stretch">
-                  <StackPanel Orientation="Horizontal" Spacing="4" Height="20">
-                    <materialIcons:MaterialIcon Kind="Counter" Classes="field-icon" Width="14" Height="14"/>
-                    <TextBlock Text="Quantity *" FontSize="12" FontWeight="SemiBold"
-                               Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
-                  </StackPanel>
-                  <TextBox x:Name="QuantityTextBox"
-                           Text="{Binding QuantityText, Mode=TwoWay}"
-                           Watermark="{Binding QuantityWatermark}"
-                           ToolTip.Tip="Enter numeric quantity"
-                           TabIndex="4"
-                           Height="36"/>
-                </StackPanel>
-              </Border>
-            </Grid>
-
-            <!-- Row 4: Notes (Full Width) - Stretches to use remaining space -->
-            <Border Grid.Row="4" Classes="field-container notes-field"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    MinHeight="80">
-              <Grid RowDefinitions="Auto,*">
-                <!-- Label Row -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="4" Height="20" Margin="0,0,0,4">
-                  <materialIcons:MaterialIcon Kind="NoteText" Classes="field-icon" Width="14" Height="14"/>
-                  <TextBlock Text="Notes (Optional)" FontSize="12" FontWeight="SemiBold"
-                             Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
-                </StackPanel>
-                <!-- TextBox Row - Stretches to fill available space -->
-                <TextBox Grid.Row="1"
-                         x:Name="NotesTextBox"
-                         Text="{Binding Notes, Mode=TwoWay}"
-                         Watermark="{Binding NotesWatermark}"
-                         AcceptsReturn="True"
-                         TextWrapping="Wrap"
-                         VerticalAlignment="Stretch"
-                         VerticalContentAlignment="Top"
-                         ToolTip.Tip="Optional notes or comments"
-                         TabIndex="5"/>
-              </Grid>
+                <TextBox x:Name="OperationTextBox"
+                         Classes="ManufacturingInput"
+                         Text="{Binding SelectedOperation, Mode=TwoWay}"
+                         Watermark="{Binding OperationWatermark}"
+                         ToolTip.Tip="Enter operation number (90, 100, 110)"
+                         TabIndex="2"/>
+              </StackPanel>
             </Border>
           </Grid>
-        </StackPanel>
-      </Border>
 
-      <!-- Action buttons panel -->
-      <Border Grid.Row="1"
-              Classes="Card"
-              Background="{DynamicResource ThemeV2.Background.Surface}"
-              BorderBrush="{DynamicResource ThemeV2.Border.Subtle}"
-              BorderThickness="1"
-              CornerRadius="{StaticResource ThemeV2.CornerRadius.Large}"
-              Padding="{StaticResource ThemeV2.Spacing.Medium}"
-              Margin="0">
+          <!-- Row 2: Location + Quantity using StyleSystem -->
+          <Grid Grid.Row="2" Classes="ManufacturingTwoColumn" ColumnDefinitions="1*,12,1*">
 
-        <Grid Classes="Form.Actions" ColumnDefinitions="Auto,*,Auto">
-
-          <!-- Primary Actions (Left) -->
-          <StackPanel Grid.Column="0"
-                      Orientation="Horizontal"
-                      Spacing="{StaticResource ThemeV2.Space.MD}"
-                      HorizontalAlignment="Left">
-
-            <!-- Save Button using StyleSystem -->
-            <Button x:Name="SaveButton"
-                    Classes="Primary"
-                    Background="{DynamicResource ThemeV2.Action.Primary}"
-                    Foreground="{DynamicResource ThemeV2.Content.OnColor}"
-                    MinWidth="120"
-                    Height="44"
-                    Command="{Binding SaveCommand}"
-                    IsEnabled="{Binding CanSave}"
-                    ToolTip.Tip="Save inventory item (Enter to execute)"
-                    TabIndex="6">
-              <StackPanel Orientation="Horizontal"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"
-                          Spacing="{StaticResource ThemeV2.Space.SM}">
-                <materialIcons:MaterialIcon Kind="ContentSave"
-                                            Width="18"
-                                            Height="18"
-                                            Foreground="{DynamicResource ThemeV2.Content.OnColor}"/>
-                <TextBlock Classes="Body"
-                           Text="Save Item"
-                           Foreground="{DynamicResource ThemeV2.Content.OnColor}"
-                           FontWeight="SemiBold"/>
+            <!-- Location Field using Manufacturing StyleSystem -->
+            <Border Grid.Column="0" Classes="ManufacturingField" Tapped="FocusLocationTextBox">
+              <StackPanel Classes="ManufacturingFieldContent">
+                <StackPanel Classes="ManufacturingFieldHeader">
+                  <materialIcons:MaterialIcon Kind="MapMarker" Classes="ManufacturingFieldIcon"/>
+                  <TextBlock Classes="ManufacturingFieldLabel" Text="Location *"/>
+                </StackPanel>
+                <TextBox x:Name="LocationTextBox"
+                         Classes="ManufacturingInput"
+                         Text="{Binding SelectedLocation, Mode=TwoWay}"
+                         Watermark="{Binding LocationWatermark}"
+                         ToolTip.Tip="Enter location (FLOOR, RECEIVING, etc.)"
+                         TabIndex="3"/>
               </StackPanel>
-            </Button>
+            </Border>
 
-            <!-- Reset Button using StyleSystem -->
-            <Button Classes="Secondary"
-                    Background="{DynamicResource ThemeV2.Action.Secondary}"
-                    Foreground="{DynamicResource ThemeV2.Content.Primary}"
-                    MinWidth="100"
-                    Height="44"
-                    Command="{Binding ResetCommand}"
-                    CommandParameter="False"
-                    ToolTip.Tip="Reset form (F5 for soft reset, Shift+F5 for hard reset)">
-              <StackPanel Orientation="Horizontal"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"
-                          Spacing="{StaticResource ThemeV2.Space.SM}">
-                <materialIcons:MaterialIcon Kind="Refresh"
-                                            Width="16"
-                                            Height="16"
-                                            Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
-                <TextBlock Classes="Body"
-                           Text="Reset"
-                           Foreground="{DynamicResource ThemeV2.Content.Primary}"
-                           FontWeight="Medium"/>
+            <!-- Quantity Field using Manufacturing StyleSystem -->
+            <Border Grid.Column="2" Classes="ManufacturingField" Tapped="FocusQuantityTextBox">
+              <StackPanel Classes="ManufacturingFieldContent">
+                <StackPanel Classes="ManufacturingFieldHeader">
+                  <materialIcons:MaterialIcon Kind="Counter" Classes="ManufacturingFieldIcon"/>
+                  <TextBlock Classes="ManufacturingFieldLabel" Text="Quantity *"/>
+                </StackPanel>
+                <TextBox x:Name="QuantityTextBox"
+                         Classes="ManufacturingInput"
+                         Text="{Binding QuantityText, Mode=TwoWay}"
+                         Watermark="{Binding QuantityWatermark}"
+                         ToolTip.Tip="Enter numeric quantity"
+                         TabIndex="4"/>
               </StackPanel>
-            </Button>
-          </StackPanel>
+            </Border>
+          </Grid>
 
-          <!-- Advanced Actions (Right) -->
-          <Button Grid.Column="2"
-                  Classes="Icon"
-                  Background="{DynamicResource ThemeV2.Background.Surface}"
-                  BorderBrush="{DynamicResource ThemeV2.Border.Default}"
-                  Width="48"
-                  Height="48"
-                  Command="{Binding AdvancedEntryCommand}"
-                  ToolTip.Tip="Open advanced inventory features">
-            <materialIcons:MaterialIcon Kind="Settings"
-                                        Width="22"
-                                        Height="22"
-                                        Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
-          </Button>
+          <!-- Row 4: Notes Full Width using StyleSystem - fills remaining space -->
+          <Border Grid.Row="4" Classes="ManufacturingField Notes"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  Tapped="FocusNotesTextBox">
+            <Grid Classes="ManufacturingSingleColumn" RowDefinitions="Auto,*">
+              <!-- Label Row -->
+              <StackPanel Grid.Row="0" Classes="ManufacturingFieldHeader">
+                <materialIcons:MaterialIcon Kind="NoteText" Classes="ManufacturingFieldIcon"/>
+                <TextBlock Classes="ManufacturingFieldLabel" Text="Notes (Optional)"/>
+              </StackPanel>
+              <!-- TextBox Row - multiline and fills remaining area -->
+              <TextBox Grid.Row="1"
+                       x:Name="NotesTextBox"
+                       Classes="ManufacturingInput Notes"
+                       Text="{Binding Notes, Mode=TwoWay}"
+                       Watermark="{Binding NotesWatermark}"
+                       ToolTip.Tip="Optional notes or comments - Press Enter for new line"
+                       TabIndex="5"
+                       AcceptsReturn="True"
+                       TextWrapping="Wrap"
+                       VerticalAlignment="Stretch"
+                       HorizontalAlignment="Stretch"
+                       Height="NaN"
+                       MinHeight="120"/>
+            </Grid>
+          </Border>
+
+
         </Grid>
-      </Border>
+
+      </StackPanel>
+    </Border>
+
+    <!-- Action buttons panel - separate from main form panel -->
+    <Border Grid.Row="1"
+            Classes="ManufacturingField"
+            Padding="12,8"
+            Margin="0,8,0,8"
+            HorizontalAlignment="Stretch">
+
+      <Grid Classes="ManufacturingActions" ColumnDefinitions="Auto,*,Auto">
+
+        <!-- Primary Actions using StyleSystem -->
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    HorizontalAlignment="Left">
+
+          <!-- Save Button using Manufacturing StyleSystem - Compact -->
+          <Button x:Name="SaveButton"
+                  Classes="Primary ManufacturingSave"
+                  Command="{Binding SaveCommand}"
+                  IsEnabled="{Binding CanSave}"
+                  ToolTip.Tip="Save inventory item (Enter to execute)"
+                  TabIndex="6"
+                  Height="32"
+                  MinWidth="100">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="6">
+              <materialIcons:MaterialIcon Kind="ContentSave" Classes="ManufacturingActionIcon"/>
+              <TextBlock Classes="Caption" Text="Save Item"/>
+            </StackPanel>
+          </Button>
+
+          <!-- Reset Button using Manufacturing StyleSystem - Compact -->
+          <Button Classes="Secondary ManufacturingReset"
+                  Command="{Binding ResetCommand}"
+                  CommandParameter="False"
+                  ToolTip.Tip="Reset form (F5 for soft reset, Shift+F5 for hard reset)"
+                  Height="32"
+                  MinWidth="80">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="6">
+              <materialIcons:MaterialIcon Kind="Refresh" Classes="ManufacturingSecondaryIcon"/>
+              <TextBlock Classes="Caption" Text="Reset"/>
+            </StackPanel>
+          </Button>
+        </StackPanel>
+
+        <!-- Advanced Actions using StyleSystem - Compact -->
+        <Button Grid.Column="2"
+                Classes="Icon ManufacturingAdvanced"
+                Command="{Binding AdvancedEntryCommand}"
+                ToolTip.Tip="Open advanced inventory features"
+                Height="32"
+                Width="32">
+          <materialIcons:MaterialIcon Kind="Settings" Classes="ManufacturingLargeIcon"/>
+        </Button>
+      </Grid>
+    </Border>
+
     </Grid>
+  </Border>
 </UserControl>
 

@@ -1,0 +1,102 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="using:Material.Icons.Avalonia">
+
+<!--
+MTM Manufacturing Icons - Theme V2 Compatible
+=============================================
+Specialized Material Icon styling for manufacturing interfaces
+Consistent sizing and coloring for form fields and actions
+WCAG 2.1 AA compliant with proper contrast ratios
+-->
+
+<!-- Manufacturing Field Icon - Standard size for form field labels -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingFieldIcon">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Width" Value="14"/>
+    <Setter Property="Height" Value="14"/>
+</Style>
+
+<!-- Manufacturing Action Icon - For buttons and interactive elements -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingActionIcon">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Width" Value="18"/>
+    <Setter Property="Height" Value="18"/>
+</Style>
+
+<!-- Manufacturing Title Icon - For form headers and titles -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingTitleIcon">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Width" Value="20"/>
+    <Setter Property="Height" Value="20"/>
+</Style>
+
+<!-- Manufacturing Secondary Icon - For secondary actions and indicators -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingSecondaryIcon">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Width" Value="16"/>
+    <Setter Property="Height" Value="16"/>
+</Style>
+
+<!-- Manufacturing Large Icon - For advanced action buttons -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingLargeIcon">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Width" Value="22"/>
+    <Setter Property="Height" Value="22"/>
+</Style>
+
+<!-- Manufacturing Status Icon - For operation status indicators -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingStatusIcon">
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Width" Value="16"/>
+    <Setter Property="Height" Value="16"/>
+</Style>
+
+<!-- Manufacturing Status Icon - Operation 90 (Move) -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingStatusIcon.Operation90">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Manufacturing.Operation90}"/>
+</Style>
+
+<!-- Manufacturing Status Icon - Operation 100 (Receive) -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingStatusIcon.Operation100">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Manufacturing.Operation100}"/>
+</Style>
+
+<!-- Manufacturing Status Icon - Operation 110 (Ship) -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingStatusIcon.Operation110">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Manufacturing.Operation110}"/>
+</Style>
+
+<!-- Manufacturing Validation Icon - Success state -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingValidationIcon.Success">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Success}"/>
+    <Setter Property="Width" Value="12"/>
+    <Setter Property="Height" Value="12"/>
+</Style>
+
+<!-- Manufacturing Validation Icon - Error state -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingValidationIcon.Error">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Error}"/>
+    <Setter Property="Width" Value="12"/>
+    <Setter Property="Height" Value="12"/>
+</Style>
+
+<!-- Manufacturing Validation Icon - Warning state -->
+<Style Selector="materialIcons|MaterialIcon.ManufacturingValidationIcon.Warning">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Warning}"/>
+    <Setter Property="Width" Value="12"/>
+    <Setter Property="Height" Value="12"/>
+</Style>
+
+</Styles>

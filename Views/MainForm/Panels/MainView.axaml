@@ -20,7 +20,7 @@
              VerticalAlignment="Stretch"
              VerticalContentAlignment="Stretch"
              HorizontalContentAlignment="Stretch"
-             Background="{DynamicResource ThemeV2.Background.Canvas}">
+             Background="{DynamicResource ThemeV2.Background.Card}">
 
   <UserControl.Resources>
     <!-- Theme V2 Resources - StyleSystem provides all styling -->

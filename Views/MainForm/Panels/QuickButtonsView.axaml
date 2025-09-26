@@ -154,7 +154,7 @@
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="10*"/> <!-- Position -->
                       <ColumnDefinition Width="4"/>     <!-- Spacer -->
-                      <ColumnDefinition Width="40*"/>     <!-- Part Info -->
+                      <ColumnDefinition Width="100"/>     <!-- Part Info -->
                       <ColumnDefinition Width="4"/>     <!-- Spacer -->
                       <ColumnDefinition Width="25*"/>  <!-- QTY -->
                       <ColumnDefinition Width="4"/>     <!-- Spacer -->

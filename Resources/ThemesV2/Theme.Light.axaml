@@ -198,6 +198,15 @@ Following MTM architectural patterns and WCAG 2.1 AA compliance
         <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.Out" Color="{StaticResource ThemeV2.Color.Red.600}"/>
         <SolidColorBrush x:Key="ThemeV2.MTM.Inventory.Transfer" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
 
+        <!-- Manufacturing operation tokens -->
+        <SolidColorBrush x:Key="ThemeV2.Manufacturing.Operation90" Color="{StaticResource ThemeV2.Color.Blue.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Manufacturing.Operation100" Color="{StaticResource ThemeV2.Color.Green.600}"/>
+        <SolidColorBrush x:Key="ThemeV2.Manufacturing.Operation110" Color="{StaticResource ThemeV2.Color.Orange.600}"/>
+
+        <!-- Manufacturing field validation tokens -->
+        <SolidColorBrush x:Key="ThemeV2.Manufacturing.FieldValid" Color="{StaticResource ThemeV2.Color.Green.500}"/>
+        <SolidColorBrush x:Key="ThemeV2.Manufacturing.FieldInvalid" Color="{StaticResource ThemeV2.Color.Red.500}"/>
+
         <!-- Quick buttons - Enhanced contrast for Light theme -->
         <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background" Color="{StaticResource ThemeV2.Color.Blue.700}"/>
         <SolidColorBrush x:Key="ThemeV2.MTM.QuickButton.Background.Hover" Color="{StaticResource ThemeV2.Color.Blue.800}"/>
