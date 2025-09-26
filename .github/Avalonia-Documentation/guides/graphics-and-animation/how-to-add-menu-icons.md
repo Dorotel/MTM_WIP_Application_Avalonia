@@ -25,4 +25,3 @@ The `MenuItem.Icon` property is used to set an icon for a menu item. You can use
 ```
 
 In this example, the `MenuItem.Icon` property is set to an `Image` control that displays an image from the application resources. The `Source` property of the `Image` control is set to a resource URI that represents the image source. The `Width` and `Height` properties are set to control the size of the image.
-

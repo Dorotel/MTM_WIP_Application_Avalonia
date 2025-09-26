@@ -1,0 +1,204 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.SettingsForm"
+             x:Class="MTM_WIP_Application_Avalonia.Views.SettingsForm.ThemeSettingsView"
+             x:DataType="vm:ThemeSettingsViewModel">
+
+<!--
+Theme V2 Settings View
+=====================
+Demonstrates proper usage of Theme V2 system with semantic tokens
+Uses MVVM Community Toolkit patterns and MTM design system
+Following established MTM AXAML patterns to prevent AVLN2000 errors
+-->
+
+<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+    <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8">
+
+        <!-- Content Border with proper containment -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource ThemeV2.Background.Card}"
+                BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16"
+                Margin="0,0,0,8">
+
+            <StackPanel Spacing="16">
+
+                <!-- Header Section -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Theme Settings"
+                               Classes="Heading2"
+                               Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+                    <TextBlock Text="Configure application appearance and theme preferences"
+                               Classes="Body Secondary"
+                               Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
+                </StackPanel>
+
+                <!-- Current Theme Display -->
+                <Border Classes="Panel" Margin="0,8">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Current Theme"
+                                   Classes="Heading3"
+                                   Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+                        <TextBlock Text="{Binding CurrentThemeDisplay}"
+                                   Classes="Body"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource ThemeV2.Action.Primary}"/>
+                        <TextBlock Text="{Binding SelectedTheme, StringFormat='Selected: {0}'}"
+                                   Classes="Caption"
+                                   Foreground="{DynamicResource ThemeV2.Content.Tertiary}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Theme Selection -->
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Theme Selection"
+                               Classes="Heading3"
+                               Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+
+                    <ComboBox ItemsSource="{Binding AvailableThemes}"
+                              SelectedItem="{Binding SelectedTheme}"
+                              MinWidth="200"
+                              HorizontalAlignment="Left"
+                              Background="{DynamicResource ThemeV2.Input.Background}"
+                              BorderBrush="{DynamicResource ThemeV2.Input.Border}"/>
+
+                    <Button Content="Apply Theme"
+                            Command="{Binding ApplyThemeCommand}"
+                            IsEnabled="{Binding !IsLoading}"
+                            Background="{DynamicResource ThemeV2.Action.Primary}"
+                            Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                            HorizontalAlignment="Left"/>
+                </StackPanel>
+
+                <!-- System Theme Options -->
+                <Border Classes="Panel" Margin="0,8">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="System Theme Integration"
+                                   Classes="Heading3"
+                                   Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <CheckBox IsChecked="{Binding IsSystemThemeEnabled}"
+                                      Content="Follow system theme"
+                                      Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+                        </StackPanel>
+
+                        <TextBlock Text="When enabled, the application automatically switches between light and dark themes based on your system preference."
+                                   Classes="Caption"
+                                   TextWrapping="Wrap"
+                                   Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                                   MaxWidth="400"/>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="Toggle System Following"
+                                    Command="{Binding ToggleSystemThemeCommand}"
+                                    IsEnabled="{Binding !IsLoading}"
+                                    Classes="Secondary"/>
+
+                            <Button Content="Refresh System Theme"
+                                    Command="{Binding RefreshSystemThemeCommand}"
+                                    IsEnabled="{Binding !IsLoading}"
+                                    Classes="Secondary"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- User Preferences -->
+                <Border Classes="Panel" Margin="0,8">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="User Preferences"
+                                   Classes="Heading3"
+                                   Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4">
+                            <TextBlock Grid.Column="0"
+                                       Text="User ID:"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource ThemeV2.Content.Primary}"
+                                       Margin="0,0,8,0"/>
+
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding CurrentUserId}"
+                                     Watermark="Enter user ID"
+                                     Background="{DynamicResource ThemeV2.Input.Background}"
+                                     BorderBrush="{DynamicResource ThemeV2.Input.Border}"
+                                     MinWidth="200"/>
+
+                            <Button Grid.Column="2"
+                                    Content="Set User"
+                                    Command="{Binding SetCurrentUserCommand}"
+                                    CommandParameter="{Binding CurrentUserId}"
+                                    IsEnabled="{Binding !IsLoading}"
+                                    Classes="Secondary"
+                                    Margin="8,0,0,0"/>
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="Load User Theme"
+                                    Command="{Binding LoadUserThemeCommand}"
+                                    IsEnabled="{Binding !IsLoading}"
+                                    Classes="Secondary"/>
+
+                            <Button Content="Save User Theme"
+                                    Command="{Binding SaveUserThemeCommand}"
+                                    IsEnabled="{Binding !IsLoading}"
+                                    Classes="Secondary"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Debug Information -->
+                <Border Classes="Panel"
+                        Background="{DynamicResource ThemeV2.Background.Subtle}"
+                        Margin="0,8">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Theme Information"
+                                   Classes="Heading3"
+                                   Foreground="{DynamicResource ThemeV2.Content.Primary}"/>
+
+                        <Button Content="Show Theme Info"
+                                Command="{Binding GetThemeInfoCommand}"
+                                Classes="Secondary"/>
+
+                        <TextBlock Text="Check the application logs for detailed theme information"
+                                   Classes="Caption"
+                                   Foreground="{DynamicResource ThemeV2.Content.Tertiary}"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </Border>
+
+        <!-- Action buttons panel -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource ThemeV2.Background.Surface}"
+                BorderBrush="{DynamicResource ThemeV2.Border.Subtle}"
+                BorderThickness="0,1,0,0"
+                Padding="16,8">
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+
+                <!-- Loading indicator -->
+                <ProgressBar IsVisible="{Binding IsLoading}"
+                             IsIndeterminate="True"
+                             Width="100"
+                             Height="4"
+                             VerticalAlignment="Center"/>
+
+                <TextBlock Text="Loading..."
+                           IsVisible="{Binding IsLoading}"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                           Margin="8,0,16,0"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</ScrollViewer>
+
+</UserControl>

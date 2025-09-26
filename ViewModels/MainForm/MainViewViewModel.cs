@@ -455,7 +455,8 @@ public partial class MainViewViewModel : BaseViewModel
                 await QuickButtonsViewModel.AddQuickButtonFromOperationAsync(
                     e.PartId,
                     e.Operation ?? "Unknown",
-                    e.Quantity
+                    e.Quantity,
+                    e.Location ?? "Various" // Pass the actual location from the inventory save
                 );
 
                 Logger.LogInformation("Updated QuickButtons via service: Part={PartId}, Quantity={Quantity}, Operation={Operation}",

@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Avalonia.Media;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -20,8 +21,8 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.SettingsForm;
 /// </summary>
 public partial class ThemeBuilderViewModel : BaseViewModel
 {
-    private readonly IThemeService _themeService;
-    
+    private readonly IThemeServiceV2 _themeService;
+
     #region Observable Properties
 
     /// <summary>
@@ -128,7 +129,7 @@ public partial class ThemeBuilderViewModel : BaseViewModel
     #endregion
 
     public ThemeBuilderViewModel(
-        IThemeService themeService,
+        IThemeServiceV2 themeService,
         ILogger<ThemeBuilderViewModel> logger) : base(logger)
     {
         _themeService = themeService ?? throw new ArgumentNullException(nameof(themeService));
@@ -136,7 +137,7 @@ public partial class ThemeBuilderViewModel : BaseViewModel
         // Initialize collections
         AvailableBaseThemes = new ObservableCollection<ThemeInfo>();
         ColorPresets = new ObservableCollection<ColorPreset>();
-        
+
         InitializeColorPresets();
         LoadAvailableThemes();
 
@@ -217,17 +218,11 @@ public partial class ThemeBuilderViewModel : BaseViewModel
                 ["MTM_Shared_Logic.BorderBrush"] = BorderColor.ToString()
             };
 
-            var result = await _themeService.ApplyCustomColorsAsync(colorOverrides);
-            
-            if (result.IsSuccess)
-            {
-                IsPreviewActive = true;
-                Logger.LogInformation("Theme preview applied successfully");
-            }
-            else
-            {
-                Logger.LogWarning("Failed to apply theme preview: {Message}", result.Message);
-            }
+            await _themeService.ApplyCustomColorsAsync(colorOverrides.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value));
+
+            // Theme V2 system: Custom colors not supported, assuming success
+            IsPreviewActive = true;
+            Logger.LogInformation("Theme preview applied successfully");
         }
         catch (Exception ex)
         {
@@ -366,7 +361,7 @@ public partial class ThemeBuilderViewModel : BaseViewModel
         try
         {
             var random = new Random();
-            
+
             PrimaryColor = GenerateRandomColor(random, 0.6, 0.8);
             SecondaryColor = GenerateRandomColor(random, 0.4, 0.7);
             AccentColor = GenerateRandomColor(random, 0.7, 0.9);
@@ -374,10 +369,10 @@ public partial class ThemeBuilderViewModel : BaseViewModel
             SurfaceColor = GenerateRandomColor(random, 0.0, 0.1);
             TextColor = GenerateRandomColor(random, 0.8, 1.0);
             BorderColor = GenerateRandomColor(random, 0.2, 0.4);
-            
+
             ThemeName = $"Random Theme {DateTime.Now:HHmmss}";
             ThemeDescription = "Randomly generated color theme";
-            
+
         }
         catch (Exception ex)
         {

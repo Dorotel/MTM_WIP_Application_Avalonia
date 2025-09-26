@@ -165,7 +165,7 @@ public class StartupValidationService : IStartupValidationService
             // Define optional services that should be available but are not critical
             var optionalServices = new[]
             {
-                typeof(MTM_WIP_Application_Avalonia.Services.IThemeService),
+                typeof(MTM_WIP_Application_Avalonia.Services.Interfaces.IThemeServiceV2),
                 typeof(MTM_WIP_Application_Avalonia.Services.ISettingsService),
                 typeof(MTM_WIP_Application_Avalonia.Services.IDatabaseService)
             };

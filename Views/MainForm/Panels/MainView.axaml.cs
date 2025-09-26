@@ -19,6 +19,7 @@ namespace MTM_WIP_Application_Avalonia.Views
     {
         private bool _isInitialized = false;
         private MainViewViewModel? _viewModel;
+        private bool _isThemeDropdownVisible;
 
         /// <summary>
         /// Static flag to track if a tab switch is currently in progress
@@ -62,14 +63,14 @@ namespace MTM_WIP_Application_Avalonia.Views
                 try
                 {
                     // Find the ThemeQuickSwitcher control
-                    var themeQuickSwitcher = this.FindControl<Views.ThemeQuickSwitcher>("ThemeQuickSwitcher") ??
-                                           FindControlInVisualTree<Views.ThemeQuickSwitcher>(this, "ThemeQuickSwitcher");
+                    var themeQuickSwitcher = this.FindControl<Views.MainForm.Overlays.ThemeQuickSwitcher>("ThemeQuickSwitcher") ??
+                                           FindControlInVisualTree<Views.MainForm.Overlays.ThemeQuickSwitcher>(this, "ThemeQuickSwitcher");
 
                     if (themeQuickSwitcher != null)
                     {
-                        // Subscribe to the theme editor request event
-                        themeQuickSwitcher.ThemeEditorRequested += OnThemeEditorRequested;
-                        System.Diagnostics.Debug.WriteLine("Successfully subscribed to ThemeQuickSwitcher.ThemeEditorRequested event");
+                        // Subscribe to the dropdown request event
+                        themeQuickSwitcher.DropdownRequested += OnThemeDropdownRequested;
+                        System.Diagnostics.Debug.WriteLine("Successfully subscribed to ThemeQuickSwitcher.DropdownRequested event");
                     }
                     else
                     {
@@ -121,6 +122,111 @@ namespace MTM_WIP_Application_Avalonia.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error handling theme editor request: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles theme dropdown request by toggling the ThemeDropdownOverlay visibility
+        /// </summary>
+        private void OnThemeDropdownRequested(object? sender, EventArgs e)
+        {
+            try
+            {
+                // Find the ThemeDropdownOverlay control
+                var themeDropdownOverlay = this.FindControl<Views.MainForm.Overlays.ThemeDropdownOverlay>("ThemeDropdownOverlay");
+
+                if (themeDropdownOverlay != null)
+                {
+                    // Toggle visibility - if visible, hide it; if hidden, show it
+                    if (_isThemeDropdownVisible)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Theme dropdown already visible - hiding overlay");
+                        HideThemeDropdown(themeDropdownOverlay);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("Theme dropdown requested - showing overlay");
+                        ShowThemeDropdown(themeDropdownOverlay);
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("ERROR: ThemeDropdownOverlay control not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling theme dropdown request: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Shows the theme dropdown overlay
+        /// </summary>
+        private void ShowThemeDropdown(Views.MainForm.Overlays.ThemeDropdownOverlay themeDropdownOverlay)
+        {
+            try
+            {
+                // Show the overlay
+                themeDropdownOverlay.IsVisible = true;
+                _isThemeDropdownVisible = true;
+                System.Diagnostics.Debug.WriteLine("ThemeDropdownOverlay shown successfully");
+
+                // Subscribe to close event if not already subscribed
+                themeDropdownOverlay.CloseRequested -= OnThemeDropdownCloseRequested; // Prevent double subscription
+                themeDropdownOverlay.CloseRequested += OnThemeDropdownCloseRequested;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error showing theme dropdown: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Hides the theme dropdown overlay
+        /// </summary>
+        private void HideThemeDropdown(Views.MainForm.Overlays.ThemeDropdownOverlay themeDropdownOverlay)
+        {
+            try
+            {
+                // Hide the overlay
+                themeDropdownOverlay.IsVisible = false;
+                _isThemeDropdownVisible = false;
+                System.Diagnostics.Debug.WriteLine("ThemeDropdownOverlay hidden successfully");
+
+                // Unsubscribe from close event to prevent memory leaks
+                themeDropdownOverlay.CloseRequested -= OnThemeDropdownCloseRequested;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error hiding theme dropdown: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles theme dropdown close request by hiding the overlay
+        /// </summary>
+        private void OnThemeDropdownCloseRequested(object? sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Theme dropdown close requested - hiding overlay");
+
+                // Find the ThemeDropdownOverlay control
+                var themeDropdownOverlay = this.FindControl<Views.MainForm.Overlays.ThemeDropdownOverlay>("ThemeDropdownOverlay");
+
+                if (themeDropdownOverlay != null)
+                {
+                    HideThemeDropdown(themeDropdownOverlay);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("ERROR: ThemeDropdownOverlay control not found for closing");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling theme dropdown close request: {ex.Message}");
             }
         }
 

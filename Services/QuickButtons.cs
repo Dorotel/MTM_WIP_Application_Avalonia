@@ -16,7 +16,7 @@ namespace MTM_WIP_Application_Avalonia.Services;
 
 /// <summary>
 /// Quick buttons management service interface.
-/// Provides functionality for managing user's quick action buttons including 
+/// Provides functionality for managing user's quick action buttons including
 /// loading, saving, reordering, and synchronizing with transaction history.
 /// </summary>
 public interface IQuickButtonsService
@@ -30,21 +30,22 @@ public interface IQuickButtonsService
     Task<bool> AddQuickButtonFromOperationAsync(string userId, string partId, string operation, int quantity, string? notes = null);
     Task<bool> AddTransactionToLast10Async(string userId, string partId, string operation, int quantity);
     Task<bool> AddTransactionToLast10Async(string userId, string partId, string operation, int quantity, string transactionType);
+    Task<bool> AddTransactionToLast10Async(string userId, string partId, string operation, int quantity, string transactionType, string location);
     Task<bool> CreateQuickButtonAsync(string partId, string operation, string location, int quantity, string? notes = null);
     Task<bool> ExportQuickButtonsAsync(string userId, string fileName = "");
     Task<bool> ImportQuickButtonsAsync(string userId, string filePath);
     Task<List<string>> GetAvailableExportFilesAsync();
-    
+
     /// <summary>
     /// Enhanced export with file selection dialog
     /// </summary>
     Task ExportQuickButtonsWithSelectionAsync(string userId, Control sourceControl);
-    
+
     /// <summary>
     /// Enhanced import with file selection dialog
     /// </summary>
     Task ImportQuickButtonsWithSelectionAsync(string userId, Control sourceControl);
-    
+
     List<QuickButtonData> GetQuickButtons();
     event EventHandler<QuickButtonsChangedEventArgs>? QuickButtonsChanged;
     event EventHandler<SessionTransactionEventArgs>? SessionTransactionAdded;
@@ -62,13 +63,13 @@ public interface IProgressService : INotifyPropertyChanged
     int ProgressPercentage { get; }
     string StatusMessage { get; }
     bool CanCancel { get; }
-    
+
     void StartOperation(string description, bool canCancel = false);
     void UpdateProgress(int percentage, string? statusMessage = null);
     void CompleteOperation(string? finalMessage = null);
     void CancelOperation();
     void ReportError(string errorMessage);
-    
+
     event EventHandler<ProgressChangedEventArgs>? ProgressChanged;
     event EventHandler<OperationCompletedEventArgs>? OperationCompleted;
     event EventHandler? OperationCancelled;
@@ -170,10 +171,10 @@ public class QuickButtonsService : IQuickButtonsService
                 else
                 {
                     // Status -1 means error
-                    _logger.LogWarning("qb_quickbuttons_Get_ByUser returned error status {Status}: {Message}", 
+                    _logger.LogWarning("qb_quickbuttons_Get_ByUser returned error status {Status}: {Message}",
                         result.Status, result.Message);
                 }
-                
+
                 _logger.LogInformation("Loaded {Count} quick buttons for user {UserId}", quickButtons.Count, userId);
                 return quickButtons;
             }
@@ -188,7 +189,7 @@ public class QuickButtonsService : IQuickButtonsService
         {
             _logger.LogError(ex, "Failed to load quick buttons for user: {UserId}", userId);
             await ErrorHandling.HandleErrorAsync(ex, nameof(LoadUserQuickButtonsAsync), userId);
-            
+
             // Return empty list instead of sample data for production
             return new List<QuickButtonData>();
         }
@@ -241,12 +242,12 @@ public class QuickButtonsService : IQuickButtonsService
                 for (int i = 0; i < result.Data.Rows.Count; i++)
                 {
                     var row = result.Data.Rows[i];
-                    
+
                     // Log the row data for debugging
-                    _logger.LogDebug("Row {Index}: PartID={PartID}, Operation={Operation}, Quantity={Quantity}", 
-                        i, SafeGetColumnValue(row, "PartID"), SafeGetColumnValue(row, "Operation"), 
+                    _logger.LogDebug("Row {Index}: PartID={PartID}, Operation={Operation}, Quantity={Quantity}",
+                        i, SafeGetColumnValue(row, "PartID"), SafeGetColumnValue(row, "Operation"),
                         SafeGetColumnValue(row, "Quantity"));
-                    
+
                     transactions.Add(new QuickButtonData
                     {
                         Id = i + 1, // Use row index + 1 as ID for transactions
@@ -275,7 +276,7 @@ public class QuickButtonsService : IQuickButtonsService
         {
             _logger.LogError(ex, "Failed to load recent transactions for user: {UserId}", userId);
             await ErrorHandling.HandleErrorAsync(ex, nameof(LoadLast10TransactionsAsync), userId);
-            
+
             // Return empty list instead of sample data for production
             return new List<QuickButtonData>();
         }
@@ -305,7 +306,7 @@ public class QuickButtonsService : IQuickButtonsService
         {
             if (!row.Table.Columns.Contains(columnName))
                 return defaultValue;
-                
+
             var value = row[columnName];
             return value == DBNull.Value ? defaultValue : value?.ToString() ?? defaultValue;
         }
@@ -324,11 +325,11 @@ public class QuickButtonsService : IQuickButtonsService
         {
             if (!row.Table.Columns.Contains(columnName))
                 return defaultValue;
-                
+
             var value = row[columnName];
             if (value == DBNull.Value || value == null)
                 return defaultValue;
-                
+
             return Convert.ToInt32(value);
         }
         catch
@@ -346,11 +347,11 @@ public class QuickButtonsService : IQuickButtonsService
         {
             if (!row.Table.Columns.Contains(columnName))
                 return null;
-                
+
             var value = row[columnName];
             if (value == DBNull.Value || value == null)
                 return null;
-                
+
             return Convert.ToDateTime(value);
         }
         catch
@@ -372,33 +373,33 @@ public class QuickButtonsService : IQuickButtonsService
 
             if (string.IsNullOrWhiteSpace(quickButton.UserId))
             {
-                _logger.LogError("QuickButton UserId is null or empty - cannot save. Position: {Position}, PartId: {PartId}", 
+                _logger.LogError("QuickButton UserId is null or empty - cannot save. Position: {Position}, PartId: {PartId}",
                     quickButton.Position, quickButton.PartId);
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(quickButton.PartId))
             {
-                _logger.LogError("QuickButton PartId is null or empty - cannot save. UserId: {UserId}, Position: {Position}", 
+                _logger.LogError("QuickButton PartId is null or empty - cannot save. UserId: {UserId}, Position: {Position}",
                     quickButton.UserId, quickButton.Position);
                 return false;
             }
 
             if (quickButton.Position < 1 || quickButton.Position > 10)
             {
-                _logger.LogError("QuickButton Position {Position} is out of range (1-10) - cannot save. PartId: {PartId}", 
+                _logger.LogError("QuickButton Position {Position} is out of range (1-10) - cannot save. PartId: {PartId}",
                     quickButton.Position, quickButton.PartId);
                 return false;
             }
 
             if (quickButton.Quantity <= 0)
             {
-                _logger.LogError("QuickButton Quantity {Quantity} must be > 0 - cannot save. PartId: {PartId}, Position: {Position}", 
+                _logger.LogError("QuickButton Quantity {Quantity} must be > 0 - cannot save. PartId: {PartId}, Position: {Position}",
                     quickButton.Quantity, quickButton.PartId, quickButton.Position);
                 return false;
             }
 
-            _logger.LogDebug("Saving quick button: Position {Position}, Part {PartId}, User {UserId}", 
+            _logger.LogDebug("Saving quick button: Position {Position}, Part {PartId}, User {UserId}",
                 quickButton.Position, quickButton.PartId, quickButton.UserId);
 
             var parameters = new Dictionary<string, object>
@@ -423,14 +424,14 @@ public class QuickButtonsService : IQuickButtonsService
             // For Save operations, we expect Status 1 (success with row affected)
             if (result.Status >= 0)
             {
-                _logger.LogInformation("Quick button saved successfully: {PartId} at position {Position}", 
+                _logger.LogInformation("Quick button saved successfully: {PartId} at position {Position}",
                     quickButton.PartId, quickButton.Position);
 
                 return true;
             }
             else
             {
-                _logger.LogError("Failed to save quick button: {PartId}, Status: {Status}, Error: {Error}", 
+                _logger.LogError("Failed to save quick button: {PartId}, Status: {Status}, Error: {Error}",
                     quickButton.PartId, result.Status, result.Message);
                 return false;
             }
@@ -438,7 +439,7 @@ public class QuickButtonsService : IQuickButtonsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to save quick button: {PartId}", quickButton?.PartId);
-            await ErrorHandling.HandleErrorAsync(ex, nameof(SaveQuickButtonAsync), quickButton?.UserId ?? "unknown", 
+            await ErrorHandling.HandleErrorAsync(ex, nameof(SaveQuickButtonAsync), quickButton?.UserId ?? "unknown",
                 new Dictionary<string, object> { ["QuickButton"] = quickButton ?? new object() });
             return false;
         }
@@ -477,9 +478,9 @@ public class QuickButtonsService : IQuickButtonsService
                 _logger.LogInformation("Quick button removed successfully: ID {ButtonId}", buttonId);
 
                 // Notify subscribers of changes
-                QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs 
-                { 
-                    UserId = userId, 
+                QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs
+                {
+                    UserId = userId,
                     ChangeType = QuickButtonChangeType.Removed
                 });
 
@@ -531,9 +532,9 @@ public class QuickButtonsService : IQuickButtonsService
                 _logger.LogInformation("All quick buttons cleared for user: {UserId}", userId);
 
                 // Notify subscribers of changes
-                QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs 
-                { 
-                    UserId = userId, 
+                QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs
+                {
+                    UserId = userId,
                     ChangeType = QuickButtonChangeType.Cleared
                 });
 
@@ -557,12 +558,12 @@ public class QuickButtonsService : IQuickButtonsService
     {
         try
         {
-            _logger.LogDebug("Reordering {Count} quick buttons for user: {UserId}", 
+            _logger.LogDebug("Reordering {Count} quick buttons for user: {UserId}",
                 reorderedButtons.Count, userId);
 
             // For reordering, we'll call the save procedure for each button with its new position
             bool allSuccessful = true;
-            
+
             foreach (var button in reorderedButtons)
             {
                 // Enforce bounds locally before hitting database
@@ -604,15 +605,15 @@ public class QuickButtonsService : IQuickButtonsService
                     _logger.LogError("Failed to reorder button at position {Position}: {Error}", button.Position, result.Message);
                 }
             }
-            
+
             if (allSuccessful)
             {
                 _logger.LogInformation("Quick buttons reordered successfully for user: {UserId}", userId);
 
                 // Notify subscribers of changes
-                QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs 
-                { 
-                    UserId = userId, 
+                QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs
+                {
+                    UserId = userId,
                     ChangeType = QuickButtonChangeType.Reordered
                 });
             }
@@ -643,9 +644,19 @@ public class QuickButtonsService : IQuickButtonsService
     /// </summary>
     public async Task<bool> AddTransactionToLast10Async(string userId, string partId, string operation, int quantity, string transactionType)
     {
+        // Default to "Various" for backward compatibility
+        return await AddTransactionToLast10Async(userId, partId, operation, quantity, transactionType, "Various");
+    }
+
+    /// <summary>
+    /// Adds a transaction to the user's last 10 transactions for quick button creation.
+    /// Called automatically when inventory operations are completed with specified transaction type and location.
+    /// </summary>
+    public async Task<bool> AddTransactionToLast10Async(string userId, string partId, string operation, int quantity, string transactionType, string location)
+    {
         try
         {
-            _logger.LogDebug("Adding transaction to last 10 for user: {UserId}, Part: {PartId}, Operation: {Operation}, Quantity: {Quantity}", 
+            _logger.LogDebug("Adding transaction to last 10 for user: {UserId}, Part: {PartId}, Operation: {Operation}, Quantity: {Quantity}",
                 userId, partId, operation, quantity);
 
             var parameters = new Dictionary<string, object>
@@ -669,16 +680,16 @@ public class QuickButtonsService : IQuickButtonsService
                 parameters
             );
 
-            // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR  
+            // For MySQL stored procedures: Status >= 0 means SUCCESS, Status < 0 means ERROR
             // MTM Status Pattern: -1=Error, 0=Success (no data), 1=Success (with data)
             if (result.Status >= 0)
             {
-                _logger.LogInformation("Successfully added transaction to last 10 for user {UserId}: {PartId}/{Operation}/{Quantity}", 
+                _logger.LogInformation("Successfully added transaction to last 10 for user {UserId}: {PartId}/{Operation}/{Quantity}",
                     userId, partId, operation, quantity);
-                
+
                 // Now add this as a quick button at position 1, shifting others down
                 await AddQuickButtonFromOperationAsync(userId, partId, operation, quantity);
-                
+
                 // Raise event to notify UI that quick buttons need to be refreshed
                 QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs
                 {
@@ -699,7 +710,7 @@ public class QuickButtonsService : IQuickButtonsService
                     UserId = userId,
                     PartId = partId,
                     Operation = operation,
-                    Location = "Various", // For removal operations, location is not specific
+                    Location = string.IsNullOrEmpty(location) ? "Various" : location, // Use actual location or "Various" as fallback
                     Quantity = quantity,
                     TransactionType = transactionType,
                     Notes = $"Transaction logged via {transactionType} operation"
@@ -725,31 +736,31 @@ public class QuickButtonsService : IQuickButtonsService
     {
         try
         {
-            _logger.LogDebug("Adding quick button from operation: {PartId}, {Operation}, {Quantity}", 
+            _logger.LogDebug("Adding quick button from operation: {PartId}, {Operation}, {Quantity}",
                 partId, operation, quantity);
 
             // Load current quick buttons for the user
             var existingButtons = await LoadUserQuickButtonsAsync(userId);
-            
+
             // Check if this exact part+operation combo already exists
-            var duplicateButton = existingButtons.FirstOrDefault(b => 
-                string.Equals(b.PartId, partId, StringComparison.OrdinalIgnoreCase) && 
+            var duplicateButton = existingButtons.FirstOrDefault(b =>
+                string.Equals(b.PartId, partId, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(b.Operation, operation, StringComparison.OrdinalIgnoreCase));
-            
+
             if (duplicateButton != null)
             {
                 // Remove the duplicate first
-                _logger.LogDebug("Removing duplicate button for {PartId}/{Operation} at position {Position}", 
+                _logger.LogDebug("Removing duplicate button for {PartId}/{Operation} at position {Position}",
                     partId, operation, duplicateButton.Position);
                 await RemoveQuickButtonAsync(duplicateButton.Position, userId);
-                
+
                 // Reload buttons after removal
                 existingButtons = await LoadUserQuickButtonsAsync(userId);
             }
-            
+
             // Clear all existing buttons for this user to rebuild properly
             await ClearAllQuickButtonsAsync(userId);
-            
+
             // Create new button for position 1
             var newButton = new QuickButtonData
             {
@@ -762,7 +773,7 @@ public class QuickButtonsService : IQuickButtonsService
                 CreatedDate = DateTime.Now,
                 LastUsedDate = DateTime.Now
             };
-            
+
             // Save the new button at position 1
             var saveResult = await SaveQuickButtonAsync(newButton);
             if (!saveResult)
@@ -770,29 +781,29 @@ public class QuickButtonsService : IQuickButtonsService
                 _logger.LogError("Failed to save new quick button at position 1: {PartId}/{Operation}", partId, operation);
                 return false;
             }
-            
+
             // Add existing buttons shifted down, keeping only the most recent 9
             var recentButtons = existingButtons
                 .OrderBy(b => b.Position)
                 .Take(9)
                 .ToList();
-                
+
             for (int i = 0; i < recentButtons.Count; i++)
             {
                 var button = recentButtons[i];
                 button.Position = i + 2; // Start from position 2
-                
+
                 var shiftResult = await SaveQuickButtonAsync(button);
                 if (!shiftResult)
                 {
-                    _logger.LogError("Failed to save shifted button at position {Position}: {PartId}", 
+                    _logger.LogError("Failed to save shifted button at position {Position}: {PartId}",
                         button.Position, button.PartId);
                 }
             }
-            
-            _logger.LogInformation("Successfully added quick button at position 1: {PartId}/{Operation}/{Quantity}", 
+
+            _logger.LogInformation("Successfully added quick button at position 1: {PartId}/{Operation}/{Quantity}",
                 partId, operation, quantity);
-                
+
             // Raise event to notify UI (this will be called again but it's important for immediate UI update)
             QuickButtonsChanged?.Invoke(this, new QuickButtonsChangedEventArgs
             {
@@ -800,7 +811,7 @@ public class QuickButtonsService : IQuickButtonsService
                 ChangeType = QuickButtonChangeType.Added,
                 AffectedButton = newButton
             });
-            
+
             return true;
         }
         catch (Exception ex)
@@ -815,7 +826,7 @@ public class QuickButtonsService : IQuickButtonsService
     {
         var operations = new[] { "90", "100", "110", "120", "130" };
         var parts = new[] { "PART001", "PART002", "PART003", "PART004", "PART005" };
-        
+
         return Enumerable.Range(1, 7).Select(i => new QuickButtonData
         {
             Id = i,
@@ -834,7 +845,7 @@ public class QuickButtonsService : IQuickButtonsService
     {
         var operations = new[] { "90", "100", "110", "120", "130" };
         var parts = new[] { "24733444-PKG", "24677611", "24733405-PKG", "24733403-PKG", "24733491-PKG" };
-        
+
         return Enumerable.Range(1, 10).Select(i => new QuickButtonData
         {
             Id = i + 100,
@@ -908,7 +919,7 @@ public class QuickButtonsService : IQuickButtonsService
             var jsonContent = JsonSerializer.Serialize(exportData, options);
             await File.WriteAllTextAsync(fullPath, jsonContent);
 
-            _logger.LogInformation("Successfully exported {Count} quick buttons to: {FilePath}", 
+            _logger.LogInformation("Successfully exported {Count} quick buttons to: {FilePath}",
                 quickButtons.Count, fullPath);
 
             return true;
@@ -1022,7 +1033,7 @@ public class QuickButtonsService : IQuickButtonsService
         try
         {
             var exportPath = _filePathService.GetQuickButtonsExportPath();
-            
+
             if (!Directory.Exists(exportPath))
             {
                 return new List<string>();
@@ -1035,7 +1046,7 @@ public class QuickButtonsService : IQuickButtonsService
                 .ToList();
 
             _logger.LogDebug("Found {Count} export files in {Path}", files.Count, exportPath);
-            
+
             await Task.CompletedTask; // Make this properly async
             return files;
         }
@@ -1115,7 +1126,7 @@ public class QuickButtonsService : IQuickButtonsService
                 {
                     // Use the custom path for export
                     var success = await ExportToSpecificPathAsync(userId, selectedPath);
-                    
+
                     if (success)
                     {
                         // Success - trigger success overlay if available
@@ -1196,7 +1207,7 @@ public class QuickButtonsService : IQuickButtonsService
 
                     // Perform the import
                     var success = await ImportQuickButtonsAsync(userId, selectedPath);
-                    
+
                     if (success)
                     {
                         // Success - trigger success overlay if available
@@ -1295,7 +1306,7 @@ public class QuickButtonsService : IQuickButtonsService
             var jsonContent = JsonSerializer.Serialize(exportData, options);
             await File.WriteAllTextAsync(filePath, jsonContent);
 
-            _logger.LogInformation("Successfully exported {Count} quick buttons to: {FilePath}", 
+            _logger.LogInformation("Successfully exported {Count} quick buttons to: {FilePath}",
                 quickButtons.Count, filePath);
 
             return true;
@@ -1441,7 +1452,7 @@ public class ProgressService : IProgressService
                 IsOperationInProgress = true;
             }
 
-            _logger.LogInformation("Operation started: {Description} (Cancellable: {CanCancel})", 
+            _logger.LogInformation("Operation started: {Description} (Cancellable: {CanCancel})",
                 description, canCancel);
         }
         catch (Exception ex)
@@ -1517,7 +1528,7 @@ public class ProgressService : IProgressService
             {
                 if (!CanCancel || !IsOperationInProgress)
                 {
-                    _logger.LogWarning("Cannot cancel operation: CanCancel={CanCancel}, InProgress={InProgress}", 
+                    _logger.LogWarning("Cannot cancel operation: CanCancel={CanCancel}, InProgress={InProgress}",
                         CanCancel, IsOperationInProgress);
                     return;
                 }

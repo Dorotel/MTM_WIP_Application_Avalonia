@@ -1,0 +1,97 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+<!--
+MTM ComboBox Styles - Theme V2 Compatible
+========================================
+ComboBox dropdown styling for selections
+Uses Theme V2 semantic tokens for consistent theming
+WCAG 2.1 AA compliant with proper accessibility support
+-->
+
+<!-- Standard ComboBox -->
+<Style Selector="ComboBox.InputField">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Input.Content}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="ComboBox.InputField:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border.Hover}"/>
+</Style>
+
+<Style Selector="ComboBox.InputField:focus">
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border.Focus}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+</Style>
+
+<Style Selector="ComboBox.InputField:disabled">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background.Disabled}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Disabled}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Disabled}"/>
+    <Setter Property="Opacity" Value="{StaticResource ThemeV2.Opacity.Disabled}"/>
+</Style>
+
+<!-- ComboBox dropdown styling -->
+<Style Selector="ComboBox.InputField /template/ Popup">
+    <Setter Property="Placement" Value="Bottom"/>
+    <Setter Property="MaxHeight" Value="200"/>
+</Style>
+
+<Style Selector="ComboBox.InputField /template/ Border#DropdownBorder">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Strong}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+</Style>
+
+<!-- ComboBox items styling -->
+<Style Selector="ComboBoxItem">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="Padding" Value="12,8"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="ComboBoxItem:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
+</Style>
+
+<Style Selector="ComboBoxItem:selected">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+</Style>
+
+<Style Selector="ComboBoxItem:selected:focus">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+</Style>
+
+<!-- Large ComboBox variant -->
+<Style Selector="ComboBox.InputField.Large">
+    <Setter Property="Padding" Value="12,8"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Heading6.FontSize}"/>
+</Style>
+
+<!-- Small ComboBox variant -->
+<Style Selector="ComboBox.InputField.Small">
+    <Setter Property="Padding" Value="6,4"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+</Style>
+
+<!-- Error state -->
+<Style Selector="ComboBox.InputField.Error">
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border.Error}"/>
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Error.Background}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+</Style>
+
+</Styles>

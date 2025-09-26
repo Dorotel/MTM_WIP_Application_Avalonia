@@ -16,4 +16,3 @@ This technique uses a complex **binding path** to locate the parent view model f
 TO DO
 
 <img src={SplitViewExpanderScreenshot} alt=""/>
-

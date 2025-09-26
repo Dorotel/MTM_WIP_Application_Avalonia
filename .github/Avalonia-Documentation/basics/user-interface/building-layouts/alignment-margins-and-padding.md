@@ -227,4 +227,3 @@ The following example demonstrates each of the concepts that are detailed in thi
 When compiled, the preceding application yields a UI that looks like the following illustration. The effects of the various property values are evident in the spacing between elements, and significant property values for elements in each column are shown within `TextBlock` elements.
 
 <img src={LayoutMarginsPaddingAlignmentComplexAnnotatedScreenshot} alt="Several positioning properties in one application"/>
-

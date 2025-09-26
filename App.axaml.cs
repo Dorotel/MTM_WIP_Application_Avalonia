@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.ViewModels;
 using MTM_WIP_Application_Avalonia.Views;
 using CommunityToolkit.Mvvm.Input;
@@ -41,13 +42,13 @@ public partial class App : Application
         try
         {
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] App.Initialize() started");
-            
+
             // Set up global exception handlers for emergency shutdown
             SetupGlobalExceptionHandlers();
-            
+
             // Load XAML with proper error handling
             AvaloniaXamlLoader.Load(this);
-            
+
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] App.Initialize() completed - XAML loaded successfully");
         }
         catch (Exception ex)
@@ -56,7 +57,7 @@ public partial class App : Application
             var errorMessage = $"Failed to initialize application XAML resources: {ex.Message}";
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] App.Initialize() failed: {errorMessage}");
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Stack trace: {ex.StackTrace}");
-            
+
             // Ensure the error is properly propagated
             throw new InvalidOperationException(errorMessage, ex);
         }
@@ -84,7 +85,7 @@ public partial class App : Application
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Initializing application services...");
 
             // Initialize configuration with proper null checking
-            var configuration = Program.GetService<IConfiguration>() 
+            var configuration = Program.GetService<IConfiguration>()
                 ?? throw new InvalidOperationException("Configuration service could not be resolved");
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Configuration service obtained");
 
@@ -94,7 +95,7 @@ public partial class App : Application
 
             // Initialize logging infrastructure with proper error handling
             _logger = Program.GetService<ILogger<App>>();
-            var loggerFactory = Program.GetService<ILoggerFactory>() 
+            var loggerFactory = Program.GetService<ILoggerFactory>()
                 ?? throw new InvalidOperationException("LoggerFactory service could not be resolved");
             var generalLogger = loggerFactory.CreateLogger("Helper_Database_StoredProcedure");
             Helper_Database_StoredProcedure.SetLogger(generalLogger);
@@ -114,7 +115,7 @@ public partial class App : Application
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Creating MainWindow with dependency injection...");
 
                 // Resolve MainWindow ViewModel with proper error handling
-                var mainWindowViewModel = Program.GetService<MainWindowViewModel>() 
+                var mainWindowViewModel = Program.GetService<MainWindowViewModel>()
                     ?? throw new InvalidOperationException("MainWindowViewModel service could not be resolved");
                 _logger?.LogInformation("MainWindowViewModel service resolved successfully");
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] MainWindowViewModel resolved");
@@ -153,17 +154,24 @@ public partial class App : Application
                     // Initialize theme service after UI is ready
                     try
                     {
-                        var themeService = Program.GetService<IThemeService>();
-                        var themeInitResult = await themeService.InitializeThemeSystemAsync();
-                        if (themeInitResult.IsSuccess)
+                        var themeService = Program.GetService<IThemeServiceV2>();
+                        await themeService.InitializeThemeSystemAsync();
+                        // Legacy method call completed successfully
+                        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization successful");
+                        _logger?.LogInformation("Deferred theme initialization successful");
+
+                        // Initialize Theme V2 service for new semantic token system
+                        try
                         {
-                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization successful: {themeInitResult.Message}");
-                            _logger?.LogInformation("Deferred theme initialization successful: {Message}", themeInitResult.Message);
+                            var themeServiceV2 = Program.GetService<IThemeServiceV2>();
+                            await themeServiceV2.InitializeAsync();
+                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Theme V2 service initialization successful");
+                            _logger?.LogInformation("Theme V2 service initialization successful");
                         }
-                        else
+                        catch (Exception themeV2Ex)
                         {
-                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Deferred theme initialization failed: {themeInitResult.Message}");
-                            _logger?.LogWarning("Deferred theme initialization failed: {Message}", themeInitResult.Message);
+                            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Theme V2 service initialization failed: {themeV2Ex.Message}");
+                            _logger?.LogWarning(themeV2Ex, "Theme V2 service initialization failed");
                         }
                     }
                     catch (Exception themeEx)
@@ -301,7 +309,7 @@ public partial class App : Application
             catch (Exception loadEx)
             {
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Could not load MTM Light theme resources: {loadEx.Message}");
-                
+
                 // Fallback: Manually set MTM Light colors
                 ForceMTMLightColors();
             }
@@ -367,7 +375,7 @@ public partial class App : Application
                 ["MTM_Shared_Logic.PrimaryAction"] = "#B8860B",      // Dark goldenrod
                 ["MTM_Shared_Logic.SecondaryAction"] = "#DAA520",    // Goldenrod
                 ["MTM_Shared_Logic.OverlayTextBrush"] = "#FFFFFF",   // White text
-                
+
                 // Background and layout colors
                 ["MTM_Shared_Logic.SidebarGradientBrush"] = "#B8860B", // Sidebar gradient
                 ["MTM_Shared_Logic.FooterBackgroundBrush"] = "#8C7300", // Footer background
@@ -375,12 +383,12 @@ public partial class App : Application
                 ["MTM_Shared_Logic.CardBackgroundBrush"] = "#FFFFFF", // Card backgrounds
                 ["MTM_Shared_Logic.MainBackground"] = "#FFF9D1",     // Main background
                 ["MTM_Shared_Logic.ContentAreas"] = "#FFFFFF",       // Content areas
-                
+
                 // Border and accent colors
                 ["MTM_Shared_Logic.BorderAccentBrush"] = "#FFEB9C",  // Light border accent
                 ["MTM_Shared_Logic.BorderDarkBrush"] = "#F5F5DC",    // Light borders
                 ["MTM_Shared_Logic.HoverBackground"] = "#FFF9D1",    // Hover background
-                
+
                 // Text colors
                 ["MTM_Shared_Logic.BodyText"] = "#666666",           // Body text
                 ["MTM_Shared_Logic.HeadingText"] = "#8C7300",        // Heading text
@@ -460,10 +468,10 @@ public partial class App : Application
         {
             // Handle unhandled exceptions in the current AppDomain
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-            
+
             // Handle unobserved task exceptions
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
-            
+
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Global exception handlers configured for emergency shutdown");
         }
         catch (Exception ex)
@@ -481,7 +489,7 @@ public partial class App : Application
         {
             var exception = e.ExceptionObject as Exception;
             var message = exception?.Message ?? "Unknown critical error";
-            
+
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] CRITICAL: Unhandled exception occurred - {message}");
             _logger?.LogCritical(exception, "Unhandled exception occurred - attempting emergency shutdown");
 
@@ -517,10 +525,10 @@ public partial class App : Application
             // Try to show emergency error overlay for severe task exceptions
             if (e.Exception.InnerExceptions.Count > 3) // Multiple exceptions might indicate system instability
             {
-                await TryShowEmergencyErrorOverlay("Multiple Task Failures", 
+                await TryShowEmergencyErrorOverlay("Multiple Task Failures",
                     $"Multiple background tasks have failed. The application may be unstable.\n\n{message}");
             }
-            
+
             // Mark as observed to prevent app termination
             e.SetObserved();
         }
@@ -549,7 +557,7 @@ public partial class App : Application
                     0, // No auto-dismiss for critical errors
                     true // isError = true (shows Exit/Continue buttons)
                 );
-                
+
                 Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Emergency error overlay displayed");
             }
             else
@@ -566,15 +574,15 @@ public partial class App : Application
                         WindowStartupLocation = WindowStartupLocation.CenterScreen,
                     };
 
-                    var exitButton = new Button 
-                    { 
+                    var exitButton = new Button
+                    {
                         Content = "Exit Application",
                         Margin = new Avalonia.Thickness(4)
                     };
                     exitButton.Click += (_, _) => Environment.Exit(1);
 
-                    var continueButton = new Button 
-                    { 
+                    var continueButton = new Button
+                    {
                         Content = "Continue",
                         Margin = new Avalonia.Thickness(4)
                     };
@@ -584,7 +592,7 @@ public partial class App : Application
                     {
                         Spacing = 16,
                         Margin = new Avalonia.Thickness(16),
-                        Children = 
+                        Children =
                         {
                             new TextBlock { Text = $"Critical Error: {message}", FontWeight = Avalonia.Media.FontWeight.Bold },
                             new TextBlock { Text = details, TextWrapping = Avalonia.Media.TextWrapping.Wrap },
@@ -597,7 +605,7 @@ public partial class App : Application
                             }
                         }
                     };
-                    
+
                     // Try to show as dialog with main window, fallback to Show() if dialog fails
                     try
                     {
@@ -620,7 +628,7 @@ public partial class App : Application
         catch (Exception ex)
         {
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Failed to show emergency error overlay: {ex.Message}");
-            
+
             // Last resort: Console prompt for emergency action
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] EMERGENCY: Press Ctrl+C to terminate or wait 10 seconds for automatic shutdown");
             await Task.Delay(10000);

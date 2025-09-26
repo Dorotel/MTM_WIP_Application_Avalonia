@@ -14,46 +14,44 @@
   <UserControl.Styles>
     <!-- MTM Theme Input Field Styles -->
     <Style Selector="TextBox.input-field">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+      <Setter Property="BorderBrush" Value="#BDBDBD" />
+      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="#424242" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="Padding" Value="8,6" />
-      <Setter Property="MinHeight" Value="32" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <!-- Error state styling -->
     <Style Selector="TextBox.input-field.error">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorLightBrush}" />
+      <Setter Property="BorderBrush" Value="#F44336" />
+      <Setter Property="Background" Value="#FFCDD2" />
     </Style>
 
     <!-- Focus state styling -->
     <Style Selector="TextBox.input-field:focus">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.FocusBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+      <Setter Property="BorderBrush" Value="#1976D2" />
+      <Setter Property="Background" Value="#F5F5F5" />
     </Style>
 
     <!-- Primary Button styling -->
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
+      <Setter Property="Background" Value="#2196F3" />
+      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="BorderBrush" Value="#BDBDBD" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="MinHeight" Value="32" />
       <Setter Property="Padding" Value="12,6" />
     </Style>
 
     <!-- Secondary Button styling -->
     <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
+      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="#212121" />
+      <Setter Property="BorderBrush" Value="#2196F3" />
       <Setter Property="BorderThickness" Value="1.5" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="MinHeight" Value="32" />
@@ -61,23 +59,23 @@
     </Style>
 
     <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
+      <Setter Property="Background" Value="#F5F5F5" />
+      <Setter Property="BorderBrush" Value="#2196F3" />
+      <Setter Property="Foreground" Value="#BDBDBD" />
     </Style>
 
     <!-- Material Icons global styling -->
     <Style Selector="materialIcons|MaterialIcon">
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
+      <Setter Property="Foreground" Value="#1976D2" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <!-- Warning Panel styling -->
     <Style Selector="Border.warning-panel">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.WarningLightBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.WarningBrush}" />
+      <Setter Property="Background" Value="#FFE0B2" />
+      <Setter Property="BorderBrush" Value="#FF9800" />
       <Setter Property="BorderThickness" Value="2" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="Padding" Value="12,8" />
@@ -88,7 +86,7 @@
   <!-- Main Layout Container - ScrollViewer for overflow handling -->
   <ScrollViewer HorizontalScrollBarVisibility="Auto"
                 VerticalScrollBarVisibility="Auto"
-                Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+                Background="#FAFAFA">
 
     <Grid x:Name="MainContainer"
           RowDefinitions="*,Auto"
@@ -99,8 +97,8 @@
 
       <!-- Main Entry Panel -->
       <Border Grid.Row="0"
-              Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+              Background="#FFFFFF"
+              BorderBrush="#EEEEEE"
               BorderThickness="1"
               CornerRadius="8"
               Padding="16"
@@ -110,7 +108,7 @@
 
           <!-- Header Section -->
           <Border Grid.Row="0"
-                  Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
+                  Background="#EEEEEE"
                   CornerRadius="6"
                   Padding="12,8"
                   Margin="0,0,0,16">
@@ -119,13 +117,13 @@
                                         Kind="PlaylistAdd"
                                         Width="24"
                                         Height="24"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                                        Foreground="#FFFFFF"
                                         Margin="0,0,8,0" />
               <TextBlock Grid.Column="1"
                         Text="Create New Quick Button"
                         FontSize="16"
                         FontWeight="SemiBold"
-                        Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                        Foreground="#FFFFFF"
                         VerticalAlignment="Center" />
             </Grid>
           </Border>
@@ -139,12 +137,12 @@
                                         Kind="Warning"
                                         Width="20"
                                         Height="20"
-                                        Foreground="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                                        Foreground="#FF9800"
                                         Margin="0,0,8,0" />
               <TextBlock Grid.Column="1"
                         Text="{Binding DuplicateWarningMessage}"
                         FontSize="12"
-                        Foreground="{DynamicResource MTM_Shared_Logic.WarningBrush}"
+                        Foreground="#FF9800"
                         FontWeight="SemiBold"
                         TextWrapping="Wrap"
                         MaxWidth="520"
@@ -167,10 +165,10 @@
                 <TextBlock Text="Part ID:"
                           FontWeight="SemiBold"
                           FontSize="12"
-                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                          Foreground="#212121" />
                 <TextBlock Text="*Required"
                           FontSize="10"
-                          Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                          Foreground="#F44336"
                           FontStyle="Italic" />
               </StackPanel>
               <TextBox x:Name="PartIdTextBox"
@@ -192,10 +190,10 @@
                 <TextBlock Text="Operation:"
                           FontWeight="SemiBold"
                           FontSize="12"
-                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                          Foreground="#212121" />
                 <TextBlock Text="*Required"
                           FontSize="10"
-                          Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                          Foreground="#F44336"
                           FontStyle="Italic" />
               </StackPanel>
               <TextBox x:Name="OperationTextBox"
@@ -217,10 +215,10 @@
                 <TextBlock Text="Quantity:"
                           FontWeight="SemiBold"
                           FontSize="12"
-                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                          Foreground="#212121" />
                 <TextBlock Text="*Required"
                           FontSize="10"
-                          Foreground="{DynamicResource MTM_Shared_Logic.ErrorBrush}"
+                          Foreground="#F44336"
                           FontStyle="Italic" />
               </StackPanel>
               <TextBox x:Name="QuantityTextBox"
@@ -243,14 +241,14 @@
                         Text="Status:"
                         FontWeight="SemiBold"
                         FontSize="12"
-                        Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                        Foreground="#212121"
                         VerticalAlignment="Center" />
               <TextBlock Grid.Column="1"
                         Text="{Binding StatusMessage}"
                         FontSize="12"
                         TextWrapping="Wrap"
                         MaxWidth="520"
-                        Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                        Foreground="#424242"
                         VerticalAlignment="Center" />
             </Grid>
 
@@ -264,10 +262,10 @@
                 <TextBlock Text="Notes:"
                           FontWeight="SemiBold"
                           FontSize="12"
-                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                          Foreground="#212121" />
                 <TextBlock Text="Optional"
                           FontSize="10"
-                          Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}"
+                          Foreground="#757575"
                           FontStyle="Italic" />
               </StackPanel>
               <TextBox Grid.Column="1"
@@ -287,8 +285,8 @@
 
       <!-- Action Buttons Panel -->
       <Border Grid.Row="1"
-              Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
-              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+              Background="#F5F5F5"
+              BorderBrush="#2196F3"
               BorderThickness="1"
               CornerRadius="6"
               Padding="12"
@@ -305,10 +303,10 @@
             <materialIcons:MaterialIcon Kind="Loading"
                                       Width="16"
                                       Height="16"
-                                      Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
+                                      Foreground="#1976D2" />
             <TextBlock Text="Creating..."
                       FontSize="12"
-                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                      Foreground="#424242"
                       VerticalAlignment="Center" />
           </StackPanel>
 
@@ -341,9 +339,9 @@
                   <materialIcons:MaterialIcon Kind="PlaylistAdd"
                                             Width="16"
                                             Height="16"
-                                            Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
+                                            Foreground="#FFFFFF" />
                   <TextBlock Text="Create Quick Button"
-                            Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
+                            Foreground="#FFFFFF" />
                 </StackPanel>
               </Button.Content>
             </Button>

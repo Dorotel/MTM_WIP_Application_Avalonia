@@ -12,8 +12,8 @@
         <StackPanel Spacing="20" MaxWidth="600">
             
             <!-- Connection Settings Section -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="20">
@@ -22,7 +22,7 @@
                     <TextBlock Text="🗄️ Database Connection Settings"
                                FontSize="18"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"/>
+                               Foreground="#212121"/>
                     
                     <!-- Server Name -->
                     <Grid ColumnDefinitions="150,*">
@@ -111,8 +111,8 @@
             </Border>
             
             <!-- Connection Status -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+            <Border Background="#E3F2FD"
+                    BorderBrush="#2196F3"
                     BorderThickness="1"
                     CornerRadius="4"
                     Padding="16">
@@ -121,7 +121,7 @@
                                FontSize="16"
                                VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding ConnectionStatus}"
-                               Foreground="{DynamicResource MTM_Shared_Logic.InfoTextBrush}"
+                               Foreground="#1976D2"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
                     

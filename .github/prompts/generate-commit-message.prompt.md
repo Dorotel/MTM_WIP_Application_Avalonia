@@ -1,7 +1,6 @@
 ---
 mode: 'agent'
 description: 'Generate conventional commit messages for MTM WIP Application following project standards and analyzing changed files'
-tools: ['*']
 ---
 
 ## Implementation Mode

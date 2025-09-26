@@ -161,4 +161,3 @@ return File.OpenRead(CachePath + ".bmp");
 The debug breakpoint should stop the app. This demonstrates that the album art is about to be read from disk, rather than retrieved from the Web API.
 
 On the next page, you will complete the persistence feature, and load the user's album collection from the cache when the app first starts up.
-

@@ -52,4 +52,3 @@ Using a data template in this way, you have both defined and chosen the data tem
 The code works correctly because the object in the window's content zone happens to have the properties specified in the bindings. As an exercise: introduce a binding for a property that does not exist on the student class. (Your app will still work, but it ignores the property it cannot find.)
 
 On the next page, you will see how to define multiple data templates, and choose the correct template from the class of the object in the window's content zone.
-

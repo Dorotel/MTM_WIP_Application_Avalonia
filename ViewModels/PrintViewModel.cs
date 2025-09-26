@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
 using MTM_WIP_Application_Avalonia.Models;
 using Avalonia.Controls;
 
@@ -25,7 +26,7 @@ public partial class PrintViewModel : BaseViewModel
 {
     private readonly IPrintService _printService;
     private readonly INavigationService? _navigationService;
-    private readonly IThemeService? _themeService;
+    private readonly IThemeServiceV2? _themeService;
     private readonly IConfigurationService? _configurationService;
 
     /// <summary>
@@ -206,7 +207,7 @@ public partial class PrintViewModel : BaseViewModel
         ILogger<PrintViewModel> logger,
         IPrintService printService,
         INavigationService? navigationService = null,
-        IThemeService? themeService = null,
+        IThemeServiceV2? themeService = null,
         IConfigurationService? configurationService = null) : base(logger)
     {
         _printService = printService ?? throw new ArgumentNullException(nameof(printService));

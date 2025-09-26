@@ -1,7 +1,6 @@
 ---
 mode: 'agent'
 description: 'Create GitHub Issues for unimplemented requirements from specification files using feature_request.yml template.'
-tools: ['*']
 ---
 # Create GitHub Issues for Unmet Specification Requirements
 

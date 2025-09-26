@@ -1,0 +1,94 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:material="using:Material.Icons.Avalonia">
+
+<!--
+CollapsiblePanel Component Styles
+================================
+Centralized styling for CollapsiblePanel custom control following MTM Theme V2 patterns.
+Replaces local styles in CollapsiblePanel.axaml for better maintainability.
+All styles use Theme V2 semantic tokens for adaptive theming.
+WCAG 2.1 AA compliant throughout.
+-->
+
+<!-- Root Container Style -->
+<Style Selector="Border.CollapsiblePanel">
+  <Setter Property="Background" Value="Transparent"/>
+  <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+  <Setter Property="BorderThickness" Value="1"/>
+  <Setter Property="CornerRadius" Value="8"/>
+  <Setter Property="Transitions">
+    <Transitions>
+      <BrushTransition Property="BorderBrush" Duration="0:0:0.25"/>
+      <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3"/>
+    </Transitions>
+  </Setter>
+</Style>
+
+<!-- Root Hover State -->
+<Style Selector="Border.CollapsiblePanel:pointerover">
+  <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+</Style>
+
+<!-- Header Panel Style -->
+<Style Selector="Border.CollapsiblePanel.Header">
+  <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+  <Setter Property="BorderBrush" Value="Transparent"/>
+  <Setter Property="BorderThickness" Value="0"/>
+  <Setter Property="CornerRadius" Value="8,8,0,0"/>
+  <Setter Property="Transitions">
+    <Transitions>
+      <BrushTransition Property="Background" Duration="0:0:0.25"/>
+    </Transitions>
+  </Setter>
+</Style>
+
+<!-- Header Hover State -->
+<Style Selector="Border.CollapsiblePanel.Header:pointerover">
+  <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+</Style>
+
+<!-- Content Panel Style -->
+<Style Selector="Border.CollapsiblePanel.Content">
+  <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+  <Setter Property="BorderBrush" Value="Transparent"/>
+  <Setter Property="BorderThickness" Value="0"/>
+  <Setter Property="CornerRadius" Value="8,8,8,8"/>
+</Style>
+
+<!-- Header Text Styling using Theme V2 Typography -->
+<Style Selector="Border.CollapsiblePanel.Header TextBlock, Border.CollapsiblePanel.Header ContentPresenter">
+  <Setter Property="TextElement.Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+  <Setter Property="TextElement.FontWeight" Value="SemiBold"/>
+  <Setter Property="TextElement.FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+</Style>
+
+<!-- Toggle Button in Header -->
+<Style Selector="Border.CollapsiblePanel.Header Button">
+  <Setter Property="Background" Value="Transparent"/>
+  <Setter Property="BorderBrush" Value="Transparent"/>
+  <Setter Property="BorderThickness" Value="0"/>
+  <Setter Property="Margin" Value="0"/>
+  <Setter Property="CornerRadius" Value="4"/>
+  <Setter Property="Width" Value="32"/>
+  <Setter Property="Height" Value="32"/>
+  <Setter Property="Transitions">
+    <Transitions>
+      <BrushTransition Property="Background" Duration="0:0:0.15"/>
+    </Transitions>
+  </Setter>
+</Style>
+
+<!-- Toggle Button Hover State -->
+<Style Selector="Border.CollapsiblePanel.Header Button:pointerover">
+  <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
+</Style>
+
+<!-- MaterialIcon in Header Button with Adaptive Theming -->
+<Style Selector="Border.CollapsiblePanel.Header Button material|MaterialIcon">
+  <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+  <Setter Property="Width" Value="16"/>
+  <Setter Property="Height" Value="16"/>
+</Style>
+
+</Styles>

@@ -23,11 +23,3 @@ In addition to basic touch events, Avalonia provides built-in gesture recognizer
 ```
 
 In this example, an `Image` control is set up to respond to pinch and scroll gestures. The `PinchGestureRecognizer` enables pinch-to-zoom functionality, and the `ScrollGestureRecognizer` allows the image to be scrolled both horizontally and vertically.
-
-
-
-
-
-
-
-

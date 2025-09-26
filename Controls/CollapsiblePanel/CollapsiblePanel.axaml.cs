@@ -6,7 +6,12 @@ using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Media;
+using Avalonia.Metadata;
 using Material.Icons;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Services;
 
 namespace MTM_WIP_Application_Avalonia.Controls;
 
@@ -22,9 +27,11 @@ public enum HeaderPosition
 }
 
 /// <summary>
-/// Collapsible panel with gold header bar and content area
+/// Manufacturing-grade collapsible panel with professional MTM styling and ResolutionIndependentSizing integration.
+/// Features responsive design, touch-friendly controls, and comprehensive accessibility support.
+/// Now inherits from ContentControl to eliminate TabItem styling inheritance while maintaining content properties.
 /// </summary>
-public partial class CollapsiblePanel : UserControl
+public partial class CollapsiblePanel : ContentControl
 {
     // Styled properties
     public static readonly StyledProperty<bool> IsExpandedProperty =
@@ -33,8 +40,20 @@ public partial class CollapsiblePanel : UserControl
     public static readonly StyledProperty<HeaderPosition> HeaderPositionProperty =
         AvaloniaProperty.Register<CollapsiblePanel, HeaderPosition>(nameof(HeaderPosition), HeaderPosition.Top);
 
+    // Header property (ContentControl provides Content property)
     public static readonly StyledProperty<object?> HeaderProperty =
         AvaloniaProperty.Register<CollapsiblePanel, object?>(nameof(Header));
+
+    // Additional properties for styling compatibility
+    public static readonly StyledProperty<IBrush?> HeaderBackgroundProperty =
+        AvaloniaProperty.Register<CollapsiblePanel, IBrush?>(nameof(HeaderBackground));
+
+    public static readonly StyledProperty<IBrush?> ExpanderBackgroundProperty =
+        AvaloniaProperty.Register<CollapsiblePanel, IBrush?>(nameof(ExpanderBackground));
+
+    // ResolutionIndependentSizing integration
+    private IResolutionIndependentSizingService? _sizingService;
+    private ILogger<CollapsiblePanel>? _logger;
 
     // Properties
     public bool IsExpanded
@@ -49,10 +68,23 @@ public partial class CollapsiblePanel : UserControl
         set => SetValue(HeaderPositionProperty, value);
     }
 
+    // Header property (ContentControl provides Content property)
     public object? Header
     {
         get => GetValue(HeaderProperty);
         set => SetValue(HeaderProperty, value);
+    }
+
+    public IBrush? HeaderBackground
+    {
+        get => GetValue(HeaderBackgroundProperty);
+        set => SetValue(HeaderBackgroundProperty, value);
+    }
+
+    public IBrush? ExpanderBackground
+    {
+        get => GetValue(ExpanderBackgroundProperty);
+        set => SetValue(ExpanderBackgroundProperty, value);
     }
 
     // Legacy property for backward compatibility
@@ -65,11 +97,9 @@ public partial class CollapsiblePanel : UserControl
     // Events
     public event EventHandler<bool>? ExpandedChanged;
 
-    // Internal references
-    private ContentPresenter? _contentPresenter;
+    // Internal references for HeaderedContentControl template
     private Border? _contentArea;
     private Border? _headerArea;
-    private Grid? _headerContentGrid;
     private Material.Icons.Avalonia.MaterialIcon? _toggleIcon;
     private Button? _toggleButton;
     private Grid? _rootGrid;
@@ -77,24 +107,63 @@ public partial class CollapsiblePanel : UserControl
 
     public CollapsiblePanel()
     {
-        InitializeComponent();
+        InitializeServices();
+    }
+
+    /// <summary>
+    /// Initialize ResolutionIndependentSizingService and other services from DI container
+    /// Uses proper MTM service access pattern via Program.GetOptionalService
+    /// </summary>
+    private void InitializeServices()
+    {
+        try
+        {
+            // MTM Pattern: Get services from Program static methods (proper dependency injection access)
+            _sizingService = Program.GetOptionalService<IResolutionIndependentSizingService>();
+            _logger = Program.GetOptionalService<ILogger<CollapsiblePanel>>();
+
+            if (_sizingService != null)
+            {
+                _logger?.LogDebug("CollapsiblePanel initialized with ResolutionIndependentSizingService following MTM patterns");
+                System.Diagnostics.Debug.WriteLine("CollapsiblePanel: Services initialized successfully");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("CollapsiblePanel: ResolutionIndependentSizingService not available, using fallback sizing values");
+            }
+        }
+        catch (Exception ex)
+        {
+            // If service resolution fails, continue without services (graceful degradation)
+            System.Diagnostics.Debug.WriteLine($"CollapsiblePanel service initialization failed: {ex.Message}");
+        }
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
-        
-        // Get references to controls from the template
-        _contentPresenter = e.NameScope.Find<ContentPresenter>("ContentPresenter");
-        _contentArea = e.NameScope.Find<Border>("ContentArea");
-        _headerArea = e.NameScope.Find<Border>("HeaderArea");
-        _headerContentGrid = e.NameScope.Find<Grid>("HeaderContentGrid");
-        _toggleIcon = e.NameScope.Find<Material.Icons.Avalonia.MaterialIcon>("ToggleIcon");
-        _toggleButton = e.NameScope.Find<Button>("ToggleButton");
-        _rootGrid = e.NameScope.Find<Grid>("RootGrid");
-        
+
+        // Unsubscribe from old button events if they exist
+        if (_toggleButton != null)
+        {
+            _toggleButton.Click -= OnToggleClick;
+        }
+
+        // Get references to controls from the HeaderedContentControl template
+        _contentArea = e.NameScope.Find<Border>("PART_ContentArea");
+        _headerArea = e.NameScope.Find<Border>("PART_HeaderArea");
+        _toggleIcon = e.NameScope.Find<Material.Icons.Avalonia.MaterialIcon>("PART_ToggleIcon");
+        _toggleButton = e.NameScope.Find<Button>("PART_ToggleButton");
+        _rootGrid = e.NameScope.Find<Grid>("PART_RootGrid");
+
+        // Subscribe to new button events
+        if (_toggleButton != null)
+        {
+            _toggleButton.Click += OnToggleClick;
+        }
+
         _isTemplateApplied = true;
-        
+
         // Set up initial layout and state
         UpdateLayout();      // Configure layout based on HeaderPosition
         UpdateDisplay();     // Set initial expanded/collapsed state
@@ -103,18 +172,16 @@ public partial class CollapsiblePanel : UserControl
     protected override void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        
+
         // If template wasn't applied yet, try to get references now
         if (!_isTemplateApplied)
         {
-            _contentPresenter = this.FindControl<ContentPresenter>("ContentPresenter");
-            _contentArea = this.FindControl<Border>("ContentArea");
-            _headerArea = this.FindControl<Border>("HeaderArea");
-            _headerContentGrid = this.FindControl<Grid>("HeaderContentGrid");
-            _toggleIcon = this.FindControl<Material.Icons.Avalonia.MaterialIcon>("ToggleIcon");
-            _toggleButton = this.FindControl<Button>("ToggleButton");
-            _rootGrid = this.FindControl<Grid>("RootGrid");
-            
+            _contentArea = this.FindControl<Border>("PART_ContentArea");
+            _headerArea = this.FindControl<Border>("PART_HeaderArea");
+            _toggleIcon = this.FindControl<Material.Icons.Avalonia.MaterialIcon>("PART_ToggleIcon");
+            _toggleButton = this.FindControl<Button>("PART_ToggleButton");
+            _rootGrid = this.FindControl<Grid>("PART_RootGrid");
+
             UpdateLayout();
             UpdateDisplay();
         }
@@ -143,7 +210,7 @@ public partial class CollapsiblePanel : UserControl
         // Clear existing row/column definitions and reset grid assignments
         _rootGrid.RowDefinitions.Clear();
         _rootGrid.ColumnDefinitions.Clear();
-        
+
         Grid.SetRow(_headerArea, 0);
         Grid.SetColumn(_headerArea, 0);
         Grid.SetRow(_contentArea, 0);
@@ -175,7 +242,10 @@ public partial class CollapsiblePanel : UserControl
 
         // Update button positioning
         UpdateButtonPositioning();
-        
+
+        // Ensure header maintains consistent size
+        UpdateHeaderSize();
+
         // Update header corner radius based on current expanded state
         UpdateHeaderCornerRadius(!IsExpanded);
     }
@@ -186,7 +256,7 @@ public partial class CollapsiblePanel : UserControl
         // Account for root border thickness (2px on each side = 4px total)
         _rootGrid!.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(30))); // 34 - 4 for border
         _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
-        
+
         if (_headerArea != null)
         {
             Grid.SetColumn(_headerArea, 0);
@@ -195,7 +265,7 @@ public partial class CollapsiblePanel : UserControl
         {
             Grid.SetColumn(_contentArea, 1);
         }
-        
+
         if (_headerArea != null)
         {
             _headerArea.BorderThickness = new Avalonia.Thickness(0, 0, 1, 0);
@@ -211,7 +281,7 @@ public partial class CollapsiblePanel : UserControl
         // Account for root border thickness (2px on each side = 4px total)
         _rootGrid!.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
         _rootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(30))); // 34 - 4 for border
-        
+
         if (_contentArea != null)
         {
             Grid.SetColumn(_contentArea, 0);
@@ -219,7 +289,7 @@ public partial class CollapsiblePanel : UserControl
         if (_headerArea != null)
         {
             Grid.SetColumn(_headerArea, 1);
-            
+
             _headerArea.BorderThickness = new Avalonia.Thickness(1, 0, 0, 0);
             // Corner radius will be set by UpdateHeaderCornerRadius based on expanded state
             _headerArea.Width = 34;
@@ -233,7 +303,7 @@ public partial class CollapsiblePanel : UserControl
         // Account for root border thickness (2px on each side = 4px total)
         _rootGrid!.RowDefinitions.Add(new RowDefinition(new GridLength(30))); // 34 - 4 for border
         _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
-        
+
         if (_headerArea != null)
         {
             Grid.SetRow(_headerArea, 0);
@@ -254,7 +324,7 @@ public partial class CollapsiblePanel : UserControl
         // Account for root border thickness (2px on each side = 4px total)
         _rootGrid!.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
         _rootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(30))); // 34 - 4 for border
-        
+
         if (_contentArea != null)
         {
             Grid.SetRow(_contentArea, 0);
@@ -262,7 +332,7 @@ public partial class CollapsiblePanel : UserControl
         if (_headerArea != null)
         {
             Grid.SetRow(_headerArea, 1);
-            
+
             _headerArea.BorderThickness = new Avalonia.Thickness(0, 1, 0, 0);
             // Corner radius will be set by UpdateHeaderCornerRadius based on expanded state
             _headerArea.Width = double.NaN;
@@ -309,7 +379,7 @@ public partial class CollapsiblePanel : UserControl
         {
             _contentArea.IsVisible = true;
             _toggleIcon.Kind = GetCollapseIcon();
-            
+
             // When expanded, use position-specific corner radius
             UpdateHeaderCornerRadius(false);
         }
@@ -317,20 +387,20 @@ public partial class CollapsiblePanel : UserControl
         {
             _contentArea.IsVisible = false;
             _toggleIcon.Kind = GetExpandIcon();
-            
+
             // When collapsed, header should have all 4 corners rounded
             UpdateHeaderCornerRadius(true);
         }
-        
+
         // Update the UserControl's dimensions based on expanded state and header position
         if (IsExpanded)
         {
             this.Width = double.NaN; // Auto width when expanded
             this.Height = double.NaN; // Auto height when expanded
-            
-            // Restore header to normal size when expanded
-            UpdateHeaderSize(false);
-            
+
+            // Ensure header maintains consistent size
+            UpdateHeaderSize();
+
             switch (HeaderPosition)
             {
                 case HeaderPosition.Left:
@@ -347,9 +417,9 @@ public partial class CollapsiblePanel : UserControl
         }
         else
         {
-            // Shrink header to fit collapsed panel
-            UpdateHeaderSize(true);
-            
+            // Ensure header maintains consistent size even when collapsed
+            UpdateHeaderSize();
+
             switch (HeaderPosition)
             {
                 case HeaderPosition.Left:
@@ -401,50 +471,29 @@ public partial class CollapsiblePanel : UserControl
         }
     }
 
-    private void UpdateHeaderSize(bool isCollapsed)
+    private void UpdateHeaderSize()
     {
         if (_headerArea == null)
             return;
 
+        // Header should maintain consistent size regardless of expanded/collapsed state
         switch (HeaderPosition)
         {
             case HeaderPosition.Left:
             case HeaderPosition.Right:
-                if (isCollapsed)
-                {
-                    // When collapsed, make header fill the entire collapsed panel width
-                    _headerArea.Width = double.NaN; // Fill available width
-                    _headerArea.Height = double.NaN;
-                    _headerArea.ClearValue(MaxWidthProperty);
-                    _headerArea.ClearValue(MaxHeightProperty);
-                }
-                else
-                {
-                    // When expanded, use normal header width
-                    _headerArea.Width = 32;
-                    _headerArea.Height = double.NaN;
-                    _headerArea.ClearValue(MaxWidthProperty);
-                    _headerArea.ClearValue(MaxHeightProperty);
-                }
+                // Always use consistent header width for vertical headers
+                _headerArea.Width = 34; // Consistent 34px width
+                _headerArea.Height = double.NaN; // Fill available height
+                _headerArea.ClearValue(MaxWidthProperty);
+                _headerArea.ClearValue(MaxHeightProperty);
                 break;
             case HeaderPosition.Top:
             case HeaderPosition.Bottom:
-                if (isCollapsed)
-                {
-                    // When collapsed, make header fill the entire collapsed panel height
-                    _headerArea.Width = double.NaN;
-                    _headerArea.Height = double.NaN; // Fill available height
-                    _headerArea.ClearValue(MaxWidthProperty);
-                    _headerArea.ClearValue(MaxHeightProperty);
-                }
-                else
-                {
-                    // When expanded, use normal header height
-                    _headerArea.Width = double.NaN;
-                    _headerArea.Height = 32;
-                    _headerArea.ClearValue(MaxWidthProperty);
-                    _headerArea.ClearValue(MaxHeightProperty);
-                }
+                // Always use consistent header height for horizontal headers
+                _headerArea.Width = double.NaN; // Fill available width
+                _headerArea.Height = 34; // Consistent 34px height
+                _headerArea.ClearValue(MaxWidthProperty);
+                _headerArea.ClearValue(MaxHeightProperty);
                 break;
         }
     }
@@ -488,7 +537,7 @@ public partial class CollapsiblePanel : UserControl
         {
             IsExpanded = expanded;
             // UpdateDisplay and event will be called via PropertyChanged if raiseEvent is true
-            
+
             if (!raiseEvent)
             {
                 // Temporarily disable events

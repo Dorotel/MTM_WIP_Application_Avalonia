@@ -1,7 +1,6 @@
 ---
 mode: 'agent'
 description: 'Create an Architectural Decision Record (ADR) document for AI-optimized decision documentation.'
-tools: ['*']
 ---
 
 ## Implementation Mode

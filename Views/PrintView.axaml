@@ -16,7 +16,7 @@
         
         <!-- Header Section -->
         <Border Grid.Row="0" 
-                Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}" 
+                Background="#2196F3" 
                 CornerRadius="8" 
                 Padding="20" 
                 Margin="10,10,10,5">
@@ -24,11 +24,11 @@
                 <TextBlock Text="🖨️ Print Interface" 
                           FontSize="24" 
                           FontWeight="Bold" 
-                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                          Foreground="#212121" 
                           HorizontalAlignment="Center" />
                 <TextBlock Text="Configure print settings, customize layout, and preview before printing" 
                           FontSize="14" 
-                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                          Foreground="#212121" 
                           HorizontalAlignment="Center" 
                           Margin="0,8,0,0" />
             </StackPanel>
@@ -39,8 +39,8 @@
             
             <!-- Print Options Panel -->
             <Border Grid.Column="0" 
-                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                    Background="#FFFFFF" 
+                    BorderBrush="#E0E0E0" 
                     BorderThickness="1" 
                     CornerRadius="8" 
                     Padding="0" 
@@ -49,12 +49,12 @@
                 <Grid RowDefinitions="Auto,*">
                     <!-- Options Header -->
                     <Border Grid.Row="0" 
-                            Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}" 
+                            Background="#2196F3" 
                             CornerRadius="8,8,0,0" 
                             Padding="12">
                         <TextBlock Text="🖨️ Print Options" 
                                   FontWeight="SemiBold" 
-                                  Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" 
+                                  Foreground="#FFFFFF" 
                                   FontSize="14" />
                     </Border>
                     
@@ -66,13 +66,13 @@
                         <StackPanel Spacing="16">
                             
                             <!-- Printer Selection -->
-                            <Border Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                            <Border Background="#E6E6F0" 
                                     CornerRadius="6" 
                                     Padding="12">
                                 <StackPanel Spacing="8">
                                     <TextBlock Text="Printer" 
                                               FontWeight="Bold" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                              Foreground="#212121" />
                                     <ComboBox ItemsSource="{Binding AvailablePrinters}"
                                              SelectedItem="{Binding SelectedPrinter}"
                                              HorizontalAlignment="Stretch" />
@@ -80,13 +80,13 @@
                             </Border>
 
                             <!-- Page Setup -->
-                            <Border Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                            <Border Background="#E6E6F0" 
                                     CornerRadius="6" 
                                     Padding="12">
                                 <StackPanel Spacing="8">
                                     <TextBlock Text="Page Setup" 
                                               FontWeight="Bold" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                              Foreground="#212121" />
                                     
                                     <!-- Orientation -->
                                     <Grid ColumnDefinitions="80,*" ColumnSpacing="8">
@@ -117,13 +117,13 @@
                             </Border>
 
                             <!-- Print Quality and Copies -->
-                            <Border Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                            <Border Background="#E6E6F0" 
                                     CornerRadius="6" 
                                     Padding="12">
                                 <StackPanel Spacing="8">
                                     <TextBlock Text="Print Settings" 
                                               FontWeight="Bold" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                              Foreground="#212121" />
                                     
                                     <!-- Quality -->
                                     <Grid ColumnDefinitions="60,*" ColumnSpacing="8">
@@ -160,13 +160,13 @@
                             </Border>
 
                             <!-- Print Style -->
-                            <Border Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                            <Border Background="#E6E6F0" 
                                     CornerRadius="6" 
                                     Padding="12">
                                 <StackPanel Spacing="8">
                                     <TextBlock Text="Print Style" 
                                               FontWeight="Bold" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                              Foreground="#212121" />
                                     
                                     <!-- Style Selection -->
                                     <ComboBox ItemsSource="{Binding StyleOptions}"
@@ -199,13 +199,13 @@
                             </Border>
 
                             <!-- Document Settings -->
-                            <Border Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                            <Border Background="#E6E6F0" 
                                     CornerRadius="6" 
                                     Padding="12">
                                 <StackPanel Spacing="8">
                                     <TextBlock Text="Document" 
                                               FontWeight="Bold" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                              Foreground="#212121" />
                                     
                                     <!-- Document Title -->
                                     <TextBox Text="{Binding DocumentTitle}" 
@@ -231,13 +231,13 @@
                             </Border>
 
                             <!-- Template Management -->
-                            <Border Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                            <Border Background="#E6E6F0" 
                                     CornerRadius="6" 
                                     Padding="12">
                                 <StackPanel Spacing="8">
                                     <TextBlock Text="Templates" 
                                               FontWeight="Bold" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                              Foreground="#212121" />
                                     
                                     <ComboBox ItemsSource="{Binding AvailableTemplates}"
                                              SelectedItem="{Binding SelectedTemplate}"
@@ -261,8 +261,8 @@
 
             <!-- Print Preview and Layout Panel -->
             <Border Grid.Column="1" 
-                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                    Background="#FFFFFF" 
+                    BorderBrush="#E0E0E0" 
                     BorderThickness="1" 
                     CornerRadius="8" 
                     Margin="5,0,0,0">
@@ -270,7 +270,7 @@
                 <Grid RowDefinitions="Auto,*,Auto">
                     <!-- Preview Header -->
                     <Border Grid.Row="0" 
-                            Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}" 
+                            Background="#757575" 
                             CornerRadius="8,8,0,0" 
                             Padding="16,12">
                         <Grid ColumnDefinitions="*,Auto">
@@ -279,22 +279,22 @@
                                 <TextBlock Text="Print Preview" 
                                           FontSize="18" 
                                           FontWeight="SemiBold" 
-                                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                                          Foreground="#212121" 
                                           VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding CurrentPage, StringFormat='Page \{0\}'}" 
                                           FontSize="14" 
-                                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                                          Foreground="#424242" 
                                           VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding TotalPages, StringFormat='of \{0\}'}" 
                                           FontSize="14" 
-                                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                                          Foreground="#424242" 
                                           VerticalAlignment="Center" />
                             </StackPanel>
 
                             <!-- Right side controls -->
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
                                 <!-- Zoom Controls -->
-                                <Border Background="{DynamicResource MTM_Shared_Logic.HoverBrush}"
+                                <Border Background="#E6E6F0"
                                        CornerRadius="4"
                                        Padding="8,4">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
@@ -309,7 +309,7 @@
                                                   VerticalAlignment="Center" 
                                                   MinWidth="35"
                                                   HorizontalAlignment="Center"
-                                                  Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                                                  Foreground="#424242" />
                                         <Button Content="🔍+" 
                                                Command="{Binding ZoomInCommand}"
                                                Classes="mtm-secondary"
@@ -342,7 +342,7 @@
                     <ScrollViewer Grid.Row="1" 
                                   VerticalScrollBarVisibility="Auto" 
                                   HorizontalScrollBarVisibility="Auto" 
-                                  Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}">
+                                  Background="#F5F5F5">
                         
                         <!-- Loading Overlay -->
                         <Grid>
@@ -351,8 +351,8 @@
                                     HorizontalAlignment="Center" 
                                     VerticalAlignment="Top"
                                     Margin="20">
-                                <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-                                       BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                                <Border Background="#FFFFFF" 
+                                       BorderBrush="#E0E0E0" 
                                        BorderThickness="1" 
                                        CornerRadius="4">
                                     <ContentControl Content="{Binding PrintPreview}"
@@ -372,10 +372,10 @@
                                     <ProgressBar IsIndeterminate="True" 
                                                 Width="200" 
                                                 Height="4" 
-                                                Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
+                                                Foreground="#2196F3" />
                                     <TextBlock Text="Generating print preview..." 
                                               FontSize="14" 
-                                              Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}" 
+                                              Foreground="#FFFFFF" 
                                               HorizontalAlignment="Center" />
                                 </StackPanel>
                             </Border>
@@ -384,8 +384,8 @@
 
                     <!-- Layout Panel (Collapsible) -->
                     <Border Grid.Row="2" 
-                           Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                           BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                           Background="#F5F5F5" 
+                           BorderBrush="#E0E0E0" 
                            BorderThickness="0,1,0,0"
                            IsVisible="{Binding ShowLayoutPanel}"
                            Height="200">
@@ -400,8 +400,8 @@
 
         <!-- Action Bar -->
         <Border Grid.Row="2" 
-                Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                Background="#F5F5F5" 
+                BorderBrush="#E0E0E0" 
                 BorderThickness="0,1,0,0" 
                 Padding="15,8" 
                 Margin="10,5,10,10">
@@ -410,7 +410,7 @@
                 <!-- Status Message -->
                 <TextBlock Grid.Column="0" 
                           Text="{Binding StatusMessage, FallbackValue='Ready to configure print settings'}" 
-                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                          Foreground="#424242" 
                           VerticalAlignment="Center" />
                 
                 <!-- Loading Indicator -->
@@ -425,7 +425,7 @@
                                 VerticalAlignment="Center" />
                     <TextBlock Text="Processing..." 
                               FontSize="12" 
-                              Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                              Foreground="#424242" 
                               VerticalAlignment="Center" />
                 </StackPanel>
                 

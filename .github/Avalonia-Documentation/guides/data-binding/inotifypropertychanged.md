@@ -64,11 +64,3 @@ public partial class MyViewModel : ObservableObject
 In this code, the `ObservableObject` class implements `INotifyPropertyChanged`, and the `[ObservableProperty]` attribute is used to indicate that `_name` is an observable property. The Source Generator will then generate the necessary boilerplate code behind the scenes, including the property's getter and setter, and automatically call the `OnPropertyChanged` method when the property changes. This makes the implementation cleaner and less error-prone.
 
 The MVVM Toolkit provides a range of tools to help simplify the implementation of the MVVM pattern in your .NET applications, including simplifying the use of `INotifyPropertyChanged`. The use of Source Generators makes your code more efficient and readable, while still maintaining the same functionality.
-
-
-
-
-
-
-
-

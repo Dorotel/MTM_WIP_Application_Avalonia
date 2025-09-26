@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using MTM_WIP_Application_Avalonia.Models;
 using MTM_WIP_Application_Avalonia.ViewModels.Shared;
 
 namespace MTM_WIP_Application_Avalonia.Services;
@@ -46,7 +47,7 @@ public class SettingsPanelStateManager
     /// <summary>
     /// Gets all panel IDs with unsaved changes.
     /// </summary>
-    public IEnumerable<string> PanelsWithUnsavedChanges => 
+    public IEnumerable<string> PanelsWithUnsavedChanges =>
         _stateSnapshots.Where(kvp => kvp.Value.HasChanges).Select(kvp => kvp.Key);
 
     #endregion
@@ -115,7 +116,7 @@ public class SettingsPanelStateManager
                 OnStateChanged(panelId, currentHasChanges);
             }
 
-            _logger.LogDebug("Updated current state for panel {PanelId}, HasChanges: {HasChanges}", 
+            _logger.LogDebug("Updated current state for panel {PanelId}, HasChanges: {HasChanges}",
                 panelId, currentHasChanges);
         }
         catch (Exception ex)
@@ -168,7 +169,7 @@ public class SettingsPanelStateManager
     public async Task<ServiceResult> SaveAllChangesAsync()
     {
         var panelsWithChanges = PanelsWithUnsavedChanges.ToList();
-        
+
         if (!panelsWithChanges.Any())
         {
             return ServiceResult.Success("No changes to save");
@@ -182,10 +183,10 @@ public class SettingsPanelStateManager
             var results = await Task.WhenAll(tasks);
 
             var failedResults = results.Where(r => !r.IsSuccess).ToList();
-            
+
             if (failedResults.Any())
             {
-                var errorMessages = string.Join("; ", failedResults.Select(r => r.Message));
+                var errorMessages = string.Join("; ", failedResults.Select(r => r.ErrorMessage));
                 return ServiceResult.Failure($"Some saves failed: {errorMessages}");
             }
 
@@ -215,7 +216,7 @@ public class SettingsPanelStateManager
 
             // Restore original values to ViewModel
             RestoreViewModelState(viewModel, snapshot.OriginalValues);
-            
+
             // Update current values to match original
             snapshot.CurrentValues = new Dictionary<string, object?>(snapshot.OriginalValues);
 
@@ -237,7 +238,7 @@ public class SettingsPanelStateManager
     public Task<ServiceResult> RevertAllChangesAsync()
     {
         var panelsWithChanges = PanelsWithUnsavedChanges.ToList();
-        
+
         if (!panelsWithChanges.Any())
         {
             return Task.FromResult(ServiceResult.Success("No changes to revert"));
@@ -298,10 +299,10 @@ public class SettingsPanelStateManager
     private Dictionary<string, object?> ExtractViewModelState(BaseViewModel viewModel)
     {
         var state = new Dictionary<string, object?>();
-        
+
         // Use reflection to get all public properties
         var properties = viewModel.GetType().GetProperties(
-            System.Reflection.BindingFlags.Public | 
+            System.Reflection.BindingFlags.Public |
             System.Reflection.BindingFlags.Instance);
 
         foreach (var property in properties)
@@ -315,7 +316,7 @@ public class SettingsPanelStateManager
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Could not extract property {PropertyName} from {ViewModelType}", 
+                    _logger.LogWarning(ex, "Could not extract property {PropertyName} from {ViewModelType}",
                         property.Name, viewModel.GetType().Name);
                 }
             }
@@ -330,7 +331,7 @@ public class SettingsPanelStateManager
     private void RestoreViewModelState(BaseViewModel viewModel, Dictionary<string, object?> state)
     {
         var properties = viewModel.GetType().GetProperties(
-            System.Reflection.BindingFlags.Public | 
+            System.Reflection.BindingFlags.Public |
             System.Reflection.BindingFlags.Instance);
 
         foreach (var property in properties)
@@ -343,7 +344,7 @@ public class SettingsPanelStateManager
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Could not restore property {PropertyName} on {ViewModelType}", 
+                    _logger.LogWarning(ex, "Could not restore property {PropertyName} on {ViewModelType}",
                         property.Name, viewModel.GetType().Name);
                 }
             }

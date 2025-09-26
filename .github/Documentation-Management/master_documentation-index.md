@@ -54,7 +54,6 @@ This master index catalogs all documentation files identified in the MTM WIP App
 ```yaml
 ---
 description: 'Brief description of the file purpose'
-tools: ['codebase', 'fetch', 'search', 'usages'] # Available tools array
 ---
 ```
 

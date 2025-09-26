@@ -125,6 +125,3 @@ For the complete ItemsControl API documentation, see [here](https://api-docs.ava
 :::info
 View the source code on _GitHub_ [`ItemsControl.cs`](https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Controls/ItemsControl.cs)
 :::
-
-
-

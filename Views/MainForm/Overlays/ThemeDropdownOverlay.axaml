@@ -1,0 +1,142 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MTM_WIP_Application_Avalonia.Views.MainForm.Overlays.ThemeDropdownOverlay"
+             x:Name="ThemeDropdownOverlayRoot">
+
+    <!-- Theme Dropdown Overlay - Right panel dropdown -->
+    <Grid>
+        <!-- Dropdown Panel positioned for right panel -->
+        <Border Classes="Card Elevated"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                Margin="8,8,8,8"
+                MinWidth="240"
+                MaxWidth="280"
+                MinHeight="300"
+                ZIndex="1000">
+
+            <StackPanel Spacing="{StaticResource ThemeV2.Space.SM}" Margin="12">
+
+                <!-- Compact Header -->
+                <TextBlock Classes="Body"
+                          Text="Theme Settings"
+                          FontWeight="SemiBold"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,8"/>
+
+                <!-- Light/Dark Theme Toggle - Compact Layout -->
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="Caption" Text="Theme Mode:" FontWeight="SemiBold"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="Caption"
+                                  Text="Light"
+                                  Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                                  VerticalAlignment="Center"
+                                  Grid.Column="0"/>
+                        <ToggleSwitch x:Name="ThemeToggleSwitch"
+                                     OffContent=""
+                                     OnContent=""
+                                     MinWidth="40"
+                                     MinHeight="20"
+                                     VerticalAlignment="Center"
+                                     HorizontalAlignment="Center"
+                                     Grid.Column="1"
+                                     ToolTip.Tip="Toggle between Light and Dark theme"/>
+                        <TextBlock Classes="Caption"
+                                  Text="Dark"
+                                  Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                                  VerticalAlignment="Center"
+                                  Grid.Column="2"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Separator -->
+                <Border Background="{DynamicResource ThemeV2.Border.Subtle}"
+                        Height="1"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,6"/>
+
+                <!-- Accent Color Section - Disabled (Not Implemented) -->
+                <StackPanel Spacing="4" Opacity="0.5">
+                    <TextBlock Classes="Caption" Text="Accent Color:" FontWeight="SemiBold"/>
+                    <Button x:Name="AccentColorButton"
+                           Classes="Secondary"
+                           IsEnabled="False"
+                           Background="{DynamicResource ThemeV2.Background.Subtle}"
+                           BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                           BorderThickness="1"
+                           CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
+                           Height="28"
+                           HorizontalAlignment="Stretch"
+                           Foreground="{DynamicResource ThemeV2.Content.Tertiary}"
+                           ToolTip.Tip="Coming soon - Accent color selection">
+                        <TextBlock Text="Coming Soon"
+                                  FontSize="11"
+                                  TextTrimming="CharacterEllipsis"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- Separator -->
+                <Border Background="{DynamicResource ThemeV2.Border.Subtle}"
+                        Height="1"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,6"/>
+
+                <!-- Theme Editor Access - Disabled (Not Implemented) -->
+                <StackPanel Spacing="4" Opacity="0.5">
+                    <TextBlock Classes="Caption" Text="Advanced:" FontWeight="SemiBold"/>
+                    <Button x:Name="EditThemeButton"
+                           Classes="Secondary"
+                           IsEnabled="False"
+                           Background="{DynamicResource ThemeV2.Background.Subtle}"
+                           Foreground="{DynamicResource ThemeV2.Content.Tertiary}"
+                           HorizontalAlignment="Stretch"
+                           Height="28"
+                           ToolTip.Tip="Coming soon - Advanced theme editor">
+                        <TextBlock Text="🎨 Coming Soon"
+                                  FontSize="11"
+                                  TextTrimming="CharacterEllipsis"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- Separator -->
+                <Border Background="{DynamicResource ThemeV2.Border.Subtle}"
+                        Height="1"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,6"/>
+
+                <!-- Action Buttons - Compact -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Button x:Name="ApplyButton"
+                           Classes="Primary"
+                           Grid.Column="0"
+                           Height="32"
+                           HorizontalAlignment="Stretch"
+                           ToolTip.Tip="Apply theme changes">
+                        <TextBlock Text="Apply"
+                                  FontSize="12"
+                                  FontWeight="SemiBold"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Center"/>
+                    </Button>
+                    <Button x:Name="CloseButton"
+                           Classes="Secondary"
+                           Grid.Column="1"
+                           Height="32"
+                           HorizontalAlignment="Stretch"
+                           ToolTip.Tip="Close theme panel">
+                        <TextBlock Text="Close"
+                                  FontSize="12"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Center"/>
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+
+</UserControl>

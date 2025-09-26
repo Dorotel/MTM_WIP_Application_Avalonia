@@ -85,7 +85,3 @@ Raised when current system color values are changed. This includes changes to da
 event EventHandler<PlatformColorValues>? ColorValuesChanged;
 ```
 Use the `IPlatformSettings` interface to adapt your application's behavior to user-specific platform settings.
-
-
-
-

@@ -1,6 +1,5 @@
 ---
 mode: 'agent'
-tools: ['*']
 description: 'Get best practices for Entity Framework Core'
 ---
 

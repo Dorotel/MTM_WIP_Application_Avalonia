@@ -32,111 +32,67 @@
   </UserControl.KeyBindings>
 
   <UserControl.Styles>
-    <!-- MTM Theme Input Field Styles -->
-    <Style Selector="TextBox.input-field">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BodyText}" />
+    <!-- Theme V2 Input Field Styles using StyleSystem -->
+    <Style Selector="TextBox.Standard">
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background}" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Input.Content}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
       <Setter Property="MinHeight" Value="32" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
-    <!-- Focus state styling -->
-    <Style Selector="TextBox.input-field:focus">
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.FocusBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
+    <!-- Focus state using Theme V2 -->
+    <Style Selector="TextBox.Standard:focus">
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}" />
     </Style>
 
-    <!-- Material Icons global styling -->
+    <!-- Material Icons with Theme V2 -->
     <Style Selector="materialIcons|MaterialIcon">
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <!-- Primary Button styling -->
-    <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="12,6" />
-    </Style>
-
-    <!-- Secondary Button styling -->
-    <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" />
-      <Setter Property="BorderThickness" Value="1.5" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="12,6" />
-    </Style>
-
-    <Style Selector="Button.secondary:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.HoverBackground}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.BorderDarkBrush}" />
-    </Style>
-
-    <!-- Danger Button styling for Delete -->
-    <Style Selector="Button.danger">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="12,6" />
-    </Style>
-
-    <Style Selector="Button.danger:pointerover">
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.ErrorDarkBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource MTM_Shared_Logic.ErrorDarkBrush}" />
-    </Style>
+    <!-- Remove manual button styles - use StyleSystem classes -->
   </UserControl.Styles>
 
   <!-- Root Grid for overlay positioning -->
   <Grid x:Name="RootContainer">
 
     <!-- Main Layout Container - No ScrollViewer wrapper, CustomDataGrid handles its own scrolling -->
-    <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8" Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+    <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8" Background="{DynamicResource ThemeV2.Background.Canvas}">
 
       <!-- Data Display Section -->
-      <Border Grid.Row="0" Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+      <Border Grid.Row="0" Classes="Card" Background="{DynamicResource ThemeV2.Background.Card}" BorderBrush="{DynamicResource ThemeV2.Border.Default}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,8">
 
         <Grid x:Name="DataContainer" RowDefinitions="Auto,Auto,*">
 
           <!-- Search Input Panel (CollapsiblePanel) -->
           <controls:CollapsiblePanel Grid.Row="1" x:Name="SearchPanel" Header="Search Filters" HeaderPosition="Top" IsExpanded="True" Margin="0,0,0,16">
-            <Grid x:Name="SearchFieldsGrid" RowDefinitions="Auto,Auto" RowSpacing="12" Margin="8">
+            <Grid x:Name="SearchFieldsGrid" Classes="Form" RowDefinitions="Auto,Auto" RowSpacing="12" Margin="8">
 
               <!-- Part ID Field -->
               <Grid x:Name="PartIdGrid" Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
-                  <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
-                  <TextBlock Text="Part ID:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
+                  <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" />
+                  <TextBlock Classes="Form.Label" Text="Part ID:" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding SelectedPart, Mode=TwoWay}" Watermark="{Binding PartWatermark}" Classes="input-field" ToolTip.Tip="Select or enter a part number to search" TabIndex="1" IsEnabled="{Binding AreSearchFieldsEnabled}" />
+                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding SelectedPart, Mode=TwoWay}" Watermark="{Binding PartWatermark}" Classes="Standard" ToolTip.Tip="Select or enter a part number to search" TabIndex="1" IsEnabled="{Binding AreSearchFieldsEnabled}" />
               </Grid>
 
               <!-- Operation Field -->
               <Grid x:Name="OperationGrid" Grid.Row="1" ColumnDefinitions="90,*" ColumnSpacing="12">
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
-                  <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" Foreground="{DynamicResource MTM_Shared_Logic.InteractiveText}" />
-                  <TextBlock Text="Operation:" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" VerticalAlignment="Center" />
+                  <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" />
+                  <TextBlock Classes="Form.Label" Text="Operation:" VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding SelectedOperation, Mode=TwoWay}" Watermark="{Binding OperationWatermark}" Classes="input-field" ToolTip.Tip="Select or enter an operation number" TabIndex="2" IsEnabled="{Binding AreSearchFieldsEnabled}" />
+                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding SelectedOperation, Mode=TwoWay}" Watermark="{Binding OperationWatermark}" Classes="Standard" ToolTip.Tip="Select or enter an operation number" TabIndex="2" IsEnabled="{Binding AreSearchFieldsEnabled}" />
               </Grid>
 
             </Grid>
@@ -155,8 +111,8 @@
                                          MultiRowDeleteCommand="{Binding DeleteMultipleItemsCommand}"
                                          EditItemCommand="{Binding EditItemCommand}"
                                          IsVisible="{Binding HasInventoryItems}"
-                                         Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                                         BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                                         Background="{DynamicResource ThemeV2.Background.Card}"
+                                         BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                                          BorderThickness="1"
                                          CornerRadius="4"
                                          MinHeight="200"
@@ -164,17 +120,18 @@
 
             <!-- Nothing Found Indicator -->
             <Border Grid.Row="0" IsVisible="{Binding !HasInventoryItems}"
-                    Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                    Classes="Card"
+                    Background="{DynamicResource ThemeV2.Background.Card}"
+                    BorderBrush="{DynamicResource ThemeV2.Border.Default}"
                     BorderThickness="1" CornerRadius="4" Padding="32" MinHeight="200">
               <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
                 <materialIcons:MaterialIcon Kind="DatabaseRemove" Width="48" Height="48"
-                                          Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
-                <TextBlock Text="No inventory items found" FontSize="16" FontWeight="Medium"
-                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                                          Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
+                <TextBlock Classes="Heading3" Text="No inventory items found"
+                          Foreground="{DynamicResource ThemeV2.Content.Primary}"
                           HorizontalAlignment="Center" />
-                <TextBlock Text="Enter search criteria above and click Search" FontSize="12"
-                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                <TextBlock Classes="Body" Text="Enter search criteria above and click Search"
+                          Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                           HorizontalAlignment="Center" />
               </StackPanel>
             </Border>
@@ -183,8 +140,8 @@
             <Border Grid.Row="0" IsVisible="{Binding IsLoading}" Background="#80000000" MinHeight="200">
               <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
                 <ProgressBar IsIndeterminate="True" Width="200" Height="4"
-                           Foreground="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-                <TextBlock Text="Loading inventory data..." FontSize="14" Foreground="{DynamicResource MTM_Shared_Logic.HighlightTextBrush}"
+                           Foreground="{DynamicResource ThemeV2.Action.Primary}" />
+                <TextBlock Text="Loading inventory data..." FontSize="14" Foreground="{DynamicResource ThemeV2.Content.OnDark}"
                           HorizontalAlignment="Center" />
               </StackPanel>
             </Border>
@@ -195,31 +152,31 @@
       </Border>
 
       <!-- Action Buttons Panel -->
-      <Border Grid.Row="1" Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+      <Border Grid.Row="1" Classes="Card" Background="{DynamicResource ThemeV2.Background.Surface}" BorderBrush="{DynamicResource ThemeV2.Action.Primary}" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,8">
 
         <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="Auto,*,Auto">
 
           <!-- Primary Actions -->
           <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
 
-            <Button x:Name="SearchButton" Classes="primary" Width="100" Command="{Binding SearchCommand}" ToolTip.Tip="Search inventory (F5)" Click="OnSearchButtonClick">
+            <Button x:Name="SearchButton" Classes="Primary" Width="100" Command="{Binding SearchCommand}" ToolTip.Tip="Search inventory (F5)" Click="OnSearchButtonClick">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
-                <materialIcons:MaterialIcon Kind="Magnify" Width="14" Height="14" />
-                <TextBlock Text="Search" FontSize="11" FontWeight="SemiBold" />
+                <materialIcons:MaterialIcon Kind="Magnify" Width="14" Height="14" Foreground="{DynamicResource ThemeV2.Content.OnColor}" />
+                <TextBlock Classes="Body" Text="Search" Foreground="{DynamicResource ThemeV2.Content.OnColor}" />
               </StackPanel>
             </Button>
 
-            <Button x:Name="DeleteButton" Classes="danger" Width="100" Command="{Binding DeleteCommand}" IsEnabled="{Binding CanDelete}" ToolTip.Tip="Delete selected items (Delete key)" Click="OnDeleteButtonClick">
+            <Button x:Name="DeleteButton" Classes="Secondary" Width="100" Command="{Binding DeleteCommand}" IsEnabled="{Binding CanDelete}" ToolTip.Tip="Delete selected items (Delete key)" Click="OnDeleteButtonClick">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="Delete" Width="14" Height="14" />
-                <TextBlock Text="Delete" FontSize="11" FontWeight="SemiBold" />
+                <TextBlock Text="Delete" />
               </StackPanel>
             </Button>
 
-            <Button Classes="secondary" Width="100" Command="{Binding ResetCommand}" ToolTip.Tip="Reset search criteria (Escape)" Click="OnResetButtonClick">
+            <Button Classes="Secondary" Width="100" Command="{Binding ResetCommand}" ToolTip.Tip="Reset search criteria (Escape)" Click="OnResetButtonClick">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14" />
-                <TextBlock Text="Reset" FontSize="11" />
+                <TextBlock Text="Reset" />
               </StackPanel>
             </Button>
 
@@ -228,24 +185,24 @@
           <!-- Secondary Actions -->
           <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
 
-            <Button Classes="secondary" Width="100" Command="{Binding UndoCommand}" IsEnabled="{Binding CanUndo}" ToolTip.Tip="Undo last removal (Ctrl+Z)">
+            <Button Classes="Secondary" Width="100" Command="{Binding UndoCommand}" IsEnabled="{Binding CanUndo}" ToolTip.Tip="Undo last removal (Ctrl+Z)">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="Undo" Width="14" Height="14" />
-                <TextBlock Text="Undo" FontSize="11" />
+                <TextBlock Text="Undo" />
               </StackPanel>
             </Button>
 
-            <Button Classes="secondary" Width="100" Command="{Binding PrintCommand}" IsEnabled="{Binding HasInventoryItems}" ToolTip.Tip="Print inventory list (Ctrl+P)">
+            <Button Classes="Secondary" Width="100" Command="{Binding PrintCommand}" IsEnabled="{Binding HasInventoryItems}" ToolTip.Tip="Print inventory list (Ctrl+P)">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="Printer" Width="14" Height="14" />
-                <TextBlock Text="Print" FontSize="11" />
+                <TextBlock Text="Print" />
               </StackPanel>
             </Button>
 
-            <Button Classes="secondary" Width="100" Command="{Binding AdvancedRemovalCommand}" ToolTip.Tip="Advanced removal options">
+            <Button Classes="Secondary" Width="100" Command="{Binding AdvancedRemovalCommand}" ToolTip.Tip="Advanced removal options">
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
                 <materialIcons:MaterialIcon Kind="Settings" Width="14" Height="14" />
-                <TextBlock Text="Advanced" FontSize="11" />
+                <TextBlock Text="Advanced" />
               </StackPanel>
             </Button>
 
@@ -260,8 +217,8 @@
     <Border x:Name="NoteEditorOverlay"
             IsVisible="{Binding IsNoteEditorVisible}"
             Background="#CC000000">
-      <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-              BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
+      <Border Background="{DynamicResource ThemeV2.Background.Card}"
+              BorderBrush="{DynamicResource ThemeV2.Action.Primary}"
               BorderThickness="2"
               CornerRadius="8"
               MaxWidth="600"
@@ -281,8 +238,8 @@
             Background="#CC000000"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
-      <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-              BorderBrush="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
+      <Border Background="{DynamicResource ThemeV2.Background.Card}"
+              BorderBrush="{DynamicResource ThemeV2.Action.Primary}"
               BorderThickness="2"
               CornerRadius="8"
               Margin="30"

@@ -157,6 +157,7 @@ digraph CSharpDependencies {
     "MTM_WIP_Application_Avalonia.FileSelectionService" [label="FileSelectionService", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.FileSelectionService"];
     "MTM_WIP_Application_Avalonia.FileSelectionOptions" [label="FileSelectionOptions", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.FileSelectionOptions"];
     "MTM_WIP_Application_Avalonia.FocusManagementService" [label="FocusManagementService", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.FocusManagementService"];
+    "MTM_WIP_Application_Avalonia.ThemeChangedEventArgs" [label="ThemeChangedEventArgs", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.Interfaces.ThemeChangedEventArgs"];
     "MTM_WIP_Application_Avalonia.InventoryEditingService" [label="InventoryEditingService", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.InventoryEditingService"];
     "MTM_WIP_Application_Avalonia.MasterDataService" [label="MasterDataService", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.MasterDataService"];
     "MTM_WIP_Application_Avalonia.MTMFileLoggerProvider" [label="MTMFileLoggerProvider", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.MTMFileLoggerProvider"];
@@ -193,6 +194,7 @@ digraph CSharpDependencies {
     "MTM_WIP_Application_Avalonia.ServiceResult" [label="ServiceResult", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.ServiceResult"];
     "MTM_WIP_Application_Avalonia.ServiceResult" [label="ServiceResult", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.ServiceResult"];
     "MTM_WIP_Application_Avalonia.ThemeService" [label="ThemeService", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.ThemeService"];
+    "MTM_WIP_Application_Avalonia.ThemeServiceV2" [label="ThemeServiceV2", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.ThemeServiceV2"];
     "MTM_WIP_Application_Avalonia.VirtualPanelManager" [label="VirtualPanelManager", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Services.VirtualPanelManager"];
     "MTM_WIP_Application_Avalonia.AddItemViewModel" [label="AddItemViewModel", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.ViewModels.AddItemViewModel"];
     "MTM_WIP_Application_Avalonia.AdvancedInventoryViewModel" [label="AdvancedInventoryViewModel", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.ViewModels.MainForm.AdvancedInventoryViewModel"];
@@ -270,6 +272,7 @@ digraph CSharpDependencies {
     "MTM_WIP_Application_Avalonia.ThemeBuilderViewModel" [label="ThemeBuilderViewModel", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.ViewModels.SettingsForm.ThemeBuilderViewModel"];
     "MTM_WIP_Application_Avalonia.ColorPreset" [label="ColorPreset", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.ViewModels.SettingsForm.ColorPreset"];
     "MTM_WIP_Application_Avalonia.ThemeInfo" [label="ThemeInfo", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.ViewModels.SettingsForm.ThemeInfo"];
+    "MTM_WIP_Application_Avalonia.ThemeSettingsViewModel" [label="ThemeSettingsViewModel", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.ViewModels.SettingsForm.ThemeSettingsViewModel"];
     "MTM_WIP_Application_Avalonia.BaseViewModel" [label="BaseViewModel", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.ViewModels.Shared.BaseViewModel"];
     "MTM_WIP_Application_Avalonia.CustomDataGridViewModel" [label="CustomDataGridViewModel", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.ViewModels.Shared.CustomDataGridViewModel"];
     "MTM_WIP_Application_Avalonia.TransferCustomDataGridViewModel" [label="TransferCustomDataGridViewModel", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.ViewModels.Shared.TransferCustomDataGridViewModel"];
@@ -288,8 +291,7 @@ digraph CSharpDependencies {
     "MTM_WIP_Application_Avalonia.ConfirmationOverlayView" [label="ConfirmationOverlayView", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.ConfirmationOverlayView"];
     "MTM_WIP_Application_Avalonia.based" [label="based", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.based"];
     "MTM_WIP_Application_Avalonia.SuggestionOverlayView" [label="SuggestionOverlayView", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.SuggestionOverlayView"];
-    "MTM_WIP_Application_Avalonia.ThemeQuickSwitcher" [label="ThemeQuickSwitcher", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.ThemeQuickSwitcher"];
-    "MTM_WIP_Application_Avalonia.ThemeExportModel" [label="ThemeExportModel", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.ThemeExportModel"];
+    "MTM_WIP_Application_Avalonia.ThemeQuickSwitcher" [label="ThemeQuickSwitcher", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.MainForm.Overlays.ThemeQuickSwitcher"];
     "MTM_WIP_Application_Avalonia.AdvancedInventoryView" [label="AdvancedInventoryView", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.AdvancedInventoryView"];
     "MTM_WIP_Application_Avalonia.to" [label="to", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.to"];
     "MTM_WIP_Application_Avalonia.Core_Themes" [label="Core_Themes", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.Core_Themes"];
@@ -338,6 +340,7 @@ digraph CSharpDependencies {
     "MTM_WIP_Application_Avalonia.ShortcutsView" [label="ShortcutsView", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.SettingsForm.ShortcutsView"];
     "MTM_WIP_Application_Avalonia.SystemHealthView" [label="SystemHealthView", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.SettingsForm.SystemHealthView"];
     "MTM_WIP_Application_Avalonia.ThemeBuilderView" [label="ThemeBuilderView", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.SettingsForm.ThemeBuilderView"];
+    "MTM_WIP_Application_Avalonia.ThemeSettingsView" [label="ThemeSettingsView", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.SettingsForm.ThemeSettingsView"];
     "MTM_WIP_Application_Avalonia.ThemeEditorView" [label="ThemeEditorView", fillcolor=white, tooltip="MTM_WIP_Application_Avalonia.Views.ThemeEditorView"];
   }
 
@@ -452,13 +455,13 @@ digraph CSharpDependencies {
   "MTM_WIP_Application_Avalonia.ThemeService" -> "MTM_WIP_Application_Avalonia.ThemeChangedEventArgs" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.ThemeService" -> "MTM_WIP_Application_Avalonia.ThemeInfo" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.ThemeService" -> "MTM_WIP_Application_Avalonia.ServiceResult" [penwidth=1.5];
+  "MTM_WIP_Application_Avalonia.ThemeServiceV2" -> "MTM_WIP_Application_Avalonia.ThemeChangedEventArgs" [penwidth=1.5];
+  "MTM_WIP_Application_Avalonia.ThemeServiceV2" -> "MTM_WIP_Application_Avalonia.Helper_Database_StoredProcedure" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.VirtualPanelManager" -> "MTM_WIP_Application_Avalonia.SettingsPanelViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.VirtualPanelManager" -> "MTM_WIP_Application_Avalonia.SettingsCategoryViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.VirtualPanelManager" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.AddItemViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AddItemViewModel" -> "MTM_WIP_Application_Avalonia.ErrorHandling" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AdvancedInventoryViewModel" -> "MTM_WIP_Application_Avalonia.Helper_Database_StoredProcedure" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.AdvancedRemoveViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AdvancedRemoveViewModel" -> "MTM_WIP_Application_Avalonia.SessionTransaction" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AdvancedRemoveViewModel" -> "MTM_WIP_Application_Avalonia.Helper_Database_StoredProcedure" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.InventoryTabViewModel" -> "MTM_WIP_Application_Avalonia.SuccessEventArgs" [penwidth=1.5];
@@ -514,23 +517,17 @@ digraph CSharpDependencies {
   "MTM_WIP_Application_Avalonia.NoteEditorViewModel" -> "MTM_WIP_Application_Avalonia.Helper_Database_StoredProcedure" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.NoteEditorViewModel" -> "MTM_WIP_Application_Avalonia.InventoryItem" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.ProgressOverlayViewModel" -> "MTM_WIP_Application_Avalonia.ErrorHandling" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.SuccessOverlayViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.PrintLayoutControlViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.PrintLayoutControlViewModel" -> "MTM_WIP_Application_Avalonia.PrintColumnViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.PrintColumnViewModel" -> "MTM_WIP_Application_Avalonia.PrintColumnInfo" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.PrintViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.PrintViewModel" -> "MTM_WIP_Application_Avalonia.PrintLayoutControlViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.PrintViewModel" -> "MTM_WIP_Application_Avalonia.PrintColumnInfo" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.PrintViewModel" -> "MTM_WIP_Application_Avalonia.PrintConfiguration" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.AboutViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AboutViewModel" -> "MTM_WIP_Application_Avalonia.SystemComponentInfo" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AboutViewModel" -> "MTM_WIP_Application_Avalonia.LicenseInfo" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AddLocationViewModel" -> "MTM_WIP_Application_Avalonia.LocationInfo" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AddOperationViewModel" -> "MTM_WIP_Application_Avalonia.WorkCenter" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.AddUserViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.BackupRecoveryViewModel" -> "MTM_WIP_Application_Avalonia.BackupHistoryItem" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.BackupRecoveryViewModel" -> "MTM_WIP_Application_Avalonia.ScheduledBackupItem" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.DatabaseSettingsViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.EditItemTypeViewModel" -> "MTM_WIP_Application_Avalonia.ItemTypeInfo" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.EditLocationViewModel" -> "MTM_WIP_Application_Avalonia.LocationInfo" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.EditOperationViewModel" -> "MTM_WIP_Application_Avalonia.OperationInfo" [penwidth=1.5];
@@ -549,14 +546,12 @@ digraph CSharpDependencies {
   "MTM_WIP_Application_Avalonia.SettingsPanelViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.SettingsViewModel" -> "MTM_WIP_Application_Avalonia.SettingsCategoryViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.SettingsViewModel" -> "MTM_WIP_Application_Avalonia.PanelStateChangedEventArgs" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.ShortcutsViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.ShortcutsViewModel" -> "MTM_WIP_Application_Avalonia.ShortcutItem" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.SystemHealthViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.SystemHealthViewModel" -> "MTM_WIP_Application_Avalonia.ErrorHandling" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.ThemeBuilderViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.ThemeBuilderViewModel" -> "MTM_WIP_Application_Avalonia.ThemeInfo" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.ThemeBuilderViewModel" -> "MTM_WIP_Application_Avalonia.ColorPreset" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.CustomDataGridViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
+  "MTM_WIP_Application_Avalonia.ThemeSettingsViewModel" -> "MTM_WIP_Application_Avalonia.BaseViewModel" [penwidth=1.5];
+  "MTM_WIP_Application_Avalonia.ThemeSettingsViewModel" -> "MTM_WIP_Application_Avalonia.ThemeChangedEventArgs" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.CustomDataGridViewModel" -> "MTM_WIP_Application_Avalonia.CustomDataGridColumn" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.TransferCustomDataGridViewModel" -> "MTM_WIP_Application_Avalonia.CustomDataGridColumn" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.TransferCustomDataGridViewModel" -> "MTM_WIP_Application_Avalonia.TransferInventoryItem" [penwidth=1.5];
@@ -570,7 +565,6 @@ digraph CSharpDependencies {
   "MTM_WIP_Application_Avalonia.ThemeEditorViewModel" -> "MTM_WIP_Application_Avalonia.ColorSnapshot" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.TransactionHistoryViewModel" -> "MTM_WIP_Application_Avalonia.TransactionRecord" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.TransactionHistoryViewModel" -> "MTM_WIP_Application_Avalonia.ErrorHandling" [penwidth=1.5];
-  "MTM_WIP_Application_Avalonia.ThemeQuickSwitcher" -> "MTM_WIP_Application_Avalonia.ThemeChangedEventArgs" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AdvancedInventoryView" -> "MTM_WIP_Application_Avalonia.Core_Themes" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AdvancedInventoryView" -> "MTM_WIP_Application_Avalonia.Service_DebugTracer" [penwidth=1.5];
   "MTM_WIP_Application_Avalonia.AdvancedInventoryView" -> "MTM_WIP_Application_Avalonia.AdvancedInventoryViewModel" [penwidth=1.5];

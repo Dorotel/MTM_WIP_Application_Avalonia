@@ -60,4 +60,3 @@ For the complete API documentation, see [here](https://api-docs.avaloniaui.net/d
 :::info
 View the source code on _GitHub_ [`ScrollViewer.cs`](https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Controls/ScrollViewer.cs)
 :::
-

@@ -31,15 +31,15 @@ public static class StartupDialog
 
             var message = $"""
                 {appName} v{version}
-                
+
                 Current User: {username}
-                
+
                 Primary Log Location:
                 {logPath}
-                
+
                 Fallback Log Location:
                 {GetFallbackLogPath()}
-                
+
                 Application ready to use.
                 """;
 
@@ -50,11 +50,11 @@ public static class StartupDialog
             // Fallback message if there's an error getting configuration
             var fallbackMessage = $"""
                 MTM WIP Application - Startup Information
-                
+
                 Current User: {Environment.UserName.ToUpper()}
-                
+
                 Error loading configuration: {ex.Message}
-                
+
                 Application will continue with default settings.
                 """;
 
@@ -107,7 +107,7 @@ public static class StartupDialog
                     var messageWindow = new StartupInfoWindow(title, message);
                     await messageWindow.ShowDialog(desktop.MainWindow!);
                     break;
-                    
+
                 case ISingleViewApplicationLifetime:
                     // For mobile platforms, fall back to console output or logging
                     // Could be enhanced with platform-specific dialogs in the future
@@ -115,7 +115,7 @@ public static class StartupDialog
                     Console.WriteLine(message);
                     // Note: Could add logging here if a logger was available
                     break;
-                    
+
                 default:
                     Console.WriteLine($"{title}:");
                     Console.WriteLine(message);
@@ -143,17 +143,17 @@ public class StartupInfoWindow : Window
     {
         _messageText = messageText;
         Title = title;
-        
+
         Width = 600;
         Height = 400;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         CanResize = false;
         ShowInTaskbar = false;
-        
+
         // Apply MTM styling using theme resources
-        Background = Application.Current?.FindResource("MTM_Shared_Logic.CardBackgroundBrush") as IBrush ?? 
+        Background = Application.Current?.FindResource("MTM_Shared_Logic.CardBackgroundBrush") as IBrush ??
                     new SolidColorBrush(Color.FromRgb(250, 250, 250));
-        
+
         InitializeContent();
     }
 
@@ -165,7 +165,7 @@ public class StartupInfoWindow : Window
         // Header with MTM branding
         var headerPanel = new Border
         {
-            Background = Application.Current?.FindResource("MTM_Shared_Logic.PrimaryAction") as IBrush ?? 
+            Background = Application.Current?.FindResource("MTM_Shared_Logic.PrimaryAction") as IBrush ??
                         new SolidColorBrush(Color.FromRgb(106, 13, 173)),
             Height = 60,
             [DockPanel.DockProperty] = Dock.Top
@@ -186,7 +186,7 @@ public class StartupInfoWindow : Window
         var buttonPanel = new Border
         {
             Height = 70,
-            Background = Application.Current?.FindResource("MTM_Shared_Logic.PanelBackgroundBrush") as IBrush ?? 
+            Background = Application.Current?.FindResource("MTM_Shared_Logic.PanelBackgroundBrush") as IBrush ??
                        new SolidColorBrush(Color.FromRgb(240, 240, 240)),
             [DockPanel.DockProperty] = Dock.Bottom
         };
@@ -198,7 +198,7 @@ public class StartupInfoWindow : Window
             Height = 35,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
-            Background = Application.Current?.FindResource("MTM_Shared_Logic.PrimaryAction") as IBrush ?? 
+            Background = Application.Current?.FindResource("MTM_Shared_Logic.PrimaryAction") as IBrush ??
                         new SolidColorBrush(Color.FromRgb(106, 13, 173)),
             Foreground = Application.Current?.FindResource("MTM_Shared_Logic.OverlayTextBrush") as IBrush ?? Brushes.White,
             FontWeight = FontWeight.SemiBold
@@ -224,8 +224,7 @@ public class StartupInfoWindow : Window
             Text = _messageText,
             FontSize = 14,
             TextWrapping = TextWrapping.Wrap,
-            LineHeight = 22,
-            Foreground = Application.Current?.FindResource("MTM_Shared_Logic.BodyText") as IBrush ?? 
+            Foreground = Application.Current?.FindResource("MTM_Shared_Logic.BodyText") as IBrush ??
                        new SolidColorBrush(Color.FromRgb(51, 51, 51))
         };
         contentPanel.Children.Add(messageBlock);

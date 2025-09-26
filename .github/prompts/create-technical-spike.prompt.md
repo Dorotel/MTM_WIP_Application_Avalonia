@@ -1,7 +1,6 @@
 ---
 mode: 'agent'
 description: 'Create time-boxed technical spike documents for researching and resolving critical development decisions before implementation.'
-tools: ['*']
 ---
 
 ## Implementation Mode

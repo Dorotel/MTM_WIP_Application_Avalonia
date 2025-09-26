@@ -7,30 +7,30 @@
         <StackPanel Spacing="16" MaxWidth="600">
             
             <!-- Application Header -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.PrimaryGradientBrush}"
+            <Border Background="#2196F3"
                     CornerRadius="8"
                     Padding="24">
                 <StackPanel Spacing="8">
                     <TextBlock Text="🏭 MTM WIP Application"
                                FontSize="24"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                               Foreground="#FFFFFF"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Work In Progress Inventory Management System"
                                FontSize="16"
-                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                               Foreground="#FFFFFF"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Version 2.1.0"
                                FontSize="14"
-                               Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
+                               Foreground="#FFFFFF"
                                HorizontalAlignment="Center"
                                Margin="0,8,0,0"/>
                 </StackPanel>
             </Border>
 
             <!-- Company Information -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="20">
@@ -39,7 +39,7 @@
                     <TextBlock Text="🏢 Company Information"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,8"/>
                     
                     <Grid ColumnDefinitions="120,*">
@@ -60,14 +60,14 @@
                     <Grid ColumnDefinitions="120,*">
                         <TextBlock Grid.Column="0" Text="Website:" FontWeight="SemiBold"/>
                         <TextBlock Grid.Column="1" Text="www.mtm-manufacturing.com" 
-                                   Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"/>
+                                   Foreground="#2196F3"/>
                     </Grid>
                 </StackPanel>
             </Border>
 
             <!-- Application Details -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="20">
@@ -76,7 +76,7 @@
                     <TextBlock Text="📱 Application Details"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,8"/>
                     
                     <Grid ColumnDefinitions="140,*">
@@ -112,8 +112,8 @@
             </Border>
 
             <!-- System Information -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="20">
@@ -122,7 +122,7 @@
                     <TextBlock Text="💻 System Information"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,8"/>
                     
                     <Grid ColumnDefinitions="140,*">
@@ -153,8 +153,8 @@
             </Border>
 
             <!-- Development Team -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}"
+            <Border Background="#FFFFFF"
+                    BorderBrush="#E0E0E0"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="20">
@@ -163,7 +163,7 @@
                     <TextBlock Text="👥 Development Team"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}"
+                               Foreground="#212121"
                                Margin="0,0,0,8"/>
                     
                     <Grid ColumnDefinitions="140,*">
@@ -189,8 +189,8 @@
             </Border>
 
             <!-- Support Information -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.InfoLightBrush}"
-                    BorderBrush="{DynamicResource MTM_Shared_Logic.InfoBrush}"
+            <Border Background="#E3F2FD"
+                    BorderBrush="#2196F3"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="20">
@@ -199,13 +199,13 @@
                     <TextBlock Text="🛠️ Support Information"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource MTM_Shared_Logic.InfoTextBrush}"
+                               Foreground="#1976D2"
                                Margin="0,0,0,8"/>
                     
                     <Grid ColumnDefinitions="140,*">
                         <TextBlock Grid.Column="0" Text="Support Email:" FontWeight="SemiBold"/>
                         <TextBlock Grid.Column="1" Text="support@mtm-manufacturing.com"
-                                   Foreground="{DynamicResource MTM_Shared_Logic.AccentBrush}"/>
+                                   Foreground="#2196F3"/>
                     </Grid>
                     
                     <Grid ColumnDefinitions="140,*">
@@ -243,13 +243,13 @@
             </StackPanel>
 
             <!-- Copyright -->
-            <Border Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}"
+            <Border Background="#F5F5F5"
                     CornerRadius="4"
                     Padding="12"
                     Margin="0,16,0,0">
                 <TextBlock Text="© 2024 Manitowoc Tool and Manufacturing. All rights reserved."
                            FontSize="12"
-                           Foreground="{DynamicResource MTM_Shared_Logic.BodyText}"
+                           Foreground="#424242"
                            HorizontalAlignment="Center"/>
             </Border>
 

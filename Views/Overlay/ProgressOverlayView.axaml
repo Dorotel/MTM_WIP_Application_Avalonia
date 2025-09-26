@@ -14,93 +14,93 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <!-- Compact Processing Icon with Animation -->
+    <!-- Processing Icon with Animation using Theme V2 -->
     <Style Selector="materialIcons|MaterialIcon.compact-processing-icon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.PrimaryAction}" />
-      <Setter Property="Width" Value="16" />
-      <Setter Property="Height" Value="16" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="Width" Value="16"/>
+      <Setter Property="Height" Value="16"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
       <Style.Animations>
         <Animation Duration="0:0:1.5" IterationCount="Infinite">
           <KeyFrame Cue="0%">
-            <Setter Property="RotateTransform.Angle" Value="0" />
+            <Setter Property="RotateTransform.Angle" Value="0"/>
           </KeyFrame>
           <KeyFrame Cue="100%">
-            <Setter Property="RotateTransform.Angle" Value="360" />
+            <Setter Property="RotateTransform.Angle" Value="360"/>
           </KeyFrame>
         </Animation>
       </Style.Animations>
     </Style>
 
-    <!-- Compact Success Icon -->
+    <!-- Success Icon using Theme V2 -->
     <Style Selector="materialIcons|MaterialIcon.compact-success-icon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
-      <Setter Property="Width" Value="16" />
-      <Setter Property="Height" Value="16" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Success}"/>
+      <Setter Property="Width" Value="16"/>
+      <Setter Property="Height" Value="16"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
-    <!-- Compact Error Icon -->
+    <!-- Error Icon using Theme V2 -->
     <Style Selector="materialIcons|MaterialIcon.compact-error-icon">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ErrorBrush}" />
-      <Setter Property="Width" Value="16" />
-      <Setter Property="Height" Value="16" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Error}"/>
+      <Setter Property="Width" Value="16"/>
+      <Setter Property="Height" Value="16"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
-    <!-- Compact Progress Text -->
+    <!-- Progress Text using StyleSystem -->
     <Style Selector="TextBlock.compact-progress-text">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.HeadingText}" />
-      <Setter Property="FontSize" Value="12" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-      <Setter Property="Margin" Value="8,0,0,0" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+      <Setter Property="Margin" Value="{StaticResource ThemeV2.Spacing.Small}"/>
     </Style>
 
-    <!-- Compact Ready Text -->
+    <!-- Ready Text using StyleSystem -->
     <Style Selector="TextBlock.compact-ready-text">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.SuccessBrush}" />
-      <Setter Property="FontSize" Value="12" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Margin" Value="8,0,0,0" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Success}"/>
+      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="{StaticResource ThemeV2.Spacing.Small}"/>
     </Style>
 
-    <!-- Compact Determinate Progress Bar -->
+    <!-- Progress Bar using Theme V2 -->
     <Style Selector="ProgressBar.compact-progress-bar">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ProcessingBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
-      <Setter Property="Height" Value="4" />
-      <Setter Property="CornerRadius" Value="2" />
-      <Setter Property="Margin" Value="8,0,0,0" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="MinWidth" Value="60" />
-      <Setter Property="MaxWidth" Value="100" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+      <Setter Property="Height" Value="4"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+      <Setter Property="Margin" Value="{StaticResource ThemeV2.Spacing.Small}"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="MinWidth" Value="60"/>
+      <Setter Property="MaxWidth" Value="100"/>
     </Style>
 
-    <!-- Compact Indeterminate Progress Bar -->
+    <!-- Indeterminate Progress Bar using Theme V2 -->
     <Style Selector="ProgressBar.compact-indeterminate-progress">
-      <Setter Property="Foreground" Value="{DynamicResource MTM_Shared_Logic.ProcessingBrush}" />
-      <Setter Property="Background" Value="{DynamicResource MTM_Shared_Logic.BorderLightBrush}" />
-      <Setter Property="Height" Value="4" />
-      <Setter Property="CornerRadius" Value="2" />
-      <Setter Property="IsIndeterminate" Value="True" />
-      <Setter Property="Margin" Value="8,0,0,0" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="MinWidth" Value="60" />
-      <Setter Property="MaxWidth" Value="100" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+      <Setter Property="Height" Value="4"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+      <Setter Property="IsIndeterminate" Value="True"/>
+      <Setter Property="Margin" Value="{StaticResource ThemeV2.Spacing.Small}"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="MinWidth" Value="60"/>
+      <Setter Property="MaxWidth" Value="100"/>
     </Style>
   </UserControl.Styles>
 
-  <!-- Single Root Container - Grid with overlapping content -->
+  <!-- Progress container with proper Theme V2 styling -->
   <Grid MaxWidth="260" MinHeight="20" HorizontalAlignment="Left" VerticalAlignment="Center">
 
     <!-- Progress State Display (when DataContext exists and IsInProgress=true) -->
-    <StackPanel Orientation="Horizontal" Spacing="8"
+    <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}"
                 IsVisible="{Binding IsInProgress, FallbackValue=False}"
                 HorizontalAlignment="Left" VerticalAlignment="Center">
 
@@ -133,19 +133,19 @@
     </StackPanel>
 
     <!-- Ready State Display (when not in progress or DataContext is null) -->
-    <StackPanel Orientation="Horizontal" Spacing="8"
+    <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.SM}"
                 IsVisible="{Binding !IsInProgress, FallbackValue=True}"
                 HorizontalAlignment="Left" VerticalAlignment="Center">
 
       <!-- Ready Icon -->
       <materialIcons:MaterialIcon Kind="CheckCircle"
-                                 Foreground="{DynamicResource MTM_Shared_Logic.SuccessBrush}"
+                                 Foreground="{DynamicResource ThemeV2.Status.Success}"
                                  Width="16" Height="16"
-                                 VerticalAlignment="Center" />
+                                 VerticalAlignment="Center"/>
 
       <!-- Ready Text -->
-      <TextBlock Text="Ready"
-                 Classes="compact-ready-text" />
+      <TextBlock Classes="compact-ready-text"
+                 Text="Ready"/>
     </StackPanel>
 
   </Grid>

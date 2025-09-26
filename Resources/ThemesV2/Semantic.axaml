@@ -1,0 +1,28 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+<!-- Include the color primitive tokens -->
+<ResourceDictionary.MergedDictionaries>
+    <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/Tokens.axaml"/>
+</ResourceDictionary.MergedDictionaries>
+
+<!--
+Theme V2 Semantic Token Layer
+=============================
+Role-based semantic mapping of color primitives to UI purposes
+This layer provides meaning and context to the raw color tokens
+Following MTM architectural patterns and WCAG 2.1 AA compliance
+
+NOTE: Most semantic resources are defined in Theme.Light.axaml and Theme.Dark.axaml
+      for proper theme variant support. This file contains only non-theme-specific
+      semantic tokens.
+-->
+
+<!-- ===========================================
+     LEGACY COMPATIBILITY ONLY
+     =========================================== -->
+
+<!-- Only keep resources that are truly theme-independent for legacy compatibility -->
+<!-- Most semantic resources are defined in Theme.Light.axaml and Theme.Dark.axaml -->
+
+</ResourceDictionary>

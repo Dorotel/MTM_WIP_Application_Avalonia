@@ -12,21 +12,26 @@
         <!-- Material Icons Styles - REQUIRED for Material.Icons.Avalonia -->
         <materialIcons:MaterialIconStyles />
 
-        <!-- MTM Component Styles - PRIORITIZED for complete theme control -->
-        <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTMComponents.axaml"/>
+        <!-- Theme V2 Control Styles - Avalonia 11.3.4 compatible semantic token system -->
+        <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/BaseStyles.axaml"/>
+
+        <!-- MTM Style System - Component-specific styles -->
+        <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/StyleSystem.axaml"/>
+
+        <!-- Custom Controls Styles -->
+        <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Controls/CollapsiblePanel/CollapsiblePanel.axaml"/>
 
     </Application.Styles>
 
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- Load only the base MTM theme - others will be loaded dynamically -->
-                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Themes/MTMTheme.axaml"/>
+                <!-- Theme V2 Resources - Semantic token system with Avalonia 11.3.4 integration -->
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/Tokens.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/Semantic.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/Theme.Light.axaml"/>
+                <ResourceInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/Theme.Dark.axaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <!-- Additional legacy aliases for backward compatibility -->
-            <SolidColorBrush x:Key="MTM_Shared_Logic.BackgroundBrush" Color="#F8F7FF"/>
-            <SolidColorBrush x:Key="MTM_Shared_Logic.LightBackgroundBrush" Color="#FAFAFA"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

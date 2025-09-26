@@ -5,9 +5,11 @@
              xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels.MainForm"
              xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
              xmlns:overlayViews="using:MTM_WIP_Application_Avalonia.Views.Overlay"
+             xmlns:overlays="using:MTM_WIP_Application_Avalonia.Views.MainForm.Overlays"
              xmlns:panelViews="using:MTM_WIP_Application_Avalonia.Views.MainForm.Panels"
              xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
              xmlns:converters="using:MTM_WIP_Application_Avalonia.Converters"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
              mc:Ignorable="d"
              d:DesignWidth="1200"
              d:DesignHeight="700"
@@ -17,19 +19,17 @@
              HorizontalAlignment="Stretch"
              VerticalAlignment="Stretch"
              VerticalContentAlignment="Stretch"
-              HorizontalContentAlignment="Stretch"
-             Background="{DynamicResource MTM_Shared_Logic.MainBackground}">
+             HorizontalContentAlignment="Stretch"
+             Background="{DynamicResource ThemeV2.Background.Canvas}">
 
   <UserControl.Resources>
-    <!-- Resources are now provided by DynamicResource bindings from MTM themes -->
-    <converters:ColorToBoxShadowConverter x:Key="ColorToBoxShadowConverter"/>
+    <!-- Theme V2 Resources - StyleSystem provides all styling -->
+    <ResourceDictionary>
+      <converters:ColorToBoxShadowConverter x:Key="ColorToBoxShadowConverter"/>
+    </ResourceDictionary>
   </UserControl.Resources>
 
-  <UserControl.Styles>
-    <!-- TabControl styling is now handled globally by MTMComponents.axaml -->
-  </UserControl.Styles>
-
-  <!-- Keyboard shortcuts -->
+  <!-- All styling moved to StyleSystem components - no local styles needed -->  <!-- Keyboard shortcuts - PRESERVED -->
   <UserControl.KeyBindings>
     <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}"/>
     <KeyBinding Gesture="Ctrl+S" Command="{Binding OpenSettingsCommand}"/>
@@ -41,154 +41,99 @@
     <KeyBinding Gesture="Ctrl+P" Command="{Binding RemoveItemViewModel.PrintCommand}"/>
   </UserControl.KeyBindings>
 
-  <!-- Main container that stretches to fill entire available space -->
-  <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-    <DockPanel HorizontalAlignment="Stretch"
-               VerticalAlignment="Stretch"
-               LastChildFill="True">
+  <!-- Main container using StyleSystem classes -->
+  <Grid Classes="MainContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <DockPanel Classes="MainLayout" LastChildFill="True">
 
-    <!-- Header Menu with MTM Branding -->
-    <Border DockPanel.Dock="Top"
-            Background="{DynamicResource MTM_Shared_Logic.SidebarGradientBrush}"
-            Padding="24,4"
-            BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.ShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,2,8,0'}"
-            HorizontalAlignment="Stretch">
-      <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
-        <!-- Left side: Menu -->
-        <Menu Grid.Column="0"
-              Background="Transparent"
-              Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-              HorizontalAlignment="Left">
-          <MenuItem Header="_File" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}">
-            <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+    <!-- Header Menu using StyleSystem classes -->
+    <Border Classes="HeaderPanel WithShadow" DockPanel.Dock="Top">
+      <Grid Classes="HeaderContent" ColumnDefinitions="*,Auto">
+        <!-- Left side: Main Menu using StyleSystem -->
+        <Menu Classes="MainMenu" Grid.Column="0">
+          <MenuItem Header="_File">
+            <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}"/>
             <Separator/>
-            <MenuItem Header="E_xit" Command="{Binding ExitCommand}" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+            <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
           </MenuItem>
-          <MenuItem Header="_View" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}">
-            <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+          <MenuItem Header="_View">
+            <MenuItem Header="_Personal History" Command="{Binding OpenPersonalHistoryCommand}"/>
           </MenuItem>
           <!-- Development builds only -->
           <MenuItem Header="_Help"
-                    Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
                     IsVisible="{Binding ShowDevelopmentMenu, FallbackValue=False}">
-            <MenuItem Header="_About" Command="{Binding OpenAboutCommand}" Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+            <MenuItem Header="_About" Command="{Binding OpenAboutCommand}"/>
           </MenuItem>
         </Menu>
 
         <!-- Right side: Theme Quick Switcher -->
-        <views:ThemeQuickSwitcher x:Name="ThemeQuickSwitcher"
-                                 Grid.Column="1"
-                                 HorizontalAlignment="Right"
-                                 VerticalAlignment="Center"
-                                 Margin="16,0,0,0"/>
+        <overlays:ThemeQuickSwitcher x:Name="ThemeQuickSwitcher"
+                                     Classes="ThemeSwitcher"
+                                     Grid.Column="1"/>
       </Grid>
     </Border>
 
-    <!-- Status Bar -->
-    <Border DockPanel.Dock="Bottom"
-            Background="{DynamicResource MTM_Shared_Logic.FooterBackgroundBrush}"
-            Padding="24,8"
-            HorizontalAlignment="Stretch"
-            MinHeight="36">
-      <Grid ColumnDefinitions="Auto,*,Auto,Auto"
-            ColumnSpacing="16"
-            HorizontalAlignment="Stretch">
+    <!-- Status Bar using StyleSystem classes -->
+    <Border Classes="FooterPanel WithBorder" DockPanel.Dock="Bottom">
+      <Grid Classes="FooterContent" ColumnDefinitions="Auto,*,Auto,Auto">
 
         <!-- Progress Overlay Display -->
-        <overlayViews:ProgressOverlayView Grid.Column="0"
-                                         HorizontalAlignment="Left"
-                                         VerticalAlignment="Center"
-                                         DataContext="{Binding ProgressOverlayService.CurrentProgressOverlay}"
-                                         MinWidth="200"
-                                         MaxWidth="280" />
+        <overlayViews:ProgressOverlayView Classes="ProgressDisplay"
+                                         Grid.Column="0"
+                                         DataContext="{Binding ProgressOverlayService.CurrentProgressOverlay}" />
 
         <!-- Spacer -->
         <Border Grid.Column="1" Background="Transparent"/>
 
-        <!-- Enhanced Status Text Box -->
-        <Border Grid.Column="2"
-                Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-                BorderThickness="1"
-                Padding="16,8"
-                CornerRadius="8"
-                MinWidth="120"
-                HorizontalAlignment="Right">
-          <TextBlock Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
-                     Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                     FontSize="12"
+        <!-- Status Text Box using StyleSystem -->
+        <Border Classes="StatusCard" Grid.Column="2">
+          <TextBlock Classes="Caption"
+                     Text="{Binding StatusText, FallbackValue='Ready', TargetNullValue='Ready'}"
+                     Foreground="{DynamicResource ThemeV2.Content.Primary}"
                      FontWeight="SemiBold"
                      VerticalAlignment="Center"
                      TextTrimming="CharacterEllipsis"
                      ToolTip.Tip="{Binding StatusText}"/>
         </Border>
 
-        <!-- Enhanced Version Display -->
-        <Border Grid.Column="3"
-                Background="{DynamicResource MTM_Shared_Logic.PrimaryAction}"
-                CornerRadius="12"
-                Padding="12,6"
-                HorizontalAlignment="Right">
-          <TextBlock Text="Ver. 5.0"
-                     Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"
-                     FontSize="10"
-                     FontWeight="SemiBold"
+        <!-- Version Display Badge using StyleSystem -->
+        <Border Classes="VersionBadge" Grid.Column="3">
+          <TextBlock Classes="Caption"
+                     Text="Ver. 5.0"
+                     Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                     FontWeight="Bold"
                      VerticalAlignment="Center"/>
         </Border>
       </Grid>
     </Border>
 
-    <!-- Main Content Area - Fills remaining space -->
-    <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch"
-          Margin="8">
+    <!-- Main Content Area using StyleSystem -->
+    <Grid Classes="MainContent" Margin="{StaticResource ThemeV2.Spacing.Small}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" MinWidth="400"/>
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
 
-      <!-- Left Panel: Tab Control - Stretches fully -->
-      <Grid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <!-- Main Tab Control -->
-        <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-                BorderThickness="2"
-                CornerRadius="8"
-                Margin="8"
-                BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,4,12,0'}"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch">
+      <!-- Left Panel: Tab Control -->
+      <Grid Grid.Column="0">
+        <!-- Main Tab Control using StyleSystem -->
+        <Border Classes="Card Elevated TabContainer" ClipToBounds="True">
           <TabControl x:Name="MainForm_TabControl"
+                      Classes="MainNavigation"
                       SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay, FallbackValue=0}"
                       SelectionChanged="OnTabSelectionChanged"
-                      PointerPressed="OnTabControlPointerPressed"
-                      Background="Transparent"
-                      HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
-                    VerticalContentAlignment="Stretch">
+                      PointerPressed="OnTabControlPointerPressed">
 
-          <!-- Inventory Tab -->
-          <TabItem>
+          <!-- Inventory Tab with StyleSystem classes -->
+          <TabItem Classes="PrimaryTab">
             <TabItem.Header>
-              <StackPanel Orientation="Horizontal" Spacing="12">
-                <Border CornerRadius="10"
-                        Width="24"
-                        Height="24">
-                  <TextBlock Text="📦"
-                             FontSize="14"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+              <StackPanel Classes="TabHeader">
+                <Border Classes="TabIcon Primary">
+                  <materialIcons:MaterialIcon Kind="Archive"/>
                 </Border>
-                <TextBlock Text="Inventory"
-                           FontSize="15"
-                           FontWeight="SemiBold"
-                           VerticalAlignment="Center"
-                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                <TextBlock Classes="TabTitle" Text="Inventory"/>
               </StackPanel>
             </TabItem.Header>
-            <!-- Content container that stretches to fill all available space -->
+            <!-- Content container preserving MVVM binding -->
             <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
               <ContentControl Content="{Binding InventoryContent}"
                               HorizontalAlignment="Stretch"
@@ -198,27 +143,17 @@
             </DockPanel>
           </TabItem>
 
-          <!-- Remove Tab -->
-          <TabItem>
+          <!-- Remove Tab with StyleSystem classes -->
+          <TabItem Classes="WarningTab">
             <TabItem.Header>
-              <StackPanel Orientation="Horizontal" Spacing="12">
-                <Border CornerRadius="10"
-                        Width="24"
-                        Height="24">
-                  <TextBlock Text="🗑️"
-                             FontSize="14"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+              <StackPanel Classes="TabHeader">
+                <Border Classes="TabIcon Warning">
+                  <materialIcons:MaterialIcon Kind="Delete"/>
                 </Border>
-                <TextBlock Text="Remove"
-                           FontSize="15"
-                           FontWeight="SemiBold"
-                           VerticalAlignment="Center"
-                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                <TextBlock Classes="TabTitle" Text="Remove"/>
               </StackPanel>
             </TabItem.Header>
-            <!-- Content container that stretches to fill all available space -->
+            <!-- Content container preserving MVVM binding -->
             <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
               <ContentControl Content="{Binding RemoveContent}"
                               HorizontalAlignment="Stretch"
@@ -228,27 +163,17 @@
             </DockPanel>
           </TabItem>
 
-          <!-- Transfer Tab -->
-          <TabItem>
+          <!-- Transfer Tab with StyleSystem classes -->
+          <TabItem Classes="SuccessTab">
             <TabItem.Header>
-              <StackPanel Orientation="Horizontal" Spacing="12">
-                <Border CornerRadius="10"
-                        Width="24"
-                        Height="24">
-                  <TextBlock Text="🔄"
-                             FontSize="14"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+              <StackPanel Classes="TabHeader">
+                <Border Classes="TabIcon Success">
+                  <materialIcons:MaterialIcon Kind="SwapHorizontal"/>
                 </Border>
-                <TextBlock Text="Transfer"
-                           FontSize="15"
-                           FontWeight="SemiBold"
-                           VerticalAlignment="Center"
-                           Foreground="{DynamicResource MTM_Shared_Logic.OverlayTextBrush}"/>
+                <TextBlock Classes="TabTitle" Text="Transfer"/>
               </StackPanel>
             </TabItem.Header>
-            <!-- Content container that stretches to fill all available space -->
+            <!-- Content container preserving MVVM binding -->
             <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
               <ContentControl Content="{Binding TransferContent}"
                               HorizontalAlignment="Stretch"
@@ -260,25 +185,12 @@
         </TabControl>
         </Border>
 
-        <!-- Suggestion Overlay Panel - Covers entire left panel area when visible -->
+        <!-- Suggestion Overlay Panel using StyleSystem -->
         <Border x:Name="SuggestionOverlayPanel"
-                IsVisible="False"
-                Background="{DynamicResource MTM_Shared_Logic.ShadowBrush}"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Margin="8"
-                CornerRadius="8"
-                ZIndex="1003">
-          <!-- Centered overlay container -->
-          <Border Padding="16"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch"
-                  Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}"
-                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderAccentBrush}"
-                  BorderThickness="2"
-                  CornerRadius="12"
-                  BoxShadow="{Binding Source={DynamicResource MTM_Shared_Logic.DropShadowBrush}, Converter={StaticResource ColorToBoxShadowConverter}, ConverterParameter='0,8,32,0'}">
-            <!-- Overlay content will be dynamically set -->
+                Classes="OverlayPanel SuggestionOverlay"
+                IsVisible="False">
+          <!-- Overlay container -->
+          <Border Classes="OverlayContent">
             <ContentControl x:Name="SuggestionOverlayContent"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
@@ -287,16 +199,10 @@
           </Border>
         </Border>
 
-        <!-- Success Overlay Panel - Full screen overlay for success messages -->
+        <!-- Success Overlay Panel using StyleSystem -->
         <Border x:Name="SuccessOverlayPanel"
-                IsVisible="False"
-                Background="rgba(0,0,0,0.3)"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Margin="8"
-                CornerRadius="8"
-                ZIndex="1001">
-          <!-- Success overlay content will be dynamically set -->
+                Classes="OverlayPanel SuccessOverlay"
+                IsVisible="False">
           <ContentControl x:Name="SuccessOverlayContent"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
@@ -304,38 +210,40 @@
                           VerticalContentAlignment="Stretch"/>
         </Border>
 
-        <!-- NewQuickButton View Panel - Full screen view for creating new QuickButtons -->
+        <!-- NewQuickButton Overlay Panel using StyleSystem -->
         <Border x:Name="NewQuickButtonOverlayPanel"
-                IsVisible="False"
-                Background="rgba(0,0,0,0.3)"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Margin="8"
-                CornerRadius="8"
-                ZIndex="1002">
-          <!-- NewQuickButton view content -->
+                Classes="OverlayPanel NewQuickButtonOverlay"
+                IsVisible="False">
           <views:NewQuickButtonView x:Name="NewQuickButtonView"
-                                        DataContext="{x:Null}"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        MaxWidth="600"
-                                        MaxHeight="500"/>
+                                    DataContext="{x:Null}"/>
         </Border>
+
       </Grid>
 
-      <!-- Right Panel: Collapsible Quick Actions -->
-      <controls:CollapsiblePanel Grid.Column="1"
-                                HeaderPosition="Right"
-                                IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
-                                IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
-                                Margin="0,8,8,8"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Stretch"
-                                MinWidth="40">
-        <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
-                               HorizontalAlignment="Stretch"
-                               VerticalAlignment="Stretch"/>
-      </controls:CollapsiblePanel>
+      <!-- Right Panel: Collapsible Quick Actions using StyleSystem -->
+      <Grid Grid.Column="1" RowDefinitions="Auto,*">
+
+        <!-- Theme Dropdown Overlay Panel - positioned in right panel -->
+        <overlays:ThemeDropdownOverlay x:Name="ThemeDropdownOverlay"
+                                       Grid.Row="0"
+                                       Grid.RowSpan="2"
+                                       IsVisible="False"
+                                       ZIndex="1000"/>
+
+        <controls:CollapsiblePanel Grid.Row="1"
+                                  Margin="8,0"
+                                  HeaderPosition="Right"
+                                  IsExpanded="{Binding IsQuickActionsPanelExpanded, Mode=TwoWay}"
+                                  IsVisible="{Binding IsAdvancedPanelVisible, FallbackValue=True}"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Stretch">
+          <views:QuickButtonsView DataContext="{Binding QuickButtonsViewModel}"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Stretch"/>
+        </controls:CollapsiblePanel>
+
+      </Grid>
+
     </Grid>
   </DockPanel>
 

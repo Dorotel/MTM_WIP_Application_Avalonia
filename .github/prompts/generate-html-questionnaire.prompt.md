@@ -1,7 +1,6 @@
 ---
 description: "Creates an interactive HTML questionnaire on any subject with multi-step wizard interface, local storage, and automatic answer saving"
 mode: "agent"
-tools: ['*']
 ---
 
 # HTML Questionnaire Generator

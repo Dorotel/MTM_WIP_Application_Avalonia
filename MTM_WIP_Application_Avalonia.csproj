@@ -25,14 +25,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Exclude Resources folder but include individual theme files explicitly -->
+    <!-- Exclude specific folders but allow Resources/Styles and Resources/ThemesV2 -->
     <AvaloniaXaml Remove="Config\**" />
     <AvaloniaXaml Remove="Documentation\Development\Agent_Issues\**" />
     <AvaloniaXaml Remove="Documentation\Development\CopilotQuestions\**" />
     <AvaloniaXaml Remove="Documentation\Development\Reports\**" />
     <AvaloniaXaml Remove="Documentation\Development\Updates\**" />
     <AvaloniaXaml Remove="Exportable\**" />
-    <AvaloniaXaml Remove="Resources\**" />
+    <AvaloniaXaml Remove="Resources\Themes\**" />
     <AvaloniaXaml Remove="Material.Avalonia\**" />
     <Compile Remove="Config\**" />
     <Compile Remove="Documentation\Development\Agent_Issues\**" />
@@ -40,7 +40,7 @@
     <Compile Remove="Documentation\Development\Reports\**" />
     <Compile Remove="Documentation\Development\Updates\**" />
     <Compile Remove="Exportable\**" />
-    <Compile Remove="Resources\**" />
+    <Compile Remove="Resources\Themes\**" />
     <Compile Remove="Material.Avalonia\**" />
     <EmbeddedResource Remove="Config\**" />
     <EmbeddedResource Remove="Documentation\Development\Agent_Issues\**" />
@@ -48,7 +48,7 @@
     <EmbeddedResource Remove="Documentation\Development\Reports\**" />
     <EmbeddedResource Remove="Documentation\Development\Updates\**" />
     <EmbeddedResource Remove="Exportable\**" />
-    <EmbeddedResource Remove="Resources\**" />
+    <EmbeddedResource Remove="Resources\Themes\**" />
     <EmbeddedResource Remove="Material.Avalonia\**" />
     <None Remove="Config\**" />
     <None Remove="Documentation\Development\Agent_Issues\**" />
@@ -56,38 +56,17 @@
     <None Remove="Documentation\Development\Reports\**" />
     <None Remove="Documentation\Development\Updates\**" />
     <None Remove="Exportable\**" />
-    <None Remove="Resources\**" />
+    <None Remove="Resources\Themes\**" />
     <None Remove="Material.Avalonia\**" />
   </ItemGroup>
 
-  <!-- Theme files as AvaloniaResource for proper compilation -->
+  <!-- Theme V2 Foundation Files - Modern Avalonia 11.3.4 semantic token system -->
   <ItemGroup>
-    <AvaloniaResource Include="Resources\Themes\MTMComponents.axaml">
-      <SubType>Designer</SubType>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Resources\Themes\MTMTheme.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Light_Dark.axaml" />
-
-    <!-- All 15 Theme Files for Dynamic Switching -->
-    <AvaloniaResource Include="Resources\Themes\MTM_Light.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Dark.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_HighContrast.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Blue.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Blue_Dark.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Green.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Green_Dark.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Red_Dark.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Red.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Rose_Dark.axaml">
-      <SubType>Designer</SubType>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Resources\Themes\MTM_Teal.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Teal_Dark.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Amber.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Indigo.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Indigo_Dark.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Rose.axaml" />
-    <AvaloniaResource Include="Resources\Themes\MTM_Emerald.axaml" />
+    <AvaloniaResource Include="Resources\ThemesV2\Tokens.axaml" />
+    <AvaloniaResource Include="Resources\ThemesV2\Semantic.axaml" />
+    <AvaloniaResource Include="Resources\ThemesV2\Theme.Light.axaml" />
+    <AvaloniaResource Include="Resources\ThemesV2\Theme.Dark.axaml" />
+    <AvaloniaResource Include="Resources\ThemesV2\BaseStyles.axaml" />
   </ItemGroup>
 
   <ItemGroup>

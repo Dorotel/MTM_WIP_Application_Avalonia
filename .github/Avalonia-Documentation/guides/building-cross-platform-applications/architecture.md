@@ -51,19 +51,3 @@ Not to be confused with the `Async` keyword, the Async pattern is used when long
 
 ---
 Each of the aforementioned patterns will be explored in-depth as their practical application is demonstrated in our case studies. For a more comprehensive understanding of the [Facade](https://en.wikipedia.org/wiki/Facade_pattern), [Singleton](https://en.wikipedia.org/wiki/Singleton_pattern), and [Provider](https://en.wikipedia.org/wiki/Provider_model) patterns, as well as [Design Patterns](https://en.wikipedia.org/wiki/Design_Patterns) in general, you may want to delve into resources available on platforms like Wikipedia.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

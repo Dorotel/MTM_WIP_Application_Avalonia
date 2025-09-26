@@ -1,7 +1,6 @@
 ---
 description: 'Execute comprehensive MTM Pull Request audit analysis, gap detection, and generate targeted Copilot continuation prompts following MTM architectural patterns.'
 mode: 'agent'
-tools: ['*']
 ---
 
 ## Implementation Mode

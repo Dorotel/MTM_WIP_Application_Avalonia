@@ -278,7 +278,7 @@ public class RemoveService : IRemoveService
                         failures.Add(new RemovalFailure
                         {
                             Item = item,
-                            Error = validationResult.Message,
+                            Error = validationResult.ErrorMessage,
                             ErrorType = "Validation"
                         });
                         continue;

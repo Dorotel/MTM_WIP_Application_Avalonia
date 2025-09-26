@@ -1,7 +1,6 @@
 ---
 description: 'Execute comprehensive MTM file diagnostic analysis with automatic context gathering and architecture compliance validation following MTM patterns.'
 mode: 'agent'
-tools: ['*']
 ---
 
 ## Implementation Mode

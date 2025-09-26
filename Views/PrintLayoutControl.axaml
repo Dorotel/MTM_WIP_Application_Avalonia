@@ -11,8 +11,8 @@
              x:DataType="vm:PrintLayoutControlViewModel">
 
     <!-- Column Layout Customization Interface -->
-    <Border Background="{DynamicResource MTM_Shared_Logic.CardBackgroundBrush}" 
-            BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+    <Border Background="#FFFFFF" 
+            BorderBrush="#E0E0E0" 
             BorderThickness="1" 
             CornerRadius="8" 
             Padding="16">
@@ -24,29 +24,29 @@
                 <TextBlock Text="📋 Column Layout Customization" 
                           FontSize="16" 
                           FontWeight="Bold" 
-                          Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" 
+                          Foreground="#212121" 
                           VerticalAlignment="Center" />
                           
                 <TextBlock Text="{Binding VisibleColumnCount, StringFormat='\{0\} visible'}" 
                           FontSize="12" 
-                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                          Foreground="#424242" 
                           VerticalAlignment="Center" />
                           
                 <TextBlock Text="{Binding TotalColumnCount, StringFormat='of \{0\} total'}" 
                           FontSize="12" 
-                          Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                          Foreground="#424242" 
                           VerticalAlignment="Center" />
             </StackPanel>
 
             <!-- Print Style Options -->
             <Border Grid.Row="1" 
-                    Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                    Background="#E6E6F0" 
                     CornerRadius="6" 
                     Padding="12">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Print Style Settings" 
                               FontWeight="SemiBold" 
-                              Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                              Foreground="#212121" />
                     
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
                         <!-- Style Selection -->
@@ -78,15 +78,15 @@
                 
                 <!-- Column List -->
                 <Border Grid.Column="0" 
-                        Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                        Background="#F5F5F5" 
+                        BorderBrush="#E0E0E0" 
                         BorderThickness="1" 
                         CornerRadius="6">
                     
                     <Grid RowDefinitions="Auto,*">
                         <!-- Column List Header -->
                         <Border Grid.Row="0" 
-                                Background="{DynamicResource MTM_Shared_Logic.SecondaryAction}" 
+                                Background="#757575" 
                                 CornerRadius="6,6,0,0" 
                                 Padding="12,8">
                             <Grid ColumnDefinitions="30,*,80,80,80,40">
@@ -106,8 +106,8 @@
                             <ItemsControl ItemsSource="{Binding Columns}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Background="{DynamicResource MTM_Shared_Logic.MainBackground}" 
-                                                BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                                        <Border Background="#FAFAFA" 
+                                                BorderBrush="#E0E0E0" 
                                                 BorderThickness="0,0,0,1" 
                                                 Padding="8,6">
                                             <Grid ColumnDefinitions="30,*,80,80,80,40" ColumnSpacing="8">
@@ -174,8 +174,8 @@
 
                 <!-- Column Actions Panel -->
                 <Border Grid.Column="1" 
-                        Background="{DynamicResource MTM_Shared_Logic.PanelBackgroundBrush}" 
-                        BorderBrush="{DynamicResource MTM_Shared_Logic.BorderBrush}" 
+                        Background="#F5F5F5" 
+                        BorderBrush="#E0E0E0" 
                         BorderThickness="1" 
                         CornerRadius="6" 
                         Padding="12">
@@ -183,13 +183,13 @@
                     <StackPanel Spacing="12">
                         <TextBlock Text="Quick Actions" 
                                   FontWeight="SemiBold" 
-                                  Foreground="{DynamicResource MTM_Shared_Logic.HeadingText}" />
+                                  Foreground="#212121" />
 
                         <!-- Visibility Actions -->
                         <StackPanel Spacing="6">
                             <TextBlock Text="Column Visibility:" 
                                       FontSize="12" 
-                                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                                      Foreground="#424242" />
                             
                             <Button Content="👁️ Show All" 
                                    Command="{Binding ToggleAllColumnsCommand}"
@@ -210,7 +210,7 @@
                         <StackPanel Spacing="6">
                             <TextBlock Text="Reset Options:" 
                                       FontSize="12" 
-                                      Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" />
+                                      Foreground="#424242" />
                             
                             <Button Content="🔄 Reset to Defaults" 
                                    Command="{Binding ResetToDefaultsCommand}"
@@ -220,7 +220,7 @@
                         </StackPanel>
 
                         <!-- Selected Column Info -->
-                        <Border Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                        <Border Background="#E6E6F0" 
                                 CornerRadius="4" 
                                 Padding="8"
                                 IsVisible="{Binding SelectedColumn, Converter={x:Static ObjectConverters.IsNotNull}}">
@@ -232,7 +232,7 @@
                                           FontSize="11" />
                                 <TextBlock Text="{Binding SelectedColumn.TypeDisplayText}" 
                                           FontSize="10" 
-                                          Foreground="{DynamicResource MTM_Shared_Logic.TertiaryTextBrush}" />
+                                          Foreground="#757575" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -241,14 +241,14 @@
 
             <!-- Status Bar -->
             <Border Grid.Row="3" 
-                    Background="{DynamicResource MTM_Shared_Logic.HoverBrush}" 
+                    Background="#E6E6F0" 
                     CornerRadius="6" 
                     Padding="12,6">
                 <Grid ColumnDefinitions="*,Auto">
                     <!-- Status Message -->
                     <TextBlock Grid.Column="0" 
                               Text="{Binding StatusMessage, FallbackValue='Ready to customize column layout'}" 
-                              Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                              Foreground="#424242" 
                               VerticalAlignment="Center" 
                               FontSize="12" />
                     
@@ -263,7 +263,7 @@
                                     VerticalAlignment="Center" />
                         <TextBlock Text="Working..." 
                                   FontSize="10" 
-                                  Foreground="{DynamicResource MTM_Shared_Logic.BodyText}" 
+                                  Foreground="#424242" 
                                   VerticalAlignment="Center" />
                     </StackPanel>
                 </Grid>

@@ -1,7 +1,6 @@
 ---
 description: 'Automated MTM project context onboarding for new chat sessions - provides essential prompts list and execution guidance with Joyride automation'
 mode: 'agent'
-tools: ['*']
 ---
 
 # MTM Context Onboarding System

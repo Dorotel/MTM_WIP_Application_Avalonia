@@ -65,10 +65,3 @@ For the best Avalonia development experience:
 * **Windows**: Use either JetBrains Rider or Visual Studio
 * **macOS/Linux**: Use JetBrains Rider
 * **Lightweight Editor**: Visual Studio Code can be used but offers a more limited feature set
-
-
-
-
-
-
-

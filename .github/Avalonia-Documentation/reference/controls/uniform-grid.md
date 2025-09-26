@@ -53,6 +53,3 @@ For the complete API documentation about this control, see [here](https://api-do
 :::info
 View the source code on _GitHub_ [`UniformGrid.cs`](https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Controls/Primitives/UniformGrid.cs)
 :::
-
-
-

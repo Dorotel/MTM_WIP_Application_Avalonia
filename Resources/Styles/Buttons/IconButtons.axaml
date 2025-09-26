@@ -1,0 +1,90 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+<!--
+MTM Icon Button Styles - Theme V2 Compatible
+===========================================
+Icon-only buttons for compact actions
+Uses Theme V2 semantic tokens for consistent theming
+WCAG 2.1 AA compliant with proper focus indicators
+-->
+
+<!-- Icon Button - Small square buttons for icons -->
+<Style Selector="Button.Icon">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+    <Setter Property="Padding" Value="6"/>
+    <Setter Property="Width" Value="32"/>
+    <Setter Property="Height" Value="32"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Cursor" Value="Hand"/>
+</Style>
+
+<Style Selector="Button.Icon:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Hover}"/>
+</Style>
+
+<Style Selector="Button.Icon:pressed">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Pressed}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+</Style>
+
+<Style Selector="Button.Icon:focus">
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+</Style>
+
+<Style Selector="Button.Icon:disabled">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Disabled}"/>
+    <Setter Property="Opacity" Value="{StaticResource ThemeV2.Opacity.Disabled}"/>
+    <Setter Property="Cursor" Value="Arrow"/>
+</Style>
+
+<!-- Large Icon Button variant -->
+<Style Selector="Button.Icon.Large">
+    <Setter Property="Width" Value="40"/>
+    <Setter Property="Height" Value="40"/>
+    <Setter Property="Padding" Value="8"/>
+</Style>
+
+<!-- Small Icon Button variant -->
+<Style Selector="Button.Icon.Small">
+    <Setter Property="Width" Value="24"/>
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="Padding" Value="4"/>
+</Style>
+
+<!-- Circular Icon Button variant -->
+<Style Selector="Button.Icon.Round">
+    <Setter Property="CornerRadius" Value="16"/>
+</Style>
+
+<!-- Primary Icon Button variant -->
+<Style Selector="Button.Icon.Primary">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+</Style>
+
+<Style Selector="Button.Icon.Primary:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+</Style>
+
+<!-- Danger Icon Button variant -->
+<Style Selector="Button.Icon.Danger">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Error}"/>
+</Style>
+
+<Style Selector="Button.Icon.Danger:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Error.Background}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Error.Border}"/>
+</Style>
+
+</Styles>

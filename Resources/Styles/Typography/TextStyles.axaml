@@ -1,0 +1,230 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+<!--
+MTM Typography Styles - Theme V2 Compatible
+==========================================
+Text styling hierarchy following Theme V2 tokens
+Uses semantic typography scale and consistent spacing
+WCAG 2.1 AA compliant typography with proper contrast
+-->
+
+<!-- Heading Styles -->
+<Style Selector="TextBlock.Heading1">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Heading1.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Heading1.FontWeight}"/>
+    <!-- $0 -->
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="Margin" Value="0,0,0,16"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+</Style>
+
+<Style Selector="TextBlock.Heading2">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Heading2.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Heading2.FontWeight}"/>
+    <!-- $0 -->
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="Margin" Value="0,0,0,12"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+</Style>
+
+<Style Selector="TextBlock.Heading3">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Heading3.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Heading3.FontWeight}"/>
+    <!-- $0 -->
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="Margin" Value="0,0,0,10"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+</Style>
+
+<Style Selector="TextBlock.Heading4">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Heading4.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Heading4.FontWeight}"/>
+    <!-- $0 -->
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="Margin" Value="0,0,0,8"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+</Style>
+
+<Style Selector="TextBlock.Heading5">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Heading5.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Heading5.FontWeight}"/>
+    <!-- $0 -->
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="Margin" Value="0,0,0,8"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+</Style>
+
+<Style Selector="TextBlock.Heading6">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Heading6.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Heading6.FontWeight}"/>
+    <!-- $0 -->
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="Margin" Value="0,0,0,6"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+</Style>
+
+<!-- Body Text Styles -->
+<Style Selector="TextBlock.Body">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Body.FontWeight}"/>
+    <!-- $0 -->
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+    <Setter Property="Margin" Value="0,0,0,12"/>
+</Style>
+
+<Style Selector="TextBlock.BodyLarge">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.FontSize.LG}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Body.FontWeight}"/>
+    <!-- $0 -->
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+    <Setter Property="Margin" Value="0,0,0,12"/>
+</Style>
+
+<Style Selector="TextBlock.BodySmall">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.FontSize.SM}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Body.FontWeight}"/>
+    <!-- $0 -->
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+    <Setter Property="Margin" Value="0,0,0,8"/>
+</Style>
+
+<!-- Caption and Utility Text -->
+<Style Selector="TextBlock.Caption">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Caption.FontWeight}"/>
+    <!-- $0 -->
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+</Style>
+
+<Style Selector="TextBlock.Label">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Body.FontWeight}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+</Style>
+
+<!-- Content Hierarchy -->
+<Style Selector="TextBlock.Primary">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+</Style>
+
+<Style Selector="TextBlock.Secondary">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
+</Style>
+
+<Style Selector="TextBlock.Tertiary">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Tertiary}"/>
+</Style>
+
+<Style Selector="TextBlock.Disabled">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Disabled}"/>
+    <Setter Property="Opacity" Value="{StaticResource ThemeV2.Opacity.Disabled}"/>
+</Style>
+
+<!-- Status Text Colors -->
+<Style Selector="TextBlock.Success">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Success}"/>
+</Style>
+
+<Style Selector="TextBlock.Warning">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Warning}"/>
+</Style>
+
+<Style Selector="TextBlock.Error">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Error}"/>
+</Style>
+
+<Style Selector="TextBlock.Info">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Info}"/>
+</Style>
+
+<!-- Interactive Text -->
+<Style Selector="TextBlock.Link">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Link}"/>
+    <Setter Property="TextDecorations" Value="Underline"/>
+    <Setter Property="Cursor" Value="Hand"/>
+</Style>
+
+<Style Selector="TextBlock.Link:pointerover">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Link.Hover}"/>
+</Style>
+
+<!-- Special Purpose Text -->
+<Style Selector="TextBlock.Code">
+    <Setter Property="FontFamily" Value="Consolas, 'Courier New', monospace"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Subtle}"/>
+    <Setter Property="Padding" Value="2,1"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+</Style>
+
+<Style Selector="TextBlock.Emphasized">
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.SemiBold}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+</Style>
+
+<Style Selector="TextBlock.Subtle">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Tertiary}"/>
+    <Setter Property="FontStyle" Value="Italic"/>
+</Style>
+
+<!-- Manufacturing-specific text styles -->
+<Style Selector="TextBlock.PartID">
+    <Setter Property="FontFamily" Value="Consolas, 'Courier New', monospace"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.SemiBold}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+</Style>
+
+<Style Selector="TextBlock.OperationNumber">
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.Bold}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+</Style>
+
+<Style Selector="TextBlock.Quantity">
+    <Setter Property="FontFamily" Value="Segoe UI, sans-serif"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.SemiBold}"/>
+</Style>
+
+<!-- Quick Button Badge Text Styles -->
+<Style Selector="TextBlock.BadgeLabel">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.Medium}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.QuickButton.Badge.Content}"/>
+    <Setter Property="TextAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="TextBlock.BadgeValue">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.FontSize.SM}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.Bold}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.QuickButton.Badge.Content}"/>
+    <Setter Property="TextAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="TextBlock.PositionIndicator">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.FontSize.SM}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.Bold}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.QuickButton.Position.Content}"/>
+    <Setter Property="TextAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="TextBlock.QuickButtonMain">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.FontSize.MD}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.SemiBold}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.QuickButton.Content}"/>
+    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+</Style>
+
+<Style Selector="TextBlock.QuickButtonSub">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.Typography.Body.FontWeight}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.QuickButton.Content}"/>
+    <Setter Property="Opacity" Value="0.85"/>
+    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+</Style>
+
+</Styles>

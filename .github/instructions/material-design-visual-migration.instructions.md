@@ -41,15 +41,18 @@ This document provides comprehensive guidelines for migrating MTM WIP Applicatio
 
 ```xml
 <Application.Styles>
-    <!-- Material Theme for Visual Presentation -->
-    <themes:MaterialTheme 
-        BaseTheme="Light" 
-        PrimaryColor="Blue" 
-        SecondaryColor="Orange" />
+    <!-- Avalonia FluentTheme (Base) -->
+    <FluentTheme />
+    
+    <!-- Material Icons Support -->
     <materialIcons:MaterialIconStyles />
     
-    <!-- Preserve existing themes during transition -->
-    <FluentTheme />
+    <!-- Theme V2 System (Current Architecture) -->
+    <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/ThemesV2/BaseStyles.axaml"/>
+    <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/StyleSystem.axaml"/>
+    
+    <!-- Note: Material.Avalonia theme can be layered on top for enhanced visuals -->
+    <!-- but Theme V2 semantic tokens remain the foundation -->
 </Application.Styles>
 ```
 
