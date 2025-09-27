@@ -15,57 +15,62 @@
              MinWidth="240"
              MinHeight="400">
 
-  <!-- Styles removed - Using StyleSystem component classes -->
+  <!-- Enhanced Context Menu Styling - Theme V2 Compatible -->
   <UserControl.Styles>
-    <!-- Context Menu Enhancement -->
     <Style Selector="ContextMenu">
       <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Medium}"/>
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}"/>
     </Style>
 
     <Style Selector="MenuItem">
       <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
       <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}"/>
     </Style>
 
     <Style Selector="MenuItem:pointerover">
       <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
       <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
     </Style>
+
+    <Style Selector="MenuItem:pressed">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Pressed}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+    </Style>
   </UserControl.Styles>
 
-  <!-- Main Container using StyleSystem Card -->
+  <!-- Main Container - StyleSystem Card with Enhanced Layout -->
   <Border Classes="Card Elevated"
           Background="{DynamicResource ThemeV2.Background.Card}"
           BorderBrush="{DynamicResource ThemeV2.Border.Strong}"
-          Margin="4"
+          Margin="{StaticResource ThemeV2.Spacing.Small}"
           Padding="0"
           ClipToBounds="False">
-    <Grid x:Name="MainContentGrid" RowDefinitions="Auto,*,Auto" Background="Transparent" Margin="0">
-      <!-- Header Panel using StyleSystem HeaderPanel -->
+    <Grid x:Name="MainContentGrid" RowDefinitions="Auto,*,Auto" Background="Transparent">
+      <!-- Header Panel - StyleSystem Enhanced -->
       <Border Grid.Row="0"
               Classes="HeaderPanel"
               Background="{DynamicResource ThemeV2.Action.Primary}"
-              Padding="{Binding StandardPadding}"
-              MinHeight="{Binding StandardControlHeight}"
-              Margin="0,0,0,6">
+              Padding="{StaticResource ThemeV2.Spacing.Medium}"
+              MinHeight="{StaticResource ThemeV2.ControlHeight.Standard}"
+              Margin="0,0,0,8">
         <Grid ColumnDefinitions="*,Auto,*">
-          <!-- Left: Quick Actions Button -->
+          <!-- Left: Quick Actions Toggle -->
           <Button Grid.Column="0"
                   Classes="HeaderToggle"
                   Classes.Active="{Binding !IsShowingHistory}"
-                  Background="{DynamicResource ThemeV2.Action.Primary}"
-                  Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                   Command="{Binding ShowQuickActionsCommand}"
                   HorizontalAlignment="Left"
                   VerticalAlignment="Center"
                   ToolTip.Tip="Show Quick Actions">
-            <StackPanel Orientation="Horizontal" Spacing="3">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Space.XS}">
               <materialIcons:MaterialIcon Kind="Flash"
-                                        Width="10"
-                                        Height="10"
+                                        Width="12"
+                                        Height="12"
                                         Foreground="{DynamicResource ThemeV2.Content.OnColor}"/>
               <TextBlock Classes="Caption"
                          Text="Quick Actions"
@@ -74,20 +79,18 @@
             </StackPanel>
           </Button>
 
-          <!-- Right: Transaction History Button -->
+          <!-- Right: Transaction History Toggle -->
           <Button Grid.Column="2"
                   Classes="HeaderToggle"
                   Classes.Active="{Binding IsShowingHistory}"
-                  Background="{DynamicResource ThemeV2.Action.Primary}"
-                  Foreground="{DynamicResource ThemeV2.Content.OnColor}"
                   Command="{Binding ShowHistoryCommand}"
                   HorizontalAlignment="Right"
                   VerticalAlignment="Center"
                   ToolTip.Tip="Show Transaction History">
-            <StackPanel Orientation="Horizontal" Spacing="3">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource ThemeV2.Spacing.XS}">
               <materialIcons:MaterialIcon Kind="ClockOutline"
-                                        Width="10"
-                                        Height="10"
+                                        Width="12"
+                                        Height="12"
                                         Foreground="{DynamicResource ThemeV2.Content.OnColor}"/>
               <TextBlock Classes="Caption"
                          Text="History"
@@ -101,33 +104,24 @@
       <!-- Dynamic Content Area -->
       <Grid Grid.Row="1" Background="Transparent">
 
-        <!-- Quick Actions Panel - NO ScrollViewer, UniformGrid with 10 rows -->
+        <!-- Quick Actions Panel - Enhanced StyleSystem Implementation -->
         <Border IsVisible="{Binding !IsShowingHistory}"
                 Background="Transparent"
-                Padding="8">
+                Padding="{StaticResource ThemeV2.Spacing.Medium}">
           <ItemsControl ItemsSource="{Binding NonEmptyQuickButtons}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <UniformGrid Columns="1" Rows="10"/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="vm:QuickButtonItemViewModel">
-                  <Button Classes="QuickAction"
-                          Background="{DynamicResource ThemeV2.MTM.QuickButton.Background}"
-                          Foreground="White"
-                          BorderBrush="{DynamicResource ThemeV2.Border.Default}"
-                          BorderThickness="1"
-                          Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ExecuteQuickActionCommand}"
-                          CommandParameter="{Binding}"
-                          ToolTip.Tip="{Binding ToolTipText}"
-                          MinHeight="50"
-                          Height="52"
-                          HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Stretch"
-                          VerticalContentAlignment="Center"
-                          Margin="2"
-                          Padding="8,4">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:QuickButtonItemViewModel">
+                <Button Classes="QuickAction"
+                        Command="{Binding $parent[UserControl].((vm:QuickButtonsViewModel)DataContext).ExecuteQuickActionCommand}"
+                        CommandParameter="{Binding}"
+                        ToolTip.Tip="{Binding ToolTipText}"
+                        MinHeight="{StaticResource ThemeV2.ControlHeight.Large}"
+                        Height="{StaticResource ThemeV2.ControlHeight.Large}">
                   <Button.ContextMenu>
                     <ContextMenu>
                       <MenuItem Header="🗑️ Remove Button"
@@ -154,156 +148,171 @@
                                 ToolTip.Tip="Restore default button order"/>
                     </ContextMenu>
                   </Button.ContextMenu>
-                    <!-- Improved button content layout with better sizing -->
-                    <Grid ColumnDefinitions="Auto,4,*,4,Auto,4,Auto"
-                          MinHeight="44"
-                          MaxHeight="48"
-                          Margin="4,2">
 
-                      <!-- Position indicator -->
-                      <Border Grid.Column="0"
-                              CornerRadius="3"
-                              Width="20"
-                              Height="20"
-                              VerticalAlignment="Center"
-                              HorizontalAlignment="Center"
-                              BorderThickness="1"
-                              BorderBrush="White"
-                              Background="Transparent"
-                              ClipToBounds="True">
-                        <TextBlock Text="{Binding Position}"
-                                   FontSize="10"
-                                   FontWeight="Bold"
-                                   Foreground="White"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Center"/>
-                      </Border>
+                  <!-- 2-Row Layout with Position and Part ID Column Spanning -->
+                  <Grid>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="10*"/> <!-- Position -->
+                      <ColumnDefinition Width="4"/>     <!-- Spacer -->
+                      <ColumnDefinition Width="100"/>     <!-- Part Info -->
+                      <ColumnDefinition Width="4"/>     <!-- Spacer -->
+                      <ColumnDefinition Width="25*"/>  <!-- QTY -->
+                      <ColumnDefinition Width="4"/>     <!-- Spacer -->
+                      <ColumnDefinition Width="25*"/>  <!-- OP -->
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                      <RowDefinition Height="*"/>       <!-- Top Row -->
+                      <RowDefinition Height="*"/>       <!-- Bottom Row -->
+                    </Grid.RowDefinitions>
 
-                      <!-- Part ID and details -->
-                      <StackPanel Grid.Column="2"
-                                  VerticalAlignment="Center"
-                                  Spacing="2">
-                        <TextBlock Text="{Binding DisplayText}"
-                                   FontSize="12"
-                                   FontWeight="SemiBold"
-                                   Foreground="White"
-                                   TextTrimming="CharacterEllipsis"
-                                   MaxWidth="110"/>
-                        <TextBlock Text="{Binding SubText}"
-                                   FontSize="9"
-                                   Foreground="White"
-                                   Opacity="0.85"
-                                   TextTrimming="CharacterEllipsis"
-                                   MaxWidth="110"/>
-                      </StackPanel>
+                    <!-- Position Indicator - Spans both rows -->
+                    <Border Grid.Column="0" Grid.RowSpan="2"
+                            Background="{DynamicResource ThemeV2.MTM.QuickButton.Position.Background}"
+                            BorderBrush="{DynamicResource ThemeV2.MTM.QuickButton.Position.Border}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
+                            Width="20"
+                            Height="20"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                      <TextBlock Text="{Binding Position}"
+                                 Classes="PositionIndicator"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
+                    </Border>
 
-                      <!-- Quantity badge -->
-                      <Border Grid.Column="4"
-                              CornerRadius="2"
-                              Padding="4,1"
-                              VerticalAlignment="Center"
-                              BorderThickness="1"
-                              BorderBrush="White"
-                              Background="Transparent"
-                              Opacity="0.9"
-                              ClipToBounds="True">
-                        <StackPanel Spacing="0" HorizontalAlignment="Center">
-                          <TextBlock Text="QTY"
-                                     FontSize="7"
-                                     FontWeight="Medium"
-                                     Foreground="White"
-                                     TextAlignment="Center"/>
-                          <TextBlock Text="{Binding Quantity}"
-                                     FontSize="10"
-                                     FontWeight="Bold"
-                                     Foreground="White"
-                                     TextAlignment="Center"/>
-                        </StackPanel>
-                      </Border>
+                    <!-- Part Information - Spans both rows -->
 
-                      <!-- Operation badge -->
-                      <Border Grid.Column="6"
-                              CornerRadius="2"
-                              Padding="4,1"
-                              VerticalAlignment="Center"
-                              BorderThickness="1"
-                              BorderBrush="White"
-                              Background="Transparent"
-                              Opacity="0.9"
-                              ClipToBounds="True">
-                        <StackPanel Spacing="0" HorizontalAlignment="Center">
-                          <TextBlock Text="OP"
-                                     FontSize="7"
-                                     FontWeight="Medium"
-                                     Foreground="White"
-                                     TextAlignment="Center"/>
-                          <TextBlock Text="{Binding Operation}"
-                                     FontSize="10"
-                                     FontWeight="Bold"
-                                     Foreground="White"
-                                     TextAlignment="Center"/>
-                        </StackPanel>
-                      </Border>
-                    </Grid>
+                      <TextBlock Grid.Column="2" Grid.RowSpan="2"
+                      Text="{Binding DisplayText}"
+                      VerticalAlignment="Center"
+                                 Classes="QuickButtonMain"
+                                 TextTrimming="CharacterEllipsis"
+                                 MaxWidth="100"/>
+
+                    <!-- QTY Badge - Top Row -->
+                    <Border Grid.Column="4" Grid.Row="0"
+                            Background="{DynamicResource ThemeV2.MTM.QuickButton.Badge.Background}"
+                            BorderBrush="{DynamicResource ThemeV2.MTM.QuickButton.Badge.Border}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource ThemeV2.CornerRadius.XS}"
+                            MinWidth="28"
+                            VerticalAlignment="Center">
+                      <TextBlock Text="QTY"
+                                 Classes="BadgeLabel"
+                                 HorizontalAlignment="Center"/>
+                    </Border>
+
+                    <!-- QTY Value - Bottom Row -->
+                    <TextBlock Grid.Column="4" Grid.Row="1"
+                               Text="{Binding Quantity}"
+                               Classes="BadgeValue"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                    <!-- OP Badge - Top Row -->
+                    <Border Grid.Column="6" Grid.Row="0"
+                            Background="{DynamicResource ThemeV2.MTM.QuickButton.Badge.Background}"
+                            BorderBrush="{DynamicResource ThemeV2.MTM.QuickButton.Badge.Border}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource ThemeV2.CornerRadius.XS}"
+                            MinWidth="28"
+                            VerticalAlignment="Center">
+                      <TextBlock Text="OP"
+                                 Classes="BadgeLabel"
+                                 HorizontalAlignment="Center"/>
+                    </Border>
+
+                    <!-- OP Value - Bottom Row -->
+                    <TextBlock Grid.Column="6" Grid.Row="1"
+                               Text="{Binding Operation}"
+                               Classes="BadgeValue"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                  </Grid>
                   </Button>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
           </Border>
 
-        <!-- Transaction History Panel -->
+        <!-- Transaction History Panel - Pre-Approved ScrollViewer -->
         <ScrollViewer IsVisible="{Binding IsShowingHistory}"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
                       Background="{DynamicResource ThemeV2.SessionHistory.Background}"
-                      Padding="{Binding StandardPadding}">
+                      Padding="{StaticResource ThemeV2.Spacing.Medium}">
 
-          <!-- Use ItemsControl with TransactionExpandableButton controls -->
-          <ItemsControl ItemsSource="{Binding SessionTransactionHistory}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Orientation="Vertical" Spacing="2"/>
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                <controls:TransactionExpandableButton
-                  PartId="{Binding PartId}"
-                  Operation="{Binding Operation}"
-                  Quantity="{Binding Quantity}"
-                  Location="{Binding Location}"
-                  User="{Binding User}"
-                  TransactionTime="{Binding TransactionTime}"
-                  Status="{Binding Status}"
-                  ItemType="{Binding ItemType}"
-                  TransactionId="{Binding BatchNumber}"
-                  Notes="{Binding Notes}"
-                  TransactionType="{Binding TransactionType}"/>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
+          <!-- Session Transaction History -->
+          <StackPanel Spacing="{StaticResource ThemeV2.Spacing.XS}">
+            <!-- Header -->
+            <TextBlock Classes="Heading3" 
+                       Text="Transaction History" 
+                       Foreground="{DynamicResource ThemeV2.Content.Primary}"
+                       Margin="0,0,0,16"/>
+            
+            <!-- Transaction Count -->
+            <TextBlock Classes="Body" 
+                       Text="{Binding SessionTransactionCount, StringFormat='Transactions: {0}'}"
+                       Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                       Margin="0,0,0,8"/>
+            
+            <!-- Simple Transaction List -->
+            <ItemsControl ItemsSource="{Binding SessionTransactionHistory}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Classes="Card" 
+                          Margin="0,2" 
+                          Padding="8"
+                          Background="{DynamicResource ThemeV2.Background.Surface}">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                      <TextBlock Grid.Column="0" 
+                                 Classes="Caption" 
+                                 Text="{Binding TransactionTime, StringFormat='HH:mm'}"
+                                 Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                                 VerticalAlignment="Center"/>
+                      <TextBlock Grid.Column="1" 
+                                 Classes="Body" 
+                                 Text="{Binding PartId}"
+                                 Foreground="{DynamicResource ThemeV2.Content.Primary}"
+                                 Margin="8,0"
+                                 VerticalAlignment="Center"/>
+                      <TextBlock Grid.Column="2" 
+                                 Classes="Caption" 
+                                 Text="{Binding TransactionType}"
+                                 Foreground="{DynamicResource ThemeV2.Action.Primary}"
+                                 Margin="0,0,8,0"
+                                 VerticalAlignment="Center"/>
+                      <TextBlock Grid.Column="3" 
+                                 Classes="Caption" 
+                                 Text="{Binding Quantity}"
+                                 Foreground="{DynamicResource ThemeV2.Content.Primary}"
+                                 VerticalAlignment="Center"/>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
 
         </ScrollViewer>
 
       </Grid>
 
-      <!-- Footer Section using StyleSystem FooterPanel -->
+      <!-- Footer Management Panel - StyleSystem Enhanced -->
       <Border Grid.Row="2"
               Classes="FooterPanel"
               Background="{DynamicResource ThemeV2.Background.Subtle}"
-              Padding="{Binding StandardPadding}"
-              MinHeight="{Binding StandardControlHeight}"
-              Margin="0,6,0,0">
-        <!-- QoL Buttons Row -->
+              Padding="{StaticResource ThemeV2.Spacing.Medium}"
+              MinHeight="{StaticResource ThemeV2.ControlHeight.Standard}"
+              Margin="0,8,0,0">
+        <!-- Management Action Buttons -->
         <StackPanel Orientation="Horizontal"
-                    Spacing="2"
+                    Spacing="{StaticResource ThemeV2.Spacing.XS}"
                     HorizontalAlignment="Center">
 
-          <!-- New Button -->
+          <!-- New Quick Button -->
           <Button Classes="FooterToggle"
-                  Background="Transparent"
-                  Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                   Command="{Binding NewQuickButtonCommand}"
                   ToolTip.Tip="Create new quick button">
             <materialIcons:MaterialIcon Kind="Plus"
@@ -312,10 +321,8 @@
                                       Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
           </Button>
 
-          <!-- Refresh All Button -->
+          <!-- Refresh All Buttons -->
           <Button Classes="FooterToggle"
-                  Background="Transparent"
-                  Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                   Command="{Binding RefreshButtonsCommand}"
                   ToolTip.Tip="Refresh quick buttons from database">
             <materialIcons:MaterialIcon Kind="Refresh"
@@ -324,10 +331,8 @@
                                       Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
           </Button>
 
-          <!-- Clear All Button -->
+          <!-- Clear All Buttons -->
           <Button Classes="FooterToggle"
-                  Background="Transparent"
-                  Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                   Command="{Binding ClearAllButtonsCommand}"
                   ToolTip.Tip="Remove all quick actions">
             <materialIcons:MaterialIcon Kind="DeleteSweep"
@@ -336,10 +341,8 @@
                                       Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
           </Button>
 
-          <!-- Reset Order Button -->
+          <!-- Reset Button Order -->
           <Button Classes="FooterToggle"
-                  Background="Transparent"
-                  Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                   Command="{Binding ResetOrderCommand}"
                   ToolTip.Tip="Reset button order to default">
             <materialIcons:MaterialIcon Kind="SortAlphabeticalAscending"
@@ -348,10 +351,8 @@
                                       Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
           </Button>
 
-          <!-- Export Settings Button -->
+          <!-- Export Configuration -->
           <Button Classes="FooterToggle"
-                  Background="Transparent"
-                  Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                   Command="{Binding ExportQuickButtonsCommand}"
                   ToolTip.Tip="Export quick buttons configuration">
             <materialIcons:MaterialIcon Kind="Export"
@@ -360,10 +361,8 @@
                                       Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
           </Button>
 
-          <!-- Import Settings Button -->
+          <!-- Import Configuration -->
           <Button Classes="FooterToggle"
-                  Background="Transparent"
-                  Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                   Command="{Binding ImportQuickButtonsCommand}"
                   ToolTip.Tip="Import quick buttons configuration">
             <materialIcons:MaterialIcon Kind="Import"
@@ -372,10 +371,8 @@
                                       Foreground="{DynamicResource ThemeV2.Content.Secondary}"/>
           </Button>
 
-          <!-- Help/Info Button -->
+          <!-- Help and Support -->
           <Button Classes="FooterToggle"
-                  Background="Transparent"
-                  Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                   ToolTip.Tip="Show quick buttons help and keyboard shortcuts">
             <materialIcons:MaterialIcon Kind="HelpCircleOutline"
                                       Width="12"

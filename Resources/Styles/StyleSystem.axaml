@@ -46,6 +46,9 @@ Usage: Include this file to get access to all MTM styles
 <!-- Icon System -->
 <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Icons/ManufacturingIcons.axaml"/>
 
+<!-- Data Display Components -->
+<StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Data/DataGrids.axaml"/>
+
 <!-- Component Controls -->
 <StyleInclude Source="avares://MTM_WIP_Application_Avalonia/Resources/Styles/Components/CollapsiblePanels.axaml"/>
 

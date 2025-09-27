@@ -109,4 +109,28 @@ WCAG 2.1 AA compliant with proper focus indicators
     <Setter Property="FontStyle" Value="Italic"/>
 </Style>
 
+<!-- Form Input - Alias for InputField for consistent naming -->
+<Style Selector="TextBox.Form.Input">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Input.Content}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="TextBox.Form.Input:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border.Hover}"/>
+</Style>
+
+<Style Selector="TextBox.Form.Input:focus">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background.Focus}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border.Focus}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+</Style>
+
 </Styles>

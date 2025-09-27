@@ -6,204 +6,17 @@
              x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.TransferCustomDataGrid"
              x:Name="TransferCustomDataGridRoot">
 
-  <UserControl.Styles>
-    <!-- MTM TransferCustomDataGrid Cell Styles -->
 
-    <!-- Header Cell Base Style -->
-    <Style Selector="Border.header-cell">
-      <Setter Property="MinHeight" Value="36" />
-      <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
-      <Setter Property="BorderThickness" Value="0,0,1,1" />
-    </Style>
-
-    <Style Selector="Border.header-cell TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-
-    <!-- Data Cell Base Style -->
-    <Style Selector="Border.data-cell">
-      <Setter Property="MinHeight" Value="36" />
-      <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
-      <Setter Property="BorderThickness" Value="0,0,1,1" />
-    </Style>
-
-    <Style Selector="Border.data-cell TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}" />
-      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-    </Style>
-
-    <!-- Transfer Arrow Cell Style -->
-    <Style Selector="Border.arrow-cell">
-      <Setter Property="MinHeight" Value="36" />
-      <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
-      <Setter Property="BorderThickness" Value="0,0,1,1" />
-    </Style>
-
-    <Style Selector="Border.arrow-header-cell">
-      <Setter Property="MinHeight" Value="36" />
-      <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
-      <Setter Property="BorderThickness" Value="0,0,1,1" />
-    </Style>
-
-    <Style Selector="TextBlock.transfer-arrow">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}" />
-      <Setter Property="FontSize" Value="16" />
-      <Setter Property="FontWeight" Value="Bold" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-
-    <!-- Action Cell Styles -->
-    <Style Selector="Border.action-cell, Border.action-header-cell">
-      <Setter Property="MinHeight" Value="36" />
-      <Setter Property="MaxHeight" Value="36" />
-      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
-      <Setter Property="BorderThickness" Value="0,0,1,1" />
-    </Style>
-
-    <Style Selector="Border.action-cell">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}" />
-    </Style>
-
-    <!-- Transfer Button Styles -->
-    <Style Selector="Border.action-cell Button.transfer-action">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}" />
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}" />
-      <Setter Property="Padding" Value="4,2" />
-      <Setter Property="FontSize" Value="10" />
-      <Setter Property="Width" Value="28" />
-      <Setter Property="Height" Value="28" />
-      <Setter Property="Margin" Value="1" />
-      <Setter Property="Cursor" Value="Hand" />
-    </Style>
-
-    <Style Selector="Border.action-cell Button.transfer-action:pointerover">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Hover}" />
-    </Style>
-
-    <Style Selector="Border.action-cell Button.edit-action">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Secondary}" />
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Secondary}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}" />
-      <Setter Property="Padding" Value="4,2" />
-      <Setter Property="FontSize" Value="10" />
-      <Setter Property="Width" Value="28" />
-      <Setter Property="Height" Value="28" />
-      <Setter Property="Margin" Value="1" />
-      <Setter Property="Cursor" Value="Hand" />
-    </Style>
-
-    <Style Selector="Border.action-cell Button.edit-action:pointerover">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Secondary.Hover}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Secondary.Hover}" />
-    </Style>
-
-    <!-- Interactive States -->
-    <Style Selector="Border.data-cell:pointerover, Border.arrow-cell:pointerover">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
-    </Style>
-
-    <!-- Alternating Row Colors -->
-    <Style Selector="ListBoxItem:nth-child(2n) Border.data-cell">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
-    </Style>
-
-    <Style Selector="ListBoxItem:nth-child(2n) Border.arrow-cell">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
-    </Style>
-
-    <Style Selector="ListBoxItem:nth-child(2n) Border.action-cell">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
-    </Style>
-
-    <!-- Selection State - Theme V2 Adaptive -->
-    <Style Selector="ListBoxItem:selected Border.data-cell">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
-    </Style>
-
-    <Style Selector="ListBoxItem:selected Border.arrow-cell">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
-    </Style>
-
-    <Style Selector="ListBoxItem:selected Border.action-cell">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
-    </Style>
-
-    <!-- Selected row text color override for visibility on selected background -->
-    <Style Selector="ListBoxItem:selected Border.data-cell TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
-      <Setter Property="FontWeight" Value="Medium" />
-    </Style>
-
-    <Style Selector="ListBoxItem:selected TextBlock.transfer-arrow">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
-    </Style>
-
-    <!-- Selection when control loses focus -->
-    <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.data-cell">
-      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Subtle}" />
-    </Style>
-
-    <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.data-cell TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}" />
-    </Style>
-
-    <!-- Notes Indicator Style -->
-    <Style Selector="TextBlock.notes-indicator">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Success}" />
-      <Setter Property="FontSize" Value="14" />
-      <Setter Property="FontWeight" Value="Bold" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-
-    <!-- Right-aligned text for numeric columns -->
-    <Style Selector="TextBlock.numeric-value">
-      <Setter Property="HorizontalAlignment" Value="Right" />
-      <Setter Property="TextAlignment" Value="Right" />
-    </Style>
-
-  </UserControl.Styles>
 
   <!-- Main Grid Container -->
-  <Grid x:Name="MainGrid" RowDefinitions="Auto,*,Auto" ColumnDefinitions="*,Auto,Auto">
+  <Grid x:Name="MainGrid"
+        Classes="ManufacturingDataGrid"
+        RowDefinitions="Auto,*,Auto"
+        ColumnDefinitions="*,Auto,Auto">
 
     <!-- Header Section -->
     <Border Grid.Row="0" Grid.Column="0"
-            Background="{DynamicResource ThemeV2.Background.Surface}"
-            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
-            BorderThickness="1,1,1,0"
-            CornerRadius="8,8,0,0">
+            Classes="DataGrid Header">
 
       <Grid x:Name="DynamicHeaderGrid">
         <Grid.ColumnDefinitions>
@@ -218,52 +31,43 @@
         </Grid.ColumnDefinitions>
 
         <!-- Part ID Header -->
-        <Border Grid.Column="0" Classes="header-cell">
-          <TextBlock Text="Part ID"
-                     HorizontalAlignment="Center" />
+        <Border Grid.Column="0" Classes="DataGrid HeaderCell">
+          <TextBlock Text="Part ID" Classes="DataLabel" />
         </Border>
 
         <!-- Operation Header -->
-        <Border Grid.Column="1" Classes="header-cell">
-          <TextBlock Text="Operation"
-                     HorizontalAlignment="Center" />
+        <Border Grid.Column="1" Classes="DataGrid HeaderCell">
+          <TextBlock Text="Operation" Classes="DataLabel" />
         </Border>
 
         <!-- From Location Header -->
-        <Border Grid.Column="2" Classes="header-cell">
-          <TextBlock Text="From Location"
-                     HorizontalAlignment="Center" />
+        <Border Grid.Column="2" Classes="DataGrid HeaderCell">
+          <TextBlock Text="From Location" Classes="DataLabel" />
         </Border>
 
         <!-- Transfer Arrow Header -->
-        <Border Grid.Column="3" Classes="arrow-header-cell">
-          <TextBlock Text="➜"
-                     Classes="transfer-arrow"
-                     HorizontalAlignment="Center" />
+        <Border Grid.Column="3" Classes="DataGrid TransferArrowHeader">
+          <TextBlock Text="➜" Classes="TransferIndicator" />
         </Border>
 
         <!-- To Location Header -->
-        <Border Grid.Column="4" Classes="header-cell">
-          <TextBlock Text="To Location"
-                     HorizontalAlignment="Center" />
+        <Border Grid.Column="4" Classes="DataGrid HeaderCell">
+          <TextBlock Text="To Location" Classes="DataLabel" />
         </Border>
 
         <!-- Available Quantity Header -->
-        <Border Grid.Column="5" Classes="header-cell">
-          <TextBlock Text="Available"
-                     HorizontalAlignment="Center" />
+        <Border Grid.Column="5" Classes="DataGrid HeaderCell">
+          <TextBlock Text="Available" Classes="DataLabel" />
         </Border>
 
         <!-- Transfer Quantity Header -->
-        <Border Grid.Column="6" Classes="header-cell">
-          <TextBlock Text="Transfer"
-                     HorizontalAlignment="Center" />
+        <Border Grid.Column="6" Classes="DataGrid HeaderCell">
+          <TextBlock Text="Transfer" Classes="DataLabel" />
         </Border>
 
         <!-- Notes Header -->
-        <Border Grid.Column="7" Classes="header-cell">
-          <TextBlock Text="Notes"
-                     HorizontalAlignment="Center" />
+        <Border Grid.Column="7" Classes="DataGrid HeaderCell">
+          <TextBlock Text="Notes" Classes="DataLabel" />
         </Border>
 
       </Grid>
@@ -272,12 +76,9 @@
   <!-- Data Section with ScrollViewer (outer view controls scrolling; disable inner vertical scroll) -->
   <ScrollViewer Grid.Row="1" Grid.Column="0"
                   x:Name="DataScrollViewer"
+                  Classes="DataGrid Content"
                   HorizontalScrollBarVisibility="Auto"
-          VerticalScrollBarVisibility="Disabled"
-                  Background="{DynamicResource ThemeV2.Background.Card}"
-                  BorderBrush="{DynamicResource ThemeV2.Border.Default}"
-                  BorderThickness="1,0,1,1"
-                  CornerRadius="0,0,8,8">
+                  VerticalScrollBarVisibility="Disabled">
 
       <!-- Container Grid for Data and Nothing Found Panel -->
       <Grid>
@@ -329,55 +130,59 @@
                         ToolTip.Tip="{Binding Notes}" />
 
                 <!-- Part ID -->
-                <Border Grid.Column="0" Classes="data-cell">
+                <Border Grid.Column="0" Classes="DataGrid Cell">
                   <TextBlock Text="{Binding PartId}"
+                             Classes="DataValue"
                              ToolTip.Tip="{Binding PartId}" />
                 </Border>
 
                 <!-- Operation -->
-                <Border Grid.Column="1" Classes="data-cell">
+                <Border Grid.Column="1" Classes="DataGrid Cell">
                   <TextBlock Text="{Binding Operation}"
+                             Classes="DataValue"
                              ToolTip.Tip="{Binding Operation}" />
                 </Border>
 
                 <!-- From Location -->
-                <Border Grid.Column="2" Classes="data-cell">
+                <Border Grid.Column="2" Classes="DataGrid Cell">
                   <TextBlock Text="{Binding FromLocation}"
+                             Classes="DataValue"
                              ToolTip.Tip="{Binding FromLocation}" />
                 </Border>
 
                 <!-- Transfer Arrow -->
-                <Border Grid.Column="3" Classes="arrow-cell">
+                <Border Grid.Column="3" Classes="DataGrid TransferArrow">
                   <TextBlock Text="➜"
-                             Classes="transfer-arrow"
+                             Classes="TransferIndicator"
                              ToolTip.Tip="{Binding FromLocation, StringFormat='Transfer from {0}'} → {Binding ToLocation, StringFormat='to {0}'}" />
                 </Border>
 
                 <!-- To Location -->
-                <Border Grid.Column="4" Classes="data-cell">
+                <Border Grid.Column="4" Classes="DataGrid Cell">
                   <TextBlock Text="{Binding ToLocation}"
+                             Classes="DataValue"
                              ToolTip.Tip="{Binding ToLocation}" />
                 </Border>
 
                 <!-- Available Quantity -->
-                <Border Grid.Column="5" Classes="data-cell">
+                <Border Grid.Column="5" Classes="DataGrid Cell">
                   <TextBlock Text="{Binding AvailableQuantity, StringFormat=N0}"
-                             Classes="numeric-value"
+                             Classes="DataNumeric"
                              ToolTip.Tip="{Binding AvailableQuantity, StringFormat='Available: {0:N0}'}" />
                 </Border>
 
                 <!-- Transfer Quantity -->
-                <Border Grid.Column="6" Classes="data-cell">
+                <Border Grid.Column="6" Classes="DataGrid Cell">
                   <TextBlock Text="{Binding TransferQuantity, StringFormat=N0}"
-                             Classes="numeric-value"
+                             Classes="DataNumeric"
                              ToolTip.Tip="{Binding TransferQuantity, StringFormat='Transfer Qty: {0:N0}'}" />
                 </Border>
 
                 <!-- Notes -->
-                <Border Grid.Column="7" Classes="data-cell">
+                <Border Grid.Column="7" Classes="DataGrid Cell">
                   <Grid>
                     <TextBlock Text="{Binding Notes}"
-                               TextTrimming="CharacterEllipsis" />
+                               Classes="DataValue" />
                     <!-- Invisible overlay for tooltip when notes exist -->
                     <Border Background="Transparent"
                             IsVisible="{Binding HasNotes}"
@@ -408,28 +213,16 @@
                     Width="64"
                     Height="64"
                     HorizontalAlignment="Center">
-              <TextBlock Text="➜"
-                         FontSize="24"
-                         FontWeight="Bold"
-                         Foreground="{DynamicResource ThemeV2.Content.Secondary}"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center" />
+              <TextBlock Text="➜" Classes="TransferIndicator" />
             </Border>
 
             <!-- Nothing Found Message -->
             <TextBlock Text="No transfer candidates found"
-                       FontSize="18"
-                       FontWeight="Medium"
-                       Foreground="{DynamicResource ThemeV2.Content.Primary}"
-                       HorizontalAlignment="Center"
-                       TextAlignment="Center" />
+                       Classes="Heading3" />
 
             <!-- Help Text -->
             <TextBlock Text="Enter search criteria in the transfer form above and click Search to find items available for transfer."
-                       FontSize="14"
-                       Foreground="{DynamicResource ThemeV2.Content.Secondary}"
-                       HorizontalAlignment="Center"
-                       TextAlignment="Center"
+                       Classes="Body"
                        TextWrapping="Wrap"
                        MaxWidth="400" />
 
@@ -441,20 +234,10 @@
                     Padding="16,12"
                     Margin="0,8,0,0">
               <StackPanel Spacing="6">
-                <TextBlock Text="Search Tips:"
-                           FontSize="12"
-                           FontWeight="SemiBold"
-                           Foreground="{DynamicResource ThemeV2.Content.Primary}"
-                           HorizontalAlignment="Center" />
-                <TextBlock Text="• Enter Part ID to find all locations for that part"
-                           FontSize="11"
-                           Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
-                <TextBlock Text="• Add Operation number to filter by specific operation"
-                           FontSize="11"
-                           Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
-                <TextBlock Text="• Select destination location before transferring"
-                           FontSize="11"
-                           Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
+                <TextBlock Text="Search Tips:" Classes="Caption" />
+                <TextBlock Text="• Enter Part ID to find all locations for that part" Classes="Caption" />
+                <TextBlock Text="• Add Operation number to filter by specific operation" Classes="Caption" />
+                <TextBlock Text="• Select destination location before transferring" Classes="Caption" />
               </StackPanel>
             </Border>
 
@@ -466,11 +249,7 @@
 
     <!-- Action Buttons Row -->
     <Border Grid.Row="2" Grid.Column="0"
-            Background="{DynamicResource ThemeV2.Background.Surface}"
-            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
-            BorderThickness="1,0,1,1"
-            CornerRadius="0,0,8,8"
-            Padding="16,12">
+            Classes="DataGrid Footer">
 
       <Grid>
         <Grid.ColumnDefinitions>
@@ -486,17 +265,13 @@
 
           <TextBlock x:Name="SelectionInfoText"
                      Text="No items selected for transfer"
-                     Foreground="{DynamicResource ThemeV2.Content.Secondary}"
-                     FontSize="12"
-                     VerticalAlignment="Center" />
+                     Classes="Caption" />
 
           <Border Width="1" Height="16" Background="{DynamicResource ThemeV2.Border.Default}" />
 
           <TextBlock x:Name="TotalTransferQuantityText"
                      Text="Total Transfer Quantity: 0"
-                     Foreground="{DynamicResource ThemeV2.Content.Secondary}"
-                     FontSize="12" FontWeight="Medium"
-                     VerticalAlignment="Center"
+                     Classes="Caption"
                      ToolTip.Tip="Total quantity planned for transfer by Part ID and Operation" />
 
         </StackPanel>
@@ -510,14 +285,7 @@
           <!-- Edit Transfer Button -->
           <Button x:Name="EditTransferButton"
                   Content="✏️ Edit"
-                  Background="{DynamicResource ThemeV2.Action.Secondary}"
-                  Foreground="{DynamicResource ThemeV2.Content.OnColor}"
-                  BorderBrush="{DynamicResource ThemeV2.Action.Secondary}"
-                  BorderThickness="1"
-                  CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
-                  Padding="12,6"
-                  FontSize="{StaticResource ThemeV2.Typography.Caption.FontSize}"
-                  Cursor="Hand"
+                  Classes="Icon DataGrid Edit"
                   IsEnabled="False"
                   Command="{Binding EditTransferCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                   ToolTip.Tip="Edit selected transfer item (modify destination location, transfer quantity, notes, etc.)" />
@@ -525,14 +293,7 @@
           <!-- Execute Transfer Button -->
           <Button x:Name="ExecuteTransferButton"
                   Content="➜ Transfer"
-                  Background="{DynamicResource ThemeV2.MTM.Inventory.Transfer}"
-                  Foreground="{DynamicResource ThemeV2.Content.OnColor}"
-                  BorderBrush="{DynamicResource ThemeV2.MTM.Inventory.Transfer}"
-                  BorderThickness="1"
-                  CornerRadius="{StaticResource ThemeV2.CornerRadius.Small}"
-                  Padding="12,6"
-                  FontSize="{StaticResource ThemeV2.Typography.Caption.FontSize}"
-                  Cursor="Hand"
+                  Classes="Icon DataGrid Transfer"
                   IsEnabled="False"
                   Command="{Binding ExecuteTransferCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                   ToolTip.Tip="Execute transfer for selected item(s)" />
@@ -553,10 +314,9 @@
 
       <!-- Column Management Panel will be implemented in Phase 3 -->
       <TextBlock Text="Column Management\\n(Phase 3)"
+                 Classes="Caption"
                  HorizontalAlignment="Center"
                  VerticalAlignment="Center"
-                 FontSize="12"
-                 Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                  Opacity="0.7" />
     </Border>
 
@@ -572,10 +332,9 @@
 
       <!-- Filter Panel will be implemented in Phase 5 -->
       <TextBlock Text="Filter Panel\\n(Phase 5)"
+                 Classes="Caption"
                  HorizontalAlignment="Center"
                  VerticalAlignment="Center"
-                 FontSize="12"
-                 Foreground="{DynamicResource ThemeV2.Content.Secondary}"
                  Opacity="0.7" />
     </Border>
 

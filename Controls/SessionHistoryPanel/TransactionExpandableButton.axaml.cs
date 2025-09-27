@@ -170,32 +170,47 @@ public partial class TransactionExpandableButton : UserControl
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        
-        // Get references to named elements
-        _headerBorder = this.FindControl<Border>("HeaderBorder");
-        _contentBorder = this.FindControl<Border>("ContentBorder");
-        _transactionIcon = this.FindControl<Material.Icons.Avalonia.MaterialIcon>("TransactionIcon");
-        _expandIcon = this.FindControl<Material.Icons.Avalonia.MaterialIcon>("ExpandIcon");
-        _partIdText = this.FindControl<TextBlock>("PartIdText");
-        _operationText = this.FindControl<TextBlock>("OperationText");
-        _quantityText = this.FindControl<TextBlock>("QuantityText");
-        _locationText = this.FindControl<TextBlock>("LocationText");
-        _userText = this.FindControl<TextBlock>("UserText");
-        _transactionTimeText = this.FindControl<TextBlock>("TransactionTimeText");
-        _statusText = this.FindControl<TextBlock>("StatusText");
-        _itemTypeText = this.FindControl<TextBlock>("ItemTypeText");
-        _transactionIdText = this.FindControl<TextBlock>("TransactionIdText");
-        _notesText = this.FindControl<TextBlock>("NotesText");
-        _notesPanel = this.FindControl<Grid>("NotesPanel");
-        
-        // Update the display with current values
-        UpdateDisplay();
+
+        try
+        {
+            // Get references to named elements with null safety
+            _headerBorder = this.FindControl<Border>("HeaderBorder");
+            _contentBorder = this.FindControl<Border>("ContentBorder");
+            _transactionIcon = this.FindControl<Material.Icons.Avalonia.MaterialIcon>("TransactionIcon");
+            _expandIcon = this.FindControl<Material.Icons.Avalonia.MaterialIcon>("ExpandIcon");
+            _partIdText = this.FindControl<TextBlock>("PartIdText");
+            _operationText = this.FindControl<TextBlock>("OperationText");
+            _quantityText = this.FindControl<TextBlock>("QuantityText");
+            _locationText = this.FindControl<TextBlock>("LocationText");
+            _userText = this.FindControl<TextBlock>("UserText");
+            _transactionTimeText = this.FindControl<TextBlock>("TransactionTimeText");
+            _statusText = this.FindControl<TextBlock>("StatusText");
+            _itemTypeText = this.FindControl<TextBlock>("ItemTypeText");
+            _transactionIdText = this.FindControl<TextBlock>("TransactionIdText");
+            _notesText = this.FindControl<TextBlock>("NotesText");
+            _notesPanel = this.FindControl<Grid>("NotesPanel");
+
+            // Only update display if critical elements are found
+            if (_partIdText != null && _operationText != null && _quantityText != null)
+            {
+                // Update the display with current values
+                UpdateDisplay();
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("TransactionExpandableButton: Critical UI elements not found during initialization");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error in TransactionExpandableButton OnAttachedToVisualTree: {ex.Message}");
+        }
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
-        
+
         if (change.Property == PartIdProperty ||
             change.Property == OperationProperty ||
             change.Property == QuantityProperty ||
@@ -219,85 +234,117 @@ public partial class TransactionExpandableButton : UserControl
 
     private void UpdateDisplay()
     {
-        if (_partIdText == null) return; // Not initialized yet
-        
-        // Update header content
-        _partIdText!.Text = PartId;
-        _operationText!.Text = string.IsNullOrEmpty(Operation) ? "Unknown" : $"Operation {Operation}";
-        _quantityText!.Text = Quantity.ToString();
-        
-        // Update content details
-        if (_locationText != null) _locationText.Text = Location;
-        if (_userText != null) _userText.Text = User;
-        if (_transactionTimeText != null) _transactionTimeText.Text = TransactionTime.ToString("HH:mm:ss");
-        if (_statusText != null) _statusText.Text = Status;
-        if (_itemTypeText != null) _itemTypeText.Text = ItemType;
-        if (_transactionIdText != null) _transactionIdText.Text = TransactionId;
-        if (_notesText != null) _notesText.Text = Notes;
-        
-        // Show/hide notes panel based on content
-        if (_notesPanel != null)
+        // Check if all critical UI elements are initialized
+        if (_partIdText == null || _operationText == null || _quantityText == null)
+            return; // Not initialized yet
+
+        try
         {
-            _notesPanel.IsVisible = !string.IsNullOrEmpty(Notes);
+            // Update header content with safe null checks
+            _partIdText.Text = PartId ?? string.Empty;
+            _operationText.Text = string.IsNullOrEmpty(Operation) ? "Unknown" : $"Operation {Operation}";
+            _quantityText.Text = Quantity.ToString();
+
+            // Update content details with safe null checks
+            if (_locationText != null) _locationText.Text = Location ?? string.Empty;
+            if (_userText != null) _userText.Text = User ?? string.Empty;
+            if (_transactionTimeText != null)
+            {
+                // Safe DateTime formatting to prevent crashes
+                var timeText = TransactionTime == DateTime.MinValue ? "Unknown" : TransactionTime.ToString("HH:mm:ss");
+                _transactionTimeText.Text = timeText;
+            }
+            if (_statusText != null) _statusText.Text = Status ?? string.Empty;
+            if (_itemTypeText != null) _itemTypeText.Text = ItemType ?? string.Empty;
+            if (_transactionIdText != null) _transactionIdText.Text = TransactionId ?? string.Empty;
+            if (_notesText != null) _notesText.Text = Notes ?? string.Empty;
+
+            // Show/hide notes panel based on content
+            if (_notesPanel != null)
+            {
+                _notesPanel.IsVisible = !string.IsNullOrEmpty(Notes);
+            }
+
+            // Update transaction type styling and icon
+            UpdateTransactionTypeDisplay();
+
+            // Update expanded/collapsed state
+            UpdateExpandedState();
         }
-        
-        // Update transaction type styling and icon
-        UpdateTransactionTypeDisplay();
-        
-        // Update expanded/collapsed state
-        UpdateExpandedState();
+        catch (Exception ex)
+        {
+            // Prevent crashes in UI updates
+            System.Diagnostics.Debug.WriteLine($"Error updating TransactionExpandableButton display: {ex.Message}");
+        }
     }
 
     private void UpdateTransactionTypeDisplay()
     {
         if (_headerBorder == null || _contentBorder == null || _transactionIcon == null) return;
-        
-        // Clear existing transaction type classes
-        _headerBorder.Classes.Remove("transaction-in");
-        _headerBorder.Classes.Remove("transaction-out");
-        _headerBorder.Classes.Remove("transaction-transfer");
-        
-        _contentBorder.Classes.Remove("transaction-in-light");
-        _contentBorder.Classes.Remove("transaction-out-light");
-        _contentBorder.Classes.Remove("transaction-transfer-light");
-        
-        // Set appropriate styling based on transaction type
-        switch (TransactionType.ToUpperInvariant())
+
+        try
         {
-            case "IN":
-                _headerBorder.Classes.Add("transaction-in");
-                _contentBorder.Classes.Add("transaction-in-light");
-                _transactionIcon.Kind = MaterialIconKind.ArrowUp;
-                break;
-            case "OUT":
-                _headerBorder.Classes.Add("transaction-out");
-                _contentBorder.Classes.Add("transaction-out-light");
-                _transactionIcon.Kind = MaterialIconKind.ArrowDown;
-                break;
-            case "TRANSFER":
-                _headerBorder.Classes.Add("transaction-transfer");
-                _contentBorder.Classes.Add("transaction-transfer-light");
-                _transactionIcon.Kind = MaterialIconKind.SwapHorizontal;
-                break;
-            default:
-                _headerBorder.Classes.Add("transaction-in"); // Default to IN styling
-                _contentBorder.Classes.Add("transaction-in-light");
-                _transactionIcon.Kind = MaterialIconKind.Help;
-                break;
+            // Clear existing transaction type classes safely
+            _headerBorder.Classes.Remove("transaction-in");
+            _headerBorder.Classes.Remove("transaction-out");
+            _headerBorder.Classes.Remove("transaction-transfer");
+
+            _contentBorder.Classes.Remove("transaction-in-light");
+            _contentBorder.Classes.Remove("transaction-out-light");
+            _contentBorder.Classes.Remove("transaction-transfer-light");
+
+            // Set appropriate styling based on transaction type with null safety
+            var transactionType = TransactionType?.ToUpperInvariant() ?? "IN";
+            switch (transactionType)
+            {
+                case "IN":
+                    _headerBorder.Classes.Add("transaction-in");
+                    _contentBorder.Classes.Add("transaction-in-light");
+                    _transactionIcon.Kind = MaterialIconKind.ArrowUp;
+                    break;
+                case "OUT":
+                    _headerBorder.Classes.Add("transaction-out");
+                    _contentBorder.Classes.Add("transaction-out-light");
+                    _transactionIcon.Kind = MaterialIconKind.ArrowDown;
+                    break;
+                case "TRANSFER":
+                    _headerBorder.Classes.Add("transaction-transfer");
+                    _contentBorder.Classes.Add("transaction-transfer-light");
+                    _transactionIcon.Kind = MaterialIconKind.SwapHorizontal;
+                    break;
+                default:
+                    _headerBorder.Classes.Add("transaction-in"); // Default to IN styling
+                    _contentBorder.Classes.Add("transaction-in-light");
+                    _transactionIcon.Kind = MaterialIconKind.Help;
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Prevent crashes in transaction type display updates
+            System.Diagnostics.Debug.WriteLine($"Error updating transaction type display: {ex.Message}");
         }
     }
 
     private void UpdateExpandedState()
     {
         if (_contentBorder == null || _expandIcon == null) return;
-        
-        _contentBorder.IsVisible = IsExpanded;
-        _expandIcon.Kind = IsExpanded ? MaterialIconKind.ChevronDown : MaterialIconKind.ChevronRight;
-        
-        // Update header corner radius based on expanded state
-        if (_headerBorder != null)
+
+        try
         {
-            _headerBorder.CornerRadius = IsExpanded ? new CornerRadius(8, 8, 0, 0) : new CornerRadius(8);
+            _contentBorder.IsVisible = IsExpanded;
+            _expandIcon.Kind = IsExpanded ? MaterialIconKind.ChevronDown : MaterialIconKind.ChevronRight;
+
+            // Update header corner radius based on expanded state
+            if (_headerBorder != null)
+            {
+                _headerBorder.CornerRadius = IsExpanded ? new CornerRadius(8, 8, 0, 0) : new CornerRadius(8);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Prevent crashes in expanded state updates
+            System.Diagnostics.Debug.WriteLine($"Error updating expanded state: {ex.Message}");
         }
     }
 

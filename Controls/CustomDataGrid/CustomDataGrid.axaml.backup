@@ -1,0 +1,415 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Controls.CustomDataGrid.CustomDataGrid"
+             x:Name="CustomDataGridRoot">
+
+  <UserControl.Styles>
+    <!-- MTM CustomDataGrid Cell Styles -->
+
+    <!-- Header Cell Base Style -->
+    <Style Selector="Border.header-cell">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+    </Style>
+
+    <Style Selector="Border.header-cell TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Data Cell Base Style -->
+    <Style Selector="Border.data-cell">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+    </Style>
+
+    <Style Selector="Border.data-cell TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}" />
+      <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- Action Cell Styles -->
+    <Style Selector="Border.action-cell, Border.action-header-cell">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MaxHeight" Value="36" />
+      <Setter Property="Padding" Value="4,6" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
+    </Style>
+
+    <Style Selector="Border.action-cell">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}" />
+    </Style>
+
+    <!-- Action Button Styles - StyleSystem Icon Buttons -->
+    <Style Selector="Border.action-cell Button">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}" />
+      <Setter Property="Padding" Value="4,2" />
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="28" />
+      <Setter Property="Margin" Value="1" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Border.action-cell Button:pointerover">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}" />
+    </Style>
+
+    <Style Selector="Border.action-cell Button.error-action">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Error}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Error}" />
+    </Style>
+
+    <Style Selector="Border.action-cell Button.error-action:pointerover">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Error}" />
+      <Setter Property="Opacity" Value="0.8" />
+    </Style>
+
+    <!-- Interactive States -->
+    <Style Selector="Border.data-cell:pointerover">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
+    </Style>
+
+    <!-- Alternating Row Colors -->
+    <Style Selector="ListBoxItem:nth-child(2n) Border.data-cell">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:nth-child(2n) Border.action-cell">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
+    </Style>
+
+    <!-- Selection State - Theme V2 Semantic Tokens -->
+    <!-- Selected row overlay with semantic highlight -->
+    <Style Selector="ListBoxItem:selected Border.data-cell">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:selected Border.action-cell">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
+    </Style>
+
+    <!-- Selected row text color override for visibility on colored background -->
+    <Style Selector="ListBoxItem:selected Border.data-cell TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}" />
+      <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+
+    <!-- Selected row with focus (semantic pressed state) -->
+    <Style Selector="ListBoxItem:selected:focus Border.data-cell">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Pressed}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Strong}" />
+    </Style>
+
+    <!-- Selection when control loses focus (semantic unfocused state) -->
+    <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.data-cell">
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Subtle}" />
+    </Style>
+
+    <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.data-cell TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}" />
+    </Style>
+
+    <!-- Notes Indicator Style -->
+    <Style Selector="TextBlock.notes-indicator">
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Success}" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Margin" Value="0,0,5,0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Right-aligned text for numeric columns -->
+    <Style Selector="TextBlock.numeric-value">
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="TextAlignment" Value="Right" />
+    </Style>
+
+  </UserControl.Styles>
+
+  <!-- Main Grid Container -->
+  <Grid x:Name="MainGrid" RowDefinitions="Auto,*,Auto" ColumnDefinitions="*,Auto,Auto">
+
+    <!-- Header Section -->
+    <Border Grid.Row="0" Grid.Column="0"
+            Background="{DynamicResource ThemeV2.Background.Surface}"
+            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+            BorderThickness="1,1,1,0"
+            CornerRadius="8,8,0,0">
+
+      <Grid x:Name="DynamicHeaderGrid">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1.5*" />    <!-- Part ID -->
+          <ColumnDefinition Width="1*" />      <!-- Operation -->
+          <ColumnDefinition Width="1.2*" />    <!-- Location -->
+          <ColumnDefinition Width="1*" />      <!-- Quantity -->
+          <ColumnDefinition Width="80" />      <!-- Notes -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Part ID Header -->
+        <Border Grid.Column="0" Classes="header-cell">
+          <TextBlock Text="Part ID"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Operation Header -->
+        <Border Grid.Column="1" Classes="header-cell">
+          <TextBlock Text="Operation"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Location Header -->
+        <Border Grid.Column="2" Classes="header-cell">
+          <TextBlock Text="Location"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Quantity Header -->
+        <Border Grid.Column="3" Classes="header-cell">
+          <TextBlock Text="Quantity"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Notes Header -->
+        <Border Grid.Column="4" Classes="header-cell">
+          <TextBlock Text="Notes"
+                     HorizontalAlignment="Center" />
+        </Border>
+
+      </Grid>
+    </Border>
+
+    <!-- Data Section with ScrollViewer -->
+    <ScrollViewer Grid.Row="1" Grid.Column="0"
+                  x:Name="DataScrollViewer"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource ThemeV2.Background.Card}"
+                  BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                  BorderThickness="1,0,1,1"
+                  CornerRadius="0,0,8,8">
+
+      <!-- Data ListBox with Virtual Scrolling -->
+      <ListBox x:Name="DataListBox"
+               ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
+               Background="Transparent"
+               BorderThickness="0"
+               SelectionMode="Multiple"
+               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+               ScrollViewer.VerticalScrollBarVisibility="Disabled">
+
+        <ListBox.ItemsPanel>
+          <ItemsPanelTemplate>
+            <VirtualizingStackPanel Orientation="Vertical" />
+          </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+
+        <ListBox.ItemContainerTheme>
+          <ControlTheme TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+          </ControlTheme>
+        </ListBox.ItemContainerTheme>
+
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.5*" />    <!-- Part ID -->
+                <ColumnDefinition Width="1*" />      <!-- Operation -->
+                <ColumnDefinition Width="1.2*" />    <!-- Location -->
+                <ColumnDefinition Width="1*" />      <!-- Quantity -->
+                <ColumnDefinition Width="80" />      <!-- Notes -->
+              </Grid.ColumnDefinitions>
+
+              <!-- Conditional tooltip overlay for rows with notes -->
+              <Border Grid.ColumnSpan="5"
+                      Background="Transparent"
+                      IsVisible="{Binding HasNotes}"
+                      ToolTip.Tip="{Binding Notes}" />
+
+              <!-- Part ID -->
+              <Border Grid.Column="0" Classes="data-cell">
+                <TextBlock Text="{Binding PartId}"
+                           ToolTip.Tip="{Binding PartId}" />
+              </Border>
+
+              <!-- Operation -->
+              <Border Grid.Column="1" Classes="data-cell">
+                <TextBlock Text="{Binding Operation}"
+                           ToolTip.Tip="{Binding Operation}" />
+              </Border>
+
+              <!-- Location -->
+              <Border Grid.Column="2" Classes="data-cell">
+                <TextBlock Text="{Binding Location}"
+                           ToolTip.Tip="{Binding Location}" />
+              </Border>
+
+              <!-- Quantity -->
+              <Border Grid.Column="3" Classes="data-cell">
+                <TextBlock Text="{Binding Quantity, StringFormat=N0}"
+                           Classes="numeric-value"
+                           ToolTip.Tip="{Binding Quantity, StringFormat='Quantity: {0:N0}'}" />
+              </Border>
+
+              <!-- Notes -->
+              <Border Grid.Column="4" Classes="data-cell">
+                <Grid>
+                  <TextBlock Text="{Binding Notes}"
+                             TextTrimming="CharacterEllipsis" />
+                  <!-- Invisible overlay for tooltip when notes exist -->
+                  <Border Background="Transparent"
+                          IsVisible="{Binding HasNotes}"
+                          ToolTip.Tip="{Binding Notes}" />
+                </Grid>
+              </Border>
+
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </ScrollViewer>
+
+    <!-- Action Buttons Row -->
+    <Border Grid.Row="2" Grid.Column="0"
+            Background="{DynamicResource ThemeV2.Background.Surface}"
+            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+            BorderThickness="1,0,1,1"
+            CornerRadius="0,0,8,8"
+            Padding="16,12">
+
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Selection Info -->
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    Spacing="16"
+                    VerticalAlignment="Center">
+
+          <TextBlock x:Name="SelectionInfoText"
+                     Text="No items selected"
+                     Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                     FontSize="12"
+                     VerticalAlignment="Center" />
+
+          <Border Width="1" Height="16" Background="{DynamicResource ThemeV2.Border.Default}" />
+
+          <TextBlock x:Name="TotalQuantityText"
+                     Text="Total Quantity: 0"
+                     Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                     FontSize="12" FontWeight="Medium"
+                     VerticalAlignment="Center"
+                     ToolTip.Tip="Total quantity breakdown by Part ID and Operation" />
+
+        </StackPanel>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    VerticalAlignment="Center">
+
+          <!-- Edit Button -->
+          <Button x:Name="EditButton"
+                  Classes="Primary"
+                  Content="✏️ Edit"
+                  Padding="12,6"
+                  FontSize="12"
+                  Cursor="Hand"
+                  IsEnabled="False"
+                  Command="{Binding EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  ToolTip.Tip="Edit selected inventory item (all fields including Part ID, Location, Operation, Quantity, Notes, etc.)" />
+
+          <!-- Delete Button -->
+          <Button x:Name="DeleteButton"
+                  Content="🗑️ Delete"
+                  Background="{DynamicResource ThemeV2.Status.Error}"
+                  Foreground="{DynamicResource ThemeV2.Content.OnColor}"
+                  BorderBrush="{DynamicResource ThemeV2.Status.Error}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="12,6"
+                  FontSize="12"
+                  Cursor="Hand"
+                  IsEnabled="False"
+                  Command="{Binding DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  ToolTip.Tip="Delete selected item(s)" />
+
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- Column Management Panel (Phase 3 - Disabled) -->
+    <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+            x:Name="ColumnManagementContainer"
+            Width="0"
+            Background="{DynamicResource ThemeV2.Background.Surface}"
+            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+            BorderThickness="1,1,0,1"
+            IsVisible="False">
+
+      <!-- Column Management Panel will be implemented in Phase 3 -->
+      <TextBlock Text="Column Management\\n(Phase 3)"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontSize="12"
+                 Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                 Opacity="0.7" />
+    </Border>
+
+    <!-- Filter Panel (Phase 5 - Disabled) -->
+    <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
+            x:Name="FilterPanelContainer"
+            Width="0"
+            Background="{DynamicResource ThemeV2.Background.Surface}"
+            BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+            BorderThickness="1,1,1,1"
+            CornerRadius="0,8,8,0"
+            IsVisible="False">
+
+      <!-- Filter Panel will be implemented in Phase 5 -->
+      <TextBlock Text="Filter Panel\\n(Phase 5)"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontSize="12"
+                 Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                 Opacity="0.7" />
+    </Border>
+
+  </Grid>
+
+</UserControl>

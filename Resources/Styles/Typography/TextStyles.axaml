@@ -227,4 +227,53 @@ WCAG 2.1 AA compliant typography with proper contrast
     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
 </Style>
 
+<!-- DataGrid-specific Typography Styles -->
+<Style Selector="TextBlock.DataLabel">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Caption.FontSize}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+</Style>
+
+<Style Selector="TextBlock.DataValue">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+</Style>
+
+<Style Selector="TextBlock.DataNumeric">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="HorizontalAlignment" Value="Right"/>
+    <Setter Property="TextAlignment" Value="Right"/>
+</Style>
+
+<Style Selector="TextBlock.DataIndicator">
+    <Setter Property="FontSize" Value="14"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Status.Success}"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Margin" Value="0,0,5,0"/>
+  </Style>
+
+  <!-- Transfer Arrow Indicator Style -->
+  <Style Selector="TextBlock.TransferIndicator">
+    <Setter Property="FontSize" Value="16"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+  </Style>
+
+<!-- Button Label Text - For text within buttons -->
+<Style Selector="TextBlock.Button.Label">
+    <Setter Property="FontSize" Value="{StaticResource ThemeV2.Typography.Body.FontSize}"/>
+    <Setter Property="FontWeight" Value="{StaticResource ThemeV2.FontWeight.Medium}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="TextAlignment" Value="Center"/>
+</Style>
+
 </Styles>

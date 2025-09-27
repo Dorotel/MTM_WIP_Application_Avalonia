@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="using:Material.Icons.Avalonia">
 
 <!--
 MTM Icon Button Styles - Theme V2 Compatible
@@ -85,6 +86,62 @@ WCAG 2.1 AA compliant with proper focus indicators
 <Style Selector="Button.Icon.Danger:pointerover">
     <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Error.Background}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Error.Border}"/>
+</Style>
+
+<!-- DataGrid-specific Icon Button variants -->
+<Style Selector="Button.Icon.DataGrid">
+    <Setter Property="Width" Value="28"/>
+    <Setter Property="Height" Value="28"/>
+    <Setter Property="Padding" Value="4,2"/>
+    <Setter Property="Margin" Value="1"/>
+    <Setter Property="FontSize" Value="10"/>
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+</Style>
+
+<Style Selector="Button.Icon.DataGrid:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+</Style>
+
+<Style Selector="Button.Icon.DataGrid.Edit">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Secondary}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Secondary}"/>
+</Style>
+
+<Style Selector="Button.Icon.DataGrid.Edit:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Secondary.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Secondary.Hover}"/>
+</Style>
+
+<Style Selector="Button.Icon.DataGrid.Delete">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Error}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Status.Error}"/>
+</Style>
+
+<Style Selector="Button.Icon.DataGrid.Delete:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Status.Error}"/>
+    <Setter Property="Opacity" Value="0.8"/>
+</Style>
+
+<Style Selector="Button.Icon.DataGrid.Transfer">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.MTM.Inventory.Transfer}"/>
+</Style>
+
+<Style Selector="Button.Icon.DataGrid.Transfer:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary.Hover}"/>
+</Style>
+
+<!-- Icon Button Content - For icons within buttons -->
+<Style Selector="Button materialIcons|MaterialIcon.Icon.Button">
+    <Setter Property="Width" Value="16"/>
+    <Setter Property="Height" Value="16"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
 </Style>
 
 </Styles>

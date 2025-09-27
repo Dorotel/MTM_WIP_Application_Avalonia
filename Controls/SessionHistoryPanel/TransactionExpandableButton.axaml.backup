@@ -14,12 +14,12 @@
       <Setter Property="Background" Value="#4CAF50"/>
       <Setter Property="BorderBrush" Value="#4CAF50"/>
     </Style>
-
+    
     <Style Selector="Border.transaction-out">
       <Setter Property="Background" Value="#F44336"/>
       <Setter Property="BorderBrush" Value="#F44336"/>
     </Style>
-
+    
     <Style Selector="Border.transaction-transfer">
       <Setter Property="Background" Value="#FFB74D"/>
       <Setter Property="BorderBrush" Value="#FFB74D"/>
@@ -29,11 +29,11 @@
     <Style Selector="Border.transaction-in-light">
       <Setter Property="Background" Value="#C8E6C9"/>
     </Style>
-
+    
     <Style Selector="Border.transaction-out-light">
       <Setter Property="Background" Value="#FFCDD2"/>
     </Style>
-
+    
     <Style Selector="Border.transaction-transfer-light">
       <Setter Property="Background" Value="#FFE0B2"/>
     </Style>
@@ -49,15 +49,13 @@
     <!-- Content text styles -->
     <Style Selector="TextBlock.content-label">
       <Setter Property="FontWeight" Value="Medium"/>
-      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="FontSize" Value="11"/>
       <Setter Property="Foreground" Value="#212121"/>
-      <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
-
+    
     <Style Selector="TextBlock.content-value">
-      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="FontSize" Value="11"/>
       <Setter Property="Foreground" Value="#424242"/>
-      <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
   </UserControl.Styles>
 
@@ -65,9 +63,9 @@
   <Border CornerRadius="8"
           BorderThickness="1"
           Margin="2">
-
+    
     <Grid RowDefinitions="Auto,*">
-
+      
       <!-- Header Area - Clickable to expand/collapse -->
       <Border Grid.Row="0"
               x:Name="HeaderBorder"
@@ -76,9 +74,9 @@
               Padding="12,8"
               Cursor="Hand"
               PointerPressed="OnHeaderPressed">
-
+        
         <Grid ColumnDefinitions="Auto,8,*,Auto,8,Auto">
-
+          
           <!-- Transaction Type Icon -->
           <Border Grid.Column="0"
                   Background="#FFFFFF"
@@ -93,9 +91,9 @@
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
           </Border>
-
+          
           <!-- Part ID and Operation -->
-          <StackPanel Grid.Column="2"
+          <StackPanel Grid.Column="2" 
                       Orientation="Vertical"
                       VerticalAlignment="Center">
             <TextBlock x:Name="PartIdText"
@@ -107,7 +105,7 @@
                        Foreground="#FFFFFF"
                        Opacity="0.9"/>
           </StackPanel>
-
+          
           <!-- Quantity -->
           <StackPanel Grid.Column="3"
                       Orientation="Vertical"
@@ -122,7 +120,7 @@
                        Opacity="0.8"
                        HorizontalAlignment="Center"/>
           </StackPanel>
-
+          
           <!-- Expand/Collapse Icon -->
           <material:MaterialIcon Grid.Column="5"
                                  x:Name="ExpandIcon"
@@ -133,83 +131,79 @@
                                  VerticalAlignment="Center"/>
         </Grid>
       </Border>
-
+      
       <!-- Content Area - Shows when expanded -->
       <Border Grid.Row="1"
               x:Name="ContentBorder"
               CornerRadius="0,0,8,8"
               BorderThickness="0"
-              Padding="12,8"
+              Padding="16,12"
               IsVisible="False">
-
-        <StackPanel Spacing="6">
-
-          <!-- Location (Primary Info) -->
-          <Grid ColumnDefinitions="Auto,6,Auto,4,*">
-            <material:MaterialIcon Grid.Column="0" Kind="MapMarker" Width="14" Height="14"
+        
+        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12">
+          
+          <!-- Left Column - Location and Time -->
+          <Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="MapMarker" Width="16" Height="16" 
                                    Foreground="#1976D2"/>
             <TextBlock Grid.Column="2" Text="Location:" Classes="content-label" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="4" x:Name="LocationText" Text="WC01" Classes="content-value" VerticalAlignment="Center"
-                       TextTrimming="CharacterEllipsis"/>
+            <TextBlock Grid.Column="4" x:Name="LocationText" Text="WC01" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
-
-          <!-- User (Primary Info) -->
-          <Grid ColumnDefinitions="Auto,6,Auto,4,*">
-            <material:MaterialIcon Grid.Column="0" Kind="Account" Width="14" Height="14"
+          
+          <!-- Right Column - User -->
+          <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="Account" Width="16" Height="16" 
                                    Foreground="#1976D2"/>
             <TextBlock Grid.Column="2" Text="User:" Classes="content-label" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="4" x:Name="UserText" Text="admin" Classes="content-value" VerticalAlignment="Center"
-                       TextTrimming="CharacterEllipsis"/>
+            <TextBlock Grid.Column="4" x:Name="UserText" Text="admin" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
-
-          <!-- Transaction Time (Secondary Info) -->
-          <Grid ColumnDefinitions="Auto,6,Auto,4,*">
-            <material:MaterialIcon Grid.Column="0" Kind="Clock" Width="14" Height="14"
+          
+          <!-- Left Column - Transaction Time -->
+          <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="Clock" Width="16" Height="16" 
                                    Foreground="#1976D2"/>
             <TextBlock Grid.Column="2" Text="Time:" Classes="content-label" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="4" x:Name="TransactionTimeText" Text="14:30:22" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
-
-          <!-- Status (Secondary Info) -->
-          <Grid ColumnDefinitions="Auto,6,Auto,4,*">
-            <material:MaterialIcon Grid.Column="0" Kind="CheckCircle" Width="14" Height="14"
+          
+          <!-- Right Column - Status -->
+          <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="CheckCircle" Width="16" Height="16" 
                                    Foreground="#4CAF50"/>
             <TextBlock Grid.Column="2" Text="Status:" Classes="content-label" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="4" x:Name="StatusText" Text="Completed" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
-
-          <!-- Item Type (Secondary Info) -->
-          <Grid ColumnDefinitions="Auto,6,Auto,4,*">
-            <material:MaterialIcon Grid.Column="0" Kind="Package" Width="14" Height="14"
+          
+          <!-- Left Column - Item Type -->
+          <Grid Grid.Row="2" Grid.Column="0" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="Package" Width="16" Height="16" 
                                    Foreground="#1976D2"/>
             <TextBlock Grid.Column="2" Text="Type:" Classes="content-label" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="4" x:Name="ItemTypeText" Text="WIP" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
-
-          <!-- Transaction ID (Optional Info) -->
-          <Grid ColumnDefinitions="Auto,6,Auto,4,*">
-            <material:MaterialIcon Grid.Column="0" Kind="Identifier" Width="14" Height="14"
+          
+          <!-- Right Column - Transaction ID -->
+          <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="Auto,8,Auto,4,*" VerticalAlignment="Center">
+            <material:MaterialIcon Grid.Column="0" Kind="Identifier" Width="16" Height="16" 
                                    Foreground="#1976D2"/>
             <TextBlock Grid.Column="2" Text="ID:" Classes="content-label" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="4" x:Name="TransactionIdText" Text="12345" Classes="content-value" VerticalAlignment="Center"
-                       TextTrimming="CharacterEllipsis"/>
+            <TextBlock Grid.Column="4" x:Name="TransactionIdText" Text="12345" Classes="content-value" VerticalAlignment="Center"/>
           </Grid>
-
-          <!-- Notes (Optional Info with wrapping) -->
-          <StackPanel x:Name="NotesPanel" IsVisible="False">
-            <Grid ColumnDefinitions="Auto,6,Auto,4,*">
-              <material:MaterialIcon Grid.Column="0" Kind="NoteText" Width="14" Height="14"
-                                     Foreground="#1976D2"/>
-              <TextBlock Grid.Column="2" Text="Notes:" Classes="content-label" VerticalAlignment="Center"/>
-            </Grid>
-            <TextBlock x:Name="NotesText" Text="" Classes="content-value"
-                       TextWrapping="Wrap"
-                       Margin="20,2,0,0"/>
-          </StackPanel>
-
-        </StackPanel>
+          
+          <!-- Notes (spanning both columns if present) -->
+          <Grid Grid.Row="3" Grid.ColumnSpan="2" ColumnDefinitions="Auto,8,Auto,4,*" 
+                x:Name="NotesPanel" IsVisible="False" VerticalAlignment="Top">
+            <material:MaterialIcon Grid.Column="0" Kind="NoteText" Width="16" Height="16" 
+                                   Foreground="#1976D2" 
+                                   VerticalAlignment="Top" Margin="0,2,0,0"/>
+            <TextBlock Grid.Column="2" Text="Notes:" Classes="content-label" VerticalAlignment="Top"/>
+            <TextBlock Grid.Column="4" x:Name="NotesText" Text="" Classes="content-value" 
+                       TextWrapping="Wrap" VerticalAlignment="Top"/>
+          </Grid>
+          
+        </Grid>
       </Border>
-
+      
     </Grid>
   </Border>
 </UserControl>

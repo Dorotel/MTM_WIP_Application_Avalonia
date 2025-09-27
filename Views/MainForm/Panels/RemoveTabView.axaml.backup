@@ -1,0 +1,260 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MTM_WIP_Application_Avalonia.ViewModels"
+             xmlns:apivm="using:API.ViewModels.MainForm"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
+             xmlns:controls="using:MTM_WIP_Application_Avalonia.Controls"
+             xmlns:customDataGrid="using:MTM_WIP_Application_Avalonia.Controls.CustomDataGrid"
+             xmlns:behaviors="using:MTM_WIP_Application_Avalonia.Behaviors"
+             xmlns:interactions="using:Avalonia.Xaml.Interactions.Core"
+             xmlns:views="using:MTM_WIP_Application_Avalonia.Views"
+             xmlns:overlayViews="using:MTM_WIP_Application_Avalonia.Views.Overlay"
+             xmlns:conv="using:MTM_WIP_Application_Avalonia.Converters"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="600"
+             x:Class="MTM_WIP_Application_Avalonia.Views.RemoveTabView"
+             x:CompileBindings="True"
+             x:DataType="apivm:RemoveItemViewModel">
+
+  <UserControl.Resources>
+    <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
+  </UserControl.Resources>
+
+  <UserControl.KeyBindings>
+    <KeyBinding Gesture="F5" Command="{Binding SearchCommand}" />
+    <KeyBinding Gesture="Escape" Command="{Binding ResetCommand}" />
+    <KeyBinding Gesture="Delete" Command="{Binding DeleteCommand}" />
+    <KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
+    <KeyBinding Gesture="Ctrl+P" Command="{Binding PrintCommand}" />
+  </UserControl.KeyBindings>
+
+  <UserControl.Styles>
+    <!-- Theme V2 Input Field Styles using StyleSystem -->
+    <Style Selector="TextBox.Standard">
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Input.Border}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Input.Background}" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Input.Content}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}" />
+      <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- Focus state using Theme V2 -->
+    <Style Selector="TextBox.Standard:focus">
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}" />
+      <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}" />
+    </Style>
+
+    <!-- Material Icons with Theme V2 -->
+    <Style Selector="materialIcons|MaterialIcon">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Remove manual button styles - use StyleSystem classes -->
+  </UserControl.Styles>
+
+  <!-- Root Grid for overlay positioning -->
+  <Grid x:Name="RootContainer">
+
+    <!-- Main Layout Container - No ScrollViewer wrapper, CustomDataGrid handles its own scrolling -->
+    <Grid x:Name="MainContainer" RowDefinitions="*,Auto" MinWidth="600" MinHeight="400" Margin="8" Background="{DynamicResource ThemeV2.Background.Canvas}">
+
+      <!-- Data Display Section -->
+      <Border Grid.Row="0" Classes="Card" Background="{DynamicResource ThemeV2.Background.Card}" BorderBrush="{DynamicResource ThemeV2.Border.Default}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+
+        <Grid x:Name="DataContainer" RowDefinitions="Auto,Auto,*">
+
+          <!-- Search Input Panel (CollapsiblePanel) -->
+          <controls:CollapsiblePanel Grid.Row="1" x:Name="SearchPanel" Header="Search Filters" HeaderPosition="Top" IsExpanded="True" Margin="0,0,0,16">
+            <Grid x:Name="SearchFieldsGrid" Classes="Form" RowDefinitions="Auto,Auto" RowSpacing="12" Margin="8">
+
+              <!-- Part ID Field -->
+              <Grid x:Name="PartIdGrid" Grid.Row="0" ColumnDefinitions="90,*" ColumnSpacing="12">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
+                  <materialIcons:MaterialIcon Kind="Identifier" Width="14" Height="14" />
+                  <TextBlock Classes="Form.Label" Text="Part ID:" VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBox Grid.Column="1" x:Name="PartTextBox" Text="{Binding SelectedPart, Mode=TwoWay}" Watermark="{Binding PartWatermark}" Classes="Standard" ToolTip.Tip="Select or enter a part number to search" TabIndex="1" IsEnabled="{Binding AreSearchFieldsEnabled}" />
+              </Grid>
+
+              <!-- Operation Field -->
+              <Grid x:Name="OperationGrid" Grid.Row="1" ColumnDefinitions="90,*" ColumnSpacing="12">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Width="90">
+                  <materialIcons:MaterialIcon Kind="Cog" Width="14" Height="14" />
+                  <TextBlock Classes="Form.Label" Text="Operation:" VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBox Grid.Column="1" x:Name="OperationTextBox" Text="{Binding SelectedOperation, Mode=TwoWay}" Watermark="{Binding OperationWatermark}" Classes="Standard" ToolTip.Tip="Select or enter an operation number" TabIndex="2" IsEnabled="{Binding AreSearchFieldsEnabled}" />
+              </Grid>
+
+            </Grid>
+          </controls:CollapsiblePanel>
+
+          <!-- Data Display Area - CustomDataGrid Integration -->
+          <Grid Grid.Row="2" RowDefinitions="*,Auto">
+
+            <!-- CustomDataGrid for Inventory Data Display -->
+            <customDataGrid:CustomDataGrid Grid.Row="0"
+                                         x:Name="InventoryDataGrid"
+                                         ItemsSource="{Binding InventoryItems}"
+                                         SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                         SelectedItemsCollection="{Binding SelectedItems}"
+                                         DeleteItemCommand="{Binding DeleteSingleItemCommand}"
+                                         MultiRowDeleteCommand="{Binding DeleteMultipleItemsCommand}"
+                                         EditItemCommand="{Binding EditItemCommand}"
+                                         IsVisible="{Binding HasInventoryItems}"
+                                         Background="{DynamicResource ThemeV2.Background.Card}"
+                                         BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                                         BorderThickness="1"
+                                         CornerRadius="4"
+                                         MinHeight="200"
+                                         MaxHeight="400" />
+
+            <!-- Nothing Found Indicator -->
+            <Border Grid.Row="0" IsVisible="{Binding !HasInventoryItems}"
+                    Classes="Card"
+                    Background="{DynamicResource ThemeV2.Background.Card}"
+                    BorderBrush="{DynamicResource ThemeV2.Border.Default}"
+                    BorderThickness="1" CornerRadius="4" Padding="32" MinHeight="200">
+              <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                <materialIcons:MaterialIcon Kind="DatabaseRemove" Width="48" Height="48"
+                                          Foreground="{DynamicResource ThemeV2.Content.Secondary}" />
+                <TextBlock Classes="Heading3" Text="No inventory items found"
+                          Foreground="{DynamicResource ThemeV2.Content.Primary}"
+                          HorizontalAlignment="Center" />
+                <TextBlock Classes="Body" Text="Enter search criteria above and click Search"
+                          Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                          HorizontalAlignment="Center" />
+              </StackPanel>
+            </Border>
+
+            <!-- Loading Indicator -->
+            <Border Grid.Row="0" IsVisible="{Binding IsLoading}" Background="#80000000" MinHeight="200">
+              <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                <ProgressBar IsIndeterminate="True" Width="200" Height="4"
+                           Foreground="{DynamicResource ThemeV2.Action.Primary}" />
+                <TextBlock Text="Loading inventory data..." FontSize="14" Foreground="{DynamicResource ThemeV2.Content.OnDark}"
+                          HorizontalAlignment="Center" />
+              </StackPanel>
+            </Border>
+
+          </Grid>
+
+        </Grid>
+      </Border>
+
+      <!-- Action Buttons Panel -->
+      <Border Grid.Row="1" Classes="Card" Background="{DynamicResource ThemeV2.Background.Surface}" BorderBrush="{DynamicResource ThemeV2.Action.Primary}" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+
+        <Grid x:Name="ActionButtonsGrid" ColumnDefinitions="Auto,*,Auto">
+
+          <!-- Primary Actions -->
+          <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
+
+            <Button x:Name="SearchButton" Classes="Primary" Width="100" Command="{Binding SearchCommand}" ToolTip.Tip="Search inventory (F5)" Click="OnSearchButtonClick">
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                <materialIcons:MaterialIcon Kind="Magnify" Width="14" Height="14" Foreground="{DynamicResource ThemeV2.Content.OnColor}" />
+                <TextBlock Classes="Body" Text="Search" Foreground="{DynamicResource ThemeV2.Content.OnColor}" />
+              </StackPanel>
+            </Button>
+
+            <Button x:Name="DeleteButton" Classes="Secondary" Width="100" Command="{Binding DeleteCommand}" IsEnabled="{Binding CanDelete}" ToolTip.Tip="Delete selected items (Delete key)" Click="OnDeleteButtonClick">
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                <materialIcons:MaterialIcon Kind="Delete" Width="14" Height="14" />
+                <TextBlock Text="Delete" />
+              </StackPanel>
+            </Button>
+
+            <Button Classes="Secondary" Width="100" Command="{Binding ResetCommand}" ToolTip.Tip="Reset search criteria (Escape)" Click="OnResetButtonClick">
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                <materialIcons:MaterialIcon Kind="Refresh" Width="14" Height="14" />
+                <TextBlock Text="Reset" />
+              </StackPanel>
+            </Button>
+
+          </StackPanel>
+
+          <!-- Secondary Actions -->
+          <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+
+            <Button Classes="Secondary" Width="100" Command="{Binding UndoCommand}" IsEnabled="{Binding CanUndo}" ToolTip.Tip="Undo last removal (Ctrl+Z)">
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                <materialIcons:MaterialIcon Kind="Undo" Width="14" Height="14" />
+                <TextBlock Text="Undo" />
+              </StackPanel>
+            </Button>
+
+            <Button Classes="Secondary" Width="100" Command="{Binding PrintCommand}" IsEnabled="{Binding HasInventoryItems}" ToolTip.Tip="Print inventory list (Ctrl+P)">
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                <materialIcons:MaterialIcon Kind="Printer" Width="14" Height="14" />
+                <TextBlock Text="Print" />
+              </StackPanel>
+            </Button>
+
+            <Button Classes="Secondary" Width="100" Command="{Binding AdvancedRemovalCommand}" ToolTip.Tip="Advanced removal options">
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                <materialIcons:MaterialIcon Kind="Settings" Width="14" Height="14" />
+                <TextBlock Text="Advanced" />
+              </StackPanel>
+            </Button>
+
+          </StackPanel>
+
+        </Grid>
+      </Border>
+
+    </Grid>
+
+    <!-- Note Editor Overlay - positioned above main content when visible -->
+    <Border x:Name="NoteEditorOverlay"
+            IsVisible="{Binding IsNoteEditorVisible}"
+            Background="#CC000000">
+      <Border Background="{DynamicResource ThemeV2.Background.Card}"
+              BorderBrush="{DynamicResource ThemeV2.Action.Primary}"
+              BorderThickness="2"
+              CornerRadius="8"
+              MaxWidth="600"
+              MaxHeight="500"
+              Margin="50"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              BoxShadow="0 8 32 8 #40000000">
+        <!-- Direct reference to NoteEditorView with proper DataContext -->
+        <views:NoteEditorView DataContext="{Binding NoteEditorViewModel}" />
+      </Border>
+    </Border>
+
+    <!-- Edit Inventory Dialog Overlay - comprehensive inventory editing -->
+    <Border x:Name="EditInventoryDialogOverlay"
+            IsVisible="{Binding IsEditDialogVisible}"
+            Background="#CC000000"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+      <Border Background="{DynamicResource ThemeV2.Background.Card}"
+              BorderBrush="{DynamicResource ThemeV2.Action.Primary}"
+              BorderThickness="2"
+              CornerRadius="8"
+              Margin="30"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              BoxShadow="0 12 48 12 #60000000">
+        <!-- Reference to EditInventoryView with proper DataContext -->
+        <overlayViews:EditInventoryView DataContext="{Binding EditDialogViewModel}" />
+      </Border>
+    </Border>
+
+    <!-- Confirmation Dialog Overlay - multi-row deletion confirmation with MTM theme -->
+    <Border IsVisible="{Binding ConfirmationOverlayViewModel, Converter={StaticResource NullToBoolConverter}}">
+      <views:ConfirmationOverlayView DataContext="{Binding ConfirmationOverlayViewModel}" />
+    </Border>
+
+  </Grid> <!-- Close RootContainer -->
+</UserControl>

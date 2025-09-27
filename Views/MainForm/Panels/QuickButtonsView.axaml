@@ -244,29 +244,41 @@
                       Padding="{StaticResource ThemeV2.Spacing.Medium}">
 
           <!-- Session Transaction History -->
-          <ItemsControl ItemsSource="{Binding SessionTransactionHistory}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Orientation="Vertical" Spacing="{StaticResource ThemeV2.Spacing.XS}"/>
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                <controls:TransactionExpandableButton
-                  PartId="{Binding PartId}"
-                  Operation="{Binding Operation}"
-                  Quantity="{Binding Quantity}"
-                  Location="{Binding Location}"
-                  User="{Binding User}"
-                  TransactionTime="{Binding TransactionTime}"
-                  Status="{Binding Status}"
-                  ItemType="{Binding ItemType}"
-                  TransactionId="{Binding BatchNumber}"
-                  Notes="{Binding Notes}"
-                  TransactionType="{Binding TransactionType}"/>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
+          <StackPanel Spacing="{StaticResource ThemeV2.Spacing.XS}">
+            <!-- Header -->
+            <TextBlock Classes="Heading3"
+                       Text="Transaction History"
+                       Foreground="{DynamicResource ThemeV2.Content.Primary}"
+                       Margin="0,0,0,16"/>
+
+            <!-- Transaction List with Expandable Buttons -->
+            <ItemsControl ItemsSource="{Binding SessionTransactionHistory}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <controls:TransactionExpandableButton
+                    PartId="{Binding PartId}"
+                    Operation="{Binding Operation}"
+                    Quantity="{Binding Quantity}"
+                    Location="{Binding Location}"
+                    User="{Binding User}"
+                    TransactionTime="{Binding TransactionTime}"
+                    Status="{Binding Status}"
+                    ItemType="{Binding ItemType}"
+                    TransactionId="{Binding BatchNumber}"
+                    Notes="{Binding Notes}"
+                    TransactionType="{Binding TransactionType}"
+                    Margin="0,2"/>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Transaction Count - Moved to Bottom -->
+            <TextBlock Classes="Body"
+                       Text="{Binding SessionTransactionCount, StringFormat='Transactions: {0}'}"
+                       Foreground="{DynamicResource ThemeV2.Content.Secondary}"
+                       HorizontalAlignment="Center"
+                       Margin="0,16,0,0"/>
+          </StackPanel>
 
         </ScrollViewer>
 

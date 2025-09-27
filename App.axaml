@@ -9,6 +9,9 @@
         <!-- Use FluentTheme base without custom palettes to avoid interference -->
         <FluentTheme />
 
+        <!-- DataGrid Styles - REQUIRED for Avalonia.Controls.DataGrid -->
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+
         <!-- Material Icons Styles - REQUIRED for Material.Icons.Avalonia -->
         <materialIcons:MaterialIconStyles />
 

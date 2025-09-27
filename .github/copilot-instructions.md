@@ -10,8 +10,17 @@
 Whenever you interact with me, I will automatically reference ALL the instruction files listed below.
 In each chat response, include a brief note that you're following the copilot-instructions.md requirements
 and referencing all required files, but don't list them all to avoid screen clutter.
-Use this format: "**Referenced Files:** Following MTM copilot-instructions.md - all required instruction files, context files, templates, and patterns are automatically referenced for this response."
+Use this format: "**Referenced Files:** Following MTM copilot-instructions.md - all required instruction files, context files, templates, and patterns are automatically referenced for this response. [X files referenced]"
 -->
+
+<!-- MEMORY INSTRUCTION SYSTEM AUTO-INCLUDE -->
+<!-- Auto-include all memory instruction files created by remember.prompt.md system -->
+<!-- These files contain domain-organized lessons learned and troubleshooting patterns -->
+<!-- #file:C:\Users\johnk\AppData\Roaming\Code\User\prompts\memory.instructions.md -->
+<!-- #file:C:\Users\johnk\AppData\Roaming\Code\User\prompts\debugging-memory.instructions.md -->
+<!-- #file:C:\Users\johnk\AppData\Roaming\Code\User\prompts\avalonia-ui-memory.instructions.md -->
+<!-- #file:C:\Users\johnk\AppData\Roaming\Code\User\prompts\avalonia-custom-controls-memory.instructions.md -->
+<!-- Additional memory files will be auto-discovered and included as they're created -->
 
 <!-- Core Manufacturing Application Instructions -->
 <!-- #file:.github/instructions/avalonia-ui-guidelines.instructions.md -->
@@ -68,6 +77,15 @@ Use this format: "**Referenced Files:** Following MTM copilot-instructions.md - 
 
 <!--
 Referenced files in every chat response:
+
+MEMORY INSTRUCTION SYSTEM (Auto-included):
+- C:\Users\johnk\AppData\Roaming\Code\User\prompts\memory.instructions.md
+- C:\Users\johnk\AppData\Roaming\Code\User\prompts\debugging-memory.instructions.md
+- C:\Users\johnk\AppData\Roaming\Code\User\prompts\avalonia-ui-memory.instructions.md
+- C:\Users\johnk\AppData\Roaming\Code\User\prompts\avalonia-custom-controls-memory.instructions.md
+- Additional *-memory.instructions.md files as they're created by remember.prompt.md
+
+MTM APPLICATION INSTRUCTIONS:
 - .github/instructions/avalonia-ui-guidelines.instructions.md
 - .github/instructions/mvvm-community-toolkit.instructions.md
 - .github/instructions/mysql-database-patterns.instructions.md
@@ -94,6 +112,8 @@ Referenced files in every chat response:
 - .github/instructions/ui-automation-standards.instructions.md
 - .github/instructions/cross-platform-testing-standards.instructions.md
 - .github/instructions/advanced-performance-testing-framework.instructions.md
+
+MTM CONTEXT AND TEMPLATES:
 - .github/copilot/context/mtm-business-domain.md
 - .github/copilot/context/mtm-technology-stack.md
 - .github/copilot/context/mtm-architecture-patterns.md
@@ -601,7 +621,9 @@ Logger.LogError(ex, "Critical error in {Operation}", operationName);
 
 **If any are missing, explicitly request them in your prompt.**
 
-**Auto-Include System Status**: This file automatically includes all specialized instruction files when referenced. No manual file inclusion needed.
+**Auto-Include System Status**: This file automatically includes all specialized instruction files and all memory instruction files from `%APPDATA%\Code\User\prompts\*-memory.instructions.md` when referenced. No manual file inclusion needed.
+
+**Memory Integration**: The remember.prompt.md system creates domain-organized memory files that automatically integrate with this instruction system, providing persistent lessons learned and troubleshooting patterns across all MTM development sessions.
 
 </details>
 

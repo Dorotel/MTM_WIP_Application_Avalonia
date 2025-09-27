@@ -127,6 +127,9 @@ public partial class RemoveTabView : UserControl
     {
         try
         {
+            _logger?.LogInformation("🔍 QA DEBUG: RemoveTabView DataContext changed. New DataContext: {Type}",
+                DataContext?.GetType().Name ?? "NULL");
+
             // Unwire previous ViewModel events
             if (_viewModel != null)
             {
@@ -142,11 +145,16 @@ public partial class RemoveTabView : UserControl
                 // Initialize QuickButtons integration
                 _ = InitializeQuickButtonsIntegrationAsync();
 
-                _logger?.LogInformation("RemoveItemViewModel connected successfully");
+                _logger?.LogInformation("🔍 QA DEBUG: RemoveItemViewModel connected successfully. InventoryItems count: {Count}",
+                    viewModel.InventoryItems.Count);
             }
             else if (DataContext != null)
             {
-                _logger?.LogWarning("DataContext is not RemoveItemViewModel. Type: {Type}", DataContext.GetType().Name);
+                _logger?.LogWarning("🔍 QA DEBUG: DataContext is not RemoveItemViewModel. Type: {Type}", DataContext.GetType().Name);
+            }
+            else
+            {
+                _logger?.LogWarning("🔍 QA DEBUG: DataContext is NULL");
             }
         }
         catch (Exception ex)
@@ -225,9 +233,10 @@ public partial class RemoveTabView : UserControl
     {
         try
         {
+            _logger?.LogInformation("🔍 QA DEBUG: RemoveTabView OnViewLoaded started");
             SetupDataGridMultiSelection();
             SetupCollapsiblePanelBehavior();
-            _logger?.LogDebug("RemoveTabView loaded and configured successfully");
+            _logger?.LogInformation("🔍 QA DEBUG: RemoveTabView loaded and configured successfully");
         }
         catch (Exception ex)
         {
@@ -242,39 +251,39 @@ public partial class RemoveTabView : UserControl
     {
         try
         {
-            // CRITICAL FIX: Find CustomDataGrid instead of regular DataGrid
-            var customDataGrid = this.FindControl<Controls.CustomDataGrid.CustomDataGrid>("InventoryDataGrid");
-            if (customDataGrid != null)
+            // CRITICAL FIX: Find standard Avalonia DataGrid (not CustomDataGrid)
+            var dataGrid = this.FindControl<DataGrid>("InventoryDataGrid");
+            if (dataGrid != null)
             {
-                customDataGrid.SelectionChanged += OnCustomDataGridSelectionChanged;
-                _logger?.LogDebug("CustomDataGrid multi-selection configured successfully");
+                dataGrid.SelectionChanged += OnDataGridSelectionChanged;
+                _logger?.LogDebug("🔍 QA DEBUG: Standard DataGrid multi-selection configured successfully");
             }
             else
             {
-                _logger?.LogWarning("Could not find CustomDataGrid 'InventoryDataGrid' for multi-selection setup");
+                _logger?.LogWarning("Could not find DataGrid 'InventoryDataGrid' for multi-selection setup");
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error setting up CustomDataGrid multi-selection");
+            _logger?.LogError(ex, "Error setting up DataGrid multi-selection");
         }
     }
 
     /// <summary>
-    /// CRITICAL FIX: Handles CustomDataGrid selection changes to sync with ViewModel SelectedItems.
+    /// CRITICAL FIX: Handles standard Avalonia DataGrid selection changes to sync with ViewModel SelectedItems.
     /// This ensures the ViewModel's SelectedItems collection is properly updated when users make selections.
     /// </summary>
-    private void OnCustomDataGridSelectionChanged(object? sender, Controls.CustomDataGrid.SelectionChangedEventArgs e)
+    private void OnDataGridSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         try
         {
-            if (_viewModel == null || e == null) return;
+            if (_viewModel == null || sender is not DataGrid dataGrid) return;
 
-            _logger?.LogInformation("🔍 QA DEBUG: CustomDataGrid selection changed - Count: {Count}", e.SelectedCount);
+            _logger?.LogInformation("🔍 QA DEBUG: DataGrid selection changed - SelectedItems count: {Count}", dataGrid.SelectedItems.Count);
 
-            // Clear and repopulate ViewModel's SelectedItems with the CustomDataGrid selection
+            // Clear and repopulate ViewModel's SelectedItems with the DataGrid selection
             _viewModel.SelectedItems.Clear();
-            foreach (var item in e.SelectedItems)
+            foreach (var item in dataGrid.SelectedItems)
             {
                 if (item is InventoryItem inventoryItem)
                 {
@@ -288,7 +297,7 @@ public partial class RemoveTabView : UserControl
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error handling CustomDataGrid selection change");
+            _logger?.LogError(ex, "Error handling DataGrid selection change");
         }
     }
 

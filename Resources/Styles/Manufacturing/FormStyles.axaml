@@ -28,9 +28,6 @@ Uses MTM semantic tokens and WCAG 2.1 AA compliance
 
 <!-- Manufacturing Field Container - Notes variant that stretches -->
 <Style Selector="Border.ManufacturingField.Notes">
-    <Setter Property="Height" Value="NaN"/>
-    <Setter Property="MinHeight" Value="80"/>
-    <Setter Property="MaxHeight" Value="999"/>
     <Setter Property="VerticalAlignment" Value="Stretch"/>
 </Style>
 
@@ -61,13 +58,32 @@ Uses MTM semantic tokens and WCAG 2.1 AA compliance
     <Setter Property="VerticalAlignment" Value="Stretch"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="4"/>
-    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
     <Setter Property="TextWrapping" Value="NoWrap"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
     <Setter Property="Height" Value="36"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
+</Style>
+
+<!-- Manufacturing Form Input - Focus state -->
+<Style Selector="TextBox.ManufacturingInput:focus">
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+</Style>
+
+<!-- Manufacturing Form Input - Pointer over state -->
+<Style Selector="TextBox.ManufacturingInput:pointerover">
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+</Style>
+
+<!-- Manufacturing Form Input - Focus within parent container -->
+<Style Selector="Border.ManufacturingField:focus-within TextBox.ManufacturingInput">
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="BorderThickness" Value="2"/>
 </Style>
 
 <!-- Manufacturing Form Input - Notes variant with wrapping -->
@@ -134,10 +150,28 @@ Uses MTM semantic tokens and WCAG 2.1 AA compliance
     <Setter Property="Cursor" Value="Hand"/>
 </Style>
 
-<!-- Manufacturing Secondary Action Button -->
+<!-- Manufacturing Primary Action Button - Hover State -->
+<Style Selector="Button.ManufacturingSave:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Opacity" Value="0.85"/>
+    <Setter Property="RenderTransform" Value="scale(1.02)"/>
+</Style>
+
+<!-- Manufacturing Primary Action Button - Pressed State -->
+<Style Selector="Button.ManufacturingSave:pressed">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Opacity" Value="0.7"/>
+    <Setter Property="RenderTransform" Value="scale(0.98)"/>
+</Style>
+
+<!-- Manufacturing Secondary Action Button (Reset/Cancel) -->
 <Style Selector="Button.ManufacturingReset">
-    <Setter Property="Background" Value="{DynamicResource ThemeV2.Action.Secondary}"/>
-    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
@@ -149,9 +183,29 @@ Uses MTM semantic tokens and WCAG 2.1 AA compliance
     <Setter Property="Cursor" Value="Hand"/>
 </Style>
 
+<!-- Manufacturing Secondary Action Button - Hover State -->
+<Style Selector="Button.ManufacturingReset:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="RenderTransform" Value="scale(1.02)"/>
+</Style>
+
+<!-- Manufacturing Secondary Action Button - Pressed State -->
+<Style Selector="Button.ManufacturingReset:pressed">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Pressed}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Opacity" Value="0.8"/>
+    <Setter Property="RenderTransform" Value="scale(0.98)"/>
+</Style>
+
 <!-- Manufacturing Advanced Action Button -->
 <Style Selector="Button.ManufacturingAdvanced">
     <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Small}"/>
@@ -160,6 +214,25 @@ Uses MTM semantic tokens and WCAG 2.1 AA compliance
     <Setter Property="Padding" Value="8"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Cursor" Value="Hand"/>
+</Style>
+
+<!-- Manufacturing Advanced Action Button - Hover State -->
+<Style Selector="Button.ManufacturingAdvanced:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="RenderTransform" Value="scale(1.05)"/>
+</Style>
+
+<!-- Manufacturing Advanced Action Button - Pressed State -->
+<Style Selector="Button.ManufacturingAdvanced:pressed">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Pressed}"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Primary}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Opacity" Value="0.8"/>
+    <Setter Property="RenderTransform" Value="scale(0.95)"/>
 </Style>
 
 <!-- Manufacturing Field Label Header Container -->

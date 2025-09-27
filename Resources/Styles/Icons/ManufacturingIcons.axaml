@@ -99,4 +99,22 @@ WCAG 2.1 AA compliant with proper contrast ratios
     <Setter Property="Height" Value="12"/>
 </Style>
 
+<!-- Form Field Icon - For icons within form field labels -->
+<Style Selector="materialIcons|MaterialIcon.Icon.Form">
+    <Setter Property="Width" Value="14"/>
+    <Setter Property="Height" Value="14"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Action.Primary}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+</Style>
+
+<!-- Icon Large Secondary - For large secondary icons -->
+<Style Selector="materialIcons|MaterialIcon.Icon.Large.Secondary">
+    <Setter Property="Width" Value="48"/>
+    <Setter Property="Height" Value="48"/>
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+</Style>
+
 </Styles>

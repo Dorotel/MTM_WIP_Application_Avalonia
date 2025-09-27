@@ -290,6 +290,9 @@ public partial class RemoveItemViewModel : BaseViewModel
         // CRITICAL FIX: Subscribe to SelectedItems collection changes to update CanDelete property
         SelectedItems.CollectionChanged += OnSelectedItemsCollectionChanged;
 
+        // CRITICAL FIX: Subscribe to InventoryItems collection changes for UI binding
+        InventoryItems.CollectionChanged += OnInventoryItemsCollectionChanged;
+
         // Sync InventoryItems with RemoveService collection
         // Note: In a more complex scenario, we could use CollectionChanged events for two-way sync
         _ = LoadData(); // Load real data from database
@@ -333,6 +336,20 @@ public partial class RemoveItemViewModel : BaseViewModel
 
         Logger.LogInformation("🔍 QA DEBUG: SelectedItems collection changed: {Action}, Count: {Count}, CanDelete: {CanDelete}",
             e.Action, SelectedItems.Count, CanDelete);
+    }
+
+    /// <summary>
+    /// Handles InventoryItems collection changes to update UI binding properties.
+    /// CRITICAL FIX: This ensures DataGrid updates when InventoryItems collection changes.
+    /// </summary>
+    private void OnInventoryItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        // Trigger property change notifications for UI binding
+        OnPropertyChanged(nameof(HasInventoryItems));
+        OnPropertyChanged(nameof(AreSearchFieldsEnabled));
+
+        Logger.LogInformation("🔍 QA DEBUG: InventoryItems collection changed: {Action}, Count: {Count}, HasInventoryItems: {HasItems}",
+            e.Action, InventoryItems.Count, HasInventoryItems);
     }
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -400,7 +417,7 @@ public partial class RemoveItemViewModel : BaseViewModel
     {
         try
         {
-            Logger.LogInformation("Executing search via RemoveService for Part: {PartId}, Operation: {Operation}",
+            Logger.LogInformation("🔍 QA DEBUG: Starting search for Part: {PartId}, Operation: {Operation}",
                 SelectedPart, SelectedOperation);
 
             // Delegate search to RemoveService
@@ -413,24 +430,37 @@ public partial class RemoveItemViewModel : BaseViewModel
 
             if (result.IsSuccess)
             {
-                // Synchronize search results from RemoveService to ViewModel's collection
+                Logger.LogInformation("🔍 QA DEBUG: Search succeeded, got {Count} items from RemoveService", result.Value?.Count ?? 0);
+
+                // CRITICAL FIX: Synchronize search results from RemoveService to ViewModel's collection
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
+                    Logger.LogInformation("🔍 QA DEBUG: UI Thread - Clearing InventoryItems, current count: {Count}", InventoryItems.Count);
+
                     InventoryItems.Clear();
+
                     if (result.Value != null)
                     {
+                        Logger.LogInformation("🔍 QA DEBUG: UI Thread - Adding {Count} items to InventoryItems", result.Value.Count);
+
                         foreach (var item in result.Value)
                         {
                             InventoryItems.Add(item);
+                            Logger.LogDebug("🔍 QA DEBUG: Added item: {PartId} - {Operation} - {Location}",
+                                item.PartId, item.Operation, item.Location);
                         }
                     }
 
-                    // Manually trigger HasInventoryItems property change notification
+                    Logger.LogInformation("🔍 QA DEBUG: UI Thread - InventoryItems now has {Count} items", InventoryItems.Count);
+                    Logger.LogInformation("🔍 QA DEBUG: UI Thread - HasInventoryItems = {HasItems}", HasInventoryItems);
+
+                    // CRITICAL FIX: Force property change notifications
+                    OnPropertyChanged(nameof(InventoryItems));
                     OnPropertyChanged(nameof(HasInventoryItems));
                     OnPropertyChanged(nameof(AreSearchFieldsEnabled));
                 });
 
-                Logger.LogInformation("Search completed successfully: {Count} items found", result.Value?.Count ?? 0);
+                Logger.LogInformation("🔍 QA DEBUG: Search completed successfully: {Count} items found and UI updated", result.Value?.Count ?? 0);
             }
             else
             {

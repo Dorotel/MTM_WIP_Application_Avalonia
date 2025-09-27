@@ -1,0 +1,156 @@
+<!-- DataGrid Component Styles for MTM Manufacturing Application -->
+<!-- Applied via Classes attribute on DataGrid components -->
+
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Base DataGrid Container Styles -->
+  <Style Selector="Grid.ManufacturingDataGrid">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Canvas}"/>
+  </Style>
+
+  <!-- DataGrid Header Styles -->
+  <Style Selector="Border.DataGrid.Header">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="1,1,1,0"/>
+    <Setter Property="CornerRadius" Value="8,8,0,0"/>
+    <Setter Property="MinHeight" Value="36"/>
+    <Setter Property="MaxHeight" Value="36"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}"/>
+  </Style>
+
+  <!-- DataGrid Header Cell Styles -->
+  <Style Selector="Border.DataGrid.HeaderCell">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    <Setter Property="MinHeight" Value="36"/>
+    <Setter Property="MaxHeight" Value="36"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}"/>
+  </Style>
+
+  <!-- DataGrid Data Cell Styles -->
+  <Style Selector="Border.DataGrid.Cell">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    <Setter Property="MinHeight" Value="36"/>
+    <Setter Property="MaxHeight" Value="36"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}"/>
+  </Style>
+
+  <!-- DataGrid Action Cell Styles -->
+  <Style Selector="Border.DataGrid.ActionCell">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    <Setter Property="MinHeight" Value="36"/>
+    <Setter Property="MaxHeight" Value="36"/>
+    <Setter Property="Padding" Value="4,6"/>
+  </Style>
+
+  <!-- DataGrid Content Area -->
+  <Style Selector="ScrollViewer.DataGrid.Content">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="1,0,1,1"/>
+    <Setter Property="CornerRadius" Value="0,0,8,8"/>
+  </Style>
+
+  <!-- DataGrid Footer/Actions Area -->
+  <Style Selector="Border.DataGrid.Footer">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="1,0,1,1"/>
+    <Setter Property="CornerRadius" Value="0,0,8,8"/>
+    <Setter Property="Padding" Value="16,12"/>
+  </Style>
+
+  <!-- Interactive States -->
+  <Style Selector="Border.DataGrid.Cell:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+  </Style>
+
+  <!-- Alternating Row Colors -->
+  <Style Selector="ListBoxItem:nth-child(2n) Border.DataGrid.Cell">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+  </Style>
+
+  <Style Selector="ListBoxItem:nth-child(2n) Border.DataGrid.ActionCell">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+  </Style>
+
+  <!-- Selection States -->
+  <Style Selector="ListBoxItem:selected Border.DataGrid.Cell">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+  </Style>
+
+  <Style Selector="ListBoxItem:selected Border.DataGrid.ActionCell">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+  </Style>
+
+  <!-- Selected text visibility -->
+  <Style Selector="ListBoxItem:selected Border.DataGrid.Cell TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.OnColor}"/>
+    <Setter Property="FontWeight" Value="Medium"/>
+  </Style>
+
+  <!-- Unfocused selection -->
+  <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.DataGrid.Cell">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Subtle}"/>
+  </Style>
+
+  <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.DataGrid.Cell TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource ThemeV2.Content.Secondary}"/>
+  </Style>
+
+  <!-- Transfer-Specific DataGrid Styles -->
+
+  <!-- Transfer Arrow Cell Styles -->
+  <Style Selector="Border.DataGrid.TransferArrow">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Card}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    <Setter Property="MinHeight" Value="36"/>
+    <Setter Property="MaxHeight" Value="36"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}"/>
+  </Style>
+
+  <!-- Transfer Arrow Header Cell -->
+  <Style Selector="Border.DataGrid.TransferArrowHeader">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    <Setter Property="MinHeight" Value="36"/>
+    <Setter Property="MaxHeight" Value="36"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Small}"/>
+  </Style>
+
+  <!-- Alternating row colors for transfer arrow -->
+  <Style Selector="ListBoxItem:nth-child(2n) Border.DataGrid.TransferArrow">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+  </Style>
+
+  <!-- Selection states for transfer arrow -->
+  <Style Selector="ListBoxItem:selected Border.DataGrid.TransferArrow">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Selected}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+  </Style>
+
+  <Style Selector="ListBox:not(:focus) ListBoxItem:selected Border.DataGrid.TransferArrow">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Subtle}"/>
+  </Style>
+
+  <!-- Interactive states for transfer arrow -->
+  <Style Selector="Border.DataGrid.TransferArrow:pointerover">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Focus}"/>
+  </Style>
+
+</Styles>

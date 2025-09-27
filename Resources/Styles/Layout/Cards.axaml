@@ -106,4 +106,24 @@ Following MTM design system patterns
     <Setter Property="CornerRadius" Value="0"/>
 </Style>
 
+<!-- Action Card - For button/action panels -->
+<Style Selector="Border.Card.Actions">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Large}"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Medium}"/>
+</Style>
+
+<!-- Loading Overlay - For loading states -->
+<Style Selector="Border.LoadingOverlay">
+    <Setter Property="Background" Value="{DynamicResource ThemeV2.Background.Surface}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ThemeV2.Border.Default}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource ThemeV2.CornerRadius.Large}"/>
+    <Setter Property="Padding" Value="{StaticResource ThemeV2.Spacing.Large}"/>
+    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    <Setter Property="VerticalAlignment" Value="Stretch"/>
+</Style>
+
 </Styles>
