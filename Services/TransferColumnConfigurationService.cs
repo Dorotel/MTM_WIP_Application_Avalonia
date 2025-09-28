@@ -6,20 +6,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.Models;
+using MTM_WIP_Application_Avalonia.Services.Interfaces;
 
 namespace MTM_WIP_Application_Avalonia.Services;
 
-/// <summary>
-/// Service for managing TransferTabView column configuration persistence
-/// Integrates with MySQL usr_ui_settings table for user-specific preferences
-/// </summary>
-public interface IColumnConfigurationService
-{
-    Task<ServiceResult<ColumnConfiguration>> LoadColumnConfigAsync(string userId);
-    Task<ServiceResult<bool>> SaveColumnConfigAsync(string userId, ColumnConfiguration config);
-    Task<ServiceResult<bool>> ResetColumnConfigAsync(string userId);
-    ColumnConfiguration GetDefaultConfiguration();
-}
+// Interface moved to Services/Interfaces/ITransferService.cs
 
 /// <summary>
 /// Implementation of column configuration service for TransferTabView DataGrid
@@ -46,6 +37,7 @@ public class TransferColumnConfigurationService : IColumnConfigurationService
             WriteIndented = false
         };
     }
+
 
     /// <summary>
     /// Load user's column configuration preferences from MySQL usr_ui_settings table
@@ -124,20 +116,20 @@ public class TransferColumnConfigurationService : IColumnConfigurationService
     /// <param name="userId">User identifier</param>
     /// <param name="config">Column configuration to save</param>
     /// <returns>Success result indicating if save operation completed</returns>
-    public async Task<ServiceResult<bool>> SaveColumnConfigAsync(string userId, ColumnConfiguration config)
+    public async Task<ServiceResult> SaveColumnConfigAsync(string userId, ColumnConfiguration config)
     {
         try
         {
             if (string.IsNullOrWhiteSpace(userId))
             {
                 _logger.LogWarning("SaveColumnConfigAsync called with empty user ID");
-                return ServiceResult<bool>.Failure("User ID is required");
+                return ServiceResult.Failure("User ID is required");
             }
 
             if (config == null || !config.IsValid())
             {
                 _logger.LogWarning("SaveColumnConfigAsync called with invalid configuration");
-                return ServiceResult<bool>.Failure("Valid column configuration is required");
+                return ServiceResult.Failure("Valid column configuration is required");
             }
 
             _logger.LogDebug("Saving column configuration for user: {UserId}", userId);
@@ -150,7 +142,7 @@ public class TransferColumnConfigurationService : IColumnConfigurationService
 
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                return ServiceResult<bool>.Failure("Database connection string is not available");
+                return ServiceResult.Failure("Database connection string is not available");
             }
 
             try
@@ -170,27 +162,27 @@ public class TransferColumnConfigurationService : IColumnConfigurationService
                 if (result.IsSuccess)
                 {
                     _logger.LogInformation("Successfully saved column configuration for user: {UserId}", userId);
-                    return ServiceResult<bool>.Success(true);
+                    return ServiceResult.Success("Column configuration saved successfully");
                 }
                 else
                 {
                     _logger.LogWarning("Failed to save column configuration for user: {UserId}, Status: {Status}, Message: {Message}",
                         userId, result.Status, result.Message);
-                    return ServiceResult<bool>.Failure($"Database operation failed: {result.Message}");
+                    return ServiceResult.Failure($"Database operation failed: {result.Message}");
                 }
             }
             catch (Exception dbEx)
             {
                 _logger.LogError(dbEx, "Database error saving column configuration for user: {UserId}", userId);
                 await Services.ErrorHandling.HandleErrorAsync(dbEx, $"Failed to save column configuration for user: {userId}", userId);
-                return ServiceResult<bool>.Failure("Database operation failed", dbEx);
+                return ServiceResult.Failure("Database operation failed", dbEx);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error saving column configuration for user: {UserId}", userId);
             await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to save column configuration for user: {userId}", userId);
-            return ServiceResult<bool>.Failure("Failed to save column configuration", ex);
+            return ServiceResult.Failure("Failed to save column configuration", ex);
         }
     }
 
@@ -199,13 +191,13 @@ public class TransferColumnConfigurationService : IColumnConfigurationService
     /// </summary>
     /// <param name="userId">User identifier</param>
     /// <returns>Success result indicating if reset operation completed</returns>
-    public async Task<ServiceResult<bool>> ResetColumnConfigAsync(string userId)
+    public async Task<ServiceResult> ResetToDefaultsAsync(string userId)
     {
         try
         {
             if (string.IsNullOrWhiteSpace(userId))
             {
-                return ServiceResult<bool>.Failure("User ID is required");
+                return ServiceResult.Failure("User ID is required");
             }
 
             _logger.LogDebug("Resetting column configuration to defaults for user: {UserId}", userId);
@@ -217,18 +209,18 @@ public class TransferColumnConfigurationService : IColumnConfigurationService
             if (saveResult.IsSuccess)
             {
                 _logger.LogInformation("Successfully reset column configuration for user: {UserId}", userId);
-                return ServiceResult<bool>.Success(true);
+                return ServiceResult.Success("Column configuration reset to defaults");
             }
             else
             {
-                return ServiceResult<bool>.Failure($"Failed to reset configuration: {saveResult.ErrorMessage}");
+                return ServiceResult.Failure($"Failed to reset configuration: {saveResult.ErrorMessage}");
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error resetting column configuration for user: {UserId}", userId);
             await Services.ErrorHandling.HandleErrorAsync(ex, $"Failed to reset column configuration for user: {userId}", userId);
-            return ServiceResult<bool>.Failure("Failed to reset column configuration", ex);
+            return ServiceResult.Failure("Failed to reset column configuration", ex);
         }
     }
 

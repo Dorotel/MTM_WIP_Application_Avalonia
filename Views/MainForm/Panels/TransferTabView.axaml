@@ -273,20 +273,19 @@
                       VerticalAlignment="Stretch"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto"
                       ScrollViewer.VerticalScrollBarVisibility="Auto"
-                      DoubleTapped="{Binding OpenEditInventoryCommand}"
                       ToolTip.Tip="Double-click row to edit inventory item">
 
               <!-- Explicit Column Definitions -->
               <DataGrid.Columns>
 
                 <!-- Part ID Column -->
-                <DataGridTextColumn Header="Part ID"
+                <DataGridTextColumn Header="Part Number"
                                     Binding="{Binding PartId}"
                                     Width="120"
                                     CanUserReorder="True"
                                     CanUserResize="True"
                                     CanUserSort="True"
-                                    IsVisible="{Binding DataContext.IsPartIdColumnVisible, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                    IsVisible="True" />
 
                 <!-- Operation Column -->
                 <DataGridTextColumn Header="Operation"
@@ -295,25 +294,25 @@
                                     CanUserReorder="True"
                                     CanUserResize="True"
                                     CanUserSort="True"
-                                    IsVisible="{Binding DataContext.IsOperationColumnVisible, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                    IsVisible="True" />
 
                 <!-- From Location Column -->
-                <DataGridTextColumn Header="From Location"
+                <DataGridTextColumn Header="Current Location"
                                     Binding="{Binding FromLocation}"
                                     Width="100"
                                     CanUserReorder="True"
                                     CanUserResize="True"
                                     CanUserSort="True"
-                                    IsVisible="{Binding DataContext.IsFromLocationColumnVisible, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                    IsVisible="True" />
 
                 <!-- Available Quantity Column -->
-                <DataGridTextColumn Header="Available Qty"
+                <DataGridTextColumn Header="Quantity"
                                     Binding="{Binding AvailableQuantity}"
                                     Width="120"
                                     CanUserReorder="True"
                                     CanUserResize="True"
                                     CanUserSort="True"
-                                    IsVisible="{Binding DataContext.IsAvailableQuantityColumnVisible, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                    IsVisible="True" />
 
                 <!-- Transfer Quantity Column -->
                 <DataGridTextColumn Header="Transfer Qty"
@@ -322,7 +321,7 @@
                                     CanUserReorder="True"
                                     CanUserResize="True"
                                     CanUserSort="True"
-                                    IsVisible="{Binding DataContext.IsTransferQuantityColumnVisible, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                    IsVisible="True" />
 
                 <!-- Notes Column -->
                 <DataGridTextColumn Header="Notes"
@@ -331,7 +330,7 @@
                                     CanUserReorder="True"
                                     CanUserResize="True"
                                     CanUserSort="True"
-                                    IsVisible="{Binding DataContext.IsNotesColumnVisible, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                    IsVisible="True" />
 
               </DataGrid.Columns>
             </DataGrid>

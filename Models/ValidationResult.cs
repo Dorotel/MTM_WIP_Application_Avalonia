@@ -9,7 +9,7 @@ namespace MTM_WIP_Application_Avalonia.Models
     /// Contains validation status, errors, and warnings.
     /// Used by TransferService.ValidateTransferAsync method.
     /// </summary>
-    public class ValidationResult
+    public class TransferValidationResult
     {
         /// <summary>
         /// Indicates if validation passed
@@ -40,10 +40,10 @@ namespace MTM_WIP_Application_Avalonia.Models
         /// Creates a successful validation result
         /// </summary>
         /// <param name="warnings">Optional warning messages</param>
-        /// <returns>ValidationResult instance</returns>
-        public static ValidationResult Success(params string[] warnings)
+        /// <returns>TransferValidationResult instance</returns>
+        public static TransferValidationResult Success(params string[] warnings)
         {
-            return new ValidationResult
+            return new TransferValidationResult
             {
                 IsValid = true,
                 Warnings = warnings?.ToList() ?? new List<string>(),
@@ -55,10 +55,10 @@ namespace MTM_WIP_Application_Avalonia.Models
         /// Creates a failed validation result
         /// </summary>
         /// <param name="errors">Error messages</param>
-        /// <returns>ValidationResult instance</returns>
-        public static ValidationResult Failure(params string[] errors)
+        /// <returns>TransferValidationResult instance</returns>
+        public static TransferValidationResult Failure(params string[] errors)
         {
-            return new ValidationResult
+            return new TransferValidationResult
             {
                 IsValid = false,
                 Errors = errors?.ToList() ?? new List<string>(),
@@ -71,10 +71,10 @@ namespace MTM_WIP_Application_Avalonia.Models
         /// </summary>
         /// <param name="errors">Error messages</param>
         /// <param name="warnings">Warning messages</param>
-        /// <returns>ValidationResult instance</returns>
-        public static ValidationResult Failure(IEnumerable<string> errors, IEnumerable<string> warnings = null)
+        /// <returns>TransferValidationResult instance</returns>
+        public static TransferValidationResult Failure(IEnumerable<string> errors, IEnumerable<string> warnings = null)
         {
-            return new ValidationResult
+            return new TransferValidationResult
             {
                 IsValid = false,
                 Errors = errors?.ToList() ?? new List<string>(),
@@ -220,7 +220,7 @@ namespace MTM_WIP_Application_Avalonia.Models
         /// Merges another validation result into this one
         /// </summary>
         /// <param name="other">Other validation result</param>
-        public void MergeWith(ValidationResult other)
+        public void MergeWith(TransferValidationResult other)
         {
             if (other == null) return;
 
@@ -241,7 +241,7 @@ namespace MTM_WIP_Application_Avalonia.Models
         {
             var result = IsValid ? "VALID" : "INVALID";
             var details = $"Errors: {Errors.Count}, Warnings: {Warnings.Count}";
-            return $"ValidationResult: {result} ({details})";
+            return $"TransferValidationResult: {result} ({details})";
         }
     }
 }

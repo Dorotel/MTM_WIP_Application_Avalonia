@@ -23,6 +23,37 @@ using MTM_Shared_Logic;
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
 /// <summary>
+/// Represents a column configuration item for dynamic DataGrid column management
+/// </summary>
+public class ColumnItem
+{
+    /// <summary>
+    /// Internal column name from database (ID, PartID, Location, etc.)
+    /// </summary>
+    public string ColumnName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// User-friendly display name shown in the UI
+    /// </summary>
+    public string DisplayName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Whether this column is currently visible in the DataGrid
+    /// </summary>
+    public bool IsVisible { get; set; } = true;
+
+    /// <summary>
+    /// Column width (optional)
+    /// </summary>
+    public double Width { get; set; } = double.NaN;
+
+    /// <summary>
+    /// Column display order
+    /// </summary>
+    public int Order { get; set; }
+}
+
+/// <summary>
 /// Represents the result of a transfer operation for detailed tracking and reporting
 /// </summary>
 internal class TransferResult
@@ -141,7 +172,19 @@ public partial class TransferItemViewModel : BaseViewModel
         }
         else if (int.TryParse(value, out int quantity) && quantity > 0)
         {
-            TransferQuantity = quantity;
+            // Apply auto-capping logic
+            int cappedQuantity = ApplyQuantityAutoCapping(quantity);
+            TransferQuantity = cappedQuantity;
+
+            // Update text if quantity was auto-capped
+            if (cappedQuantity != quantity)
+            {
+                TransferQuantityText = cappedQuantity.ToString();
+
+                // Show warning about auto-capping
+                _logger?.LogInformation("Transfer quantity auto-capped from {Original} to {Capped} for part {PartId}",
+                    quantity, cappedQuantity, SelectedInventoryItem?.PartId ?? "UNKNOWN");
+            }
         }
         else
         {
@@ -152,6 +195,83 @@ public partial class TransferItemViewModel : BaseViewModel
         OnPropertyChanged(nameof(HasQuantityValidationError));
         OnPropertyChanged(nameof(IsTransferQuantityValid));
         OnPropertyChanged(nameof(CanTransfer));
+    }
+
+    /// <summary>
+    /// Called when SelectedInventoryItem changes - updates MaxTransferQuantity and applies auto-capping
+    /// </summary>
+    partial void OnSelectedInventoryItemChanged(TransferInventoryItem? value)
+    {
+        try
+        {
+            if (value != null)
+            {
+                // Update maximum transfer quantity based on selected item
+                MaxTransferQuantity = Math.Max(0, value.AvailableQuantity);
+
+                // Apply auto-capping to current transfer quantity
+                if (TransferQuantity > MaxTransferQuantity)
+                {
+                    int originalQuantity = TransferQuantity;
+                    TransferQuantity = MaxTransferQuantity;
+                    TransferQuantityText = MaxTransferQuantity.ToString();
+
+                    _logger?.LogInformation("Transfer quantity auto-capped from {Original} to {Max} for selected item {PartId}",
+                        originalQuantity, MaxTransferQuantity, value.PartId);
+                }
+
+                _logger?.LogDebug("Selected inventory item changed: {PartId}, Available: {Available}, MaxTransfer: {MaxTransfer}",
+                    value.PartId, value.AvailableQuantity, MaxTransferQuantity);
+            }
+            else
+            {
+                MaxTransferQuantity = 0;
+                TransferQuantity = 1;
+                TransferQuantityText = "1";
+                _logger?.LogDebug("Selected inventory item cleared - reset transfer quantity");
+            }
+
+            // Notify property changes
+            OnPropertyChanged(nameof(HasQuantityValidationError));
+            OnPropertyChanged(nameof(IsTransferQuantityValid));
+            OnPropertyChanged(nameof(CanTransfer));
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling selected inventory item change");
+        }
+    }
+
+    /// <summary>
+    /// Apply quantity auto-capping logic based on selected inventory item
+    /// </summary>
+    /// <param name="requestedQuantity">Requested transfer quantity</param>
+    /// <returns>Auto-capped quantity (never exceeds available quantity)</returns>
+    private int ApplyQuantityAutoCapping(int requestedQuantity)
+    {
+        try
+        {
+            if (SelectedInventoryItem == null)
+            {
+                return Math.Max(1, requestedQuantity); // Default to at least 1
+            }
+
+            int availableQuantity = Math.Max(0, SelectedInventoryItem.AvailableQuantity);
+
+            // Auto-cap to available quantity
+            if (requestedQuantity > availableQuantity)
+            {
+                return availableQuantity;
+            }
+
+            // Ensure minimum of 1 for valid transfers
+            return Math.Max(1, requestedQuantity);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error applying quantity auto-capping");
+            return 1; // Safe fallback
+        }
     }
 
     [ObservableProperty]
@@ -222,6 +342,59 @@ public partial class TransferItemViewModel : BaseViewModel
     /// </summary>
     [ObservableProperty]
     private bool _showColumnCustomization;
+
+    /// <summary>
+    /// Available columns for customization dropdown (based on search results)
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<ColumnItem> _availableColumns = new();
+
+    /// <summary>
+    /// Selected column action from dropdown
+    /// </summary>
+    [ObservableProperty]
+    private ColumnItem? _selectedColumnAction;
+
+    /// <summary>
+    /// Dictionary to track column visibility (populated dynamically from search results)
+    /// </summary>
+    private readonly Dictionary<string, bool> _columnVisibility = new();
+
+    /// <summary>
+    /// Static mapping of database column names to user-friendly display names
+    /// </summary>
+    private static readonly Dictionary<string, string> ColumnDisplayNames = new()
+    {
+        { "ID", "Item ID" },
+        { "PartID", "Part Number" },
+        { "Location", "Current Location" },
+        { "Operation", "Operation" },
+        { "Quantity", "Quantity" },
+        { "ItemType", "Item Type" },
+        { "ReceiveDate", "Inventory Date" },
+        { "LastUpdated", "Last Updated" },
+        { "User", "Updated By" },
+        { "BatchNumber", "Batch Number" },
+        { "Notes", "Notes" }
+    };
+
+    /// <summary>
+    /// Static mapping of database column names to suggested column widths
+    /// </summary>
+    private static readonly Dictionary<string, double> ColumnWidths = new()
+    {
+        { "ID", 80 },
+        { "PartID", 120 },
+        { "Location", 100 },
+        { "Operation", 80 },
+        { "Quantity", 80 },
+        { "ItemType", 80 },
+        { "ReceiveDate", 100 },
+        { "LastUpdated", 130 },
+        { "User", 100 },
+        { "BatchNumber", 100 },
+        { "Notes", 200 }
+    };
 
     #endregion
 
@@ -551,6 +724,9 @@ public partial class TransferItemViewModel : BaseViewModel
                     InventoryItems.Add(item);
                 }
                 System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] UI Thread - InventoryItems.Count now: {InventoryItems.Count}");
+
+                // Populate available columns dynamically from the search results
+                PopulateAvailableColumnsFromResults(result);
 
                 // Trigger property change notifications for debugging
                 OnPropertyChanged(nameof(HasInventoryItems));
@@ -1062,6 +1238,11 @@ public partial class TransferItemViewModel : BaseViewModel
     /// Matches CustomDataGrid functionality for consistent user experience
     /// </summary>
     public IRelayCommand EditTransferCommand => ExecuteEditTransferCommand;
+
+    /// <summary>
+    /// Opens the EditInventory dialog for the selected item (via double-click)
+    /// </summary>
+    public IRelayCommand OpenEditInventoryCommand => ExecuteEditTransferCommand;
 
     /// <summary>
     /// Executes inventory edit operation for selected transfer items
@@ -2096,6 +2277,81 @@ public partial class TransferItemViewModel : BaseViewModel
     #region Enhanced Validation Methods
 
     /// <summary>
+    /// Populates the AvailableColumns collection based on the columns returned from stored procedure
+    /// </summary>
+    private void PopulateAvailableColumnsFromResults(System.Data.DataTable result)
+    {
+        try
+        {
+            AvailableColumns.Clear();
+            _columnVisibility.Clear();
+
+            if (result?.Columns == null)
+            {
+                _logger.LogWarning("No columns available from search results to populate AvailableColumns");
+                return;
+            }
+
+            var order = 0;
+            foreach (System.Data.DataColumn column in result.Columns)
+            {
+                var columnName = column.ColumnName;
+                var displayName = GetUserFriendlyColumnName(columnName);
+                var suggestedWidth = GetSuggestedColumnWidth(columnName);
+
+                var columnItem = new ColumnItem
+                {
+                    ColumnName = columnName,
+                    DisplayName = displayName,
+                    IsVisible = true, // Default to visible
+                    Width = suggestedWidth,
+                    Order = order++
+                };
+
+                AvailableColumns.Add(columnItem);
+                _columnVisibility[columnName] = true;
+
+                _logger.LogDebug("Added column: {ColumnName} -> '{DisplayName}' (Width: {Width})",
+                    columnName, displayName, suggestedWidth);
+            }
+
+            // Initialize column visibility backing properties based on search results
+            IsPartIdColumnVisible = _columnVisibility.GetValueOrDefault("PartID", true);
+            IsOperationColumnVisible = _columnVisibility.GetValueOrDefault("Operation", true);
+            IsFromLocationColumnVisible = _columnVisibility.GetValueOrDefault("Location", true);
+            IsAvailableQuantityColumnVisible = _columnVisibility.GetValueOrDefault("Quantity", true);
+            IsTransferQuantityColumnVisible = true; // Always visible - UI only
+            IsNotesColumnVisible = _columnVisibility.GetValueOrDefault("Notes", true);
+
+            _logger.LogInformation("Populated {Count} columns from search results with user-friendly aliases", AvailableColumns.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error populating available columns from search results");
+        }
+    }
+
+    /// <summary>
+    /// Gets user-friendly display name for database column
+    /// </summary>
+    private static string GetUserFriendlyColumnName(string columnName)
+    {
+        return ColumnDisplayNames.TryGetValue(columnName, out var displayName)
+            ? displayName
+            : columnName; // Fallback to original name if no mapping exists
+    }
+
+    /// <summary>
+    /// Gets suggested column width for database column
+    /// </summary>
+    private static double GetSuggestedColumnWidth(string columnName)
+    {
+        return ColumnWidths.TryGetValue(columnName, out var width)
+            ? width
+            : 100; // Default width if no mapping exists
+    }
+
+    /// <summary>
     /// Enhanced MTM manufacturing validation for transfer operations
     /// Validates operation sequences, location routing, and business rules
     /// </summary>
@@ -2166,6 +2422,75 @@ public partial class TransferItemViewModel : BaseViewModel
             return false;
         }
     }
+
+    /// <summary>
+    /// Gets the visibility state for a specific column
+    /// </summary>
+    public bool GetColumnVisibility(string columnName)
+    {
+        return _columnVisibility.TryGetValue(columnName, out var isVisible) && isVisible;
+    }
+
+    /// <summary>
+    /// Sets the visibility state for a specific column
+    /// </summary>
+    public void SetColumnVisibility(string columnName, bool isVisible)
+    {
+        _columnVisibility[columnName] = isVisible;
+
+        // Update the corresponding ColumnItem if it exists
+        var columnItem = AvailableColumns.FirstOrDefault(c => c.ColumnName == columnName);
+        if (columnItem != null)
+        {
+            columnItem.IsVisible = isVisible;
+        }
+
+        // Update the specific backing property based on column name
+        switch (columnName)
+        {
+            case "PartID":
+                IsPartIdColumnVisible = isVisible;
+                break;
+            case "Operation":
+                IsOperationColumnVisible = isVisible;
+                break;
+            case "Location":
+                IsFromLocationColumnVisible = isVisible;
+                break;
+            case "Quantity":
+                IsAvailableQuantityColumnVisible = isVisible;
+                break;
+            case "Notes":
+                IsNotesColumnVisible = isVisible;
+                break;
+        }
+
+        _logger.LogDebug("Column visibility updated: {ColumnName} = {IsVisible}", columnName, isVisible);
+    }
+
+
+
+    #region Column Visibility Properties for AXAML Binding
+
+    [ObservableProperty]
+    private bool _isPartIdColumnVisible = true;
+
+    [ObservableProperty]
+    private bool _isOperationColumnVisible = true;
+
+    [ObservableProperty]
+    private bool _isFromLocationColumnVisible = true;
+
+    [ObservableProperty]
+    private bool _isAvailableQuantityColumnVisible = true;
+
+    [ObservableProperty]
+    private bool _isTransferQuantityColumnVisible = true;
+
+    [ObservableProperty]
+    private bool _isNotesColumnVisible = true;
+
+    #endregion
 
     #endregion
 }

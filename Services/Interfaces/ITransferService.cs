@@ -31,7 +31,7 @@ namespace MTM_WIP_Application_Avalonia.Services.Interfaces
         /// </summary>
         /// <param name="transfer">Transfer operation to validate</param>
         /// <returns>Validation result with error details if invalid</returns>
-        Task<ServiceResult<ValidationResult>> ValidateTransferAsync(TransferOperation transfer);
+        Task<ServiceResult<TransferValidationResult>> ValidateTransferAsync(TransferOperation transfer);
 
         /// <summary>
         /// Get list of valid destination locations
