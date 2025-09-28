@@ -18,6 +18,7 @@ using MTM_WIP_Application_Avalonia.Models; // For ItemsTransferredEventArgs
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MTM_Shared_Logic;
 
 namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 
@@ -202,6 +203,28 @@ public partial class TransferItemViewModel : BaseViewModel
 
     #endregion
 
+    #region EditInventoryView Integration Properties
+
+    /// <summary>
+    /// Controls visibility of EditInventoryView panel
+    /// </summary>
+    [ObservableProperty]
+    private bool _showEditInventoryView;
+
+    /// <summary>
+    /// EditInventoryViewModel for item editing
+    /// </summary>
+    [ObservableProperty]
+    private MTM_WIP_Application_Avalonia.ViewModels.Overlay.EditInventoryViewModel? _editInventoryViewModel;
+
+    /// <summary>
+    /// Controls visibility of column customization panel
+    /// </summary>
+    [ObservableProperty]
+    private bool _showColumnCustomization;
+
+    #endregion
+
     #region Computed Properties
 
     /// <summary>
@@ -319,6 +342,7 @@ public partial class TransferItemViewModel : BaseViewModel
         _logger.LogInformation("TransferItemViewModel initialized with dependency injection");
 
         _ = LoadComboBoxDataAsync(); // Load real data from database
+        _ = LoadColumnPreferencesAsync(); // Load user column preferences
     }
 
     #endregion
@@ -1162,6 +1186,221 @@ public partial class TransferItemViewModel : BaseViewModel
             _logger.LogError(ex, "Error expanding panel");
         }
     }
+
+    /// <summary>
+    /// Opens EditInventoryView for selected item
+    /// </summary>
+    [RelayCommand]
+    private async Task EditItemAsync(object? parameter)
+    {
+        try
+        {
+            var item = parameter as TransferInventoryItem ?? SelectedInventoryItem;
+            if (item == null)
+            {
+                _logger.LogWarning("Edit item command executed with no item selected");
+                return;
+            }
+
+            _logger.LogInformation("Opening EditInventoryView for item: {PartId}", item.PartId);
+
+            // Create EditInventoryViewModel if not exists
+            if (EditInventoryViewModel == null)
+            {
+                var editingService = Program.GetOptionalService<IInventoryEditingService>();
+                var masterDataService = Program.GetOptionalService<IMasterDataService>();
+
+                if (editingService == null || masterDataService == null)
+                {
+                    _logger.LogError("Required services not available for EditInventoryView");
+                    return;
+                }
+
+                EditInventoryViewModel = new MTM_WIP_Application_Avalonia.ViewModels.Overlay.EditInventoryViewModel(
+                    Program.GetService<ILogger<MTM_WIP_Application_Avalonia.ViewModels.Overlay.EditInventoryViewModel>>(),
+                    editingService,
+                    masterDataService);
+            }
+
+            // Initialize with the selected item
+            await EditInventoryViewModel.InitializeAsync(new MTM_WIP_Application_Avalonia.Models.InventoryItem
+            {
+                Id = item.Id,
+                PartId = item.PartId,
+                Operation = item.Operation ?? string.Empty,
+                Location = item.Location,
+                Quantity = item.Quantity,
+                ItemType = item.ItemType ?? string.Empty,
+                BatchNumber = item.BatchNumber ?? string.Empty,
+                Notes = item.Notes ?? string.Empty,
+                User = item.User ?? string.Empty,
+                ReceiveDate = item.ReceiveDate,
+                LastUpdated = item.LastUpdated
+            });
+
+            ShowEditInventoryView = true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error opening EditInventoryView");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to open edit dialog", _applicationState.CurrentUser ?? "SYSTEM");
+        }
+    }
+
+    /// <summary>
+    /// Closes EditInventoryView panel
+    /// </summary>
+    [RelayCommand]
+    private void CloseEditInventory()
+    {
+        try
+        {
+            ShowEditInventoryView = false;
+            EditInventoryViewModel?.Cleanup();
+            _logger.LogDebug("EditInventoryView closed");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error closing EditInventoryView");
+        }
+    }
+
+    /// <summary>
+    /// Shows column customization panel
+    /// </summary>
+    [RelayCommand]
+    private void ShowColumnCustomizationPanel()
+    {
+        try
+        {
+            ShowColumnCustomization = true;
+            _logger.LogDebug("Column customization panel opened");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error showing column customization");
+        }
+    }
+
+    /// <summary>
+    /// Saves column preferences to usr_ui_settings table
+    /// </summary>
+    [RelayCommand]
+    private async Task SaveColumnPreferencesAsync()
+    {
+        try
+        {
+            var columnSettings = new
+            {
+                GridId = "TransferTabView_DataGrid",
+                Columns = new[]
+                {
+                    new { Name = "Select", Visible = true, Order = 0, Width = 60 },
+                    new { Name = "PartId", Visible = true, Order = 1, Width = 150 },
+                    new { Name = "Operation", Visible = true, Order = 2, Width = 100 },
+                    new { Name = "Location", Visible = true, Order = 3, Width = 120 },
+                    new { Name = "Quantity", Visible = true, Order = 4, Width = 100 },
+                    new { Name = "WipLocation", Visible = true, Order = 5, Width = 150 },
+                    new { Name = "Actions", Visible = true, Order = 6, Width = 120 }
+                }
+            };
+
+            var jsonSettings = System.Text.Json.JsonSerializer.Serialize(columnSettings);
+
+            // Use usr_ui_settings_SetJsonSetting to save column preferences
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_User"] = _applicationState.CurrentUser ?? Environment.UserName,
+                ["p_SettingKey"] = "TransferTabView_ColumnSettings",
+                ["p_JsonValue"] = jsonSettings
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _databaseService.GetConnectionString(),
+                "usr_ui_settings_SetJsonSetting",
+                parameters
+            );
+
+            if (result.Status == 1)
+            {
+                _logger.LogInformation("Column preferences saved successfully for user: {User}", _applicationState.CurrentUser);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to save column preferences: Status {Status}", result.Status);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error saving column preferences");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to save column preferences", _applicationState.CurrentUser ?? "SYSTEM");
+        }
+    }
+
+    /// <summary>
+    /// Loads column preferences from usr_ui_settings table
+    /// </summary>
+    private async Task LoadColumnPreferencesAsync()
+    {
+        try
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                ["p_User"] = _applicationState.CurrentUser ?? Environment.UserName,
+                ["p_SettingKey"] = "TransferTabView_ColumnSettings"
+            };
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+                _databaseService.GetConnectionString(),
+                "usr_ui_settings_GetJsonSetting",
+                parameters
+            );
+
+            if (result.Status == 1 && result.Data.Rows.Count > 0)
+            {
+                var jsonValue = result.Data.Rows[0]["JsonValue"]?.ToString();
+                if (!string.IsNullOrEmpty(jsonValue))
+                {
+                    // Parse and apply column settings
+                    var columnSettings = System.Text.Json.JsonSerializer.Deserialize<dynamic>(jsonValue);
+                    _logger.LogInformation("Column preferences loaded successfully for user: {User}", _applicationState.CurrentUser);
+                    // TODO: Apply column settings to DataGrid
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading column preferences");
+            // Don't show error to user for failed preference loading - use defaults
+        }
+    }
+
+    /// <summary>
+    /// Transfers single item directly from DataGrid action
+    /// </summary>
+    [RelayCommand]
+    private async Task TransferItemAsync(object? parameter)
+    {
+        try
+        {
+            var item = parameter as TransferInventoryItem;
+            if (item == null)
+            {
+                _logger.LogWarning("Transfer item command executed with no item parameter");
+                return;
+            }
+
+            // Set as selected item and execute standard transfer
+            SelectedInventoryItem = item;
+            await ExecuteTransferAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error transferring item directly from DataGrid");
+            await Services.ErrorHandling.HandleErrorAsync(ex, "Transfer operation failed", _applicationState.CurrentUser ?? "SYSTEM");
+        }
+    }
+
     /// <summary>
     /// Shows success overlay with transfer confirmation details
     /// </summary>

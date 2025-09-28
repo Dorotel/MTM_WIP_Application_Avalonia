@@ -92,6 +92,10 @@ public static class ServiceCollectionExtensions
         // Register Resolution Independent Sizing service - singleton for consistent UI scaling across platforms
         services.TryAddSingleton<IResolutionIndependentSizingService, ResolutionIndependentSizingService>();
 
+        // Transfer and Column Configuration services - NEW
+        services.TryAddSingleton<ITransferService, TransferService>();
+        services.TryAddSingleton<IColumnConfigurationService, TransferColumnConfigurationService>();
+
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
         services.TryAddTransient<MainViewViewModel>();
