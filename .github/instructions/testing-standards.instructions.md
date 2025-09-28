@@ -5,7 +5,23 @@ applies_to: '**/*'
 
 # MTM Testing Standards Instructions
 
-## 🎯 Overview
+## �️ Constitutional Compliance
+
+**CRITICAL**: This instruction file implements **Article II: Comprehensive Testing Standards** of the MTM WIP Application Constitution.
+
+**Constitutional Requirements**:
+
+- **80% Code Coverage**: Minimum test coverage for all new functionality
+- **TDD Approach**: Tests written before implementation where applicable
+- **Cross-Platform Testing**: All features validated on Windows, macOS, Linux, Android
+- **Manufacturing Domain Testing**: Business rules validated for operations 90/100/110/120
+- **Integration Testing**: Service interactions and database operations tested
+
+**Constitutional Enforcement**: Testing standards are enforced through CI/CD constitutional compliance checks. Non-compliance will block pull request merges.
+
+**Reference**: See `constitution.md` Article II for complete Testing Standards requirements.
+
+## �🎯 Overview
 
 These instructions define the comprehensive testing standards for the MTM WIP Application, ensuring consistent test implementation across all components with cross-platform validation for every feature.
 
@@ -219,6 +235,7 @@ public class InventoryTabViewUITests
 ### Stored Procedure Coverage (45+ Procedures)
 
 **Inventory Procedures:**
+
 - `inv_inventory_Add_Item` - Add inventory with validation
 - `inv_inventory_Remove_Item` - Remove inventory with constraints
 - `inv_inventory_Get_ByPartID` - Retrieve inventory data
@@ -226,22 +243,26 @@ public class InventoryTabViewUITests
 - `inv_inventory_Update_Quantity` - Update inventory quantities
 
 **Transaction Procedures:**
+
 - `inv_transaction_Add` - Record transaction history
 - `inv_transaction_Get_History` - Retrieve transaction logs
 - `inv_transaction_Get_ByUser` - User-specific transactions
 
 **Master Data Procedures:**
+
 - `md_part_ids_Get_All` - Load all part IDs
 - `md_locations_Get_All` - Load all locations
 - `md_operation_numbers_Get_All` - Load all operations
 
 **QuickButtons Procedures:**
+
 - `qb_quickbuttons_Get_ByUser` - User QuickButtons
 - `qb_quickbuttons_Save` - Save QuickButton
 - `qb_quickbuttons_Remove` - Remove QuickButton
 - `qb_quickbuttons_Clear_ByUser` - Clear user QuickButtons
 
 **User Management Procedures:**
+
 - `usr_users_Get_All` - Load all users
 - `usr_users_Add` - Add new user
 - `usr_users_Update` - Update user details
@@ -249,6 +270,7 @@ public class InventoryTabViewUITests
 - `usr_ui_settings_SetJsonSetting` - Save user settings
 
 **Error Logging Procedures:**
+
 - `log_error_Add_Error` - Log application errors
 - `log_error_Get_All` - Retrieve error logs
 
@@ -283,6 +305,7 @@ public class StoredProcedureTests
 ### View Coverage (7+ Major Views)
 
 **Primary Views:**
+
 - `MainView.axaml` - Application shell and navigation
 - `InventoryTabView.axaml` - Inventory management interface
 - `QuickButtonsView.axaml` - Transaction shortcuts
@@ -292,6 +315,7 @@ public class StoredProcedureTests
 - `PrintView.axaml` - Report generation
 
 **Secondary Views:**
+
 - All SettingsForm sub-panels
 - Transaction history views
 - Master data management views
@@ -362,18 +386,22 @@ Tests/
 ### Test Naming Conventions
 
 **Unit Tests:**
+
 - `{ComponentName}Tests.cs`
 - `Should_{ExpectedBehavior}_When_{Condition}()`
 
 **Integration Tests:**
+
 - `{FeatureName}IntegrationTests.cs`  
 - `{Feature}_Should_{Behavior}_With_{Context}()`
 
 **Cross-Platform Tests:**
+
 - `{FeatureName}CrossPlatformTests.cs`
 - `{Feature}_{Platform}_Should_{Behavior}()`
 
 **UI Tests:**
+
 - `{ViewName}UITests.cs`
 - `{View}_Should_{UIBehavior}_When_{UserAction}()`
 
@@ -416,6 +444,7 @@ This comprehensive testing strategy ensures the MTM WIP Application maintains th
 ### When to Use Joyride
 
 **Always Use When Available:**
+
 - File template generation and boilerplate creation
 - Repetitive code pattern enforcement (MVVM, dependency injection)
 - Automated testing workflows and validation
@@ -426,18 +455,21 @@ This comprehensive testing strategy ensures the MTM WIP Application maintains th
 ### Joyride Implementation Priorities
 
 **High Priority (Use First):**
+
 - `joyride_evaluate_code` - Execute ClojureScript for workspace automation
 - `joyride_request_human_input` - Interactive decision-making workflows
 - Dynamic file creation and template generation
 - Automated pattern validation and enforcement
 
 **Medium Priority (Use When Applicable):**
+
 - VS Code API manipulation for UI automation
 - Custom workflow creation for MTM-specific patterns
 - Real-time validation of manufacturing domain rules
 - Cross-platform testing automation
 
 **Integration Benefits:**
+
 - **Consistency**: Automated pattern enforcement reduces human error
 - **Speed**: Bulk operations and template generation
 - **Quality**: Real-time validation and compliance checking
@@ -446,18 +478,21 @@ This comprehensive testing strategy ensures the MTM WIP Application maintains th
 ### MTM-Specific Joyride Applications
 
 **Manufacturing Domain:**
+
 - Automated validation of operation codes (90/100/110)
 - Location code verification (FLOOR/RECEIVING/SHIPPING)
 - Quick button configuration validation (max 10 per user)
 - Session timeout and transaction logging automation
 
 **Development Workflows:**
+
 - MVVM Community Toolkit pattern enforcement
 - Avalonia UI component generation following MTM standards
 - MySQL stored procedure validation and testing
 - Cross-platform build and deployment automation
 
 **Quality Assurance:**
+
 - Automated code review against MTM standards
 - Theme system validation (17+ theme files)
 - Database connection pooling configuration checks

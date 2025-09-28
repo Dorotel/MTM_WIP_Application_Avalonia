@@ -8,6 +8,24 @@
 
 ---
 
+## 🏛️ Constitutional Compliance
+
+**CRITICAL**: This instruction file implements **Article III: User Experience Consistency** of the MTM WIP Application Constitution.
+
+**Constitutional Requirements**:
+
+- **Avalonia UI 11.3.4**: Exclusive use of specified framework version with proper AXAML syntax
+- **Material Design Icons**: Consistent iconography using Material.Icons.Avalonia
+- **Theme Integration**: Proper DynamicResource bindings following MTM theme system
+- **Cross-Platform UI**: Interface tested and validated on Windows, macOS, Linux, Android
+- **8+ Hour Session Support**: UI remains responsive during extended manufacturing sessions
+
+**Constitutional Enforcement**: UI consistency standards are enforced through CI/CD constitutional compliance checks and cross-platform validation tests.
+
+**Reference**: See `constitution.md` Article III for complete User Experience Consistency standards.
+
+---
+
 ## 📚 Comprehensive Avalonia Documentation Reference
 
 **IMPORTANT**: This repository contains the complete Avalonia documentation straight from the official website in the `.github/Avalonia-Documentation/` folder. This includes:
