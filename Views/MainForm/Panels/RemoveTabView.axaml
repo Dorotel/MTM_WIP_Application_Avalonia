@@ -191,7 +191,8 @@
                 Padding="16"
                 Margin="0,4,0,4"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch">
+                VerticalAlignment="Stretch"
+                >
 
           <Grid RowDefinitions="*">
 
@@ -212,7 +213,9 @@
                       BorderThickness="1"
                       CornerRadius="4"
                       HorizontalAlignment="Stretch"
-                      VerticalAlignment="Stretch" />
+                      VerticalAlignment="Stretch"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto" />
 
             <!-- Nothing Found Indicator -->
             <Border Grid.Row="0"

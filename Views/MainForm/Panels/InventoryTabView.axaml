@@ -21,7 +21,8 @@
           CornerRadius="0"
           Padding="8"
           HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch">
+          VerticalAlignment="Stretch"
+          ClipToBounds="True">
 
     <!-- ================================================================================================= -->
     <!-- MAIN GRID LAYOUT - Content area + Action buttons separation -->
@@ -30,7 +31,8 @@
           RowDefinitions="*,Auto"
           Background="Transparent"
           HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch">
+          VerticalAlignment="Stretch"
+          ClipToBounds="True">
 
       <!-- ============================================================================================= -->
       <!-- CONTENT AREA - Form fields container using StyleSystem Card class -->
@@ -42,30 +44,30 @@
           HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
 
-      <StackPanel Spacing="16" HorizontalAlignment="Stretch">
+        <!-- ========================================================================================= -->
+        <!-- FORM FIELDS GRID - 5-row layout with proper spacing -->
+        <!-- ========================================================================================= -->
+        <Grid Classes="ManufacturingForm"
+            RowDefinitions="Auto,12,Auto,12,Auto,12,100*"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
 
         <!-- ========================================================================================= -->
-        <!-- FORM TITLE SECTION - Manufacturing header with icon -->
+        <!-- ROW 0: FORM TITLE SECTION - Manufacturing header with icon -->
         <!-- ========================================================================================= -->
-        <StackPanel Classes="ManufacturingFormTitle" Margin="0">
+        <StackPanel Grid.Row="0" Classes="ManufacturingFormTitle" Margin="0">
         <Border Classes="ManufacturingTitleIcon" Margin="0">
           <materialIcons:MaterialIcon Kind="Package" Classes="ManufacturingTitleIcon"/>
         </Border>
         <TextBlock Classes="ManufacturingFormTitle" Margin="0" Text="Add Inventory Item"/>
         </StackPanel>
 
-        <!-- ========================================================================================= -->
-        <!-- FORM FIELDS GRID - 5-row layout with proper spacing -->
-        <!-- ========================================================================================= -->
-        <Grid Classes="ManufacturingForm"
-            RowDefinitions="80,12,80,12,*"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch">
+        <!-- ROW 1: Space -->
 
         <!-- =================================================================================== -->
-        <!-- ROW 0: PART ID + OPERATION FIELDS - Two column layout -->
+        <!-- ROW 2: PART ID + OPERATION FIELDS - Two column layout -->
         <!-- =================================================================================== -->
-        <Grid Grid.Row="0" Classes="ManufacturingTwoColumn" ColumnDefinitions="1*,6,1*">
+        <Grid Grid.Row="2" Classes="ManufacturingTwoColumn" ColumnDefinitions="1*,6,1*">
 
           <!-- Part ID Field -->
           <Border Grid.Column="0" Classes="ManufacturingField" Tapped="FocusPartTextBox">
@@ -101,12 +103,12 @@
 
         </Grid>
 
-        <!-- Row 1: 12px spacing -->
+        <!-- Row 3: 12px spacing -->
 
         <!-- =================================================================================== -->
-        <!-- ROW 2: LOCATION + QUANTITY FIELDS - Two column layout -->
+        <!-- ROW 4: LOCATION + QUANTITY FIELDS - Two column layout -->
         <!-- =================================================================================== -->
-        <Grid Grid.Row="2" Classes="ManufacturingTwoColumn" ColumnDefinitions="1*,6,1*">
+        <Grid Grid.Row="4" Classes="ManufacturingTwoColumn" ColumnDefinitions="1*,6,1*">
 
           <!-- Location Field -->
           <Border Grid.Column="0" Classes="ManufacturingField" Tapped="FocusLocationTextBox">
@@ -142,16 +144,17 @@
 
         </Grid>
 
-        <!-- Row 3: 12px spacing -->
+        <!-- Row 5: 12px spacing -->
 
         <!-- =================================================================================== -->
-        <!-- ROW 4: NOTES FIELD - Full width, expandable multiline -->
+        <!-- ROW 6: NOTES FIELD - Full width, expandable multiline -->
         <!-- =================================================================================== -->
-        <Border Grid.Row="4"
-              Classes="Card"
+        <Border Grid.Row="6"
+              Classes="ManufacturingField Notes"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch"
               Tapped="FocusNotesTextBox">
+
           <Grid Classes="ManufacturingSingleColumn" RowDefinitions="Auto,*"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
@@ -162,24 +165,25 @@
             <TextBlock Classes="ManufacturingFieldLabel" Text="Notes (Optional)"/>
             </StackPanel>
 
-            <!-- Notes TextBox - multiline, fills remaining space -->
+            <!-- Notes TextBox - multiline, fills remaining space with proper containment -->
             <TextBox Grid.Row="1"
-                 x:Name="NotesTextBox"
-                 Text="{Binding Notes, Mode=TwoWay}"
-                 Watermark="{Binding NotesWatermark}"
-                 ToolTip.Tip="Optional notes or comments - Press Enter for new line"
-                 TabIndex="5"
-                 Height="NaN"
-                 AcceptsReturn="True"
-                 TextWrapping="Wrap"
-                 VerticalAlignment="Stretch"
-                 HorizontalAlignment="Stretch"/>
+                   x:Name="NotesTextBox"
+                   Classes="ManufacturingInput Notes"
+                   Text="{Binding Notes, Mode=TwoWay}"
+                   Watermark="{Binding NotesWatermark}"
+                   ToolTip.Tip="Optional notes or comments - Press Enter for new line"
+                   TabIndex="5"
+                   AcceptsReturn="True"
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Stretch"
+                   HorizontalAlignment="Stretch"
+                   ScrollViewer.VerticalScrollBarVisibility="Auto"
+                   ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
           </Grid>
         </Border>
 
         </Grid>
 
-      </StackPanel>
     </Border>
 
       <!-- ============================================================================================= -->
