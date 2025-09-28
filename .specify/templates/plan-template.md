@@ -6,7 +6,7 @@
 
 ## Execution Flow (/plan command scope)
 
-```
+```bash
 1. Load feature spec from Input path
    → If not found: ERROR "No feature spec at {path}"
 2. Fill Technical Context (scan for NEEDS CLARIFICATION)
@@ -83,11 +83,19 @@
 - [ ] MySQL connection pooling (5-100 connections)
 - [ ] Startup time under 10 seconds target
 
+### GSC Workflow Standards Gate
+
+- [ ] Constitution validation executed before changes
+- [ ] Memory file integration planned for appropriate GSC commands
+- [ ] Cross-platform GSC execution (Windows/macOS/Linux) validated
+- [ ] Spec-kit compatibility requirements addressed
+- [ ] GSC command performance targets (<30 seconds execution, <5 seconds memory file reading)
+
 ## Project Structure
 
 ### Documentation (this feature)
 
-```
+```bash
 specs/[###-feature]/
 ├── plan.md              # This file (/plan command output)
 ├── research.md          # Phase 0 output (/plan command)
@@ -104,7 +112,8 @@ specs/[###-feature]/
   real paths (e.g., apps/admin, packages/something). The delivered plan must
   not include Option labels.
 -->
-```
+
+```bash
 # [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
 ├── models/
@@ -152,7 +161,7 @@ directories captured above]
 
 2. **Generate and dispatch research agents**:
 
-   ```
+   ```bash
    For each unknown in Technical Context:
      Task: "Research {unknown} for {feature context}"
    For each technology choice:
@@ -168,7 +177,7 @@ directories captured above]
 
 ## Phase 1: Design & Contracts
 
-*Prerequisites: research.md complete*
+## *Prerequisites: research.md complete*
 
 1. **Extract entities from feature spec** → `data-model.md`:
    - Entity name, fields, relationships
@@ -202,7 +211,7 @@ directories captured above]
 
 ## Phase 2: Task Planning Approach
 
-*This section describes what the /tasks command will do - DO NOT execute during /plan*
+## *This section describes what the /tasks command will do - DO NOT execute during /plan*
 
 **Task Generation Strategy**:
 
@@ -225,7 +234,7 @@ directories captured above]
 
 ## Phase 3+: Future Implementation
 
-*These phases are beyond the scope of the /plan command*
+## *These phases are beyond the scope of the /plan command*
 
 **Phase 3**: Task execution (/tasks command creates tasks.md)  
 **Phase 4**: Implementation (execute tasks.md following constitutional principles)  
@@ -233,7 +242,7 @@ directories captured above]
 
 ## Complexity Tracking
 
-*Fill ONLY if Constitution Check has violations that must be justified*
+## *Fill ONLY if Constitution Check has violations that must be justified*
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
@@ -242,7 +251,7 @@ directories captured above]
 
 ## Progress Tracking
 
-*This checklist is updated during execution flow*
+## *This checklist is updated during execution flow*
 
 **Phase Status**:
 
@@ -261,4 +270,4 @@ directories captured above]
 - [ ] Complexity deviations documented
 
 ---
-*Based on Constitution v2.1.1 - See `/memory/constitution.md`*
+*Based on Constitution v2.0.0 - See `/memory/constitution.md`*
