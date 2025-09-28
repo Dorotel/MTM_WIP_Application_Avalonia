@@ -216,38 +216,108 @@
                              VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- Column Customization ComboBox -->
-                <ComboBox Grid.Column="2"
-                          x:Name="ColumnCustomizationComboBox"
-                          Classes="ManufacturingInput"
-                          ItemsSource="{Binding AvailableColumns}"
-                          SelectedItem="{Binding SelectedColumnAction, Mode=TwoWay}"
-                          DisplayMemberBinding="{Binding DisplayName}"
-                          PlaceholderText="Customize columns..."
-                          MinWidth="200"
-                          VerticalAlignment="Center"
-                          ToolTip.Tip="Show/hide or reorder columns">
+                <!-- Column Customization Dropdown Button -->
+                <Button Grid.Column="2"
+                        x:Name="ColumnCustomizationButton"
+                        Classes="Primary ManufacturingAdvanced"
+                        HorizontalContentAlignment="Left"
+                        VerticalAlignment="Center"
+                        Padding="8,4"
+                        ToolTip.Tip="Show/hide columns">
 
-                  <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                      <Grid ColumnDefinitions="Auto,*,Auto">
-                        <CheckBox Grid.Column="0"
-                                  IsChecked="{Binding IsVisible, Mode=TwoWay}"
-                                  VerticalAlignment="Center"
-                                  Margin="0,0,8,0"/>
-                        <TextBlock Grid.Column="1"
-                                   Text="{Binding DisplayName}"
-                                   VerticalAlignment="Center"/>
-                        <materialIcons:MaterialIcon Grid.Column="2"
-                                                    Kind="DragHorizontal"
-                                                    Classes="ManufacturingSecondaryIcon"
-                                                    Width="16"
-                                                    Height="16"
-                                                    VerticalAlignment="Center"/>
-                      </Grid>
-                    </DataTemplate>
-                  </ComboBox.ItemTemplate>
-                </ComboBox>
+                  <Button.Content>
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="6"
+                                VerticalAlignment="Center">
+                      <materialIcons:MaterialIcon Kind="ViewColumn"
+                                                  Classes="ManufacturingFieldIcon"/>
+                      <materialIcons:MaterialIcon Kind="ChevronDown"
+                                                  Classes="ManufacturingSecondaryIcon"
+                                                  Width="12"
+                                                  Height="12"
+                                                  VerticalAlignment="Center"/>
+                    </StackPanel>
+                  </Button.Content>
+
+                  <Button.Flyout>
+                    <Flyout Placement="BottomEdgeAlignedRight"
+                            ShowMode="TransientWithDismissOnPointerMoveAway">
+                      <Border Classes="Card"
+                              Padding="8"
+                              MinWidth="220"
+                              MaxWidth="300">
+
+                        <StackPanel Spacing="4">
+
+                          <!-- Header -->
+                          <Border Classes="ManufacturingFieldHeader"
+                                  Padding="8,4"
+                                  Margin="0,0,0,8">
+                            <TextBlock Classes="Caption"
+                                       Text="Column Visibility"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"/>
+                          </Border>
+
+                          <!-- Column Toggle List -->
+                          <ScrollViewer MaxHeight="300"
+                                        VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding AvailableColumns}">
+                              <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                  <Border Classes="ManufacturingField"
+                                          Padding="8,4"
+                                          Margin="0,1">
+                                    <Grid ColumnDefinitions="Auto,*">
+
+                                      <CheckBox Grid.Column="0"
+                                                IsChecked="{Binding IsVisible, Mode=TwoWay}"
+                                                VerticalAlignment="Center"
+                                                Margin="0,0,12,0"/>
+
+                                      <TextBlock Grid.Column="1"
+                                                 Classes="Caption"
+                                                 Text="{Binding DisplayName}"
+                                                 VerticalAlignment="Center"/>
+                                    </Grid>
+                                  </Border>
+                                </DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                          </ScrollViewer>
+
+                          <!-- Footer Actions -->
+                          <Border Classes="ManufacturingActions"
+                                  Padding="4,8,4,4"
+                                  Margin="0,8,0,0"
+                                  BorderBrush="{DynamicResource MTM_Shared_Logic.BorderLightBrush}"
+                                  BorderThickness="0,1,0,0">
+
+                            <Grid ColumnDefinitions="Auto,8,Auto"
+                                  HorizontalAlignment="Center">
+                              <Button Grid.Column="0"
+                                      Classes="Tertiary"
+                                      Content="Show All"
+                                      FontSize="11"
+                                      Padding="12,4"
+                                      Command="{Binding ShowAllColumnsCommand}"
+                                      ToolTip.Tip="Show all columns"/>
+
+                              <Button Grid.Column="2"
+                                      Classes="Tertiary"
+                                      Content="Hide All"
+                                      FontSize="11"
+                                      Padding="12,4"
+                                      Command="{Binding HideAllColumnsCommand}"
+                                      ToolTip.Tip="Hide all columns"/>
+                            </Grid>
+                          </Border>
+
+                        </StackPanel>
+                      </Border>
+                    </Flyout>
+                  </Button.Flyout>
+                </Button>
 
               </Grid>
             </Border>
@@ -296,19 +366,28 @@
                                     CanUserSort="True"
                                     IsVisible="True" />
 
-                <!-- From Location Column -->
+                <!-- Current Location Column -->
                 <DataGridTextColumn Header="Current Location"
-                                    Binding="{Binding FromLocation}"
+                                    Binding="{Binding Location}"
                                     Width="100"
                                     CanUserReorder="True"
                                     CanUserResize="True"
                                     CanUserSort="True"
                                     IsVisible="True" />
 
-                <!-- Available Quantity Column -->
+                <!-- Quantity Column -->
                 <DataGridTextColumn Header="Quantity"
-                                    Binding="{Binding AvailableQuantity}"
-                                    Width="120"
+                                    Binding="{Binding Quantity}"
+                                    Width="80"
+                                    CanUserReorder="True"
+                                    CanUserResize="True"
+                                    CanUserSort="True"
+                                    IsVisible="True" />
+
+                <!-- Item Type Column -->
+                <DataGridTextColumn Header="Item Type"
+                                    Binding="{Binding ItemType}"
+                                    Width="80"
                                     CanUserReorder="True"
                                     CanUserResize="True"
                                     CanUserSort="True"
@@ -317,7 +396,25 @@
                 <!-- Transfer Quantity Column -->
                 <DataGridTextColumn Header="Transfer Qty"
                                     Binding="{Binding TransferQuantity}"
-                                    Width="120"
+                                    Width="100"
+                                    CanUserReorder="True"
+                                    CanUserResize="True"
+                                    CanUserSort="True"
+                                    IsVisible="True" />
+
+                <!-- Last Updated Column -->
+                <DataGridTextColumn Header="Last Updated"
+                                    Binding="{Binding LastUpdated}"
+                                    Width="130"
+                                    CanUserReorder="True"
+                                    CanUserResize="True"
+                                    CanUserSort="True"
+                                    IsVisible="True" />
+
+                <!-- Updated By Column -->
+                <DataGridTextColumn Header="Updated By"
+                                    Binding="{Binding User}"
+                                    Width="100"
                                     CanUserReorder="True"
                                     CanUserResize="True"
                                     CanUserSort="True"
@@ -450,16 +547,6 @@
                       Width="32"
                       TabIndex="6">
                 <materialIcons:MaterialIcon Kind="Printer" Classes="ManufacturingLargeIcon"/>
-              </Button>
-
-              <!-- Column Customization Button -->
-              <Button Classes="Icon ManufacturingAdvanced"
-                      Command="{Binding ShowColumnCustomizationPanelCommand}"
-                      ToolTip.Tip="Customize columns"
-                      Height="32"
-                      Width="32"
-                      TabIndex="7">
-                <materialIcons:MaterialIcon Kind="ViewColumn" Classes="ManufacturingLargeIcon"/>
               </Button>
 
             </StackPanel>

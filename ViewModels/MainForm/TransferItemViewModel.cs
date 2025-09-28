@@ -25,7 +25,7 @@ namespace MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 /// <summary>
 /// Represents a column configuration item for dynamic DataGrid column management
 /// </summary>
-public class ColumnItem
+public partial class ColumnItem : ObservableObject
 {
     /// <summary>
     /// Internal column name from database (ID, PartID, Location, etc.)
@@ -40,7 +40,8 @@ public class ColumnItem
     /// <summary>
     /// Whether this column is currently visible in the DataGrid
     /// </summary>
-    public bool IsVisible { get; set; } = true;
+    [ObservableProperty]
+    private bool _isVisible = true;
 
     /// <summary>
     /// Column width (optional)
@@ -491,6 +492,11 @@ public partial class TransferItemViewModel : BaseViewModel
     /// </summary>
     public event EventHandler<ProgressReportEventArgs>? ProgressReported;
 
+    /// <summary>
+    /// Event raised when DataGrid columns should be auto-sized
+    /// </summary>
+    public event EventHandler? AutoSizeColumnsRequested;
+
     #endregion
 
     #region Constructor
@@ -733,6 +739,13 @@ public partial class TransferItemViewModel : BaseViewModel
                 OnPropertyChanged(nameof(ShowNothingFoundIndicator));
 
                 System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] UI Thread - HasInventoryItems: {HasInventoryItems}, ShowNothingFoundIndicator: {ShowNothingFoundIndicator}");
+
+                // Trigger DataGrid column auto-sizing after data is loaded
+                if (transferItems.Count > 0)
+                {
+                    AutoSizeColumnsRequested?.Invoke(this, EventArgs.Empty);
+                    _logger.LogDebug("Auto-sizing columns requested after loading {Count} transfer items", transferItems.Count);
+                }
             });
 
             System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Search operation completed successfully with {transferItems.Count} items");
@@ -1669,6 +1682,61 @@ public partial class TransferItemViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error reporting progress");
+        }
+    }
+
+    /// <summary>
+    /// Shows all columns in the DataGrid
+    /// </summary>
+    [RelayCommand]
+    private void ShowAllColumns()
+    {
+        try
+        {
+            _logger.LogInformation("Showing all columns in DataGrid");
+
+            foreach (var column in AvailableColumns)
+            {
+                column.IsVisible = true;
+                _columnVisibility[column.ColumnName] = true;
+            }
+
+            OnPropertyChanged(nameof(AvailableColumns));
+            _logger.LogDebug("All {Count} columns are now visible", AvailableColumns.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error showing all columns");
+        }
+    }
+
+    /// <summary>
+    /// Hides all columns in the DataGrid (except essential ones)
+    /// </summary>
+    [RelayCommand]
+    private void HideAllColumns()
+    {
+        try
+        {
+            _logger.LogInformation("Hiding all non-essential columns in DataGrid");
+
+            // Keep essential columns visible (PartID, Operation, Quantity)
+            var essentialColumns = new[] { "PartID", "Operation", "Quantity", "Location" };
+
+            foreach (var column in AvailableColumns)
+            {
+                var isEssential = essentialColumns.Contains(column.ColumnName, StringComparer.OrdinalIgnoreCase);
+                column.IsVisible = isEssential;
+                _columnVisibility[column.ColumnName] = isEssential;
+            }
+
+            OnPropertyChanged(nameof(AvailableColumns));
+            _logger.LogDebug("Hidden non-essential columns, {Count} essential columns remain visible",
+                AvailableColumns.Count(c => c.IsVisible));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error hiding columns");
         }
     }
 

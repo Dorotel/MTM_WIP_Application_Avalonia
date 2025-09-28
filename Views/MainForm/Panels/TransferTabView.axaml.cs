@@ -106,8 +106,8 @@ public partial class TransferTabView : UserControl
             _resetButton = this.FindControl<Button>("ResetButton");
             System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] ResetButton: {(_resetButton != null ? "FOUND" : "NOT FOUND")}");
 
-            _transferInventoryDataGrid = this.FindControl<DataGrid>("TransferInventoryDataGrid");
-            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] TransferInventoryDataGrid: {(_transferInventoryDataGrid != null ? "FOUND" : "NOT FOUND")}");
+            _transferInventoryDataGrid = this.FindControl<DataGrid>("InventoryDataGrid");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] InventoryDataGrid: {(_transferInventoryDataGrid != null ? "FOUND" : "NOT FOUND")}");
 
             _logger?.LogInformation("[TRANSFER-DEBUG] Control references initialized: Panel={HasPanel}, SearchButton={HasSearch}, ResetButton={HasReset}, DataGrid={HasDataGrid}",
                 _searchConfigPanel != null, _searchButton != null, _resetButton != null, _transferInventoryDataGrid != null);
@@ -264,6 +264,7 @@ public partial class TransferTabView : UserControl
                 viewModel.PanelCollapseRequested += OnPanelCollapseRequested;
                 viewModel.SuccessOverlayRequested += OnSuccessOverlayRequested;
                 viewModel.ProgressReported += OnProgressReported;
+                viewModel.AutoSizeColumnsRequested += OnAutoSizeColumnsRequested;
             }
             else
             {
@@ -514,6 +515,54 @@ public partial class TransferTabView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling progress report");
+        }
+    }
+
+    /// <summary>
+    /// Handles DataGrid column auto-sizing request from ViewModel
+    /// </summary>
+    private async void OnAutoSizeColumnsRequested(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (_transferInventoryDataGrid == null)
+            {
+                _logger?.LogWarning("Cannot auto-size columns: DataGrid reference is null");
+                return;
+            }
+
+            // Use Dispatcher to ensure we're on the UI thread and data is fully loaded
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                try
+                {
+                    System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] Auto-sizing DataGrid columns");
+
+                    // Auto-size all columns to fit their content
+                    foreach (var column in _transferInventoryDataGrid.Columns)
+                    {
+                        if (column is DataGridTextColumn textColumn)
+                        {
+                            // Set to auto-size based on content
+                            textColumn.Width = DataGridLength.Auto;
+                        }
+                    }
+
+                    // Force a layout update to apply the changes
+                    _transferInventoryDataGrid.InvalidateArrange();
+                    _transferInventoryDataGrid.UpdateLayout();
+
+                    _logger?.LogDebug("DataGrid columns auto-sized successfully");
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex, "Error during DataGrid column auto-sizing");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling auto-size columns request");
         }
     }
 
@@ -813,6 +862,7 @@ public partial class TransferTabView : UserControl
                 viewModel.PanelCollapseRequested -= OnPanelCollapseRequested;
                 viewModel.SuccessOverlayRequested -= OnSuccessOverlayRequested;
                 viewModel.ProgressReported -= OnProgressReported;
+                viewModel.AutoSizeColumnsRequested -= OnAutoSizeColumnsRequested;
             }
 
             // Unsubscribe from control events
