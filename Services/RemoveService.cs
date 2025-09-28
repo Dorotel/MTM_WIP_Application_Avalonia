@@ -272,13 +272,13 @@ public class RemoveService : IRemoveService
                 try
                 {
                     // Validate item data
-                    var validationResult = ValidateInventoryItem(item);
-                    if (!validationResult.IsSuccess)
+                    var itemValidationResult = ValidateInventoryItem(item);
+                    if (!itemValidationResult.IsSuccess)
                     {
                         failures.Add(new RemovalFailure
                         {
                             Item = item,
-                            Error = validationResult.ErrorMessage,
+                            Error = itemValidationResult.ErrorMessage ?? "Validation failed",
                             ErrorType = "Validation"
                         });
                         continue;

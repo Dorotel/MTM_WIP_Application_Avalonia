@@ -134,7 +134,7 @@
               </StackPanel>
             </TabItem.Header>
             <!-- Content container preserving MVVM binding -->
-            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True" ClipToBounds="True">
               <ContentControl Content="{Binding InventoryContent}"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
@@ -154,7 +154,7 @@
               </StackPanel>
             </TabItem.Header>
             <!-- Content container preserving MVVM binding -->
-            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True" ClipToBounds="True">
               <ContentControl Content="{Binding RemoveContent}"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
@@ -174,7 +174,7 @@
               </StackPanel>
             </TabItem.Header>
             <!-- Content container preserving MVVM binding -->
-            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True" ClipToBounds="True">
               <ContentControl Content="{Binding TransferContent}"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"

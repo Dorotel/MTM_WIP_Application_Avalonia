@@ -12,8 +12,7 @@ using Microsoft.Extensions.Logging;
 using MTM_WIP_Application_Avalonia.ViewModels.MainForm;
 using MTM_WIP_Application_Avalonia.Services;
 using MTM_WIP_Application_Avalonia.Controls;
-using MTM_WIP_Application_Avalonia.Controls.CustomDataGrid;
-using MTM_WIP_Application_Avalonia.Models.CustomDataGrid;
+
 using MTM_Shared_Logic.Models;
 
 namespace MTM_WIP_Application_Avalonia.Views;
@@ -35,7 +34,7 @@ public partial class TransferTabView : UserControl
     private CollapsiblePanel? _searchConfigPanel;
     private Button? _searchButton;
     private Button? _resetButton;
-    private TransferCustomDataGrid? _transferInventoryDataGrid;
+    private DataGrid? _transferInventoryDataGrid;
 
     /// <summary>
     /// Initializes a new instance of the TransferTabView class.
@@ -107,21 +106,21 @@ public partial class TransferTabView : UserControl
             _resetButton = this.FindControl<Button>("ResetButton");
             System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] ResetButton: {(_resetButton != null ? "FOUND" : "NOT FOUND")}");
 
-            _transferInventoryDataGrid = this.FindControl<TransferCustomDataGrid>("TransferInventoryDataGrid");
-            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] TransferInventoryDataGrid: {(_transferInventoryDataGrid != null ? "FOUND" : "NOT FOUND")}");
+            _transferInventoryDataGrid = this.FindControl<DataGrid>("InventoryDataGrid");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] InventoryDataGrid: {(_transferInventoryDataGrid != null ? "FOUND" : "NOT FOUND")}");
 
             _logger?.LogInformation("[TRANSFER-DEBUG] Control references initialized: Panel={HasPanel}, SearchButton={HasSearch}, ResetButton={HasReset}, DataGrid={HasDataGrid}",
                 _searchConfigPanel != null, _searchButton != null, _resetButton != null, _transferInventoryDataGrid != null);
 
             if (_transferInventoryDataGrid == null)
             {
-                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] CRITICAL: TransferInventoryDataGrid control not found - TransferCustomDataGrid functionality may not work");
-                _logger?.LogWarning("[TRANSFER-DEBUG] TransferInventoryDataGrid control not found - TransferCustomDataGrid functionality may not work");
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] CRITICAL: TransferInventoryDataGrid control not found - DataGrid functionality may not work");
+                _logger?.LogWarning("[TRANSFER-DEBUG] TransferInventoryDataGrid control not found - DataGrid functionality may not work");
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferInventoryDataGrid found - Setting up custom event handlers");
-                SetupTransferCustomDataGridEvents();
+                System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferInventoryDataGrid found - Setting up standard DataGrid event handlers");
+                SetupStandardDataGridEvents();
             }
 
             System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] InitializeControlReferences completed");
@@ -134,26 +133,72 @@ public partial class TransferTabView : UserControl
     }
 
     /// <summary>
-    /// Setup TransferCustomDataGrid specific event handlers
+    /// Setup standard DataGrid specific event handlers
     /// </summary>
-    private void SetupTransferCustomDataGridEvents()
+    private void SetupStandardDataGridEvents()
     {
         try
         {
             if (_transferInventoryDataGrid == null) return;
 
-            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] SetupTransferCustomDataGridEvents started");
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] SetupStandardDataGridEvents started");
 
-            // Subscribe to selection events if available
-            // Note: TransferCustomDataGrid may need to expose these events in its implementation
+            // Subscribe to standard DataGrid selection events
+            _transferInventoryDataGrid.SelectionChanged += OnDataGridSelectionChanged;
+            _transferInventoryDataGrid.DoubleTapped += OnDataGridDoubleTapped;
 
-            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] TransferCustomDataGrid event handlers setup completed");
-            _logger?.LogInformation("[TRANSFER-DEBUG] TransferCustomDataGrid event handlers setup completed");
+            System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] Standard DataGrid event handlers setup completed");
+            _logger?.LogInformation("[TRANSFER-DEBUG] Standard DataGrid event handlers setup completed");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Error setting up TransferCustomDataGrid events: {ex.Message}");
-            _logger?.LogError(ex, "[TRANSFER-DEBUG] Error setting up TransferCustomDataGrid events");
+            System.Diagnostics.Debug.WriteLine($"[TRANSFER-DEBUG] Error setting up standard DataGrid events: {ex.Message}");
+            _logger?.LogError(ex, "[TRANSFER-DEBUG] Error setting up standard DataGrid events");
+        }
+    }
+
+    /// <summary>
+    /// Handle DataGrid selection changes
+    /// </summary>
+    private void OnDataGridSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (sender is DataGrid dataGrid && DataContext is TransferItemViewModel viewModel)
+            {
+                // Update ViewModel with selected item
+                if (dataGrid.SelectedItem is TransferInventoryItem selectedItem)
+                {
+                    viewModel.SelectedInventoryItem = selectedItem;
+                    _logger?.LogDebug("DataGrid selection changed to: {PartId}", selectedItem.PartId);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling DataGrid selection change");
+        }
+    }
+
+    /// <summary>
+    /// Handle DataGrid double-tap to edit item
+    /// </summary>
+    private async void OnDataGridDoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+    {
+        try
+        {
+            if (sender is DataGrid dataGrid && DataContext is TransferItemViewModel viewModel)
+            {
+                if (dataGrid.SelectedItem is TransferInventoryItem selectedItem)
+                {
+                    await viewModel.EditItemCommand.ExecuteAsync(selectedItem);
+                    _logger?.LogDebug("DataGrid double-tapped - opening edit for: {PartId}", selectedItem.PartId);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling DataGrid double-tap");
         }
     }
 
@@ -219,6 +264,7 @@ public partial class TransferTabView : UserControl
                 viewModel.PanelCollapseRequested += OnPanelCollapseRequested;
                 viewModel.SuccessOverlayRequested += OnSuccessOverlayRequested;
                 viewModel.ProgressReported += OnProgressReported;
+                viewModel.AutoSizeColumnsRequested += OnAutoSizeColumnsRequested;
             }
             else
             {
@@ -469,6 +515,54 @@ public partial class TransferTabView : UserControl
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error handling progress report");
+        }
+    }
+
+    /// <summary>
+    /// Handles DataGrid column auto-sizing request from ViewModel
+    /// </summary>
+    private async void OnAutoSizeColumnsRequested(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (_transferInventoryDataGrid == null)
+            {
+                _logger?.LogWarning("Cannot auto-size columns: DataGrid reference is null");
+                return;
+            }
+
+            // Use Dispatcher to ensure we're on the UI thread and data is fully loaded
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                try
+                {
+                    System.Diagnostics.Debug.WriteLine("[TRANSFER-DEBUG] Auto-sizing DataGrid columns");
+
+                    // Auto-size all columns to fit their content
+                    foreach (var column in _transferInventoryDataGrid.Columns)
+                    {
+                        if (column is DataGridTextColumn textColumn)
+                        {
+                            // Set to auto-size based on content
+                            textColumn.Width = DataGridLength.Auto;
+                        }
+                    }
+
+                    // Force a layout update to apply the changes
+                    _transferInventoryDataGrid.InvalidateArrange();
+                    _transferInventoryDataGrid.UpdateLayout();
+
+                    _logger?.LogDebug("DataGrid columns auto-sized successfully");
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex, "Error during DataGrid column auto-sizing");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling auto-size columns request");
         }
     }
 
@@ -768,6 +862,7 @@ public partial class TransferTabView : UserControl
                 viewModel.PanelCollapseRequested -= OnPanelCollapseRequested;
                 viewModel.SuccessOverlayRequested -= OnSuccessOverlayRequested;
                 viewModel.ProgressReported -= OnProgressReported;
+                viewModel.AutoSizeColumnsRequested -= OnAutoSizeColumnsRequested;
             }
 
             // Unsubscribe from control events
@@ -803,6 +898,13 @@ public partial class TransferTabView : UserControl
             if (locationTextBox != null)
             {
                 locationTextBox.LostFocus -= OnLocationLostFocus;
+            }
+
+            // Unsubscribe from DataGrid events
+            if (_transferInventoryDataGrid != null)
+            {
+                _transferInventoryDataGrid.SelectionChanged -= OnDataGridSelectionChanged;
+                _transferInventoryDataGrid.DoubleTapped -= OnDataGridDoubleTapped;
             }
 
             KeyDown -= OnKeyDown;

@@ -53,7 +53,7 @@ public interface ICustomDataGridService
     /// Validates imported data against column configurations and business rules.
     /// Phase 6 feature for data validation.
     /// </summary>
-    Task<ValidationResult<T>> ValidateImportedDataAsync<T>(IEnumerable<T> data, ObservableCollection<CustomDataGridColumn> columns);
+    Task<TransferValidationResult<T>> ValidateImportedDataAsync<T>(IEnumerable<T> data, ObservableCollection<CustomDataGridColumn> columns);
     
     /// <summary>
     /// Performs bulk update operations on multiple data items.
@@ -106,7 +106,7 @@ public interface ICustomDataGridService
     /// Validates a column configuration for consistency.
     /// Phase 3 feature for configuration quality assurance.
     /// </summary>
-    ValidationResult ValidateColumnConfiguration(ColumnConfiguration configuration);
+    TransferValidationResult ValidateColumnConfiguration(ColumnConfiguration configuration);
 }
 
 /// <summary>
@@ -672,11 +672,11 @@ public class CustomDataGridService : ICustomDataGridService
     /// </summary>
     /// <param name="configuration">Configuration to validate</param>
     /// <returns>Validation result with details</returns>
-    public ValidationResult ValidateColumnConfiguration(ColumnConfiguration configuration)
+    public TransferValidationResult ValidateColumnConfiguration(ColumnConfiguration configuration)
     {
         try
         {
-            var result = new ValidationResult { IsValid = true };
+            var result = new TransferValidationResult { IsValid = true };
 
             if (configuration == null)
             {
@@ -736,7 +736,7 @@ public class CustomDataGridService : ICustomDataGridService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error validating column configuration");
-            return new ValidationResult
+            return new TransferValidationResult
             {
                 IsValid = false,
                 Errors = { $"Validation error: {ex.Message}" }
@@ -893,9 +893,9 @@ public class CustomDataGridService : ICustomDataGridService
     /// Validates imported data against column configurations and business rules.
     /// Phase 6 feature for data validation.
     /// </summary>
-    public async Task<ValidationResult<T>> ValidateImportedDataAsync<T>(IEnumerable<T> data, ObservableCollection<CustomDataGridColumn> columns)
+    public async Task<TransferValidationResult<T>> ValidateImportedDataAsync<T>(IEnumerable<T> data, ObservableCollection<CustomDataGridColumn> columns)
     {
-        var result = new ValidationResult<T>();
+        var result = new TransferValidationResult<T>();
         var dataList = data.ToList();
         
         try
@@ -1473,7 +1473,7 @@ public class SelectionStatistics
 /// Result of a validation operation for column configurations.
 /// Phase 3 feature for ensuring configuration quality and consistency.
 /// </summary>
-public class ValidationResult
+public class TransferValidationResult
 {
     /// <summary>
     /// Gets or sets whether the validation passed.
@@ -1655,7 +1655,7 @@ public class BulkOperationStatistics
 /// Validation result for imported data.
 /// Phase 6 feature for data quality assurance.
 /// </summary>
-public class ValidationResult<T>
+public class TransferValidationResult<T>
 {
     /// <summary>
     /// Gets or sets whether the data is valid.

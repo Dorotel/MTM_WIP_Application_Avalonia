@@ -337,7 +337,7 @@ namespace MTM_WIP_Application_Avalonia.Models
         private void ValidateProperty(string propertyName, object value)
         {
             var context = new ValidationContext(this) { MemberName = propertyName };
-            var results = new System.Collections.Generic.List<ValidationResult>();
+            var results = new System.Collections.Generic.List<System.ComponentModel.DataAnnotations.ValidationResult>();
 
             if (!Validator.TryValidateProperty(value, context, results))
             {
@@ -357,7 +357,7 @@ namespace MTM_WIP_Application_Avalonia.Models
         public bool IsValid()
         {
             var context = new ValidationContext(this);
-            var results = new System.Collections.Generic.List<ValidationResult>();
+            var results = new System.Collections.Generic.List<System.ComponentModel.DataAnnotations.ValidationResult>();
 
             var isValid = Validator.TryValidateObject(this, context, results, true);
 
@@ -380,7 +380,7 @@ namespace MTM_WIP_Application_Avalonia.Models
         /// <returns>Collection of validation results</returns>
         public System.Collections.Generic.IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var results = new System.Collections.Generic.List<ValidationResult>();
+            var results = new System.Collections.Generic.List<System.ComponentModel.DataAnnotations.ValidationResult>();
 
             // Custom validation rules for MTM business logic
 

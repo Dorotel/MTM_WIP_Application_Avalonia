@@ -1,0 +1,1137 @@
+using System;using System;
+
+using System.Collections.Generic;using System.Collections.Generic;
+
+using System.Data;using System.Data;
+
+using System.Linq;using System.Linq;
+
+using System.Threading.Tasks;using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;using Microsoft.Extensions.Logging;
+
+using MTM_WIP_Application_Avalonia.Models;using MTM_WIP_Application_Avalonia.Models;
+
+using MTM_WIP_Application_Avalonia.Services.Interfaces;using MTM_WIP_Application_Avalonia.Services.Interfaces;
+
+
+
+namespace MTM_WIP_Application_Avalonia.Servicesnamespace MTM_WIP_Application_Avalonia.Services
+
+{
+
+    /// <summary>
+
+    /// Implementation of transfer service for inventory operations
+
+    /// Integrates with existing MTM stored procedures and master data services/// <summary>/// <summary>
+
+    /// </summary>
+
+    public class TransferService : ITransferService/// Implementation of transfer service for inventory operations/// Implementation of transfer service for inventory operations
+
+    {
+
+        private readonly ILogger<TransferService> _logger;/// Integrates with existing MTM stored procedures and master data services/// Integrates with existing MTM stored procedures and master data services
+
+        private readonly IDatabaseService _databaseService;
+
+        private readonly IMasterDataService _masterDataService;/// </summary>/// </summary>
+
+
+
+        public TransferService(public class TransferService : ITransferServicepublic class TransferService : ITransferService
+
+            ILogger<TransferService> logger,
+
+            IDatabaseService databaseService,{{
+
+            IMasterDataService masterDataService)
+
+        {    private readonly ILogger<TransferService> _logger; private readonly ILogger<TransferService> _logger;
+
+            ArgumentNullException.ThrowIfNull(logger);
+
+            ArgumentNullException.ThrowIfNull(databaseService);    private readonly IDatabaseService _databaseService; private readonly IDatabaseService _databaseService;
+
+            ArgumentNullException.ThrowIfNull(masterDataService);
+
+    private readonly IMasterDataService _masterDataService; private readonly IMasterDataService _masterDataService;
+
+            _logger = logger;
+
+            _databaseService = databaseService;
+
+            _masterDataService = masterDataService;
+
+        }    public TransferService(    public TransferService(
+
+
+
+        /// <summary>        ILogger<TransferService> logger, ILogger<TransferService> logger,
+
+        /// Search inventory items available for transfer operations
+
+        /// </summary>        IDatabaseService databaseService, IDatabaseService databaseService,
+
+        /// <param name="partId">Part identifier (optional)</param>
+
+        /// <param name="operation">Operation number (optional)</param>        IMasterDataService masterDataService)        IMasterDataService masterDataService)
+
+        /// <returns>List of available inventory items with transfer-specific properties</returns>
+
+        public async Task<ServiceResult<List<InventoryItem>>> SearchInventoryAsync(string? partId = null, string? operation = null)    {    {
+
+        {
+
+            try        ArgumentNullException.ThrowIfNull(logger);        ArgumentNullException.ThrowIfNull(logger);
+
+            {
+
+                _logger.LogDebug("Searching inventory for transfers - PartId: {PartId}, Operation: {Operation}", partId, operation);        ArgumentNullException.ThrowIfNull(databaseService);        ArgumentNullException.ThrowIfNull(databaseService);
+
+
+
+                var connectionString = _databaseService.GetConnectionString();        ArgumentNullException.ThrowIfNull(masterDataService);        ArgumentNullException.ThrowIfNull(masterDataService);
+
+                if (string.IsNullOrWhiteSpace(connectionString))
+
+                {
+
+                    return ServiceResult<List<InventoryItem>>.Failure("Database connection not available");
+
+                }        _logger = logger;        _logger = logger;
+
+
+
+                var parameters = new Dictionary<string, object>();        _databaseService = databaseService;        _databaseService = databaseService;
+
+                
+
+                if (!string.IsNullOrWhiteSpace(partId))        _masterDataService = masterDataService;        _masterDataService = masterDataService;
+
+                    parameters.Add("p_PartID", partId);
+
+                    }
+
+                if (!string.IsNullOrWhiteSpace(operation))}
+
+                    parameters.Add("p_Operation", operation);
+
+
+
+                // Use existing inventory search stored procedure
+
+                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(/// <summary>    /// <summary>
+
+                    connectionString,
+
+                    "inv_inventory_Get_ByPartIDandOperation",/// Search inventory items available for transfer    /// Search inventory items available for transfer
+
+                    parameters
+
+                );/// </summary>    /// </summary>
+
+
+
+                if (!result.IsSuccess)/// <param name="partId">Optional part ID filter</param>    /// <param name="partId">Optional part ID filter</param>
+
+                {
+
+                    _logger.LogWarning("Database search failed: {Message}", result.Message);/// <param name="operation">Optional operation filter</param>    /// <param name="operation">Optional operation filter</param>
+
+                    return ServiceResult<List<InventoryItem>>.Failure($"Search failed: {result.Message}");
+
+                }/// <returns>List of available inventory items for transfer</returns>    /// <returns>List of available inventory items for transfer</returns>
+
+
+
+                var inventoryItems = new List<InventoryItem>();public async Task<ServiceResult<List<TransferOperation>>> SearchInventoryAsync(string? partId = null, string? operation = null)    public async Task<ServiceResult<List<TransferOperation>>> SearchInventoryAsync(string? partId = null, string? operation = null)
+
+                foreach (DataRow row in result.Data.Rows)
+
+                {{
+
+                    try    {
+
+                    {
+
+                        var item = new InventoryItem        try        try
+
+                        {
+
+                            Id = Convert.ToInt32(row["ID"]),        {
+
+                            PartId = row["PartID"]?.ToString() ?? string.Empty,            {
+
+                            Location = row["Location"]?.ToString() ?? string.Empty,
+
+                            Operation = row["Operation"]?.ToString() ?? string.Empty,                _logger.LogDebug("Searching inventory for transfer - PartId: {PartId}, Operation: {Operation}", partId, operation); _logger.LogDebug("Searching inventory for transfer - PartId: {PartId}, Operation: {Operation}", partId, operation);
+
+                            Quantity = Convert.ToInt32(row["Quantity"] ?? 0),
+
+                            ItemType = row["ItemType"]?.ToString() ?? "WIP",
+
+                            ReceiveDate = Convert.ToDateTime(row["ReceiveDate"] ?? DateTime.Now),
+
+                            LastUpdated = Convert.ToDateTime(row["LastUpdated"] ?? DateTime.Now),                var connectionString = _databaseService.GetConnectionString(); var connectionString = _databaseService.GetConnectionString();
+
+                            User = row["User"]?.ToString() ?? string.Empty,
+
+                            BatchNumber = row["BatchNumber"]?.ToString(),                if (string.IsNullOrWhiteSpace(connectionString)) if (string.IsNullOrWhiteSpace(connectionString))
+
+                            Notes = row["Notes"]?.ToString()
+
+                        };                    {
+
+                        {
+
+                        inventoryItems.Add(item);
+
+                    }                            return ServiceResult<List<TransferOperation>>.Failure("Database connection not available"); return ServiceResult<List<TransferOperation>>.Failure("Database connection not available");
+
+                    catch (Exception rowEx)
+
+                    {                        }
+
+                        _logger.LogWarning(rowEx, "Error parsing inventory row, skipping");                    }
+
+                    }
+
+                }
+
+
+
+                _logger.LogInformation("Found {Count} inventory items for transfer", inventoryItems.Count);                try            try
+
+                return ServiceResult<List<InventoryItem>>.Success(inventoryItems);
+
+            }                {
+
+            catch (Exception ex)                    {
+
+            {
+
+                _logger.LogError(ex, "Error searching inventory for transfers");                        var parameters = new Dictionary<string, object>(); var parameters = new Dictionary<string, object>();
+
+                await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to search inventory for transfers");
+
+                return ServiceResult<List<InventoryItem>>.Failure("Search operation failed", ex);                        string procedureName; string procedureName;
+
+            }
+
+        }
+
+
+
+        /// <summary>                        // Determine which stored procedure to use based on filters                // Determine which stored procedure to use based on filters
+
+        /// Execute transfer operation with quantity splitting and validation
+
+        /// </summary>                        if (!string.IsNullOrWhiteSpace(partId) && !string.IsNullOrWhiteSpace(operation)) if (!string.IsNullOrWhiteSpace(partId) && !string.IsNullOrWhiteSpace(operation))
+
+        /// <param name="transfer">Transfer operation details</param>
+
+        /// <returns>Success/failure result with transaction details</returns>                            {
+
+        public async Task<ServiceResult<TransferResult>> ExecuteTransferAsync(TransferOperation transfer)                                {
+
+        {
+
+            try                                    // Search by both part ID and operation                    // Search by both part ID and operation
+
+            {
+
+                if (transfer == null)                                    parameters.Add("p_PartID", partId); parameters.Add("p_PartID", partId);
+
+                {
+
+                    return ServiceResult<TransferResult>.Failure("Transfer operation is required");                                    parameters.Add("p_Operation", operation); parameters.Add("p_Operation", operation);
+
+                }
+
+                                    procedureName = "inv_inventory_Get_ByPartIDandOperation"; procedureName = "inv_inventory_Get_ByPartIDandOperation";
+
+                _logger.LogInformation("Executing transfer: {PartId} from {FromLocation} to {ToLocation}, Quantity: {Quantity}",
+
+                    transfer.PartId, transfer.FromLocation, transfer.ToLocation, transfer.TransferQuantity);                                }
+
+                            }
+
+                // Validate the transfer operation first
+
+                var validationResult = await ValidateTransferAsync(transfer);                            else if (!string.IsNullOrWhiteSpace(partId))                else if (!string.IsNullOrWhiteSpace(partId))
+
+                if (!validationResult.IsSuccess || !validationResult.Data.IsValid)
+
+                {                                {
+
+                    var errors = validationResult.Data?.Errors ?? new List<string> { "Validation failed" };                                    {
+
+                    return ServiceResult<TransferResult>.Failure($"Transfer validation failed: {string.Join(", ", errors)}");
+
+                }                                        // Search by part ID only                    // Search by part ID only
+
+
+
+                var connectionString = _databaseService.GetConnectionString();                                        parameters.Add("p_PartID", partId); parameters.Add("p_PartID", partId);
+
+                if (string.IsNullOrWhiteSpace(connectionString))
+
+                {                                        procedureName = "inv_inventory_Get_ByPartID"; procedureName = "inv_inventory_Get_ByPartID";
+
+                    return ServiceResult<TransferResult>.Failure("Database connection not available");
+
+                }                                    }
+
+                                }
+
+                var parameters = new Dictionary<string, object>
+
+                {                                else                else
+
+                    { "p_PartID", transfer.PartId },
+
+                    { "p_FromLocation", transfer.FromLocation },                                {
+
+                    { "p_ToLocation", transfer.ToLocation },                                    {
+
+                    { "p_Operation", transfer.Operation ?? string.Empty },
+
+                    { "p_TransferQuantity", transfer.TransferQuantity },                                        // Get all inventory items (with reasonable limit)                    // Get all inventory items (with reasonable limit)
+
+                    { "p_BatchNumber", transfer.BatchNumber ?? string.Empty },
+
+                    { "p_UserId", transfer.UserId }                                        parameters.Add("p_Limit", 1000); // Reasonable limit for UI performance                    parameters.Add("p_Limit", 1000); // Reasonable limit for UI performance
+
+                };
+
+                                        procedureName = "inv_inventory_Get_All"; procedureName = "inv_inventory_Get_All";
+
+                // Execute transfer using new stored procedure with splitting logic
+
+                var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(                                    }
+
+                    connectionString,                                }
+
+                    "inv_transfer_Execute_WithSplit",
+
+                    parameters
+
+                );
+
+                        var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+
+                if (!result.IsSuccess)
+
+                {                            connectionString, connectionString,
+
+                    _logger.LogError("Transfer execution failed: {Message}", result.Message);
+
+                    return ServiceResult<TransferResult>.Failure($"Transfer failed: {result.Message}");                            procedureName, procedureName,
+
+                }
+
+                            parameters                    parameters
+
+                // Parse the result to get transaction details
+
+                var transferResult = TransferResult.Success(                        );                );
+
+                    transfer.PartId,
+
+                    transfer.FromLocation,
+
+                    transfer.ToLocation,
+
+                    transfer.TransferQuantity,                        if (result.IsSuccess && result.Data.Rows.Count > 0) if (result.IsSuccess && result.Data.Rows.Count > 0)
+
+                    result.Data.Rows.Count > 0 ? result.Data.Rows[0]["TransactionId"]?.ToString() : null
+
+                );                            {
+
+                                {
+
+                _logger.LogInformation("Transfer completed successfully: {TransactionId}", transferResult.TransactionId);
+
+                return ServiceResult<TransferResult>.Success(transferResult);                                    var transferOperations = new List<TransferOperation>(); var transferOperations = new List<TransferOperation>();
+
+            }
+
+            catch (Exception ex)
+
+            {
+
+                _logger.LogError(ex, "Error executing transfer operation");                                    foreach (DataRow row in result.Data.Rows) foreach (DataRow row in result.Data.Rows)
+
+                await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to execute transfer operation", transfer?.UserId);
+
+                                                        {
+
+                var failureResult = TransferResult.Failure(                                            {
+
+                    transfer?.PartId ?? "UNKNOWN",
+
+                    transfer?.FromLocation ?? "UNKNOWN",                                                var transferOp = new TransferOperation                        var transferOp = new TransferOperation
+
+                    transfer?.ToLocation ?? "UNKNOWN",
+
+                    transfer?.TransferQuantity ?? 0,                        {                        {
+
+                    $"Transfer failed: {ex.Message}"
+
+                );                            PartId = row["PartID"]?.ToString() ?? string.Empty,                            PartId = row["PartID"]?.ToString() ?? string.Empty,
+
+                
+
+                return ServiceResult<TransferResult>.Success(failureResult);                            FromLocation = row["Location"]?.ToString() ?? string.Empty,                            FromLocation = row["Location"]?.ToString() ?? string.Empty,
+
+            }
+
+        }                            Operation = row["OperationNumber"]?.ToString() ?? string.Empty,                            Operation = row["OperationNumber"]?.ToString() ?? string.Empty,
+
+
+
+        /// <summary>                            AvailableQuantity = Convert.ToInt32(row["Quantity"] ?? 0),                            AvailableQuantity = Convert.ToInt32(row["Quantity"] ?? 0),
+
+        /// Validate transfer operation before execution
+
+        /// </summary>                            BatchNumber = row["BatchNumber"]?.ToString() ?? string.Empty,                            BatchNumber = row["BatchNumber"]?.ToString() ?? string.Empty,
+
+        /// <param name="transfer">Transfer operation to validate</param>
+
+        /// <returns>Validation result with detailed error information</returns>                            Notes = row["Notes"]?.ToString() ?? string.Empty,                            Notes = row["Notes"]?.ToString() ?? string.Empty,
+
+        public async Task<ServiceResult<ValidationResult>> ValidateTransferAsync(TransferOperation transfer)
+
+        {                            // Default transfer parameters - user will set these                            // Default transfer parameters - user will set these
+
+            try
+
+            {                            ToLocation = string.Empty,                            ToLocation = string.Empty,
+
+                var validation = new ValidationResult();
+
+                            TransferQuantity = 0,                            TransferQuantity = 0,
+
+                if (transfer == null)
+
+                {                            UserId = "SYSTEM" // Will be updated by UI                            UserId = "SYSTEM" // Will be updated by UI
+
+                    validation.AddError("Transfer operation cannot be null");
+
+                    return ServiceResult<ValidationResult>.Success(validation);                        };                        };
+
+                }
+
+
+
+                // Validate required fields
+
+                if (string.IsNullOrWhiteSpace(transfer.PartId))                                                // Only add items with available quantity                        // Only add items with available quantity
+
+                    validation.AddError("Part ID is required");
+
+                                                if (transferOp.AvailableQuantity > 0) if (transferOp.AvailableQuantity > 0)
+
+                if (string.IsNullOrWhiteSpace(transfer.FromLocation))
+
+                    validation.AddError("Source location is required");                                                    {
+
+                                                        {
+
+                if (string.IsNullOrWhiteSpace(transfer.ToLocation))
+
+                    validation.AddError("Destination location is required");                                                            transferOperations.Add(transferOp); transferOperations.Add(transferOp);
+
+
+
+                if (transfer.TransferQuantity <= 0)                                                        }
+
+                    validation.AddError("Transfer quantity must be greater than zero");                                                    }
+
+
+
+                if (string.IsNullOrWhiteSpace(transfer.UserId))                                            }
+
+                    validation.AddError("User ID is required");                                        }
+
+
+
+                // Validate locations are different
+
+                if (!string.IsNullOrWhiteSpace(transfer.FromLocation) && 
+
+                    !string.IsNullOrWhiteSpace(transfer.ToLocation) &&                                    _logger.LogInformation("Found {Count} inventory items available for transfer", transferOperations.Count); _logger.LogInformation("Found {Count} inventory items available for transfer", transferOperations.Count);
+
+                    string.Equals(transfer.FromLocation, transfer.ToLocation, StringComparison.OrdinalIgnoreCase))
+
+                {                                    return ServiceResult<List<TransferOperation>>.Success(transferOperations); return ServiceResult<List<TransferOperation>>.Success(transferOperations);
+
+                    validation.AddError("Source and destination locations must be different");
+
+                }                                }
+
+                            }
+
+                // Validate destination location exists
+
+                var locationsResult = await GetValidLocationsAsync();                            else                else
+
+                if (locationsResult.IsSuccess && locationsResult.Data.Any())
+
+                {                            {
+
+                    if (!locationsResult.Data.Contains(transfer.ToLocation, StringComparer.OrdinalIgnoreCase))                                {
+
+                    {
+
+                        validation.AddWarning($"Destination location '{transfer.ToLocation}' may not be valid");                                    _logger.LogInformation("No inventory items found for transfer criteria"); _logger.LogInformation("No inventory items found for transfer criteria");
+
+                    }
+
+                }                                    return ServiceResult<List<TransferOperation>>.Success(new List<TransferOperation>()); return ServiceResult<List<TransferOperation>>.Success(new List<TransferOperation>());
+
+
+
+                // Validate available quantity (this would require checking current inventory)                                }
+
+                if (!string.IsNullOrWhiteSpace(transfer.PartId) && !string.IsNullOrWhiteSpace(transfer.FromLocation))                            }
+
+                {
+
+                    try                    }
+
+                    {                }
+
+                        var inventoryResult = await SearchInventoryAsync(transfer.PartId, transfer.Operation);
+
+                        if (inventoryResult.IsSuccess)                catch (Exception dbEx)            catch (Exception dbEx)
+
+                        {
+
+                            var matchingItem = inventoryResult.Data                {
+
+                                .FirstOrDefault(i => string.Equals(i.Location, transfer.FromLocation, StringComparison.OrdinalIgnoreCase));                    {
+
+
+
+                            if (matchingItem == null)                        _logger.LogError(dbEx, "Database error searching inventory for transfer"); _logger.LogError(dbEx, "Database error searching inventory for transfer");
+
+                            {
+
+                                validation.AddError($"No inventory found for part '{transfer.PartId}' at location '{transfer.FromLocation}'");                        await Services.ErrorHandling.HandleErrorAsync(dbEx, "Failed to search inventory for transfer", "SYSTEM"); await Services.ErrorHandling.HandleErrorAsync(dbEx, "Failed to search inventory for transfer", "SYSTEM");
+
+                            }
+
+                            else if (matchingItem.Quantity < transfer.TransferQuantity)                        return ServiceResult<List<TransferOperation>>.Failure("Database operation failed", dbEx); return ServiceResult<List<TransferOperation>>.Failure("Database operation failed", dbEx);
+
+                            {
+
+                                validation.AddError($"Insufficient quantity. Available: {matchingItem.Quantity}, Requested: {transfer.TransferQuantity}");                    }
+
+                            }                }
+
+                        }
+
+                    }                }        }
+
+                    catch (Exception ex)
+
+                    {        catch (Exception ex)        catch (Exception ex)
+
+                        _logger.LogWarning(ex, "Could not validate inventory availability for transfer");
+
+                        validation.AddWarning("Could not verify inventory availability");        {
+
+                    }            {
+
+                }
+
+                _logger.LogError(ex, "Unexpected error searching inventory for transfer"); _logger.LogError(ex, "Unexpected error searching inventory for transfer");
+
+                _logger.LogDebug("Transfer validation completed. Valid: {IsValid}, Errors: {ErrorCount}, Warnings: {WarningCount}",
+
+                    validation.IsValid, validation.Errors.Count, validation.Warnings.Count);                await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to search inventory for transfer", "SYSTEM"); await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to search inventory for transfer", "SYSTEM");
+
+
+
+                return ServiceResult<ValidationResult>.Success(validation);                return ServiceResult<List<TransferOperation>>.Failure("Failed to search inventory", ex); return ServiceResult<List<TransferOperation>>.Failure("Failed to search inventory", ex);
+
+            }
+
+            catch (Exception ex)            }
+
+            {        }
+
+                _logger.LogError(ex, "Error validating transfer operation");
+
+                await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to validate transfer operation");        }    }
+
+                
+
+                var errorValidation = new ValidationResult();
+
+                errorValidation.AddError($"Validation failed: {ex.Message}");
+
+                return ServiceResult<ValidationResult>.Success(errorValidation);    /// <summary>    /// <summary>
+
+            }
+
+        }    /// Execute inventory transfer operation with quantity auto-capping    /// Execute inventory transfer operation with quantity auto-capping
+
+
+
+        /// <summary>    /// </summary>    /// </summary>
+
+        /// Get list of valid destination locations for transfers
+
+        /// </summary>    /// <param name="operation">Transfer operation details</param>    /// <param name="operation">Transfer operation details</param>
+
+        /// <returns>List of valid location identifiers</returns>
+
+        public async Task<ServiceResult<List<string>>> GetValidLocationsAsync()    /// <returns>Transfer result with success status and updated quantities</returns>    /// <returns>Transfer result with success status and updated quantities</returns>
+
+        {
+
+            try    public async Task<ServiceResult<TransferResult>> ExecuteTransferAsync(TransferOperation operation)    public async Task<ServiceResult<TransferResult>> ExecuteTransferAsync(TransferOperation operation)
+
+            {
+
+                _logger.LogDebug("Loading valid locations for transfers");{
+
+    {
+
+                // Use master data service to get locations
+
+                var locations = await _masterDataService.GetLocationsAsync();        try        try
+
+                if (locations != null && locations.Any())
+
+                {        {
+
+                    var locationList = locations.Select(l => l.ToString()).ToList();            {
+
+                    _logger.LogDebug("Loaded {Count} locations from master data service", locationList.Count);
+
+                    return ServiceResult<List<string>>.Success(locationList);                if (operation == null) if (operation == null)
+
+                }
+
+                    {
+
+                // Fallback to common MTM locations if master data is unavailable                        {
+
+                var fallbackLocations = new List<string>
+
+                {                            return ServiceResult<TransferResult>.Failure("Transfer operation is required"); return ServiceResult<TransferResult>.Failure("Transfer operation is required");
+
+                    "FLOOR",
+
+                    "RECEIVING",                         }
+
+                    "SHIPPING",                    }
+
+                    "WIP",
+
+                    "QUARANTINE",
+
+                    "STORAGE"
+
+                };                _logger.LogDebug("Executing transfer - PartId: {PartId}, From: {FromLocation}, To: {ToLocation}, Quantity: {Quantity}", _logger.LogDebug("Executing transfer - PartId: {PartId}, From: {FromLocation}, To: {ToLocation}, Quantity: {Quantity}",
+
+
+
+                _logger.LogWarning("Master data service returned no locations, using fallback locations");                    operation.PartId, operation.FromLocation, operation.ToLocation, operation.TransferQuantity); operation.PartId, operation.FromLocation, operation.ToLocation, operation.TransferQuantity);
+
+                return ServiceResult<List<string>>.Success(fallbackLocations);
+
+            }
+
+            catch (Exception ex)
+
+            {                // Validate the transfer operation first            // Validate the transfer operation first
+
+                _logger.LogError(ex, "Error loading valid locations for transfers");
+
+                await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to load valid locations", "SYSTEM");                var validationResult = await ValidateTransferAsync(operation); var validationResult = await ValidateTransferAsync(operation);
+
+                
+
+                // Return fallback locations even on error                if (!validationResult.IsSuccess || !validationResult.Value?.IsValid == true) if (!validationResult.IsSuccess || !validationResult.Value?.IsValid == true)
+
+                var fallbackLocations = new List<string> { "FLOOR", "RECEIVING", "SHIPPING" };
+
+                return ServiceResult<List<string>>.Success(fallbackLocations);                    {
+
+            }                        {
+
+        }
+
+    }                            var errorMsg = validationResult.Value?.GetErrorMessage() ?? validationResult.ErrorMessage ?? "Validation failed"; var errorMsg = validationResult.Value?.GetErrorMessage() ?? validationResult.ErrorMessage ?? "Validation failed";
+
+}
+                            return ServiceResult<TransferResult>.Failure(errorMsg); return ServiceResult<TransferResult>.Failure(errorMsg);
+
+                        }
+                    }
+
+
+
+                var connectionString = _databaseService.GetConnectionString(); var connectionString = _databaseService.GetConnectionString();
+
+                if (string.IsNullOrWhiteSpace(connectionString)) if (string.IsNullOrWhiteSpace(connectionString))
+
+                    {
+                        {
+
+                            return ServiceResult<TransferResult>.Failure("Database connection not available"); return ServiceResult<TransferResult>.Failure("Database connection not available");
+
+                        }
+                    }
+
+
+
+                try            try
+
+                {
+                    {
+
+                        // Auto-cap transfer quantity to available quantity                // Auto-cap transfer quantity to available quantity
+
+                        var actualTransferQuantity = Math.Min(operation.TransferQuantity, operation.AvailableQuantity); var actualTransferQuantity = Math.Min(operation.TransferQuantity, operation.AvailableQuantity);
+
+                        if (actualTransferQuantity != operation.TransferQuantity) if (actualTransferQuantity != operation.TransferQuantity)
+
+                            {
+                                {
+
+                                    _logger.LogWarning("Transfer quantity auto-capped from {RequestedQuantity} to {ActualQuantity} for part {PartId}", _logger.LogWarning("Transfer quantity auto-capped from {RequestedQuantity} to {ActualQuantity} for part {PartId}",
+
+                                        operation.TransferQuantity, actualTransferQuantity, operation.PartId); operation.TransferQuantity, actualTransferQuantity, operation.PartId);
+
+                                }
+                            }
+
+
+
+                        var parameters = new Dictionary<string, object>                var parameters = new Dictionary<string, object>
+
+                {                {
+
+                    { "p_PartID", operation.PartId },                    { "p_PartID", operation.PartId },
+
+                    { "p_FromLocation", operation.FromLocation },                    { "p_FromLocation", operation.FromLocation },
+
+                    { "p_ToLocation", operation.ToLocation },                    { "p_ToLocation", operation.ToLocation },
+
+                    { "p_Operation", operation.Operation },                    { "p_Operation", operation.Operation },
+
+                    { "p_TransferQuantity", actualTransferQuantity },                    { "p_TransferQuantity", actualTransferQuantity },
+
+                    { "p_BatchNumber", operation.BatchNumber ?? string.Empty },                    { "p_BatchNumber", operation.BatchNumber ?? string.Empty },
+
+                    { "p_Notes", operation.Notes ?? string.Empty },                    { "p_Notes", operation.Notes ?? string.Empty },
+
+                    { "p_UserId", operation.UserId }                    { "p_UserId", operation.UserId }
+
+                };
+                    }
+                    ;
+
+
+
+                    var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(var result = await Helper_Database_StoredProcedure.ExecuteDataTableWithStatus(
+
+                        connectionString, connectionString,
+
+                        "inv_inventory_Transfer", "inv_inventory_Transfer",
+
+                        parameters                    parameters
+
+                    );                );
+
+
+
+                    if (result.IsSuccess) if (result.IsSuccess)
+
+                        {
+                            {
+
+                                var transferResult = TransferResult.Success(var transferResult = new TransferResult
+
+
+                                    transactionId: Guid.NewGuid().ToString(),                    {
+
+                                originalQty: operation.AvailableQuantity,                        IsSuccess = true,
+
+                        transferredQty: actualTransferQuantity,                        TransferredQuantity = actualTransferQuantity,
+
+                        remainingQty: operation.AvailableQuantity - actualTransferQuantity,                        RemainingQuantity = operation.AvailableQuantity - actualTransferQuantity,
+
+                        message: $"Successfully transferred {actualTransferQuantity} units from {operation.FromLocation} to {operation.ToLocation}"                        Message = $"Successfully transferred {actualTransferQuantity} units from {operation.CurrentLocation} to {operation.TargetLocation}",
+
+                    ); BatchNumber = operation.BatchNumber ?? string.Empty
+
+                    }
+                                ;
+
+                                // Set additional properties
+
+                                transferResult.FromLocation = operation.FromLocation; _logger.LogInformation("Successfully transferred {Quantity} units of {PartId} from {FromLocation} to {ToLocation}",
+
+                                transferResult.ToLocation = operation.ToLocation; actualTransferQuantity, operation.PartId, operation.CurrentLocation, operation.TargetLocation);
+
+                                transferResult.PartId = operation.PartId;
+
+                                transferResult.Operation = operation.Operation; return ServiceResult<TransferResult>.Success(transferResult);
+
+                                transferResult.UserId = operation.UserId;
+                            }
+
+                else
+
+                                _logger.LogInformation("Successfully transferred {Quantity} units of {PartId} from {FromLocation} to {ToLocation}",                 {
+
+                                actualTransferQuantity, operation.PartId, operation.FromLocation, operation.ToLocation); var errorMsg = result.Message ?? "Transfer operation failed";
+
+                                _logger.LogWarning("Transfer failed - Status: {Status}, Message: {Message}", result.Status, result.Message);
+
+                                return ServiceResult<TransferResult>.Success(transferResult);
+
+                            }
+                            var transferResult = new TransferResult
+
+                else
+                            {
+
+                                {
+                                    IsSuccess = false,
+
+                    var errorMsg = result.Message ?? "Transfer operation failed"; TransferredQuantity = 0,
+
+                    _logger.LogWarning("Transfer failed - Status: {Status}, Message: {Message}", result.Status, result.Message); RemainingQuantity = operation.AvailableQuantity,
+
+                                            Message = errorMsg,
+
+                    var transferResult = TransferResult.Failure(errorMsg); BatchNumber = operation.BatchNumber ?? string.Empty
+
+                    transferResult.FromLocation = operation.FromLocation;
+                                }
+                                ;
+
+                                transferResult.ToLocation = operation.ToLocation;
+
+                                transferResult.PartId = operation.PartId; return ServiceResult<TransferResult>.Success(transferResult);
+
+                                transferResult.Operation = operation.Operation;
+                            }
+
+                            transferResult.UserId = operation.UserId;
+                        }
+
+            catch (Exception dbEx)
+
+                    return ServiceResult<TransferResult>.Success(transferResult);
+                {
+
+                }
+                _logger.LogError(dbEx, "Database error executing transfer for part: {PartId}", operation.PartId);
+
+                }
+                await Services.ErrorHandling.HandleErrorAsync(dbEx, $"Failed to execute transfer for part: {operation.PartId}", "SYSTEM");
+
+            catch (Exception dbEx)                return ServiceResult<TransferResult>.Failure("Database operation failed", dbEx);
+
+                { }
+
+                _logger.LogError(dbEx, "Database error executing transfer for part: {PartId}", operation.PartId);
+                }
+
+                await Services.ErrorHandling.HandleErrorAsync(dbEx, $"Failed to execute transfer for part: {operation.PartId}", "SYSTEM");        catch (Exception ex)
+
+                return ServiceResult<TransferResult>.Failure("Database operation failed", dbEx);
+        {
+
+        }
+        _logger.LogError(ex, "Unexpected error executing transfer");
+
+        }
+        await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to execute transfer", "SYSTEM");
+
+        catch (Exception ex)            return ServiceResult<TransferResult>.Failure("Failed to execute transfer", ex);
+
+        { }
+
+        _logger.LogError(ex, "Unexpected error executing transfer");
+        }
+
+        await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to execute transfer", "SYSTEM");
+
+        return ServiceResult<TransferResult>.Failure("Failed to execute transfer", ex);    /// <summary>
+
+    }    /// Validate transfer operation before execution
+
+}    /// </summary>
+
+     /// <param name="operation">Transfer operation to validate</param>
+
+     /// <summary>    /// <returns>Validation result with detailed error information</returns>
+
+     /// Validate transfer operation before execution    public async Task<ServiceResult<ValidationResult>> ValidateTransferAsync(TransferOperation operation)
+
+     /// </summary>    {
+
+     /// <param name="operation">Transfer operation to validate</param>        try
+
+     /// <returns>Validation result with detailed error information</returns>        {
+
+public async Task<ServiceResult<ValidationResult>> ValidateTransferAsync(TransferOperation operation)            if (operation == null)
+
+{
+    {
+
+        try                return ServiceResult<ValidationResult>.Success(ValidationResult.Invalid("Transfer operation is required"));
+
+        { }
+
+        if (operation == null)
+
+        {
+            var validationErrors = new List<string>();
+
+            return ServiceResult<ValidationResult>.Success(ValidationResult.Failure("Transfer operation is required"));
+
+        }            // Basic field validation
+
+        if (string.IsNullOrWhiteSpace(operation.PartId))
+
+            var validationErrors = new List<string>(); validationErrors.Add("Part ID is required");
+
+
+
+        // Basic field validation            if (string.IsNullOrWhiteSpace(operation.CurrentLocation))
+
+        if (string.IsNullOrWhiteSpace(operation.PartId)) validationErrors.Add("Current location is required");
+
+        validationErrors.Add("Part ID is required");
+
+        if (string.IsNullOrWhiteSpace(operation.TargetLocation))
+
+            if (string.IsNullOrWhiteSpace(operation.FromLocation)) validationErrors.Add("Target location is required");
+
+        validationErrors.Add("From location is required");
+
+        if (operation.CurrentLocation == operation.TargetLocation)
+
+            if (string.IsNullOrWhiteSpace(operation.ToLocation)) validationErrors.Add("Target location must be different from current location");
+
+        validationErrors.Add("To location is required");
+
+        if (operation.TransferQuantity <= 0)
+
+            if (operation.FromLocation == operation.ToLocation) validationErrors.Add("Transfer quantity must be greater than zero");
+
+        validationErrors.Add("Target location must be different from current location");
+
+        if (operation.TransferQuantity > operation.AvailableQuantity)
+
+            if (operation.TransferQuantity <= 0) validationErrors.Add($"Transfer quantity ({operation.TransferQuantity}) exceeds available quantity ({operation.AvailableQuantity})");
+
+        validationErrors.Add("Transfer quantity must be greater than zero");
+
+        // Validate locations against master data
+
+        if (operation.TransferQuantity > operation.AvailableQuantity) var validLocationsResult = await GetValidLocationsAsync();
+
+        validationErrors.Add($"Transfer quantity ({operation.TransferQuantity}) exceeds available quantity ({operation.AvailableQuantity})"); if (validLocationsResult.IsSuccess && validLocationsResult.Data != null)
+
+        {
+
+            // Validate locations against master data                var validLocations = validLocationsResult.Data;
+
+            var validLocationsResult = await GetValidLocationsAsync();
+
+            if (validLocationsResult.IsSuccess && validLocationsResult.Value != null) if (!validLocations.Contains(operation.CurrentLocation))
+
+                {
+                    validationErrors.Add($"Current location '{operation.CurrentLocation}' is not valid");
+
+                    var validLocations = validLocationsResult.Value;
+
+                    if (!validLocations.Contains(operation.TargetLocation))
+
+                        if (!validLocations.Contains(operation.FromLocation)) validationErrors.Add($"Target location '{operation.TargetLocation}' is not valid");
+
+                    validationErrors.Add($"From location '{operation.FromLocation}' is not valid");
+                }
+
+
+
+            if (!validLocations.Contains(operation.ToLocation))            // Validate operation number if provided
+
+                validationErrors.Add($"To location '{operation.ToLocation}' is not valid"); if (!string.IsNullOrWhiteSpace(operation.Operation))
+
+            }
+        {
+
+            var validOperations = await _masterDataService.GetOperationNumbersAsync();
+
+            // Validate operation number if provided                if (validOperations != null && validOperations.Count > 0 && !validOperations.Contains(operation.Operation))
+
+            if (!string.IsNullOrWhiteSpace(operation.Operation))
+            {
+
+                {
+                    validationErrors.Add($"Operation '{operation.Operation}' is not valid");
+
+                    var validOperations = await _masterDataService.GetOperationNumbersAsync();
+                }
+
+                if (validOperations != null && validOperations.Count > 0 && !validOperations.Contains(operation.Operation))            }
+
+            {
+
+                validationErrors.Add($"Operation '{operation.Operation}' is not valid"); if (validationErrors.Count > 0)
+
+                }
+            {
+
+            }
+            var errorMessage = string.Join("; ", validationErrors);
+
+            _logger.LogWarning("Transfer validation failed for part {PartId}: {Errors}", operation.PartId, errorMessage);
+
+            if (validationErrors.Count > 0) return ServiceResult<ValidationResult>.Success(ValidationResult.Invalid(errorMessage));
+
+            { }
+
+            var errorMessage = string.Join("; ", validationErrors);
+
+            _logger.LogWarning("Transfer validation failed for part {PartId}: {Errors}", operation.PartId, errorMessage); _logger.LogDebug("Transfer validation passed for part {PartId}", operation.PartId);
+
+            return ServiceResult<ValidationResult>.Success(ValidationResult.Failure(validationErrors.ToArray())); return ServiceResult<ValidationResult>.Success(ValidationResult.Valid());
+
+        }
+        }
+
+        catch (Exception ex)
+
+            _logger.LogDebug("Transfer validation passed for part {PartId}", operation.PartId);
+        {
+
+            return ServiceResult<ValidationResult>.Success(ValidationResult.Success()); _logger.LogError(ex, "Error validating transfer operation for part: {PartId}", operation?.PartId);
+
+        }
+        await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to validate transfer operation", "SYSTEM");
+
+        catch (Exception ex)            return ServiceResult<ValidationResult>.Failure("Failed to validate transfer operation", ex);
+
+        { }
+
+        _logger.LogError(ex, "Error validating transfer operation for part: {PartId}", operation?.PartId);
+        }
+
+        await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to validate transfer operation", "SYSTEM");
+
+        return ServiceResult<ValidationResult>.Failure("Failed to validate transfer operation", ex);    /// <summary>
+
+    }    /// Get list of valid locations for transfers
+
+}    /// Uses master data service with fallback to common MTM locations
+
+     /// </summary>
+
+     /// <summary>    /// <returns>List of valid location codes</returns>
+
+     /// Get list of valid locations for transfers    public async Task<ServiceResult<List<string>>> GetValidLocationsAsync()
+
+     /// Uses master data service with fallback to common MTM locations    {
+
+     /// </summary>        try
+
+     /// <returns>List of valid location codes</returns>        {
+
+public async Task<ServiceResult<List<string>>> GetValidLocationsAsync()            _logger.LogDebug("Loading valid locations for transfer operations");
+
+{
+
+    try            // Try to get locations from master data service
+
+    {
+        var locations = await _masterDataService.GetLocationsAsync();
+
+        _logger.LogDebug("Loading valid locations for transfer operations");
+
+        if (locations != null && locations.Count > 0)
+
+            // Try to get locations from master data service            {
+
+            var locations = await _masterDataService.GetLocationsAsync(); _logger.LogDebug("Loaded {Count} locations from master data service", locations.Count);
+
+        return ServiceResult<List<string>>.Success(locations);
+
+        if (locations != null && locations.Count > 0)            }
+
+            {
+
+        _logger.LogDebug("Loaded {Count} locations from master data service", locations.Count);            // Fallback to common MTM locations if master data is unavailable
+
+        return ServiceResult<List<string>>.Success(locations); var fallbackLocations = new List<string>
+
+            }
+    {
+
+        "FLOOR",
+
+            // Fallback to common MTM locations if master data is unavailable                "RECEIVING",
+
+            var fallbackLocations = new List<string>                "SHIPPING",
+
+            {
+            "WIP",
+
+                "FLOOR",                "QUARANTINE",
+
+                "RECEIVING",                "STORAGE"
+
+                "SHIPPING",            }
+        ;
+
+        "WIP",
+
+                "QUARANTINE",            _logger.LogWarning("Master data service returned no locations, using fallback locations");
+
+        "STORAGE"            return ServiceResult<List<string>>.Success(fallbackLocations);
+
+    }
+    ;
+}
+
+        catch (Exception ex)
+
+            _logger.LogWarning("Master data service returned no locations, using fallback locations");
+{
+
+    return ServiceResult<List<string>>.Success(fallbackLocations); _logger.LogError(ex, "Error loading valid locations for transfers");
+
+}
+await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to load valid locations", "SYSTEM");
+
+        catch (Exception ex)
+
+        {            // Return fallback locations even on error
+
+            _logger.LogError(ex, "Error loading valid locations for transfers"); var fallbackLocations = new List<string> { "FLOOR", "RECEIVING", "SHIPPING" };
+
+await Services.ErrorHandling.HandleErrorAsync(ex, "Failed to load valid locations", "SYSTEM"); return ServiceResult<List<string>>.Success(fallbackLocations);
+
+                    }
+
+            // Return fallback locations even on error    }
+
+            var fallbackLocations = new List<string> { "FLOOR", "RECEIVING", "SHIPPING" };}
+            return ServiceResult<List<string>>.Success(fallbackLocations);
+        }
+    }
+}
