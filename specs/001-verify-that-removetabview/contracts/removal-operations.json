@@ -1,0 +1,245 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RemoveTabView Removal Operations Test Contract",
+  "description": "Defines test contracts for removal and undo functionality validation",
+  "type": "object",
+  "properties": {
+    "removeInventoryItemsAsync": {
+      "description": "Batch removal of inventory items",
+      "type": "object",
+      "properties": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/inventoryItem"
+              },
+              "minItems": 1,
+              "description": "Items to remove"
+            },
+            "currentUser": {
+              "type": "string",
+              "minLength": 1,
+              "description": "User performing the operation"
+            },
+            "notes": {
+              "type": "string",
+              "description": "Operation notes"
+            }
+          },
+          "required": [
+            "items",
+            "currentUser"
+          ],
+          "additionalProperties": false
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "isSuccess": {
+              "type": "boolean",
+              "description": "Operation success indicator"
+            },
+            "value": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/removalResult"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Removal operation result"
+            },
+            "errorMessage": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Error message if operation failed"
+            }
+          },
+          "required": [
+            "isSuccess"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "request",
+        "response"
+      ]
+    },
+    "undoLastRemovalAsync": {
+      "description": "Undo the last removal operation",
+      "type": "object",
+      "properties": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "currentUser": {
+              "type": "string",
+              "minLength": 1,
+              "description": "User performing the undo"
+            }
+          },
+          "required": [
+            "currentUser"
+          ],
+          "additionalProperties": false
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "isSuccess": {
+              "type": "boolean",
+              "description": "Undo operation success indicator"
+            },
+            "value": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/removalResult"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Undo operation result"
+            },
+            "errorMessage": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Error message if undo failed"
+            }
+          },
+          "required": [
+            "isSuccess"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "request",
+        "response"
+      ]
+    }
+  },
+  "definitions": {
+    "inventoryItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Primary key identifier"
+        },
+        "partId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Part number"
+        },
+        "location": {
+          "type": "string",
+          "description": "Physical location code"
+        },
+        "operation": {
+          "type": "string",
+          "pattern": "^(90|100|110|120)$",
+          "description": "Manufacturing operation number"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Item quantity"
+        },
+        "user": {
+          "type": "string",
+          "description": "User who created/modified the item"
+        }
+      },
+      "required": [
+        "id",
+        "partId",
+        "location",
+        "operation",
+        "quantity",
+        "user"
+      ],
+      "additionalProperties": true
+    },
+    "removalResult": {
+      "type": "object",
+      "properties": {
+        "successfulRemovals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/inventoryItem"
+          },
+          "description": "Items successfully removed"
+        },
+        "failedRemovals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/removalFailure"
+          },
+          "description": "Items that failed to remove"
+        },
+        "successCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of successful removals"
+        },
+        "failureCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of failed removals"
+        },
+        "hasSuccesses": {
+          "type": "boolean",
+          "description": "True if any items succeeded"
+        },
+        "hasFailures": {
+          "type": "boolean",
+          "description": "True if any items failed"
+        }
+      },
+      "required": [
+        "successfulRemovals",
+        "failedRemovals",
+        "successCount",
+        "failureCount",
+        "hasSuccesses",
+        "hasFailures"
+      ],
+      "additionalProperties": false
+    },
+    "removalFailure": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "$ref": "#/definitions/inventoryItem",
+          "description": "The item that failed to remove"
+        },
+        "error": {
+          "type": "string",
+          "description": "Specific error message"
+        },
+        "exception": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Technical exception details"
+        }
+      },
+      "required": [
+        "item",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>false</IsTestProject>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <!-- Minimal dependencies for verification runner -->
+  <ItemGroup>
+    <!-- No external packages needed for reflection-based verification -->
+  </ItemGroup>
+
+  <!-- Remove custom Using directives to avoid conflicts with ImplicitUsings -->
+
+  <!-- Reference specific assemblies instead of project reference to avoid conflicts -->
+  <ItemGroup>
+    <Reference Include="MTM_WIP_Application_Avalonia">
+      <HintPath>..\bin\Debug\net8.0\MTM_WIP_Application_Avalonia.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

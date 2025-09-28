@@ -1,0 +1,162 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RemoveTabView Search Operations Test Contract",
+  "description": "Defines test contracts for search functionality validation",
+  "type": "object",
+  "properties": {
+    "searchInventoryAsync": {
+      "description": "Search inventory items with filtering criteria",
+      "type": "object",
+      "properties": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "partId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Part identifier filter (optional)"
+            },
+            "operation": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Operation number filter (90, 100, 110, 120)",
+              "pattern": "^(90|100|110|120)?$"
+            },
+            "location": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Location code filter (optional)"
+            },
+            "user": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "User filter (optional)"
+            }
+          },
+          "additionalProperties": false
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "isSuccess": {
+              "type": "boolean",
+              "description": "Operation success indicator"
+            },
+            "value": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/inventoryItem"
+              },
+              "description": "List of matching inventory items"
+            },
+            "errorMessage": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Error message if operation failed"
+            }
+          },
+          "required": [
+            "isSuccess"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "request",
+        "response"
+      ]
+    }
+  },
+  "definitions": {
+    "inventoryItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Primary key identifier"
+        },
+        "partId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Part number (required, non-empty)"
+        },
+        "location": {
+          "type": "string",
+          "description": "Physical location code"
+        },
+        "operation": {
+          "type": "string",
+          "pattern": "^(90|100|110|120)$",
+          "description": "Manufacturing operation number"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Item quantity (positive integer)"
+        },
+        "itemType": {
+          "type": "string",
+          "description": "Item classification"
+        },
+        "batchNumber": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Production batch identifier"
+        },
+        "receiveDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When item was received"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last modification timestamp"
+        },
+        "user": {
+          "type": "string",
+          "description": "User who created/modified the item"
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Additional comments"
+        },
+        "isSelected": {
+          "type": "boolean",
+          "description": "UI selection state"
+        }
+      },
+      "required": [
+        "id",
+        "partId",
+        "location",
+        "operation",
+        "quantity",
+        "itemType",
+        "receiveDate",
+        "lastUpdated",
+        "user",
+        "isSelected"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

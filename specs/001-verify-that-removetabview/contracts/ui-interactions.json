@@ -1,0 +1,387 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RemoveTabView UI Interactions Test Contract",
+  "description": "Defines test contracts for UI behavior and user interactions validation",
+  "type": "object",
+  "properties": {
+    "keyBindings": {
+      "description": "Keyboard shortcut validations",
+      "type": "object",
+      "properties": {
+        "F5": {
+          "description": "Triggers search command",
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "SearchCommand"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "expectedBehavior": {
+              "const": "Execute search with current criteria"
+            }
+          },
+          "required": [
+            "command",
+            "enabled",
+            "expectedBehavior"
+          ]
+        },
+        "Escape": {
+          "description": "Triggers reset command",
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "ResetCommand"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "expectedBehavior": {
+              "const": "Clear search criteria and results"
+            }
+          },
+          "required": [
+            "command",
+            "enabled",
+            "expectedBehavior"
+          ]
+        },
+        "Delete": {
+          "description": "Triggers delete command for selected items",
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "DeleteCommand"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "expectedBehavior": {
+              "const": "Remove selected inventory items"
+            },
+            "requiresSelection": {
+              "const": true
+            }
+          },
+          "required": [
+            "command",
+            "enabled",
+            "expectedBehavior",
+            "requiresSelection"
+          ]
+        },
+        "Ctrl+Z": {
+          "description": "Triggers undo command",
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "UndoCommand"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "expectedBehavior": {
+              "const": "Restore last removed items"
+            },
+            "requiresUndoHistory": {
+              "const": true
+            }
+          },
+          "required": [
+            "command",
+            "enabled",
+            "expectedBehavior",
+            "requiresUndoHistory"
+          ]
+        },
+        "Ctrl+P": {
+          "description": "Triggers print command",
+          "type": "object",
+          "properties": {
+            "command": {
+              "const": "PrintCommand"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "expectedBehavior": {
+              "const": "Print inventory list"
+            },
+            "requiresData": {
+              "const": true
+            }
+          },
+          "required": [
+            "command",
+            "enabled",
+            "expectedBehavior",
+            "requiresData"
+          ]
+        }
+      },
+      "required": [
+        "F5",
+        "Escape",
+        "Delete",
+        "Ctrl+Z",
+        "Ctrl+P"
+      ]
+    },
+    "dataGridInteractions": {
+      "description": "DataGrid behavior validations",
+      "type": "object",
+      "properties": {
+        "multiSelection": {
+          "description": "Multi-item selection support",
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "selectionMode": {
+              "const": "Multiple"
+            },
+            "syncWithViewModel": {
+              "type": "boolean"
+            },
+            "expectedBehavior": {
+              "const": "Selected items sync with SelectedItems collection"
+            }
+          },
+          "required": [
+            "enabled",
+            "selectionMode",
+            "syncWithViewModel",
+            "expectedBehavior"
+          ]
+        },
+        "columnConfiguration": {
+          "description": "DataGrid column setup",
+          "type": "object",
+          "properties": {
+            "autoGenerateColumns": {
+              "type": "boolean"
+            },
+            "canUserReorderColumns": {
+              "type": "boolean"
+            },
+            "canUserResizeColumns": {
+              "type": "boolean"
+            },
+            "canUserSortColumns": {
+              "type": "boolean"
+            },
+            "isReadOnly": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "autoGenerateColumns",
+            "canUserReorderColumns",
+            "canUserResizeColumns",
+            "canUserSortColumns",
+            "isReadOnly"
+          ]
+        }
+      },
+      "required": [
+        "multiSelection",
+        "columnConfiguration"
+      ]
+    },
+    "formInteractions": {
+      "description": "Form field behavior validations",
+      "type": "object",
+      "properties": {
+        "partIdField": {
+          "description": "Part ID input validation",
+          "type": "object",
+          "properties": {
+            "watermark": {
+              "type": "string"
+            },
+            "binding": {
+              "const": "SelectedPart"
+            },
+            "suggestionOverlay": {
+              "type": "boolean"
+            },
+            "validationTrigger": {
+              "const": "LostFocus"
+            }
+          },
+          "required": [
+            "watermark",
+            "binding",
+            "suggestionOverlay",
+            "validationTrigger"
+          ]
+        },
+        "operationField": {
+          "description": "Operation input validation",
+          "type": "object",
+          "properties": {
+            "watermark": {
+              "type": "string"
+            },
+            "binding": {
+              "const": "SelectedOperation"
+            },
+            "suggestionOverlay": {
+              "type": "boolean"
+            },
+            "validationTrigger": {
+              "const": "LostFocus"
+            },
+            "validValues": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(90|100|110|120)$"
+              }
+            }
+          },
+          "required": [
+            "watermark",
+            "binding",
+            "suggestionOverlay",
+            "validationTrigger",
+            "validValues"
+          ]
+        }
+      },
+      "required": [
+        "partIdField",
+        "operationField"
+      ]
+    },
+    "overlayInteractions": {
+      "description": "Overlay dialog behavior validations",
+      "type": "object",
+      "properties": {
+        "confirmationDialog": {
+          "description": "Deletion confirmation overlay",
+          "type": "object",
+          "properties": {
+            "triggerCondition": {
+              "const": "Delete operation with selected items"
+            },
+            "modalBehavior": {
+              "type": "boolean"
+            },
+            "buttons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "contains": {
+                "const": "Delete"
+              }
+            },
+            "expectedResult": {
+              "const": "Boolean confirmation result"
+            }
+          },
+          "required": [
+            "triggerCondition",
+            "modalBehavior",
+            "buttons",
+            "expectedResult"
+          ]
+        },
+        "successOverlay": {
+          "description": "Success notification display",
+          "type": "object",
+          "properties": {
+            "triggerCondition": {
+              "const": "Successful removal operation"
+            },
+            "duration": {
+              "type": "integer",
+              "minimum": 1000
+            },
+            "iconKind": {
+              "const": "CheckCircle"
+            },
+            "autoClose": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "triggerCondition",
+            "duration",
+            "iconKind",
+            "autoClose"
+          ]
+        }
+      },
+      "required": [
+        "confirmationDialog",
+        "successOverlay"
+      ]
+    },
+    "responsiveLayout": {
+      "description": "Cross-platform layout behavior",
+      "type": "object",
+      "properties": {
+        "minWidth": {
+          "type": "integer",
+          "minimum": 600
+        },
+        "minHeight": {
+          "type": "integer",
+          "minimum": 400
+        },
+        "scrollViewer": {
+          "type": "object",
+          "properties": {
+            "horizontalScrollBarVisibility": {
+              "const": "Auto"
+            },
+            "verticalScrollBarVisibility": {
+              "const": "Auto"
+            }
+          },
+          "required": [
+            "horizontalScrollBarVisibility",
+            "verticalScrollBarVisibility"
+          ]
+        },
+        "gridLayout": {
+          "type": "object",
+          "properties": {
+            "rowDefinitions": {
+              "const": "*,Auto"
+            },
+            "contentSection": {
+              "const": "Grid.Row=0"
+            },
+            "actionSection": {
+              "const": "Grid.Row=1"
+            }
+          },
+          "required": [
+            "rowDefinitions",
+            "contentSection",
+            "actionSection"
+          ]
+        }
+      },
+      "required": [
+        "minWidth",
+        "minHeight",
+        "scrollViewer",
+        "gridLayout"
+      ]
+    }
+  },
+  "required": [
+    "keyBindings",
+    "dataGridInteractions",
+    "formInteractions",
+    "overlayInteractions",
+    "responsiveLayout"
+  ]
+}
