@@ -8,6 +8,24 @@
 
 ---
 
+## 🏛️ Constitutional Compliance
+
+**CRITICAL**: This instruction file supports **Article I: Code Quality Excellence** of the MTM WIP Application Constitution.
+
+**Constitutional Requirements**:
+
+- **Nullable Reference Types**: `<Nullable>enable</Nullable>` required for all projects
+- **MVVM Community Toolkit**: Exclusive use of `[ObservableProperty]` and `[RelayCommand]` patterns
+- **Centralized Error Handling**: `Services.ErrorHandling.HandleErrorAsync()` mandatory
+- **Dependency Injection**: Constructor injection with `ArgumentNullException.ThrowIfNull()`
+- **Cross-Platform Compatibility**: Support for Windows, macOS, Linux, Android
+
+**Constitutional Enforcement**: All architectural decisions must comply with constitutional principles. Non-compliance will be flagged by CI/CD constitutional compliance checks.
+
+**Reference**: See `constitution.md` Article I for complete Code Quality Excellence standards.
+
+---
+
 ## 📚 Comprehensive Avalonia Documentation Reference
 
 **IMPORTANT**: This repository contains the complete Avalonia documentation straight from the official website in the `.github/Avalonia-Documentation/` folder. For architectural guidance:

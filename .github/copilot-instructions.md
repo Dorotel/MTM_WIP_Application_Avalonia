@@ -10,7 +10,7 @@
 Whenever you interact with me, I will automatically reference ALL the instruction files listed below.
 In each chat response, include a brief note that you're following the copilot-instructions.md requirements
 and referencing all required files, but don't list them all to avoid screen clutter.
-Use this format: "**Referenced Files:** Following MTM copilot-instructions.md - all required instruction files, context files, templates, and patterns are automatically referenced for this response. [X files referenced]"
+Use this format: "**Referenced Files:** Following MTM copilot-instructions.md - all required instruction files, context files, templates, and patterns are automatically referenced for this response. {Memory Files: [count lines in all *-memory.instructions.md files in %APPDATA%\Code\User\prompts]} {Project Files: [count lines in all other referenced .md files]} [X total files referenced]"
 -->
 
 <!-- MEMORY INSTRUCTION SYSTEM AUTO-INCLUDE -->
