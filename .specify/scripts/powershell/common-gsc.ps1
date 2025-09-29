@@ -417,17 +417,19 @@ function Test-ConstitutionalCompliance {
     }
 }
 
-# Export functions for use by GSC commands
-Export-ModuleMember -Function @(
-    "Initialize-GSCEnvironment",
-    "Get-CrossPlatformInfo",
-    "Initialize-WorkflowState",
-    "New-WorkflowState",
-    "Start-PerformanceMonitoring",
-    "Add-PerformanceMilestone",
-    "Complete-GSCExecution",
-    "Test-ConstitutionalCompliance"
-)
+# Export functions for use by GSC commands (only when loaded as a module)
+if ($ExecutionContext.SessionState.Module) {
+    Export-ModuleMember -Function @(
+        "Initialize-GSCEnvironment",
+        "Get-CrossPlatformInfo",
+        "Initialize-WorkflowState",
+        "New-WorkflowState",
+        "Start-PerformanceMonitoring",
+        "Add-PerformanceMilestone",
+        "Complete-GSCExecution",
+        "Test-ConstitutionalCompliance"
+    )
+}
 
 # Module initialization
 Write-Verbose "GSC Common Module v$script:GSCModuleVersion loaded successfully"

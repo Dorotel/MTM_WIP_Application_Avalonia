@@ -515,15 +515,17 @@ function Test-MemoryFileIntegrity {
     }
 }
 
-# Export functions for use by GSC commands
-Export-ModuleMember -Function @(
-    "Get-MemoryFileLocations",
-    "Read-MemoryFile",
-    "Extract-MemoryPatterns",
-    "Get-PatternType",
-    "Get-RelevantMemoryPatterns",
-    "Test-MemoryFileIntegrity"
-)
+# Export functions for use by GSC commands (only when loaded as a module)
+if ($ExecutionContext.SessionState.Module) {
+    Export-ModuleMember -Function @(
+        "Get-MemoryFileLocations",
+        "Read-MemoryFile",
+        "Extract-MemoryPatterns",
+        "Get-PatternType",
+        "Get-RelevantMemoryPatterns",
+        "Test-MemoryFileIntegrity"
+    )
+}
 
 # Module initialization
 Write-Verbose "GSC Memory Integration Module v$script:MemoryModuleVersion loaded successfully"
