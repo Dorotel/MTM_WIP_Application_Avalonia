@@ -1,0 +1,19 @@
+{
+  "performanceDegradationMode": false,
+  "version": "1.0.0",
+  "teamCollaborationLock": {
+    "lockOwner": null,
+    "isLocked": false,
+    "lockExpiration": null
+  },
+  "checkpointData": {},
+  "currentPhase": "not_started",
+  "validationStatus": {},
+  "phaseHistory": [],
+  "workflowId": "b6fdc3e2-12bf-4e39-b541-6fb6e3df268d",
+  "constitutionalComplianceStatus": {},
+  "lastCommand": null,
+  "memoryIntegrationPoints": [],
+  "lastExecutionTime": null
+}
+

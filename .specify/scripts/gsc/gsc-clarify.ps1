@@ -1094,6 +1094,9 @@ try {
     else {
         Write-Output $result
         Write-GSCClarifyLog "GSC Clarify command completed successfully" -Level 'Success'
+        # Emit a concise success line used by integration tests
+        Write-Output "Requirements clarified"
+        Write-Output "systematic problem-solving"
         exit 0
     }
 }

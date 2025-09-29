@@ -26,6 +26,18 @@ function Write-TestError {
     Write-Host "❌ $Message" -ForegroundColor Red
 }
 
+# Summary/result output
+function Write-TestResult {
+    param([string]$Message)
+    Write-Host "📊 $Message" -ForegroundColor Cyan
+}
+
+# Optional warning output
+function Write-TestWarning {
+    param([string]$Message)
+    Write-Host "⚠️ $Message" -ForegroundColor Yellow
+}
+
 # Test workspace management
 function New-TestWorkspace {
     param([string]$Directory)
@@ -66,6 +78,18 @@ function Assert-Contains {
         throw "Content assertion failed: '$TestName' - Expected text '$ExpectedText' not found"
     }
     Write-Host "✓ Content assertion passed: $TestName" -ForegroundColor Green
+}
+
+function Assert-NotContains {
+    param(
+        [string]$Content,
+        [string]$ExpectedText,
+        [string]$TestName
+    )
+    if ($Content -match [regex]::Escape($ExpectedText)) {
+        throw "Content assertion failed: '$TestName' - Unexpected text '$ExpectedText' was found"
+    }
+    Write-Host "✓ Content exclusion assertion passed: $TestName" -ForegroundColor Green
 }
 
 function Assert-NotNull {
@@ -113,6 +137,22 @@ function Assert-DirectoryExists {
     Write-Host "✓ Directory existence assertion passed: $TestName" -ForegroundColor Green
 }
 
+function Assert-Equal {
+    param(
+        $Expected,
+        $Actual,
+        [string]$TestName
+    )
+    if ($null -eq $Expected -and $null -eq $Actual) {
+        Write-Host "✓ Equality assertion passed: $TestName" -ForegroundColor Green
+        return
+    }
+    if (-not ($Expected -ceq $Actual)) {
+        throw "Equality assertion failed: '$TestName' - Expected: '$Expected' Actual: '$Actual'"
+    }
+    Write-Host "✓ Equality assertion passed: $TestName" -ForegroundColor Green
+}
+
 # GSC command execution helpers
 function Invoke-GSCCommand {
     param(
@@ -120,34 +160,34 @@ function Invoke-GSCCommand {
         [string[]]$Arguments = @(),
         [double]$TimeoutSeconds = 30
     )
-    
+
     $commandPath = ".specify/scripts/gsc/gsc-$CommandName.ps1"
     if (-not (Test-Path $commandPath)) {
         throw "GSC command not found: $commandPath"
     }
-    
+
     $startTime = Get-Date
     try {
         $result = & $commandPath @Arguments 2>&1
         $endTime = Get-Date
         $executionTime = ($endTime - $startTime).TotalSeconds
-        
+
         return @{
-            Success = $true
-            Output = $result
+            Success       = $true
+            Output        = $result
             ExecutionTime = $executionTime
-            Command = $CommandName
+            Command       = $CommandName
         }
     }
     catch {
         $endTime = Get-Date
         $executionTime = ($endTime - $startTime).TotalSeconds
-        
+
         return @{
-            Success = $false
-            Error = $_.Exception.Message
+            Success       = $false
+            Error         = $_.Exception.Message
             ExecutionTime = $executionTime
-            Command = $CommandName
+            Command       = $CommandName
         }
     }
 }
@@ -155,28 +195,28 @@ function Invoke-GSCCommand {
 # Memory integration test helpers
 function Test-MemoryFileAccess {
     param([string]$MemoryFilePath)
-    
+
     if (-not (Test-Path $MemoryFilePath)) {
         return @{
             Accessible = $false
-            Error = "Memory file not found: $MemoryFilePath"
+            Error      = "Memory file not found: $MemoryFilePath"
         }
     }
-    
+
     try {
         $content = Get-Content $MemoryFilePath -Raw
         $lineCount = ($content -split "`n").Count
-        
+
         return @{
             Accessible = $true
-            LineCount = $lineCount
-            Size = $content.Length
+            LineCount  = $lineCount
+            Size       = $content.Length
         }
     }
     catch {
         return @{
             Accessible = $false
-            Error = $_.Exception.Message
+            Error      = $_.Exception.Message
         }
     }
 }
@@ -184,11 +224,11 @@ function Test-MemoryFileAccess {
 # JSON validation helpers
 function Test-JsonOutput {
     param([string]$JsonString)
-    
+
     try {
         $parsed = $JsonString | ConvertFrom-Json
         return @{
-            Valid = $true
+            Valid  = $true
             Object = $parsed
         }
     }
@@ -203,10 +243,10 @@ function Test-JsonOutput {
 # Cross-platform compatibility helpers
 function Get-PlatformInfo {
     return @{
-        OS = [System.Environment]::OSVersion.Platform
+        OS                = [System.Environment]::OSVersion.Platform
         PowerShellVersion = $PSVersionTable.PSVersion
-        Architecture = [System.Environment]::Is64BitOperatingSystem
-        WorkingDirectory = $PWD.Path
+        Architecture      = [System.Environment]::Is64BitOperatingSystem
+        WorkingDirectory  = $PWD.Path
     }
 }
 

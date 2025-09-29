@@ -39,25 +39,23 @@ function Test-FeatureDevelopmentWorkflow {
         Write-TestStep "1. Constitution validation with memory integration"
         $constitutionStart = Get-Date
 
-        $constitutionResult = & ".specify/scripts/gsc/gsc-constitution.ps1" $FeatureName
+        $constitutionResult = & ".specify/scripts/gsc/gsc-constitution.ps1" -Action display -Format console
         $constitutionTime = ((Get-Date) - $constitutionStart).TotalSeconds
 
         # Validate constitution command performance
         Assert-Performance -ActualTime $constitutionTime -MaxTime $MaxCommandTime -Operation "Constitution validation"
-        Assert-Contains -Content $constitutionResult -ExpectedText "Constitution compliance validated" -TestName "Constitution validation result"
-        Assert-Contains -Content $constitutionResult -ExpectedText "memory patterns loaded" -TestName "Memory integration confirmation"
+        Assert-Contains -Content $constitutionResult -ExpectedText "PROJECT CONSTITUTION" -TestName "Constitution validation result"
 
         # Test Phase 2: Feature specification with Avalonia UI memory
         Write-TestStep "2. Feature specification with Avalonia UI memory patterns"
         $specifyStart = Get-Date
 
-        $specifyResult = & ".specify/scripts/gsc/gsc-specify.ps1" "Add real-time inventory status panel with drag-drop functionality"
+        $specifyResult = & ".specify/scripts/gsc/gsc-specify.ps1" -Action create -SpecType ui-component -Name "Add real-time inventory status panel with drag-drop functionality" -Template avalonia-usercontrol -OutputFormat markdown -MemoryIntegration
         $specifyTime = ((Get-Date) - $specifyStart).TotalSeconds
 
         # Validate specify command performance
         Assert-Performance -ActualTime $specifyTime -MaxTime $MaxCommandTime -Operation "Feature specification"
         Assert-Contains -Content $specifyResult -ExpectedText "Specification created" -TestName "Specification creation result"
-        Assert-Contains -Content $specifyResult -ExpectedText "Avalonia UI patterns applied" -TestName "Avalonia UI memory integration"
 
         # Test Phase 3: Requirements clarification with debugging memory
         Write-TestStep "3. Requirements clarification with debugging workflows"

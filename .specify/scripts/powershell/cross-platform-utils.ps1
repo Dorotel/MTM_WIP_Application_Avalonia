@@ -30,7 +30,7 @@ $script:PlatformCapabilities = @{
         AlternativeShells         = @("cmd", "git-bash")
         PathSeparator             = "\\"
         LineEnding                = "`r`n"
-        EnvironmentVariablePrefix = "$env:"
+        EnvironmentVariablePrefix = '$env:'
         HomeVariable              = "USERPROFILE"
         UserVariable              = "USERNAME"
         PowerShellExecutable      = "pwsh.exe"
@@ -41,7 +41,7 @@ $script:PlatformCapabilities = @{
         AlternativeShells         = @("zsh", "fish")
         PathSeparator             = "/"
         LineEnding                = "`n"
-        EnvironmentVariablePrefix = "$env:"
+        EnvironmentVariablePrefix = '$env:'
         HomeVariable              = "HOME"
         UserVariable              = "USER"
         PowerShellExecutable      = "pwsh"
@@ -52,7 +52,7 @@ $script:PlatformCapabilities = @{
         AlternativeShells         = @("zsh", "fish", "sh")
         PathSeparator             = "/"
         LineEnding                = "`n"
-        EnvironmentVariablePrefix = "$env:"
+        EnvironmentVariablePrefix = '$env:'
         HomeVariable              = "HOME"
         UserVariable              = "USER"
         PowerShellExecutable      = "pwsh"
@@ -526,19 +526,21 @@ function Invoke-CrossPlatformCommand {
     }
 }
 
-# Export functions for use by GSC commands
-Export-ModuleMember -Function @(
-    "Get-PlatformInfo",
-    "Get-HomeDirectory",
-    "Get-UserName",
-    "Get-PathSeparator",
-    "Test-ElevatedPermissions",
-    "Join-PathCrossPlatform",
-    "ConvertTo-PlatformPath",
-    "Test-PowerShellCoreCompatibility",
-    "New-ShellWrapper",
-    "Invoke-CrossPlatformCommand"
-)
+# Export functions for use by GSC commands (only when loaded as a module)
+if ($ExecutionContext -and $ExecutionContext.SessionState -and $ExecutionContext.SessionState.Module) {
+    Export-ModuleMember -Function @(
+        "Get-PlatformInfo",
+        "Get-HomeDirectory",
+        "Get-UserName",
+        "Get-PathSeparator",
+        "Test-ElevatedPermissions",
+        "Join-PathCrossPlatform",
+        "ConvertTo-PlatformPath",
+        "Test-PowerShellCoreCompatibility",
+        "New-ShellWrapper",
+        "Invoke-CrossPlatformCommand"
+    )
+}
 
 # Module initialization
 Write-Verbose "GSC Cross-Platform Utilities Module v$script:CrossPlatformModuleVersion loaded successfully"
