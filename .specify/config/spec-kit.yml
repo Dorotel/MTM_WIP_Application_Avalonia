@@ -1,0 +1,123 @@
+# GitHub Spec Kit Configuration for GSC Enhancement System
+# Date: September 28, 2025
+# Feature: Complete GitHub Spec Commands Enhancement System with Memory Integration
+
+version: "1.0.0"
+name: "GSC Enhancement System"
+description: "GitHub Spec Commands with Memory Integration for MTM Manufacturing Application"
+
+# GSC Command Mappings
+commands:
+  constitution:
+    description: "Validate constitutional compliance with memory integration"
+    script: ".specify/scripts/gsc/gsc-constitution.sh"
+    usage: "./gsc constitution [feature-description]"
+    memoryIntegration: true
+    crossPlatform: ["windows", "macos", "linux"]
+
+  specify:
+    description: "Create feature specification with Avalonia UI memory patterns"
+    script: ".specify/scripts/gsc/gsc-specify.sh"
+    usage: "./gsc specify [feature-description]"
+    memoryIntegration: true
+    memoryTypes: ["avalonia-ui-memory"]
+
+  clarify:
+    description: "Clarify requirements using debugging memory workflows"
+    script: ".specify/scripts/gsc/gsc-clarify.sh"
+    usage: "./gsc clarify"
+    memoryIntegration: true
+    memoryTypes: ["debugging-memory"]
+
+  plan:
+    description: "Create implementation plan with universal development patterns"
+    script: ".specify/scripts/gsc/gsc-plan.sh"
+    usage: "./gsc plan"
+    memoryIntegration: true
+    memoryTypes: ["memory"]
+
+  task:
+    description: "Generate tasks with custom control memory patterns"
+    script: ".specify/scripts/gsc/gsc-task.sh"
+    usage: "./gsc task"
+    memoryIntegration: true
+    memoryTypes: ["avalonia-custom-controls-memory"]
+
+  analyze:
+    description: "Analyze implementation using systematic debugging"
+    script: ".specify/scripts/gsc/gsc-analyze.sh"
+    usage: "./gsc analyze"
+    memoryIntegration: true
+    memoryTypes: ["debugging-memory", "memory"]
+
+  implement:
+    description: "Execute implementation with all memory patterns"
+    script: ".specify/scripts/gsc/gsc-implement.sh"
+    usage: "./gsc implement"
+    memoryIntegration: true
+    memoryTypes:
+      [
+        "avalonia-ui-memory",
+        "debugging-memory",
+        "memory",
+        "avalonia-custom-controls-memory",
+      ]
+
+  memory:
+    description: "Display and manage memory file contents"
+    script: ".specify/scripts/gsc/gsc-memory.sh"
+    usage: "./gsc memory [--update <type> --pattern <pattern>]"
+    memoryIntegration: true
+    operations: ["display", "update", "validate"]
+
+  validate:
+    description: "Validate workflow state with memory-driven quality gates"
+    script: ".specify/scripts/gsc/gsc-validate.sh"
+    usage: "./gsc validate [--memory-only]"
+    memoryIntegration: true
+
+  status:
+    description: "Get workflow progress and compliance status"
+    script: ".specify/scripts/gsc/gsc-status.sh"
+    usage: "./gsc status [--performance] [--json]"
+    memoryIntegration: false
+
+  rollback:
+    description: "Reset workflow to beginning of current phase"
+    script: ".specify/scripts/gsc/gsc-rollback.sh"
+    usage: "./gsc rollback [--full-reset] [--preserve-memory]"
+    memoryIntegration: true
+
+  help:
+    description: "Display interactive help system for all GSC features"
+    script: ".specify/scripts/gsc/gsc-help.sh"
+    usage: "./gsc help [topic] [--format html|console|browser]"
+    memoryIntegration: false
+
+# Performance Targets
+performance:
+  commandExecutionLimit: 30 # seconds
+  memoryFileReadingLimit: 5 # seconds
+  statePersistenceLimit: 2 # seconds
+  crossPlatformValidationLimit: 60 # seconds
+
+# Manufacturing Requirements
+manufacturing:
+  support24x7Operations: true
+  teamCollaborationLocks: true
+  gracefulDegradation: true
+  fullWorkflowReset: true
+
+# Security Configuration
+security:
+  checksumValidation: true
+  basicEncryption: true
+  accessLogging: true
+  protectionLevel: "moderate"
+
+# Integration Settings
+integration:
+  copilotChatSupport: true
+  vscodeIntegration: true
+  cicdPipeline: true
+  mtmApplicationServices: true

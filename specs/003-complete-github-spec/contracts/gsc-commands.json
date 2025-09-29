@@ -1,0 +1,991 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "GSC Enhancement System Command Contracts",
+        "version": "1.0.0",
+        "description": "Command contracts for GitHub Spec Commands Enhancement System with Memory Integration"
+    },
+    "paths": {
+        "/gsc/constitution": {
+            "post": {
+                "summary": "Validate constitutional compliance with memory integration",
+                "operationId": "validateConstitution",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GSCCommandRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Constitution validation completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GSCCommandResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/specify": {
+            "post": {
+                "summary": "Create feature specification with Avalonia UI memory patterns",
+                "operationId": "createSpecification",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GSCCommandRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Feature specification created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GSCCommandResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/clarify": {
+            "post": {
+                "summary": "Clarify requirements using debugging memory workflows",
+                "operationId": "clarifyRequirements",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GSCCommandRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Requirements clarified successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GSCCommandResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/plan": {
+            "post": {
+                "summary": "Create implementation plan with universal development patterns",
+                "operationId": "createPlan",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GSCCommandRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Implementation plan created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GSCCommandResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/task": {
+            "post": {
+                "summary": "Generate tasks with custom control memory patterns",
+                "operationId": "generateTasks",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GSCCommandRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tasks generated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GSCCommandResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/analyze": {
+            "post": {
+                "summary": "Analyze implementation using systematic debugging",
+                "operationId": "analyzeImplementation",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GSCCommandRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Implementation analysis completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GSCCommandResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/implement": {
+            "post": {
+                "summary": "Execute implementation with all memory patterns",
+                "operationId": "executeImplementation",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GSCCommandRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Implementation executed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GSCCommandResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/memory": {
+            "get": {
+                "summary": "Display memory file contents and recommendations",
+                "operationId": "getMemoryStatus",
+                "responses": {
+                    "200": {
+                        "description": "Memory status retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MemoryStatusResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Update memory files with new patterns",
+                "operationId": "updateMemoryPatterns",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MemoryUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Memory patterns updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GSCCommandResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/validate": {
+            "post": {
+                "summary": "Validate workflow state with memory-driven quality gates",
+                "operationId": "validateWorkflow",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GSCCommandRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Workflow validation completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/status": {
+            "get": {
+                "summary": "Get workflow progress and compliance status",
+                "operationId": "getWorkflowStatus",
+                "responses": {
+                    "200": {
+                        "description": "Workflow status retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkflowStatusResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/rollback": {
+            "post": {
+                "summary": "Reset workflow to beginning of current phase",
+                "operationId": "rollbackWorkflow",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RollbackRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Workflow rollback completed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GSCCommandResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gsc/help": {
+            "get": {
+                "summary": "Display interactive help system for all GSC features",
+                "operationId": "displayHelp",
+                "parameters": [
+                    {
+                        "name": "topic",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Specific help topic to display"
+                    },
+                    {
+                        "name": "format",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "console",
+                                "html",
+                                "browser"
+                            ],
+                            "default": "html"
+                        },
+                        "description": "Help display format"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Help content displayed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HelpResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "GSCCommandRequest": {
+                "type": "object",
+                "required": [
+                    "command",
+                    "arguments"
+                ],
+                "properties": {
+                    "command": {
+                        "type": "string",
+                        "enum": [
+                            "constitution",
+                            "specify",
+                            "clarify",
+                            "plan",
+                            "task",
+                            "analyze",
+                            "implement",
+                            "memory",
+                            "validate",
+                            "status",
+                            "rollback",
+                            "help"
+                        ]
+                    },
+                    "arguments": {
+                        "type": "string",
+                        "description": "Command arguments and parameters"
+                    },
+                    "workflowId": {
+                        "type": "string",
+                        "description": "Unique workflow session identifier"
+                    },
+                    "memoryIntegrationEnabled": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Enable memory file integration for this command"
+                    },
+                    "crossPlatformMode": {
+                        "type": "string",
+                        "enum": [
+                            "windows",
+                            "macos",
+                            "linux"
+                        ],
+                        "description": "Target platform for command execution"
+                    },
+                    "executionContext": {
+                        "type": "string",
+                        "enum": [
+                            "powershell",
+                            "git-bash",
+                            "copilot-chat-vscode",
+                            "copilot-chat-vs2022"
+                        ],
+                        "description": "Execution environment context for command processing",
+                        "default": "powershell"
+                    },
+                    "chatFormatting": {
+                        "type": "object",
+                        "properties": {
+                            "useMarkdown": {
+                                "type": "boolean",
+                                "default": true,
+                                "description": "Enable markdown formatting for chat output"
+                            },
+                            "includeEmojis": {
+                                "type": "boolean",
+                                "default": true,
+                                "description": "Include emoji indicators in chat responses"
+                            },
+                            "collapsibleSections": {
+                                "type": "boolean",
+                                "default": true,
+                                "description": "Use collapsible sections for long content"
+                            }
+                        },
+                        "description": "Formatting options for GitHub Copilot Chat display"
+                    }
+                }
+            },
+            "GSCCommandResponse": {
+                "type": "object",
+                "required": [
+                    "success",
+                    "command",
+                    "executionTime"
+                ],
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "description": "Command execution success status"
+                    },
+                    "command": {
+                        "type": "string",
+                        "description": "Executed GSC command name"
+                    },
+                    "executionTime": {
+                        "type": "number",
+                        "description": "Command execution time in seconds"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Command execution result message"
+                    },
+                    "memoryPatternsApplied": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of memory patterns integrated during execution"
+                    },
+                    "workflowState": {
+                        "$ref": "#/components/schemas/WorkflowState"
+                    },
+                    "validationResults": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationResult"
+                        }
+                    },
+                    "nextRecommendedAction": {
+                        "type": "string",
+                        "description": "Recommended next GSC command or action"
+                    },
+                    "chatDisplay": {
+                        "type": "object",
+                        "properties": {
+                            "formattedContent": {
+                                "type": "string",
+                                "description": "Markdown-formatted content optimized for chat display"
+                            },
+                            "quickActions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "label": {
+                                            "type": "string"
+                                        },
+                                        "command": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "description": "Suggested follow-up actions for chat interface"
+                            },
+                            "contextualHelp": {
+                                "type": "string",
+                                "description": "Context-specific help text for current workflow phase"
+                            },
+                            "progressIndicator": {
+                                "type": "object",
+                                "properties": {
+                                    "currentStep": {
+                                        "type": "string"
+                                    },
+                                    "totalSteps": {
+                                        "type": "integer"
+                                    },
+                                    "completedSteps": {
+                                        "type": "integer"
+                                    },
+                                    "emoji": {
+                                        "type": "string"
+                                    }
+                                },
+                                "description": "Visual progress indicator for chat display"
+                            }
+                        },
+                        "description": "GitHub Copilot Chat specific display formatting"
+                    }
+                }
+            },
+            "MemoryStatusResponse": {
+                "type": "object",
+                "required": [
+                    "memoryFiles",
+                    "totalPatterns"
+                ],
+                "properties": {
+                    "memoryFiles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MemoryFileStatus"
+                        }
+                    },
+                    "totalPatterns": {
+                        "type": "integer",
+                        "description": "Total number of patterns across all memory files"
+                    },
+                    "recommendationsForContext": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Memory pattern recommendations for current development context"
+                    },
+                    "integrityStatus": {
+                        "type": "string",
+                        "enum": [
+                            "valid",
+                            "warning",
+                            "error"
+                        ],
+                        "description": "Overall memory file integrity status"
+                    }
+                }
+            },
+            "MemoryFileStatus": {
+                "type": "object",
+                "required": [
+                    "filePath",
+                    "fileType",
+                    "isValid"
+                ],
+                "properties": {
+                    "filePath": {
+                        "type": "string",
+                        "description": "Absolute path to memory file"
+                    },
+                    "fileType": {
+                        "type": "string",
+                        "enum": [
+                            "avalonia-ui-memory",
+                            "debugging-memory",
+                            "memory",
+                            "avalonia-custom-controls-memory"
+                        ]
+                    },
+                    "isValid": {
+                        "type": "boolean",
+                        "description": "Memory file integrity validation status"
+                    },
+                    "lastModified": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Last modification timestamp"
+                    },
+                    "patternCount": {
+                        "type": "integer",
+                        "description": "Number of patterns in this memory file"
+                    },
+                    "checksumHash": {
+                        "type": "string",
+                        "description": "SHA-256 checksum for integrity validation"
+                    },
+                    "applicableToCommands": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "GSC commands that should integrate this memory file"
+                    }
+                }
+            },
+            "MemoryUpdateRequest": {
+                "type": "object",
+                "required": [
+                    "memoryFileType",
+                    "newPatterns"
+                ],
+                "properties": {
+                    "memoryFileType": {
+                        "type": "string",
+                        "enum": [
+                            "avalonia-ui-memory",
+                            "debugging-memory",
+                            "memory",
+                            "avalonia-custom-controls-memory"
+                        ]
+                    },
+                    "newPatterns": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "New patterns to add to memory file"
+                    },
+                    "replaceConflicting": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Replace conflicting patterns to maintain single source of truth"
+                    },
+                    "context": {
+                        "type": "string",
+                        "description": "Development context where patterns were discovered"
+                    }
+                }
+            },
+            "ValidationResponse": {
+                "type": "object",
+                "required": [
+                    "overallStatus",
+                    "validationResults"
+                ],
+                "properties": {
+                    "overallStatus": {
+                        "type": "string",
+                        "enum": [
+                            "passed",
+                            "warning",
+                            "failed"
+                        ],
+                        "description": "Overall validation status"
+                    },
+                    "validationResults": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationResult"
+                        }
+                    },
+                    "constitutionalCompliance": {
+                        "type": "boolean",
+                        "description": "Constitutional compliance status"
+                    },
+                    "memoryIntegrationStatus": {
+                        "type": "string",
+                        "enum": [
+                            "complete",
+                            "partial",
+                            "failed"
+                        ],
+                        "description": "Memory integration validation status"
+                    },
+                    "nextAction": {
+                        "type": "string",
+                        "description": "Recommended next action based on validation results"
+                    }
+                }
+            },
+            "ValidationResult": {
+                "type": "object",
+                "required": [
+                    "validator",
+                    "status",
+                    "message"
+                ],
+                "properties": {
+                    "validator": {
+                        "type": "string",
+                        "description": "Name of validation rule or script"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "passed",
+                            "warning",
+                            "failed"
+                        ],
+                        "description": "Validation result status"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Validation result message"
+                    },
+                    "details": {
+                        "type": "string",
+                        "description": "Detailed validation information"
+                    },
+                    "memoryPatternRelevant": {
+                        "type": "boolean",
+                        "description": "Whether this validation relates to memory pattern integration"
+                    }
+                }
+            },
+            "WorkflowStatusResponse": {
+                "type": "object",
+                "required": [
+                    "workflowId",
+                    "currentPhase",
+                    "progress"
+                ],
+                "properties": {
+                    "workflowId": {
+                        "type": "string",
+                        "description": "Current workflow session identifier"
+                    },
+                    "currentPhase": {
+                        "type": "string",
+                        "enum": [
+                            "constitution",
+                            "specify",
+                            "clarify",
+                            "plan",
+                            "task",
+                            "analyze",
+                            "implement"
+                        ],
+                        "description": "Current GSC workflow phase"
+                    },
+                    "progress": {
+                        "type": "object",
+                        "properties": {
+                            "completedPhases": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "currentPhaseProgress": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100,
+                                "description": "Progress percentage of current phase"
+                            },
+                            "overallProgress": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100,
+                                "description": "Overall workflow progress percentage"
+                            }
+                        }
+                    },
+                    "teamCollaborationStatus": {
+                        "type": "object",
+                        "properties": {
+                            "isLocked": {
+                                "type": "boolean",
+                                "description": "Whether workflow is locked for team collaboration"
+                            },
+                            "lockOwner": {
+                                "type": "string",
+                                "description": "User who owns the current lock"
+                            },
+                            "lockExpiration": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Lock expiration timestamp"
+                            }
+                        }
+                    },
+                    "performanceDegradationMode": {
+                        "type": "boolean",
+                        "description": "Whether graceful degradation is currently active"
+                    },
+                    "memoryIntegrationSummary": {
+                        "type": "object",
+                        "properties": {
+                            "totalPatternsApplied": {
+                                "type": "integer"
+                            },
+                            "memoryFilesProcessed": {
+                                "type": "integer"
+                            },
+                            "lastMemoryUpdate": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        }
+                    }
+                }
+            },
+            "WorkflowState": {
+                "type": "object",
+                "required": [
+                    "phase",
+                    "status"
+                ],
+                "properties": {
+                    "phase": {
+                        "type": "string",
+                        "enum": [
+                            "constitution",
+                            "specify",
+                            "clarify",
+                            "plan",
+                            "task",
+                            "analyze",
+                            "implement"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "not_started",
+                            "in_progress",
+                            "completed",
+                            "failed",
+                            "rolled_back"
+                        ]
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "memoryPatternsApplied": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "RollbackRequest": {
+                "type": "object",
+                "required": [
+                    "targetPhase"
+                ],
+                "properties": {
+                    "targetPhase": {
+                        "type": "string",
+                        "enum": [
+                            "constitution",
+                            "specify",
+                            "clarify",
+                            "plan",
+                            "task",
+                            "analyze",
+                            "implement"
+                        ],
+                        "description": "Target phase to rollback to (beginning of current phase for full reset)"
+                    },
+                    "preserveMemoryPatterns": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Whether to preserve accumulated memory patterns during rollback"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "description": "Reason for rollback operation"
+                    }
+                }
+            },
+            "HelpResponse": {
+                "type": "object",
+                "required": [
+                    "helpContent",
+                    "format",
+                    "availableTopics"
+                ],
+                "properties": {
+                    "helpContent": {
+                        "type": "string",
+                        "description": "Help content in requested format (HTML, console text, etc.)"
+                    },
+                    "format": {
+                        "type": "string",
+                        "enum": [
+                            "console",
+                            "html",
+                            "browser"
+                        ],
+                        "description": "Format of the returned help content"
+                    },
+                    "availableTopics": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of available help topics"
+                    },
+                    "interactiveHtmlPath": {
+                        "type": "string",
+                        "description": "Path to interactive HTML help file when format is 'html' or 'browser'"
+                    },
+                    "quickReference": {
+                        "type": "object",
+                        "properties": {
+                            "commands": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "command": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "usage": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "workflows": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "steps": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "memoryIntegration": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "memoryType": {
+                                            "type": "string"
+                                        },
+                                        "applicableCommands": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "purpose": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

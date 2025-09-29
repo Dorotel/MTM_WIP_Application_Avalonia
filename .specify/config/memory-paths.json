@@ -1,0 +1,123 @@
+{
+    "version": "1.0.0",
+    "description": "Cross-platform memory file location configuration for GSC Enhancement System",
+    "lastUpdated": "2025-09-28T23:52:00Z",
+    "memoryFilePaths": {
+        "windows": {
+            "baseDirectory": "C:\\Users\\{USER}\\AppData\\Roaming\\Code\\User\\prompts",
+            "memoryFiles": {
+                "avalonia-ui-memory": "avalonia-ui-memory.instructions.md",
+                "debugging-memory": "debugging-memory.instructions.md",
+                "memory": "memory.instructions.md",
+                "avalonia-custom-controls-memory": "avalonia-custom-controls-memory.instructions.md"
+            }
+        },
+        "macos": {
+            "baseDirectory": "~/.local/share/Code/User/prompts",
+            "memoryFiles": {
+                "avalonia-ui-memory": "avalonia-ui-memory.instructions.md",
+                "debugging-memory": "debugging-memory.instructions.md",
+                "memory": "memory.instructions.md",
+                "avalonia-custom-controls-memory": "avalonia-custom-controls-memory.instructions.md"
+            }
+        },
+        "linux": {
+            "baseDirectory": "~/.local/share/Code/User/prompts",
+            "memoryFiles": {
+                "avalonia-ui-memory": "avalonia-ui-memory.instructions.md",
+                "debugging-memory": "debugging-memory.instructions.md",
+                "memory": "memory.instructions.md",
+                "avalonia-custom-controls-memory": "avalonia-custom-controls-memory.instructions.md"
+            }
+        }
+    },
+    "detectionRules": {
+        "platformDetection": "automatic",
+        "fallbackPlatform": "windows",
+        "userPlaceholder": "{USER}",
+        "homeDirectoryExpansion": true
+    },
+    "validationSettings": {
+        "requireAllMemoryFiles": false,
+        "checksumValidation": true,
+        "fileExistenceCheck": true,
+        "gracefulDegradationOnMissing": true
+    },
+    "performanceSettings": {
+        "maxReadTimePerFile": 2.0,
+        "totalReadTimeLimit": 5.0,
+        "cacheMemoryContent": true,
+        "cacheDurationMinutes": 30
+    },
+    "securitySettings": {
+        "validateChecksums": true,
+        "logFileAccess": true,
+        "encryptionAtRest": false,
+        "integrityMonitoring": true
+    },
+    "memoryFileMetadata": {
+        "avalonia-ui-memory": {
+            "description": "Avalonia UI framework patterns, MVVM binding, and cross-platform development lessons",
+            "applicableCommands": [
+                "specify",
+                "plan",
+                "implement",
+                "help"
+            ],
+            "patternTypes": [
+                "UI Layout",
+                "MVVM Binding",
+                "Cross-Platform",
+                "Theme System"
+            ],
+            "priority": "high"
+        },
+        "debugging-memory": {
+            "description": "Debugging workflows, systematic problem-solving approaches, and troubleshooting patterns",
+            "applicableCommands": [
+                "clarify",
+                "analyze",
+                "validate",
+                "help"
+            ],
+            "patternTypes": [
+                "Problem Solving",
+                "Error Analysis",
+                "Root Cause",
+                "Systematic Approach"
+            ],
+            "priority": "high"
+        },
+        "memory": {
+            "description": "Universal development patterns, debugging workflows, and cross-project lessons learned",
+            "applicableCommands": [
+                "plan",
+                "analyze",
+                "implement",
+                "help"
+            ],
+            "patternTypes": [
+                "Universal Patterns",
+                "Architecture",
+                "Best Practices",
+                "Cross-Project"
+            ],
+            "priority": "medium"
+        },
+        "avalonia-custom-controls-memory": {
+            "description": "Avalonia custom control development patterns, null safety, and crash prevention strategies",
+            "applicableCommands": [
+                "task",
+                "implement",
+                "help"
+            ],
+            "patternTypes": [
+                "Custom Controls",
+                "Null Safety",
+                "Layout Management",
+                "Performance"
+            ],
+            "priority": "medium"
+        }
+    }
+}
