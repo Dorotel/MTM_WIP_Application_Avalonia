@@ -383,6 +383,38 @@ This Constitution becomes effective immediately upon Repository Owner and @Agent
 
 ---
 
+## Article X: Spec-Driven Workflow and GSC Standards
+
+### Section 10.1: Specification-Driven Workflow v1
+
+- The repository SHALL follow the Specification-Driven Workflow v1 for all substantive features, maintaining up-to-date `requirements.md`, `design.md`, and `tasks.md` artifacts per the workflow template.
+- Documentation artifacts are the primary source of truth and MUST be kept in sync with implementation. Summaries are permitted for PRs and changelogs only.
+
+### Section 10.2: GitHub Spec Commands (GSC) Integration
+
+- The repository includes an officially sanctioned GSC enhancement system that automates parts of the Spec-Driven Workflow.
+- GSC commands live under `.specify/scripts/gsc/` (PowerShell Core) with corresponding cross-platform shell wrappers.
+- All GSC commands SHALL:
+  - Execute within 30 seconds under normal conditions
+  - Persist workflow state updates in `.specify/state/` within 2 seconds
+  - Process memory integration in under 5 seconds
+  - Produce deterministic JSON output when `-Json` is specified
+
+### Section 10.3: Memory Integration
+
+- The system SHALL use memory instruction files to guide generation and validation. Memory integration scripts MUST avoid leaking secrets and SHALL log access via the access logger.
+- Security controls (checksum validation, basic encryption, and access logging) SHALL be applied to memory files per `.specify/scripts/powershell/security/*`.
+
+### Section 10.4: Interactive Help and Documentation
+
+- An interactive help page is maintained at `docs/gsc-interactive-help.html` and SHALL include command references, workflow guides, memory examples, and troubleshooting.
+- A high-level overview of the enhancement system is maintained at `docs/gsc-enhancement-system.md`.
+
+### Section 10.5: Compliance
+
+- PRs introducing or modifying GSC behavior MUST update relevant documentation and pass validation scripts in `.specify/scripts/validation/`.
+- Violations of these standards SHALL block merge until resolved.
+
 ## Constitutional Enforcement Declaration
 
 **Repository Owner Signature**: [Pending Approval]  

@@ -1,3 +1,6 @@
+# Tasks Template (memory-aware)
+#
+ Use this template to generate tasks.md; integrate memory-driven patterns when creating tasks
 # Tasks: [FEATURE NAME]
 
 **Input**: Design documents from `/specs/[###-feature-name]/`

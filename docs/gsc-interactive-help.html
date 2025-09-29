@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GSC Interactive Help</title>
+    <style>
+        :root {
+            --primary: #0078D4;
+            --bg: #fff;
+            --border: #e0e0e0;
+            --muted: #666;
+        }
+
+        body {
+            font-family: Segoe UI, Roboto, Arial, sans-serif;
+            margin: 16px;
+            background: var(--bg);
+        }
+
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .title {
+            background: var(--primary);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .cmd {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+        }
+
+        .cmd h3 {
+            margin: 0 0 8px;
+        }
+
+        code {
+            background: #f6f6f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 8px 0 16px;
+        }
+
+        nav a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        input[type="search"] {
+            padding: 8px 10px;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="title">GSC Interactive Help</h1>
+    <nav>
+        <a href="#commands">Commands</a>
+        <a href="#workflows">Workflows</a>
+        <a href="#memory">Memory Integration</a>
+        <a href="#troubleshooting">Troubleshooting</a>
+    </nav>
+    <div class="card">
+        <p>This page provides an overview of the GitHub Spec Commands (GSC) enhancement system with memory integration,
+            performance targets, and cross-platform support. See also <a
+                href="gsc-enhancement-system.md">gsc-enhancement-system.md</a>.</p>
+        <p class="muted">Tip: use the search box to filter commands.</p>
+        <input id="search" type="search" placeholder="Search commands... (e.g., validate, status, rollback)" />
+    </div>
+    <div class="card" id="commands-card">
+        <h2 id="commands">Commands</h2>
+        <div class="grid" id="commands"></div>
+    </div>
+    <div class="card" id="workflows">
+        <h2>Workflows</h2>
+        <ul>
+            <li><strong>Spec-Driven</strong>: constitution → specify → clarify → plan → task → analyze → implement →
+                validate → status</li>
+            <li><strong>Error Recovery</strong>: validate → status → rollback (-FullReset optional) → implement</li>
+            <li><strong>Cross-Platform</strong>: use PowerShell Core 7+ or shell wrappers under
+                <code>.specify/scripts/gsc/*.sh</code></li>
+        </ul>
+    </div>
+    <div class="card" id="memory">
+        <h2>Memory Integration</h2>
+        <p>Memory files guide generation and validation. Access is logged and protected.</p>
+        <ul>
+            <li>Security: checksum-validator.ps1, memory-encryption.ps1, access-logger.ps1</li>
+            <li>Performance: memory-processing targets &lt; 5s</li>
+            <li>Location: auto-detected via memory-paths.json</li>
+        </ul>
+    </div>
+    <div class="card" id="troubleshooting">
+        <h2>Troubleshooting</h2>
+        <ul>
+            <li>Use <code>./gsc help</code> for command JSON and examples</li>
+            <li>Check <code>.specify/state/gsc-workflow.json</code> for current phase</li>
+            <li>On failures, run <code>./gsc rollback -FullReset</code> then re-run implement</li>
+        </ul>
+    </div>
+    <script>
+        const commands = [
+            { name: 'constitution', description: 'Validate constitutional compliance with memory integration' },
+            { name: 'specify', description: 'Create feature specification using Avalonia UI patterns' },
+            { name: 'clarify', description: 'Clarify requirements with debugging workflows' },
+            { name: 'plan', description: 'Generate technical plan with universal patterns' },
+            { name: 'task', description: 'Create tasks.md following MTM patterns' },
+            { name: 'analyze', description: 'Analyze repository and specs with systematic debugging' },
+            { name: 'implement', description: 'Execute implementation with all memory patterns' },
+            { name: 'memory', description: 'Manage memory files and integrity' },
+            { name: 'validate', description: 'Run validation quality gates' },
+            { name: 'status', description: 'Show workflow progress and performance' },
+            { name: 'rollback', description: 'Reset workflow to safe checkpoint or full reset' },
+            { name: 'help', description: 'Show help with memory-aware guidance' }
+        ];
+        const container = document.getElementById('commands');
+        const search = document.getElementById('search');
+        function render(list) {
+            container.innerHTML = '';
+            list.forEach(c => {
+                const el = document.createElement('div');
+                el.className = 'cmd';
+                el.innerHTML = `<h3>${c.name}</h3><p>${c.description}</p><p><code>./gsc ${c.name}</code></p>`;
+                container.appendChild(el);
+            });
+        }
+        render(commands);
+        search.addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase();
+            const filtered = commands.filter(c => c.name.includes(q) || c.description.toLowerCase().includes(q));
+            render(filtered);
+        });
+    </script>
+</body>
+
+</html>

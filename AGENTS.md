@@ -23,7 +23,7 @@ The **MTM WIP Application** is a cross-platform manufacturing Work-in-Process ma
 
 ## Available AI Agent Tools
 
-This repository includes **32 comprehensive AI agent tools** that provide complete development automation capabilities:
+This repository includes **32+ comprehensive AI agent tools** that provide complete development automation capabilities:
 
 ### Core Development Tools
 
@@ -64,6 +64,13 @@ This repository includes **32 comprehensive AI agent tools** that provide comple
 - **ui_automation** - Avalonia UI testing
 - **manufacturing_domain_validator** - MTM business rule validation
 - **copilot_optimizer** - GitHub Copilot integration enhancement
+\
+New GSC automation helpers:
+- **gsc_memory** - Memory file GET/POST operations
+- **gsc_validate** - Workflow validation execution
+- **gsc_status** - Progress and state reporting
+- **gsc_rollback** - Safe checkpoint reset / full reset
+- **gsc_help** - Interactive help and guidance
 
 ### Comprehensive Instruction Library
 
@@ -136,6 +143,7 @@ This repository supports **Joyride-enhanced development workflows** for maximum 
 - Dynamic theme system testing and validation (17+ theme files)
 - MySQL database integration testing and stored procedure validation
 - Cross-platform build and deployment automation workflows
+ - Spec-Driven Workflow automation via GSC commands (`.specify/scripts/gsc/`)
 
 **Usage Priority**: Use Joyride automation whenever safe and possible to enhance consistency, speed, and quality in MTM development workflows.
 
@@ -526,6 +534,7 @@ dotnet run --configuration Debug
 - Implement proper disposal patterns for resources
 - Leverage 32 AI tools for comprehensive automation
 - Follow manufacturing domain patterns from instruction library
+ - Use GSC commands to bootstrap, validate, and document features; see `docs/gsc-enhancement-system.md` and `docs/gsc-interactive-help.html`
 
 ### Performance Monitoring
 
