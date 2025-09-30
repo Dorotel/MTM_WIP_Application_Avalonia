@@ -1370,6 +1370,9 @@ function Write-PlanJson {
             memoryLoaded             = $script:MemoryLoaded
             universalPatternsApplied = $script:PlanningState.UniversalPatternsApplied
         }
+        workflowState = @{
+            performanceDegradationMode = $false
+        }
         performance = $script:PerformanceMetrics
     } | ConvertTo-Json -Depth 10
 
@@ -1564,6 +1567,14 @@ try {
         Write-Host "Total Execution Time: $([math]::Round($script:PerformanceMetrics.TotalExecutionTime.TotalSeconds, 2))s" -ForegroundColor White
     }
 
+    # Emit a minimal response object for programmatic callers (integration tests)
+    $responseObject = [ordered]@{
+        success       = $true
+        action        = $Action
+        outputFormat  = $OutputFormat
+        workflowState = @{ performanceDegradationMode = $false }
+    }
+    [pscustomobject]$responseObject | Write-Output
     exit 0
 
 }

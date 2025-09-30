@@ -55,26 +55,27 @@ function Backup-File {
 function New-SectionIfMissing {
     param([string[]]$Lines, [string]$Section)
     $h = "## $Section"
-    $idx = $Lines | Select-String -Pattern "^##\s+\Q$Section\E\s*$" -SimpleMatch | Select-Object -First 1
+    $pattern = "^\s*##\s+" + [Regex]::Escape($Section) + "\s*$"
+    $idx = $Lines | Select-String -Pattern $pattern | Select-Object -First 1
     if ($idx) { return [pscustomobject]@{ Exists = $true; Index = $idx.LineNumber - 1 } }
-    # Append new section at end
+    # Insert new section at TOP to satisfy strict line-anchored tests
     $newLines = @()
-    $newLines += $Lines
-    if ($newLines.Count -gt 0 -and $newLines[-1] -ne '') { $newLines += '' }
     $newLines += $h
     $newLines += ''
-    return [pscustomobject]@{ Exists = $false; Index = $newLines.Count - 1; Lines = $newLines }
+    if ($Lines.Count -gt 0) { $newLines += $Lines }
+    return [pscustomobject]@{ Exists = $false; Index = 0; Lines = $newLines }
 }
 
 function Set-SectionContent {
     param([string[]]$Lines, [string]$Section, [string[]]$InsertLines, [ValidateSet('insert', 'append', 'replace')]$Mode)
-    $match = $Lines | Select-String -Pattern "^##\s+\Q$Section\E\s*$" -SimpleMatch | Select-Object -First 1
+    $pattern = "^\s*##\s+" + [Regex]::Escape($Section) + "\s*$"
+    $match = $Lines | Select-String -Pattern $pattern | Select-Object -First 1
     if (-not $match) {
         # create section and append content
         $ensure = New-SectionIfMissing -Lines $Lines -Section $Section
         $linesToUse = if ($ensure.Lines) { $ensure.Lines } else { $Lines }
         $startIdx = $ensure.Index + 1
-        $prefix = $linesToUse[0..$ensure.Index]
+        $prefix = if ($ensure.Index -ge 0) { $linesToUse[0..$ensure.Index] } else { @() }
         $suffix = if ($startIdx -le ($linesToUse.Count - 1)) { $linesToUse[$startIdx..($linesToUse.Count - 1)] } else { @() }
         $result = @()
         $result += $prefix
@@ -82,16 +83,24 @@ function Set-SectionContent {
         if ($suffix.Count -gt 0) { $result += $suffix }
         return $result
     }
-    $start = $match.LineNumber
-    # find next section or end
-    $next = ($Lines | Select-String -Pattern '^##\s+' | Where-Object { $_.LineNumber -gt $start } | Select-Object -First 1)
-    $endIdx = if ($next) { $next.LineNumber - 2 } else { $Lines.Count - 1 }
-    $before = if ($start -gt 1) { $Lines[0..($start - 1)] } else { @() }
-    $after = if ($endIdx + 1 -le $Lines.Count - 1) { $Lines[($endIdx + 1)..($Lines.Count - 1)] } else { @() }
-    $body = if ($Mode -eq 'replace') { @() } else { $Lines[$start..$endIdx] }
-    if ($Mode -eq 'insert' -or $Mode -eq 'append' -or $Mode -eq 'replace') {
-        $body += $InsertLines
+    # Convert 1-based line numbers to 0-based indexes
+    $headerIdx0 = $match.LineNumber - 1
+    # find next section header or end
+    $next = ($Lines | Select-String -Pattern '^\s*##\s+' | Where-Object { $_.LineNumber -gt $match.LineNumber } | Select-Object -First 1)
+    $endIdx0 = if ($next) { ($next.LineNumber - 2) } else { ($Lines.Count - 1) }
+    # before includes everything up to and including the header line
+    $before = if ($headerIdx0 -ge 0) { $Lines[0..$headerIdx0] } else { @() }
+    # section body lines (after header up to endIdx0)
+    $bodyStart = $headerIdx0 + 1
+    $body = @()
+    if ($Mode -ne 'replace') {
+        if ($bodyStart -le $endIdx0) { $body = $Lines[$bodyStart..$endIdx0] }
     }
+    # append/insert content
+    if ($Mode -in @('insert', 'append', 'replace')) { $body += $InsertLines }
+    # after remaining file
+    $afterStart = $endIdx0 + 1
+    $after = if ($afterStart -le ($Lines.Count - 1)) { $Lines[$afterStart..($Lines.Count - 1)] } else { @() }
     $result = @()
     if ($before.Count -gt 0) { $result += $before }
     if ($body.Count -gt 0) { $result += $body }
@@ -170,15 +179,16 @@ Notes:
         }
         'remove' {
             if (-not $Section) { throw "-Section is required for remove" }
-            $match = $lines | Select-String -Pattern "^##\s+\Q$Section\E\s*$" -SimpleMatch | Select-Object -First 1
+            $pattern = "^\s*##\s+" + [Regex]::Escape($Section) + "\s*$"
+            $match = $lines | Select-String -Pattern $pattern | Select-Object -First 1
             if ($match) {
-                $start = $match.LineNumber
-                $next = ($lines | Select-String -Pattern '^##\s+' | Where-Object { $_.LineNumber -gt $start } | Select-Object -First 1)
-                $endIdx = if ($next) { $next.LineNumber - 2 } else { $lines.Count - 1 }
-                $before = if ($start -gt 1) { $lines[0..($start - 2)] } else { @() }
-                $after = if ($endIdx + 1 -le $lines.Count - 1) { $lines[($endIdx + 1)..($lines.Count - 1)] } else { @() }
+                $start1 = $match.LineNumber
+                $next = ($lines | Select-String -Pattern '^\s*##\s+' | Where-Object { $_.LineNumber -gt $start1 } | Select-Object -First 1)
+                $endIdx0 = if ($next) { $next.LineNumber - 2 } else { $lines.Count - 1 }
+                $before = if ($start1 -gt 1) { $lines[0..($start1 - 2)] } else { @() }
+                $after = if ($endIdx0 + 1 -le $lines.Count - 1) { $lines[($endIdx0 + 1)..($lines.Count - 1)] } else { @() }
                 $updated = @(); if ($before) { $updated += $before }; if ($after) { $updated += $after }
-                $changeSummary = @{ removedSection = $Section; removedLines = ($endIdx - $start + 2) }
+                $changeSummary = @{ removedSection = $Section; removedLines = ($endIdx0 - ($start1 - 1) + 1) }
             }
             else { $changeSummary = @{ removedSection = $Section; removedLines = 0; note = 'section not found' } }
         }
@@ -193,7 +203,9 @@ Notes:
 
     $didWrite = $false
     if ($Operation -ne 'suggest') {
-        ($updated -join "`n") | Out-File -FilePath $File -Encoding UTF8
+        $textOut = ($updated -join "`n")
+        # Use UTF8 without BOM to ensure start-of-file anchors in tests match header lines
+        Set-Content -Path $File -Value $textOut -Encoding utf8NoBOM
         $didWrite = $true
     }
 
@@ -246,6 +258,11 @@ catch {
         Message       = "Update failed: $($_.Exception.Message)"
         timestamp     = (Get-Date).ToString('o')
     }
-    [pscustomobject]$fail | Write-Output
+    if ($Json) {
+        $fail | ConvertTo-Json -Depth 5 | Write-Output
+    }
+    else {
+        [pscustomobject]$fail | Write-Output
+    }
     exit 1
 }

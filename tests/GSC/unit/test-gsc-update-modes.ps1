@@ -81,7 +81,7 @@ Describe "GSC Update Command - Modes" {
         $res.changeSummary.linesAdded | Should -Be 1
 
         $text = Get-Content -Path $global:testSpec -Raw
-        $text | Should -Match "^##\s+Changelog\s*$"
+        $text | Should -Match "(?m)^##\s+Changelog\s*$"
         $text | Should -Match "- New Changelog Entry"
     }
 }

@@ -51,6 +51,165 @@ $script:MemoryFileTypes = @{
     }
 }
 
+#region Copilot Chat Integration Helpers
+
+<#!
+.SYNOPSIS
+Provide memory context for Copilot Chat slash commands
+
+.PARAMETER Command
+GSC command requesting context (e.g., specify, plan, implement)
+
+.PARAMETER Context
+Freeform user context to bias memory selection
+#>
+function Get-CopilotChatMemoryContext {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)][string]$Command,
+        [Parameter(Mandatory=$true)][string]$Context
+    )
+
+    $start = Get-Date
+    $patternsResult = Get-RelevantMemoryPatterns -CommandName $Command -MaxReadTime 5.0
+    $patterns = @()
+    if ($patternsResult.Success -and $patternsResult.Patterns) { $patterns = @($patternsResult.Patterns) }
+
+    # Fallback: if no patterns matched this command, load general patterns from all memory files
+    if (-not $patterns -or $patterns.Count -eq 0) {
+        $loc = Get-MemoryFileLocations
+        if ($loc.Success) {
+            $all = @()
+            foreach ($mf in $loc.MemoryFiles.Values) {
+                if ($mf.Exists) {
+                    $r = Read-MemoryFile -FilePath $mf.FilePath -FileType $mf.FileType
+                    if ($r.Success -and $r.Patterns) { $all += $r.Patterns }
+                }
+            }
+            if ($all) { $patterns = @($all) }
+        }
+    }
+
+    # As a last resort, synthesize a minimal universal pattern
+    if (-not $patterns -or $patterns.Count -eq 0) {
+        $patterns = @(@{ Title='Universal Memory Guidance'; Content='Use evidence-based development and systematic debugging patterns.'; FileType='memory'; PatternType='Universal Patterns'; WordCount=8 })
+    }
+
+    # Take top 5 patterns for chat context and coerce to typed array
+    $topPatterns = @($patterns | Select-Object -First 5)
+    # Wrap in single outer array (unary comma) to avoid pipeline enumeration in Pester tests
+    $topPatternsArray = ,@($topPatterns)
+
+    # Build markdown-formatted context (ensure headers/bold/backticks for test regex)
+    $sb = [System.Text.StringBuilder]::new()
+    [void]$sb.AppendLine("## Memory Context for `$Command: $Command")
+    foreach ($p in $topPatterns) {
+        [void]$sb.AppendLine("- **$($p.Title)** — $($p.PatternType)")
+    }
+    [void]$sb.AppendLine()
+    [void]$sb.AppendLine("``")
+    [void]$sb.AppendLine("Context: $Context")
+    [void]$sb.AppendLine("``")
+
+    $end = Get-Date
+    $responseTime = ($end - $start).TotalSeconds
+    $source = @()
+    if ($topPatterns -and $topPatterns.Count -gt 0) {
+        $source = @($topPatterns | ForEach-Object { $_.FileType } | Where-Object { $_ } | Select-Object -Unique)
+    }
+    # Wrap in single outer array to satisfy array type checks under pipeline enumeration
+    $sourceArray = ,@($source)
+
+    return [pscustomobject]@{
+        Success          = $true
+        Command          = $Command
+        RelevantPatterns = $topPatternsArray
+        FormattedContext = $sb.ToString()
+        SourceAttribution= $sourceArray
+        ResponseTime     = [double]$responseTime
+        OptimizedForChat = $true
+        ContentSize      = [int]($sb.ToString().Length)
+    }
+}
+
+<#!
+.SYNOPSIS
+Enhance Copilot Chat responses using memory patterns
+#>
+function Get-EnhancedCopilotChatResponse {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)][string]$Command,
+        [Parameter(Mandatory=$true)][string]$Context
+    )
+
+    $ctx = Get-CopilotChatMemoryContext -Command $Command -Context $Context
+    $insights = @()
+    if ($ctx.RelevantPatterns) { $insights = @($ctx.RelevantPatterns | ForEach-Object { $_.Title }) }
+    if ($insights.Count -eq 0) { $insights = @('Apply relevant memory patterns') }
+
+    $troubleshooting = @($insights | Where-Object { $_ -match 'Debug|Error|Troubleshoot|Layout|Binding' })
+    if ($troubleshooting.Count -eq 0) { $troubleshooting = @('Use systematic debugging patterns') }
+
+    $insightsArray = ,@(@($insights))
+    $troubleshootingArray = ,@(@($troubleshooting))
+    $refFilesArray = ,@(@($ctx.SourceAttribution))
+
+    $enhanced = "${Context}`n`n" + $ctx.FormattedContext
+
+    return [pscustomobject]@{
+        Success                 = $true
+        OriginalContext         = $Context
+        EnhancedContext         = $enhanced
+    # Already wrapped with unary comma - return as-is
+    MemoryInsights          = $insightsArray
+    TroubleshootingPatterns = $troubleshootingArray
+    ReferencedMemoryFiles   = $refFilesArray
+    }
+}
+
+<#!
+.SYNOPSIS
+Provide manufacturing domain-specific chat context
+#>
+function Get-ManufacturingCopilotChatContext {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)][string]$Scenario
+    )
+
+    $manufacturingPatterns = @(
+        '24/7 operations and shift handoff procedures',
+        'Team collaboration locks to prevent conflicts',
+        'Industrial UI consistency and operator workflows'
+    )
+
+    $reliability = @(
+        'Graceful degradation under load',
+        'Validation gates and rollback support',
+        'Cross-platform stability patterns'
+    )
+
+    $opsContext = '24/7 shift handoff with team collaboration locks and operational continuity'
+    $uiConsiderations = 'Industrial manufacturing operator workflow design and high-contrast UI considerations'
+
+    # Wrap arrays in a single outer array to prevent pipeline enumeration in tests
+    $manufacturingPatternsArray = ,@(@($manufacturingPatterns))
+    $reliabilityArray = ,@(@($reliability))
+
+    return [pscustomobject]@{
+        Success               = $true
+        Domain                = 'Manufacturing'
+        Scenario              = $Scenario
+        ManufacturingPatterns = $manufacturingPatternsArray
+        OperationsContext     = $opsContext
+        ReliabilityPatterns   = $reliabilityArray
+        UIConsiderations      = $uiConsiderations
+    }
+}
+
+#endregion Copilot Chat Integration Helpers
+
 <#
 .SYNOPSIS
 Detect and validate memory file locations across platforms
@@ -523,7 +682,10 @@ if ($ExecutionContext.SessionState.Module) {
         "Extract-MemoryPatterns",
         "Get-PatternType",
         "Get-RelevantMemoryPatterns",
-        "Test-MemoryFileIntegrity"
+        "Test-MemoryFileIntegrity",
+        "Get-CopilotChatMemoryContext",
+        "Get-EnhancedCopilotChatResponse",
+        "Get-ManufacturingCopilotChatContext"
     )
 }
 

@@ -6,15 +6,15 @@
 
 #Requires -Version 7.0
 
-[CmdletBinding()]
+[CmdletBinding(PositionalBinding=$true)]
 param(
-    [Parameter(Mandatory)]
     [ValidateSet('create', 'validate', 'template', 'analyze', 'memory-sync', 'patterns', 'help')]
-    [string] $Action,
+    [string] $Action = 'create',
 
     [ValidateSet('ui-component', 'viewmodel', 'service', 'database', 'workflow', 'manufacturing', 'custom-control', 'theme', 'converter', 'behavior')]
     [string] $SpecType = 'ui-component',
 
+    [Parameter(Mandatory=$false, Position=0)]
     [string] $Name = '',
 
     [ValidateSet('avalonia-usercontrol', 'avalonia-window', 'mvvm-viewmodel', 'service-implementation', 'database-operation', 'manufacturing-workflow', 'custom-template')]
@@ -27,6 +27,15 @@ param(
 
     [switch] $VerboseMode
 )
+# Positional free-form fallback: if invoked with a single free-form string that is not an action,
+# treat it as the Name for a 'create' action to satisfy integration test flow
+if ($args -and $args.Count -gt 0) {
+    $known = @('create','validate','template','analyze','memory-sync','patterns','help')
+    if ($known -notcontains $args[0]) {
+        if ([string]::IsNullOrWhiteSpace($Name)) { $Name = ($args -join ' ') }
+        if ([string]::IsNullOrWhiteSpace($Action)) { $Action = 'create' } else { $Action = 'create' }
+    }
+}
 
 # Import required modules and entities
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -99,7 +108,17 @@ function Invoke-GSCSpecify {
         Complete-SpecifySession -Success $true
 
         Write-Host "[GSC-Specify] Specification management completed successfully" -ForegroundColor Green
-        return $result
+        # Ensure a standard envelope with Success for integration tests
+        $envelope = @{
+            success               = $true
+            action                = $result.Action
+            specType              = $result.SpecType
+            name                  = $result.Name
+            outputFormat          = $result.OutputFormat
+            specification         = $result.Specification
+            memoryPatternsApplied = $result.MemoryPatternsApplied
+        }
+        return $envelope
     }
     catch {
         Write-Error "[GSC-Specify] Error: $($_.Exception.Message)"
@@ -1322,6 +1341,7 @@ Each GSC Specify execution creates a tracked session with:
 if ($MyInvocation.InvocationName -ne '.') {
     try {
         $result = Invoke-GSCSpecify -Action $Action -SpecType $SpecType -Name $Name -Template $Template -OutputFormat $OutputFormat -MemoryIntegration $MemoryIntegration.IsPresent -VerboseOutput $VerboseMode.IsPresent
+        [pscustomobject]$result | Write-Output
         exit 0
     }
     catch {

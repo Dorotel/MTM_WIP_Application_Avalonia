@@ -27,14 +27,12 @@ The pattern text to add/update in the specified memory file (for update action)
 
 [CmdletBinding()]
 param(
-    [ValidateSet('display','update','help')]
     [string]$Action = 'display',
 
     [string]$MemoryFileType = '',
 
     [string]$Pattern = '',
 
-    [ValidateSet('console','markdown','json')]
     [string]$OutputFormat = 'json'
 )
 
@@ -50,16 +48,27 @@ try {
     if (Test-Path $memoryModule) { Import-Module $memoryModule -Force -ErrorAction Stop }
 } catch { if (Test-Path $memoryModule) { . $memoryModule } }
 
+# Pre-normalize when PowerShell positional binding captured GNU-style tokens
+if ($Action -in @('--help','-h')) { $Action = 'help' }
+elseif ($Action -in @('--update','-update')) { $Action = 'update' }
+
+# If Pattern captured as the literal flag, shift next arg into Pattern
+if ($Pattern -in @('--pattern','-pattern') -and $args -and $args.Count -ge 1) {
+    $Pattern = $args[0]
+    $gnuArgs = @()
+    if ($args.Count -gt 1) { $gnuArgs = $args[1..($args.Count-1)] }
+} else { $gnuArgs = $args }
+
 # GNU-style args fallback parsing to satisfy tests passing "--update" and "--pattern"
-if ($args -and $args.Count -gt 0) {
-    for ($i = 0; $i -lt $args.Count; $i++) {
-        switch ($args[$i]) {
+if ($gnuArgs -and $gnuArgs.Count -gt 0) {
+    for ($i = 0; $i -lt $gnuArgs.Count; $i++) {
+        switch ($gnuArgs[$i]) {
             '--help' { $Action = 'help' }
             '-h'     { $Action = 'help' }
-            '--update' { $Action = 'update'; if ($i + 1 -lt $args.Count) { $MemoryFileType = $args[$i+1]; $i++ } }
-            '-update'  { $Action = 'update'; if ($i + 1 -lt $args.Count) { $MemoryFileType = $args[$i+1]; $i++ } }
-            '--pattern' { if ($i + 1 -lt $args.Count) { $Pattern = $args[$i+1]; $i++ } }
-            '-pattern'  { if ($i + 1 -lt $args.Count) { $Pattern = $args[$i+1]; $i++ } }
+            '--update' { $Action = 'update'; if ($i + 1 -lt $gnuArgs.Count) { $MemoryFileType = $gnuArgs[$i+1]; $i++ } }
+            '-update'  { $Action = 'update'; if ($i + 1 -lt $gnuArgs.Count) { $MemoryFileType = $gnuArgs[$i+1]; $i++ } }
+            '--pattern' { if ($i + 1 -lt $gnuArgs.Count) { $Pattern = $gnuArgs[$i+1]; $i++ } }
+            '-pattern'  { if ($i + 1 -lt $gnuArgs.Count) { $Pattern = $gnuArgs[$i+1]; $i++ } }
             default { }
         }
     }

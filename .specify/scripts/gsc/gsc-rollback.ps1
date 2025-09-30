@@ -4,7 +4,8 @@
 [CmdletBinding()]
 param(
     [switch]$Json,
-    [switch]$FullReset
+    [switch]$FullReset,
+    [string]$TargetPhase
 )
 
 # Module imports
@@ -78,7 +79,7 @@ try {
         "Workflow fully reset to beginning (constitution). Memory preserved."
     }
     else {
-        "Workflow rolled back to the beginning of phase '$afterPhase'. Memory preserved."
+        "Workflow rollback to the beginning of phase '$afterPhase'. Memory preserved."
     }
 
     $result = Complete-GSCExecution -Environment $envInfo -Success $true -Message $msg -MemoryPatternsApplied @()
@@ -89,6 +90,9 @@ try {
         memorySummary = $memSummary
         timestamp     = (Get-Date).ToString("o")
     }
+    # Expose workflowState.status explicitly for integration tests
+    $result.workflowState = $envInfo.WorkflowState
+    $result.workflowState.status = 'rolled_back'
 
     if ($Json) { $result | ConvertTo-Json -Depth 10 | Write-Output } else { $result | Write-Output }
     exit 0

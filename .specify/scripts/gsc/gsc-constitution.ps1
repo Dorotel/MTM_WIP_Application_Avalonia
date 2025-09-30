@@ -46,9 +46,8 @@ This command integrates with:
 - TDD validation framework
 #>
 
-[CmdletBinding()]
+[CmdletBinding(PositionalBinding=$true)]
 param(
-    [ValidateSet('display', 'validate', 'update', 'memory-sync', 'interactive')]
     [string] $Action = 'display',
 
     [ValidateSet('console', 'markdown', 'json', 'interactive', 'copilot-chat')]
@@ -62,6 +61,18 @@ param(
 
     [hashtable] $Context = @{}
 )
+
+# Support positional argument fallback used by integration tests
+if ($args -and $args.Count -gt 0) {
+    # If the first arg is not a known action, treat it as description/context for display
+    $known = @('display','validate','update','memory-sync','interactive')
+    if ($known -notcontains $args[0]) {
+        # Put description into Context for downstream formatting
+        if (-not $Context) { $Context = @{} }
+        $Context.Description = ($args -join ' ')
+        $Action = 'display'
+    }
+}
 
 # Import required modules
 $scriptRoot = Split-Path -Parent $PSScriptRoot
@@ -424,7 +435,8 @@ try {
 
     # Display result
     if ($result.Success) {
-        Write-Output $result.Content
+        # Output the full result object for programmatic consumption
+        [pscustomobject]$result | Write-Output
         if ($Validate -and $result.ValidationResults) {
             Write-Host "`n[GSC-Constitution] Validation Results:" -ForegroundColor Cyan
             $result.ValidationResults.GetEnumerator() | ForEach-Object {
