@@ -14,7 +14,7 @@ try { if (Test-Path $commonModule) { Import-Module $commonModule -Force -ErrorAc
 try { if (Test-Path $memoryModule) { Import-Module $memoryModule -Force -ErrorAction Stop } } catch { if (Test-Path $memoryModule) { . $memoryModule } }
 
 function Get-CommandList {
-    $cmds = @("constitution","specify","clarify","plan","task","analyze","implement","memory","validate","status","rollback","help")
+    $cmds = @("constitution","specify","clarify","plan","task","analyze","implement","memory","validate","status","update","rollback","help")
     return $cmds
 }
 
@@ -31,6 +31,7 @@ function Build-HelpEntry {
         'memory'       { 'Manage memory files (GET/POST) and integrity' }
         'validate'     { 'Run validation quality gates and checks' }
         'status'       { 'Show workflow progress and performance' }
+        'update'       { 'Safely update spec files (backups, locks, optional validation)' }
         'rollback'     { 'Reset workflow to safe checkpoint or full reset' }
         'help'         { 'Show this help with memory-aware guidance' }
         default        { 'GSC command' }

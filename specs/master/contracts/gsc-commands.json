@@ -364,6 +364,35 @@
                 }
             }
         }
+        ,
+        "/gsc/update": {
+            "post": {
+                "summary": "Safely update spec sections with backups, lock handling, and validation",
+                "operationId": "updateSpec",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Specification updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GSCCommandResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     },
     "components": {
         "schemas": {
@@ -388,7 +417,8 @@
                             "validate",
                             "status",
                             "rollback",
-                            "help"
+                            "help",
+                            "update"
                         ]
                     },
                     "arguments": {
@@ -445,6 +475,19 @@
                         },
                         "description": "Formatting options for GitHub Copilot Chat display"
                     }
+                }
+            },
+            "UpdateRequest": {
+                "type": "object",
+                "required": ["file", "operation"],
+                "properties": {
+                    "file": { "type": "string" },
+                    "section": { "type": "string" },
+                    "operation": { "type": "string", "enum": ["insert","append","replace","remove","suggest"] },
+                    "content": { "type": "string" },
+                    "contentPath": { "type": "string" },
+                    "validateAfter": { "type": "boolean" },
+                    "force": { "type": "boolean" }
                 }
             },
             "GSCCommandResponse": {

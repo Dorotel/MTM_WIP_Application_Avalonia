@@ -60,7 +60,7 @@ try {
 
     # Load a quick summary of memory files to include in the response
     $memSummary = @{ totalPatterns = 0; filesProcessed = 0 }
-    $mr = Get-RelevantMemoryPatterns -CommandName "plan" -MaxReadTime 3.0
+    $mr = Get-RelevantMemoryPatterns -CommandName "rollback" -MaxReadTime 3.0
     if ($mr.Success) { $memSummary.totalPatterns = $mr.TotalPatterns; $memSummary.filesProcessed = $mr.FilesProcessed }
 
     $beforePhase = $envInfo.WorkflowState.currentPhase
@@ -76,17 +76,18 @@ try {
 
     $msg = if ($FullReset) {
         "Workflow fully reset to beginning (constitution). Memory preserved."
-    } else {
+    }
+    else {
         "Workflow rolled back to the beginning of phase '$afterPhase'. Memory preserved."
     }
 
     $result = Complete-GSCExecution -Environment $envInfo -Success $true -Message $msg -MemoryPatternsApplied @()
     $result.rollback = [ordered]@{
-        beforePhase    = $beforePhase
-        afterPhase     = $afterPhase
-        fullReset      = [bool]$FullReset
-        memorySummary  = $memSummary
-        timestamp      = (Get-Date).ToString("o")
+        beforePhase   = $beforePhase
+        afterPhase    = $afterPhase
+        fullReset     = [bool]$FullReset
+        memorySummary = $memSummary
+        timestamp     = (Get-Date).ToString("o")
     }
 
     if ($Json) { $result | ConvertTo-Json -Depth 10 | Write-Output } else { $result | Write-Output }

@@ -121,6 +121,13 @@
 - [x] **T065** [P] New gsc-help command in .specify/scripts/gsc/gsc-help.ps1 for interactive help system
 - [x] **T066** Shell wrapper for gsc-help in .specify/scripts/gsc/gsc-help.sh
 
+### Update Command (New)
+
+- [x] **T066A** [P] New gsc-update command in .specify/scripts/gsc/gsc-update.ps1 for safe spec edits (backups, locks, optional validation) ✅ COMPLETE
+- [x] **T066B** [P] Shell wrapper for gsc-update in .specify/scripts/gsc/gsc-update.sh ✅ COMPLETE
+- [x] **T066C** [P] Wire /gsc/update into contracts (contracts/gsc-commands.json) with UpdateRequest schema ✅ COMPLETE
+- [x] **T066D** [P] Integrate /gsc/update into spec-kit.yml mappings and VS Code Copilot Chat extension ✅ COMPLETE
+
 ## Phase 3.5: Validation and State Management
 
 ### Enhanced Validation Scripts
@@ -199,6 +206,21 @@
 - [ ] **T097** Manufacturing environment simulation test (24/7 operations, shift handoffs)
 - [ ] **T098** Interactive help system validation test across all platforms and browsers
 - [ ] **T099** GitHub Copilot Chat integration validation test in VS Code and Visual Studio 2022
+
+### Documentation Updates (New)
+
+- [x] **T100** Update docs/gsc-interactive-help.html to include new commands (update, and future friendly commands) and list each command’s sub-commands/parameters with examples ✅ COMPLETE (includes subcommands/parameters/examples for all commands)
+
+### Tests and Hardening for /gsc/update (New)
+
+- [x] **T101** [P] Add contract unit test for /gsc/update at tests/GSC/unit/test-gsc-update-contract.ps1 ✅ COMPLETE
+- [x] **T102** Resolve duplicate hashtable key error in gsc-update.ps1 and align output with contract (success, command, executionTime) ✅ COMPLETE
+- [ ] **T103** Add unit tests for insert/append/replace/remove modes (content writes, section creation, write counts)
+- [ ] **T104** Add lock-behavior tests (with and without -Force) using collaboration-lock-manager mocks
+- [ ] **T105** Add integration tests covering backups, decision records, and optional -ValidateAfter flow
+- [ ] **T106** Add cross-platform execution tests for /gsc/update (Windows/macOS/Linux via .sh wrapper)
+- [ ] **T107** Validate interactive help content specifically for update command (performance and completeness)
+- [x] **T108** Update quickstart.md with /gsc/update usage examples ✅ COMPLETE
 
 ## Dependencies
 

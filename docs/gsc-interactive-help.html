@@ -139,18 +139,19 @@
     </div>
     <script>
         const commands = [
-            { name: 'constitution', description: 'Validate constitutional compliance with memory integration' },
-            { name: 'specify', description: 'Create feature specification using Avalonia UI patterns' },
-            { name: 'clarify', description: 'Clarify requirements with debugging workflows' },
-            { name: 'plan', description: 'Generate technical plan with universal patterns' },
-            { name: 'task', description: 'Create tasks.md following MTM patterns' },
-            { name: 'analyze', description: 'Analyze repository and specs with systematic debugging' },
-            { name: 'implement', description: 'Execute implementation with all memory patterns' },
-            { name: 'memory', description: 'Manage memory files and integrity' },
-            { name: 'validate', description: 'Run validation quality gates' },
-            { name: 'status', description: 'Show workflow progress and performance' },
-            { name: 'rollback', description: 'Reset workflow to safe checkpoint or full reset' },
-            { name: 'help', description: 'Show help with memory-aware guidance' }
+            { name: 'constitution', description: 'Validate constitutional compliance with memory integration', usage: './gsc constitution [feature-description]', params: ['feature-description'], notes: ['Integrates memory patterns for validation'], examples: ['./gsc constitution "New inventory feature"'] },
+            { name: 'specify', description: 'Create feature specification using Avalonia UI patterns', usage: './gsc specify [feature-description]', params: ['feature-description'], notes: ['Applies Avalonia UI memory patterns'], examples: ['./gsc specify "Add real-time inventory status panel"'] },
+            { name: 'clarify', description: 'Clarify requirements with debugging workflows', usage: './gsc clarify', params: [], notes: ['Guided questions using debugging memory'], examples: ['./gsc clarify'] },
+            { name: 'plan', description: 'Generate technical plan with universal patterns', usage: './gsc plan', params: [], notes: ['Produces plan.md; integrates universal memory'], examples: ['./gsc plan'] },
+            { name: 'task', description: 'Create tasks.md following MTM patterns', usage: './gsc task', params: [], notes: ['Generates ordered tasks with [P] markers'], examples: ['./gsc task'] },
+            { name: 'analyze', description: 'Analyze repository and specs with systematic debugging', usage: './gsc analyze', params: [], notes: ['Runs analyzers and reports findings'], examples: ['./gsc analyze'] },
+            { name: 'implement', description: 'Execute implementation with all memory patterns', usage: './gsc implement', params: [], notes: ['Runs edits following MTM patterns'], examples: ['./gsc implement'] },
+            { name: 'memory', description: 'Manage memory files and integrity', usage: './gsc memory [--update <type> --pattern <pattern>]', params: ['--update', '--pattern'], notes: ['Types: avalonia-ui-memory, debugging-memory, memory, avalonia-custom-controls-memory'], examples: ['./gsc memory', './gsc memory --update avalonia-ui-memory --pattern "DataGrid binding fix"'] },
+            { name: 'validate', description: 'Run validation quality gates', usage: './gsc validate [--memory-only]', params: ['--memory-only'], notes: ['Checks constitutional and manufacturing gates'], examples: ['./gsc validate', './gsc validate --memory-only'] },
+            { name: 'status', description: 'Show workflow progress and performance', usage: './gsc status [--performance] [--json]', params: ['--performance', '--json'], notes: ['Shows lock status and degradation mode'], examples: ['./gsc status', './gsc status --performance'] },
+            { name: 'rollback', description: 'Reset workflow to safe checkpoint or full reset', usage: './gsc rollback [--full-reset] [--preserve-memory]', params: ['--full-reset', '--preserve-memory'], notes: ['Resets to start of current phase by default'], examples: ['./gsc rollback', './gsc rollback --full-reset'] },
+            { name: 'help', description: 'Show help with memory-aware guidance', usage: './gsc help [topic] [--format html|console|browser]', params: ['topic', '--format'], notes: ['Opens this interactive help when format=browser'], examples: ['./gsc help', './gsc help commands --format console'] },
+            { name: 'update', description: 'Update spec sections with backups and validation', usage: './gsc update --file <spec> --section <name> --operation insert|append|replace|remove|suggest [--content <text>|--contentPath <file>] [--validate] [--force]', params: ['--file', '--section', '--operation', '--content', '--contentPath', '--validate', '--force'], notes: ['Creates section if missing', 'Backs up before modifying', 'Respects collaboration locks'], examples: ['./gsc update --file specs/master/spec.md --section "Requirements" --operation insert --content "- New requirement" --validate', './gsc update --file specs/master/spec.md --section "Clarifications" --operation replace --contentPath updates.md --force'] }
         ];
         const container = document.getElementById('commands');
         const search = document.getElementById('search');
@@ -159,7 +160,11 @@
             list.forEach(c => {
                 const el = document.createElement('div');
                 el.className = 'cmd';
-                el.innerHTML = `<h3>${c.name}</h3><p>${c.description}</p><p><code>./gsc ${c.name}</code></p>`;
+                const params = c.params && c.params.length ? `<p class="muted">Params: ${c.params.join(', ')}</p>` : '';
+                const notes = c.notes && c.notes.length ? `<ul class="muted">${c.notes.map(n => `<li>${n}</li>`).join('')}</ul>` : '';
+                const examples = c.examples && c.examples.length ? `<div class="muted">Examples:<br>${c.examples.map(ex => `<code>${ex}</code>`).join('<br>')}</div>` : '';
+                const usage = c.usage ? `<p><strong>Usage:</strong> <code>${c.usage}</code></p>` : '';
+                el.innerHTML = `<h3>${c.name}</h3><p>${c.description}</p>${usage}${params}${notes}${examples}`;
                 container.appendChild(el);
             });
         }

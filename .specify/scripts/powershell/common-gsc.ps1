@@ -36,7 +36,7 @@ $script:PerformanceTargets = @{
 $script:GSCCommands = @(
     "constitution", "specify", "clarify", "plan", "task",
     "analyze", "implement", "memory", "validate", "status",
-    "rollback", "help"
+    "rollback", "help", "update"
 )
 
 <#
@@ -63,7 +63,7 @@ function Initialize-GSCEnvironment {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("constitution", "specify", "clarify", "plan", "task", "analyze", "implement", "memory", "validate", "status", "rollback", "help")]
+    [ValidateSet("constitution", "specify", "clarify", "plan", "task", "analyze", "implement", "memory", "validate", "status", "rollback", "help", "update")]
         [string]$CommandName,
 
         [Parameter(Mandatory = $false)]

@@ -458,3 +458,27 @@ jobs:
 ---
 
 ## *Quickstart guide generated: September 28, 2025*
+
+### Scenario 6: Updating Specs Safely with Backups (/gsc/update)
+
+Objective: Make targeted edits to spec sections with automatic backups, lock handling, and optional validation.
+
+```
+# Suggest changes (no write) for a section
+pwsh -File .specify/scripts/gsc/gsc-update.ps1 -File specs/master/spec.md -Section "Requirements" -Operation suggest -Json
+
+# Insert content into a section (creates section if missing)
+pwsh -File .specify/scripts/gsc/gsc-update.ps1 -File specs/master/spec.md -Section "Requirements" -Operation insert -Content "- New acceptance criteria" -ValidateAfter
+
+# Replace a section from file contents
+pwsh -File .specify/scripts/gsc/gsc-update.ps1 -File specs/master/spec.md -Section "Plan" -Operation replace -ContentPath specs/master/plan.md -Force
+
+# Remove a section
+pwsh -File .specify/scripts/gsc/gsc-update.ps1 -File specs/master/spec.md -Section "Deprecated" -Operation remove
+
+# Notes
+# - Backups are stored under .specify/state/backups
+# - Decision records are written under specs/master/decisions
+# - Collaboration lock is respected; use -Force to bypass when permitted
+# - Use -Json for contract-compliant output (success, command, executionTime, etc.)
+```

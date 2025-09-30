@@ -94,6 +94,12 @@ commands:
     usage: "./gsc help [topic] [--format html|console|browser]"
     memoryIntegration: false
 
+  update:
+    description: "Safely update spec sections with backups, lock handling, and validation"
+    script: ".specify/scripts/gsc/gsc-update.sh"
+    usage: "./gsc update --file <spec> --section <name> --operation insert|append|replace|remove|suggest [--content <text>|--contentPath <file>] [--validate] [--force]"
+    memoryIntegration: false
+
 # Performance Targets
 performance:
   commandExecutionLimit: 30 # seconds
