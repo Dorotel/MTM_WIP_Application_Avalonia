@@ -96,12 +96,6 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ITransferService, TransferService>();
         services.TryAddSingleton<IColumnConfigurationService, TransferColumnConfigurationService>();
 
-        // GSC Enhancement services (stubs) - safe singletons
-        services.TryAddSingleton<IMemoryIntegrationService, MemoryIntegrationService>();
-        services.TryAddSingleton<IGSCOrchestrationService, GSCOrchestrationService>();
-        services.TryAddSingleton<ICrossPlatformValidationService, CrossPlatformValidationService>();
-        services.TryAddSingleton<IWorkflowStateService, WorkflowStateService>();
-
         // ViewModels - register only those that exist and compile
         services.TryAddTransient<MainWindowViewModel>();
         services.TryAddTransient<MainViewViewModel>();
