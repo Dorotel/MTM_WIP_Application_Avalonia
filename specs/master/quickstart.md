@@ -463,7 +463,7 @@ jobs:
 
 Objective: Make targeted edits to spec sections with automatic backups, lock handling, and optional validation.
 
-```
+```bash
 # Suggest changes (no write) for a section
 pwsh -File .specify/scripts/gsc/gsc-update.ps1 -File specs/master/spec.md -Section "Requirements" -Operation suggest -Json
 

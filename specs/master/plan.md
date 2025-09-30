@@ -1,10 +1,8 @@
 
-# Implementation Plan: Complete GitHub Spec Commands (GSC) Enhancement System with Memory Integration
+# Implementation Plan: [FEATURE]
 
-**Branch**: `003-complete-github-spec` | **Date**: September 28, 2025 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/**Phase 2**: Task generation (/tasks command creates tasks.md from design artifacts)  
-**Phase 3**: Implementation execution (follow tasks.md with constitutional compliance)  
-**Phase 4**: Validation and testing (execute quickstart.md scenarios, performance validation)-complete-github-spec/spec.md`
+**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
 ## Execution Flow (/plan command scope)
 
@@ -36,19 +34,19 @@
 
 ## Summary
 
-Implement a comprehensive enhancement to the existing GitHub Spec Commands (GSC) system that integrates accumulated knowledge from memory files, provides cross-platform compatibility via PowerShell Core and Git Bash, enhances validation workflows with memory-driven quality gates, and adds new GSC commands (/memory, /validate, /status, /rollback) while maintaining manufacturing-grade reliability for 24/7 operations. The system will provide lock-based team collaboration, graceful performance degradation, full workflow reset rollback capabilities, and moderate security protection with checksum validation and basic encryption for memory files.
+[Extract from feature spec: primary requirement + technical approach from research]
 
 ## Technical Context
 
-**Language/Version**: PowerShell Core 7.0+ (Windows/macOS/Linux), Shell Script (Git Bash), JSON for state management  
-**Primary Dependencies**: PowerShell Core, @github/spec-kit framework integration, JSON.NET for state serialization  
-**Storage**: JSON-based state files, Memory files in Markdown format, Encrypted memory files at rest  
-**Testing**: PowerShell Pester testing framework, Cross-platform validation scripts, Memory integration tests  
-**Target Platform**: Windows (PowerShell + Git Bash), macOS (PowerShell Core + Bash), Linux (PowerShell Core + Bash)
-**Project Type**: Development workflow tooling enhancement (single enhanced system)  
-**Performance Goals**: GSC command execution <30 seconds, Memory file reading <5 seconds, State persistence <2 seconds  
-**Constraints**: 24/7 manufacturing operations support, Lock-based team collaboration, Graceful degradation capability  
-**Scale/Scope**: 11 GSC commands (7 enhanced + 4 new), 4+ memory file types, Cross-platform compatibility, Manufacturing-grade reliability
+**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
+**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
+**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
+**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Project Type**: [single/web/mobile - determines source structure]  
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
+**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
@@ -56,116 +54,103 @@ Implement a comprehensive enhancement to the existing GitHub Spec Commands (GSC)
 
 ### Code Quality Excellence Gate
 
-- [x] .NET 8.0 with nullable reference types enabled (GSC system uses PowerShell/JSON - .NET integration via existing MTM patterns)
-- [x] MVVM Community Toolkit patterns (NO ReactiveUI) (Applied to memory integration service components)
-- [x] Microsoft.Extensions dependency injection (Used for GSC service registrations)
-- [x] Centralized error handling via Services.ErrorHandling.HandleErrorAsync() (GSC commands integrate with existing error handling)
-- [x] Naming conventions: PascalCase classes/methods/properties, camelCase with underscore prefix for fields (Applied to GSC service classes)
+- [ ] .NET 8.0 with nullable reference types enabled
+- [ ] MVVM Community Toolkit patterns (NO ReactiveUI)
+- [ ] Microsoft.Extensions dependency injection
+- [ ] Centralized error handling via Services.ErrorHandling.HandleErrorAsync()
+- [ ] Naming conventions: PascalCase classes/methods/properties, camelCase with underscore prefix for fields
 
 ### Testing Standards Gate
 
-- [x] Unit tests with MVVM Community Toolkit patterns planned (GSC command logic, memory integration services)
-- [x] Integration tests for service interactions planned (GSC workflow orchestration, memory file operations)
-- [x] UI automation tests for workflows planned (GSC command execution via terminals, state management)
-- [x] Cross-platform tests (Windows/macOS/Linux/Android) planned (PowerShell Core + Git Bash execution validation)
-- [x] End-to-end manufacturing operator workflow tests planned (Complete GSC workflows with memory integration)
+- [ ] Unit tests with MVVM Community Toolkit patterns planned
+- [ ] Integration tests for service interactions planned
+- [ ] UI automation tests for workflows planned
+- [ ] Cross-platform tests (Windows/macOS/Linux/Android) planned
+- [ ] End-to-end manufacturing operator workflow tests planned
 
 ### User Experience Consistency Gate
 
-- [x] Avalonia UI 11.3.4 with semantic theming system (GSC commands enhance existing MTM application development)
-- [x] Responsive layouts (1024x768 to 4K) planned (GSC-developed features follow responsive patterns)
-- [x] Material Design iconography usage (Memory integration maintains icon consistency)
-- [x] Manufacturing operator-optimized workflows (minimal clicks) (GSC commands streamline development for operator-focused features)
+- [ ] Avalonia UI 11.3.4 with semantic theming system
+- [ ] Responsive layouts (1024x768 to 4K) planned
+- [ ] Material Design iconography usage
+- [ ] Manufacturing operator-optimized workflows (minimal clicks)
 
 ### Performance Requirements Gate
 
-- [x] Database operations under 30 seconds timeout (GSC workflow maintains database performance standards)
-- [x] UI responsiveness during concurrent operations (GSC commands don't block existing UI operations)
-- [x] Memory optimization for 8+ hour sessions (GSC state management designed for long development sessions)
-- [x] MySQL connection pooling (5-100 connections) (GSC commands utilize existing connection patterns)
-- [x] Startup time under 10 seconds target (GSC commands have independent startup, don't affect app startup)
+- [ ] Database operations under 30 seconds timeout
+- [ ] UI responsiveness during concurrent operations
+- [ ] Memory optimization for 8+ hour sessions
+- [ ] MySQL connection pooling (5-100 connections)
+- [ ] Startup time under 10 seconds target
 
 ### GSC Workflow Standards Gate
 
-- [x] Constitution validation executed before changes (Constitution validation is core GSC functionality)
-- [x] Memory file integration planned for appropriate GSC commands (Core requirement - all 11 commands integrate memory files)
-- [x] Cross-platform GSC execution (Windows/macOS/Linux) validated (PowerShell Core 7.0+ + Git Bash compatibility)
-- [x] Spec-kit compatibility requirements addressed (@github/spec-kit integration with slash commands)
-- [x] GSC command performance targets (<30 seconds execution, <5 seconds memory file reading) (Performance targets defined in FR-021, FR-022)
+- [ ] Constitution validation executed before changes
+- [ ] Memory file integration planned for appropriate GSC commands
+- [ ] Cross-platform GSC execution (Windows/macOS/Linux) validated
+- [ ] Spec-kit compatibility requirements addressed
+- [ ] GSC command performance targets (<30 seconds execution, <5 seconds memory file reading)
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```bash
-specs/003-complete-github-spec/
-├── plan.md              # This file (/plan command output) ✅
-├── research.md          # Phase 0 output (/plan command) ✅
-├── data-model.md        # Phase 1 output (/plan command) ✅
-├── quickstart.md        # Phase 1 output (/plan command) ✅
-├── contracts/           # Phase 1 output (/plan command) ✅
+specs/[###-feature]/
+├── plan.md              # This file (/plan command output)
+├── research.md          # Phase 0 output (/plan command)
+├── data-model.md        # Phase 1 output (/plan command)
+├── quickstart.md        # Phase 1 output (/plan command)
+├── contracts/           # Phase 1 output (/plan command)
 └── tasks.md             # Phase 2 output (/tasks command - NOT created by /plan)
 ```
 
 ### Source Code (repository root)
+<!--
+  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
+  for this feature. Delete unused options and expand the chosen structure with
+  real paths (e.g., apps/admin, packages/something). The delivered plan must
+  not include Option labels.
+-->
 
 ```bash
-# GSC Enhancement System Structure
-.specify/
-├── scripts/
-│   ├── gsc/                           # Enhanced GSC command implementations
-│   │   ├── gsc-constitution.ps1/.sh   # Constitution validation with memory integration
-│   │   ├── gsc-specify.ps1/.sh         # Feature specification with Avalonia UI memory
-│   │   ├── gsc-clarify.ps1/.sh         # Clarification with debugging memory workflows
-│   │   ├── gsc-plan.ps1/.sh            # Planning with universal development patterns
-│   │   ├── gsc-task.ps1/.sh            # Task execution with custom control memory
-│   │   ├── gsc-analyze.ps1/.sh         # Analysis with systematic debugging
-│   │   ├── gsc-implement.ps1/.sh       # Implementation with all memory patterns
-│   │   ├── gsc-memory.ps1/.sh          # NEW: Memory file management and display
-│   │   ├── gsc-validate.ps1/.sh        # NEW: Workflow validation and quality gates
-│   │   ├── gsc-status.ps1/.sh          # NEW: Workflow progress and compliance status
-│   │   ├── gsc-rollback.ps1/.sh        # NEW: Full workflow reset with memory preservation
-│   │   └── gsc-orchestrator.ps1/.sh    # Master workflow orchestration
-│   ├── powershell/
-│   │   ├── common-gsc.ps1              # Shared GSC utilities and functions
-│   │   ├── memory-integration.ps1       # Memory file reading and processing
-│   │   └── cross-platform-utils.ps1    # Cross-platform compatibility utilities
-│   └── validation/
-│       ├── validate-constitution.ps1    # Enhanced constitution validation
-│       ├── validate-specify.ps1         # Specification validation with memory
-│       ├── validate-clarify.ps1         # Clarification completeness validation
-│       ├── validate-analyze.ps1         # Analysis quality validation
-│       └── validate-implement.ps1       # Implementation compliance validation
-├── state/                              # JSON-based workflow state management
-│   ├── gsc-workflow.json               # Workflow progress and phase tracking
-│   ├── validation-status.json          # Validation results and compliance status
-│   ├── constitutional-compliance.json   # Constitutional adherence tracking
-│   └── memory-integration.json          # Memory pattern application tracking
-├── config/
-│   ├── spec-kit.yml                    # @github/spec-kit integration configuration
-│   └── memory-paths.json               # Memory file location configuration
-└── templates/
-    └── gsc-command-template.ps1        # Standard template for new GSC commands
+# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
+src/
+├── models/
+├── services/
+├── cli/
+└── lib/
 
-# Enhanced Services (existing MTM structure)
-Services/
-├── MemoryIntegrationService.cs         # Memory file reading and processing service
-├── GSCOrchestrationService.cs          # GSC workflow coordination service
-├── CrossPlatformValidationService.cs   # Platform compatibility validation
-└── WorkflowStateService.cs             # JSON state persistence and management
-
-# Enhanced Testing Structure
 tests/
-├── GSC/
-│   ├── unit/                           # GSC command unit tests
-│   ├── integration/                    # GSC workflow integration tests
-│   ├── cross-platform/                 # Windows/macOS/Linux validation tests
-│   └── memory-integration/             # Memory file processing tests
-└── performance/
-    └── gsc-performance-tests.ps1       # GSC command performance validation
+├── contract/
+├── integration/
+└── unit/
+
+# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
+backend/
+├── src/
+│   ├── models/
+│   ├── services/
+│   └── api/
+└── tests/
+
+frontend/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   └── services/
+└── tests/
+
+# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
+api/
+└── [same as backend above]
+
+ios/ or android/
+└── [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
-**Structure Decision**: GSC Enhancement System follows the existing .specify/ directory structure with enhanced cross-platform script organization. PowerShell and shell script pairs ensure Git Bash compatibility. JSON-based state management provides platform independence. Integration with existing MTM Services/ directory maintains architectural consistency.
+**Structure Decision**: [Document the selected structure and reference the real
+directories captured above]
 
 ## Phase 0: Outline & Research
 
@@ -188,9 +173,7 @@ tests/
    - Rationale: [why chosen]
    - Alternatives considered: [what else evaluated]
 
-**Output**: research.md with all technical decisions documented and validated
-
-**Phase 0 Status**: ✅ COMPLETE - All technical context clarified, no NEEDS CLARIFICATION remaining
+**Output**: research.md with all NEEDS CLARIFICATION resolved
 
 ## Phase 1: Design & Contracts
 
@@ -272,19 +255,19 @@ tests/
 
 **Phase Status**:
 
-- [x] Phase 0: Research complete (/plan command) ✅
-- [x] Phase 1: Design complete (/plan command) ✅
-- [x] Phase 2: Task planning approach described (/plan command) ✅
-- [x] Phase 3: Tasks generated (/tasks command) ✅
+- [ ] Phase 0: Research complete (/plan command)
+- [ ] Phase 1: Design complete (/plan command)
+- [ ] Phase 2: Task planning complete (/plan command - describe approach only)
+- [ ] Phase 3: Tasks generated (/tasks command)
 - [ ] Phase 4: Implementation complete
 - [ ] Phase 5: Validation passed
 
 **Gate Status**:
 
-- [x] Initial Constitution Check: PASS ✅
-- [x] Post-Design Constitution Check: PASS ✅
-- [x] All NEEDS CLARIFICATION resolved ✅
-- [x] Complexity deviations documented (None required) ✅
+- [ ] Initial Constitution Check: PASS
+- [ ] Post-Design Constitution Check: PASS
+- [ ] All NEEDS CLARIFICATION resolved
+- [ ] Complexity deviations documented
 
 ---
 *Based on Constitution v2.0.0 - See `/memory/constitution.md`*
