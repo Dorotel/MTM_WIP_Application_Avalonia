@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="4" errors="0" failures="4" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-09-29" time="21:14:53">
+  <environment platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk1\Partition3" user-domain="JOHNSPC" clr-version="9.0.8" cwd="C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia" user="johnk" machine-name="JOHNSPC" nunit-version="2.5.8.0" os-version="10.0.26100" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="0.4965" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\tests\GSC\copilot-chat\test-copilot-chat-memory-integration.ps1" executed="True" result="Failure" success="False" time="0.4965" asserts="0" description="C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\tests\GSC\copilot-chat\test-copilot-chat-memory-integration.ps1">
+        <results>
+          <test-suite type="TestFixture" name="GSC GitHub Copilot Chat Memory Integration Tests" executed="True" result="Failure" success="False" time="0.2078" asserts="0" description="GSC GitHub Copilot Chat Memory Integration Tests">
+            <results>
+              <test-suite type="TestFixture" name="GSC GitHub Copilot Chat Memory Integration Tests.Memory Context Injection for Chat Commands" executed="True" result="Failure" success="False" time="0.0936" asserts="0" description="GSC GitHub Copilot Chat Memory Integration Tests.Memory Context Injection for Chat Commands">
+                <results>
+                  <test-case description="Should inject relevant memory patterns into Copilot Chat slash commands" name="GSC GitHub Copilot Chat Memory Integration Tests.Memory Context Injection for Chat Commands.Should inject relevant memory patterns into Copilot Chat slash commands" time="0.072" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'Get-CopilotChatMemoryContext' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\tests\GSC\copilot-chat\test-copilot-chat-memory-integration.ps1:53</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="GSC GitHub Copilot Chat Memory Integration Tests.Chat Response Enhancement with Memory Patterns" executed="True" result="Failure" success="False" time="0.1154" asserts="0" description="GSC GitHub Copilot Chat Memory Integration Tests.Chat Response Enhancement with Memory Patterns">
+                <results>
+                  <test-case description="Should enhance Copilot Chat responses with memory pattern insights" name="GSC GitHub Copilot Chat Memory Integration Tests.Chat Response Enhancement with Memory Patterns.Should enhance Copilot Chat responses with memory pattern insights" time="0.0168" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'Get-EnhancedCopilotChatResponse' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\tests\GSC\copilot-chat\test-copilot-chat-memory-integration.ps1:90</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="GSC GitHub Copilot Chat Memory Integration Tests.Manufacturing Domain Context Integration" executed="True" result="Failure" success="False" time="0.1557" asserts="0" description="GSC GitHub Copilot Chat Memory Integration Tests.Manufacturing Domain Context Integration">
+                <results>
+                  <test-case description="Should provide manufacturing-specific context enhancements" name="GSC GitHub Copilot Chat Memory Integration Tests.Manufacturing Domain Context Integration.Should provide manufacturing-specific context enhancements" time="0.0145" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'Get-ManufacturingCopilotChatContext' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\tests\GSC\copilot-chat\test-copilot-chat-memory-integration.ps1:121</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="GSC GitHub Copilot Chat Memory Integration Tests.Performance Requirements for Chat Integration" executed="True" result="Failure" success="False" time="0.1775" asserts="0" description="GSC GitHub Copilot Chat Memory Integration Tests.Performance Requirements for Chat Integration">
+                <results>
+                  <test-case description="Should provide memory context within Chat response time limits" name="GSC GitHub Copilot Chat Memory Integration Tests.Performance Requirements for Chat Integration.Should provide memory context within Chat response time limits" time="0.0164" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'Get-CopilotChatMemoryContext' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\johnk\source\repos\MTM_WIP_Application_Avalonia\tests\GSC\copilot-chat\test-copilot-chat-memory-integration.ps1:153</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

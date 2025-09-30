@@ -34,13 +34,13 @@ Describe "GSC GitHub Copilot Chat Memory Integration Tests" {
 
         # Import GSC modules for testing (will fail initially)
         try {
-            Import-Module ".specify/scripts/powershell/memory-integration.ps1" -Force
-            Import-Module ".specify/scripts/powershell/common-gsc.ps1" -Force
+            if (Test-Path ".specify/scripts/powershell/memory-integration.ps1") { . ".specify/scripts/powershell/memory-integration.ps1" }
+            if (Test-Path ".specify/scripts/powershell/common-gsc.ps1") { . ".specify/scripts/powershell/common-gsc.ps1" }
             $script:modulesAvailable = $true
         }
         catch {
             $script:modulesAvailable = $false
-            Write-Warning "GSC Copilot Chat integration modules not available - expected for TDD"
+            Write-Warning "GSC Copilot Chat integration scripts not available - expected for TDD"
         }
     }
 

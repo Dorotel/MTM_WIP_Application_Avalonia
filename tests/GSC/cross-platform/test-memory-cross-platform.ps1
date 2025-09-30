@@ -25,13 +25,13 @@ Describe "GSC Cross-Platform Memory File Access Tests" {
 
         # Import GSC modules for testing (will fail initially)
         try {
-            Import-Module ".specify/scripts/powershell/cross-platform-utils.ps1" -Force
-            Import-Module ".specify/scripts/powershell/memory-integration.ps1" -Force
+            if (Test-Path ".specify/scripts/powershell/cross-platform-utils.ps1") { . ".specify/scripts/powershell/cross-platform-utils.ps1" }
+            if (Test-Path ".specify/scripts/powershell/memory-integration.ps1") { . ".specify/scripts/powershell/memory-integration.ps1" }
             $modulesAvailable = $true
         }
         catch {
             $modulesAvailable = $false
-            Write-Warning "GSC cross-platform modules not available - expected for TDD"
+            Write-Warning "GSC cross-platform scripts not available - expected for TDD"
         }
     }
 

@@ -215,11 +215,11 @@
 
 - [x] **T101** [P] Add contract unit test for /gsc/update at tests/GSC/unit/test-gsc-update-contract.ps1 ✅ COMPLETE
 - [x] **T102** Resolve duplicate hashtable key error in gsc-update.ps1 and align output with contract (success, command, executionTime) ✅ COMPLETE
-- [ ] **T103** Add unit tests for insert/append/replace/remove modes (content writes, section creation, write counts)
-- [ ] **T104** Add lock-behavior tests (with and without -Force) using collaboration-lock-manager mocks
-- [ ] **T105** Add integration tests covering backups, decision records, and optional -ValidateAfter flow
-- [ ] **T106** Add cross-platform execution tests for /gsc/update (Windows/macOS/Linux via .sh wrapper)
-- [ ] **T107** Validate interactive help content specifically for update command (performance and completeness)
+- [x] **T103** Add unit tests for insert/append/replace/remove modes (content writes, section creation, write counts)
+- [x] **T104** Add lock-behavior tests (with and without -Force) using collaboration-lock-manager mocks
+- [x] **T105** Add integration tests covering backups, decision records, and optional -ValidateAfter flow
+- [x] **T106** Add cross-platform execution tests for /gsc/update (Windows/macOS/Linux via .sh wrapper)
+- [x] **T107** Validate interactive help content specifically for update command (performance and completeness)
 - [x] **T108** Update quickstart.md with /gsc/update usage examples ✅ COMPLETE
 
 ## Dependencies

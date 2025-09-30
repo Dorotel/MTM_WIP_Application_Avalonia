@@ -4,9 +4,10 @@
 
 Describe "GSC Cross-Platform Execution - Windows" {
     BeforeAll {
+        $script:modulesAvailable = $false
         try {
-            Import-Module ".specify/scripts/powershell/cross-platform-utils.ps1" -Force
-            $modulesAvailable = $true
+            if (Test-Path ".specify/scripts/powershell/cross-platform-utils.ps1") { . ".specify/scripts/powershell/cross-platform-utils.ps1" }
+            $script:modulesAvailable = $true
         }
         catch {
             $script:modulesAvailable = $false

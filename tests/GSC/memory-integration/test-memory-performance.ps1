@@ -25,15 +25,15 @@ Describe "GSC Memory Integration Performance Tests" {
         }
 
         # Import GSC modules for testing (will fail initially)
-        try {
-            Import-Module ".specify/scripts/powershell/memory-integration.ps1" -Force
-            Import-Module ".specify/scripts/powershell/common-gsc.ps1" -Force
-            $modulesAvailable = $true
-        }
-        catch {
-            $modulesAvailable = $false
-            Write-Warning "GSC performance monitoring modules not available - expected for TDD"
-        }
+            try {
+                if (Test-Path ".specify/scripts/powershell/memory-integration.ps1") { . ".specify/scripts/powershell/memory-integration.ps1" }
+                if (Test-Path ".specify/scripts/powershell/common-gsc.ps1") { . ".specify/scripts/powershell/common-gsc.ps1" }
+                $modulesAvailable = $true
+            }
+            catch {
+                $modulesAvailable = $false
+                Write-Warning "GSC memory integration scripts not available - expected for TDD"
+            }
     }
 
     Context "Memory File Reading Performance" {

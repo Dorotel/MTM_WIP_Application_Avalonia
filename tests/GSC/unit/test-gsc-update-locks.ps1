@@ -13,8 +13,8 @@ Describe "GSC Update Command - Lock Handling" {
         if (Test-Path $global:stateFile) { $global:stateBackup = Get-Content -Path $global:stateFile -Raw }
 
         $lockState = @{
-            workflowId = [guid]::NewGuid().ToString()
-            currentPhase = 'plan'
+            workflowId            = [guid]::NewGuid().ToString()
+            currentPhase          = 'plan'
             teamCollaborationLock = @{ isLocked = $true; lockOwner = 'tester'; lockExpiration = (Get-Date).AddHours(1).ToString('o') }
         } | ConvertTo-Json
         $lockState | Out-File -FilePath $global:stateFile -Encoding UTF8

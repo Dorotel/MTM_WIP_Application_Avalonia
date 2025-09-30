@@ -526,19 +526,21 @@ function Invoke-CrossPlatformCommand {
     }
 }
 
-# Export functions for use by GSC commands
-Export-ModuleMember -Function @(
-    "Get-PlatformInfo",
-    "Get-HomeDirectory",
-    "Get-UserName",
-    "Get-PathSeparator",
-    "Test-ElevatedPermissions",
-    "Join-PathCrossPlatform",
-    "ConvertTo-PlatformPath",
-    "Test-PowerShellCoreCompatibility",
-    "New-ShellWrapper",
-    "Invoke-CrossPlatformCommand"
-)
+# Export functions for use by GSC commands (only when loaded as a module)
+if ($ExecutionContext.SessionState.Module) {
+    Export-ModuleMember -Function @(
+        "Get-PlatformInfo",
+        "Get-HomeDirectory",
+        "Get-UserName",
+        "Get-PathSeparator",
+        "Test-ElevatedPermissions",
+        "Join-PathCrossPlatform",
+        "ConvertTo-PlatformPath",
+        "Test-PowerShellCoreCompatibility",
+        "New-ShellWrapper",
+        "Invoke-CrossPlatformCommand"
+    )
+}
 
 # Module initialization
 Write-Verbose "GSC Cross-Platform Utilities Module v$script:CrossPlatformModuleVersion loaded successfully"

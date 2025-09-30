@@ -5,25 +5,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>GSC Interactive Help</title>
+    <meta name="description"
+        content="GitHub Spec Commands (GSC) interactive help with memory integration, workflows, and troubleshooting." />
     <style>
         :root {
             --primary: #0078D4;
             --bg: #fff;
             --border: #e0e0e0;
-            --muted: #666;
+            --muted: #555;
+            --text: #1a1a1a;
+            --code-bg: #f6f6f6;
         }
 
         body {
             font-family: Segoe UI, Roboto, Arial, sans-serif;
             margin: 16px;
             background: var(--bg);
-        }
-
-        .card {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
+            color: var(--text);
+            line-height: 1.45;
         }
 
         .title {
@@ -32,28 +31,6 @@
             padding: 8px 12px;
             border-radius: 6px;
             display: inline-block;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 12px;
-        }
-
-        .cmd {
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 12px;
-        }
-
-        .cmd h3 {
-            margin: 0 0 8px;
-        }
-
-        code {
-            background: #f6f6f6;
-            padding: 2px 6px;
-            border-radius: 4px;
         }
 
         nav {
@@ -73,72 +50,133 @@
             text-decoration: underline;
         }
 
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: #fff;
+        }
+
         .muted {
             color: var(--muted);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .cmd {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+        }
+
+        .cmd h3 {
+            margin: 0 0 8px;
+            font-size: 16px;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
         }
 
         input[type="search"] {
             padding: 8px 10px;
             width: 100%;
-            max-width: 420px;
+            max-width: 480px;
             border: 1px solid var(--border);
             border-radius: 6px;
         }
 
-        .hidden {
-            display: none;
+        ul {
+            padding-left: 18px;
         }
     </style>
 </head>
 
 <body>
     <h1 class="title">GSC Interactive Help</h1>
-    <nav>
+    <nav aria-label="Sections">
         <a href="#commands">Commands</a>
         <a href="#workflows">Workflows</a>
         <a href="#memory">Memory Integration</a>
         <a href="#troubleshooting">Troubleshooting</a>
     </nav>
-    <div class="card">
-        <p>This page provides an overview of the GitHub Spec Commands (GSC) enhancement system with memory integration,
-            performance targets, and cross-platform support. See also <a
-                href="gsc-enhancement-system.md">gsc-enhancement-system.md</a>.</p>
-        <p class="muted">Tip: use the search box to filter commands.</p>
-        <input id="search" type="search" placeholder="Search commands... (e.g., validate, status, rollback)" />
+
+    <div class="card" role="region" aria-labelledby="intro">
+        <h2 id="intro">Overview</h2>
+        <p>This guide explains the GitHub Spec Commands (GSC) enhancement system with memory integration, performance
+            targets, and cross-platform support. It follows documentation best practices—clear structure, readable
+            language,
+            and task-oriented organization.</p>
+        <p>See also <a href="gsc-enhancement-system.md">gsc-enhancement-system.md</a>. Use the search box to filter
+            commands.</p>
+        <label for="search" class="muted">Search commands</label><br />
+        <input id="search" type="search" placeholder="Search commands… (e.g., validate, status, rollback)"
+            aria-label="Search commands" />
     </div>
-    <div class="card" id="commands-card">
+
+    <div class="card" id="quickstart" role="region" aria-labelledby="quickstart-title">
+        <h2 id="quickstart-title">Quick Start</h2>
+        <ol>
+            <li><strong>Plan</strong>: clarify goals and users; create or review <code>plan.md</code> and
+                <code>tasks.md</code>.</li>
+            <li><strong>Execute</strong>: run spec-driven workflow (see Workflows below).</li>
+            <li><strong>Validate</strong>: run quality gates; review performance and memory checks.</li>
+            <li><strong>Recover</strong>: on failures, use rollback and rerun implement.</li>
+        </ol>
+    </div>
+
+    <div class="card" id="commands-card" role="region" aria-labelledby="commands">
         <h2 id="commands">Commands</h2>
-        <div class="grid" id="commands"></div>
+        <p class="muted">Each command includes a description, usage, optional parameters, notes, and examples.</p>
+        <div class="grid" id="commandsList"></div>
     </div>
-    <div class="card" id="workflows">
-        <h2>Workflows</h2>
+
+    <div class="card" id="workflows" role="region" aria-labelledby="workflows-title">
+        <h2 id="workflows-title">Workflows</h2>
         <ul>
             <li><strong>Spec-Driven</strong>: constitution → specify → clarify → plan → task → analyze → implement →
                 validate → status</li>
-            <li><strong>Error Recovery</strong>: validate → status → rollback (-FullReset optional) → implement</li>
-            <li><strong>Cross-Platform</strong>: use PowerShell Core 7+ or shell wrappers under
-                <code>.specify/scripts/gsc/*.sh</code>
-            </li>
+            <li><strong>Error Recovery</strong>: validate → status → rollback (<code>--full-reset</code> optional) →
+                implement</li>
+            <li><strong>Cross-Platform</strong>: use PowerShell Core 7+ or shell wrappers at
+                <code>.specify/scripts/gsc/*.sh</code></li>
         </ul>
     </div>
-    <div class="card" id="memory">
-        <h2>Memory Integration</h2>
-        <p>Memory files guide generation and validation. Access is logged and protected.</p>
+
+    <div class="card" id="memory" role="region" aria-labelledby="memory-title">
+        <h2 id="memory-title">Memory Integration</h2>
+        <p>Memory files guide generation and validation. Access is logged and protected. Locations are auto-detected
+            using
+            <code>.specify/config/memory-paths.json</code>. Performance targets aim for total processing under 5
+            seconds.
+        </p>
         <ul>
-            <li>Security: checksum-validator.ps1, memory-encryption.ps1, access-logger.ps1</li>
-            <li>Performance: memory-processing targets &lt; 5s</li>
-            <li>Location: auto-detected via memory-paths.json</li>
+            <li><strong>Security</strong>: checksum validation, optional encryption, and access logging</li>
+            <li><strong>Performance</strong>: cached reads; pattern extraction targets &lt; 3s</li>
+            <li><strong>Location</strong>: per-OS base directory and filenames defined via configuration</li>
         </ul>
     </div>
-    <div class="card" id="troubleshooting">
-        <h2>Troubleshooting</h2>
+
+    <div class="card" id="troubleshooting" role="region" aria-labelledby="troubleshooting-title">
+        <h2 id="troubleshooting-title">Troubleshooting</h2>
         <ul>
-            <li>Use <code>./gsc help</code> for command JSON and examples</li>
-            <li>Check <code>.specify/state/gsc-workflow.json</code> for current phase</li>
-            <li>On failures, run <code>./gsc rollback -FullReset</code> then re-run implement</li>
+            <li>Use <code>./gsc help</code> for command JSON and examples.</li>
+            <li>Check <code>.specify/state/gsc-workflow.json</code> for current phase and state.</li>
+            <li>If a step fails, run <code>./gsc rollback --full-reset</code> (optional) and then rerun
+                <code>implement</code>.</li>
+            <li>Confirm PowerShell Core 7+ availability; use shell wrappers for macOS/Linux.</li>
         </ul>
     </div>
+
     <script>
+        // Command catalog
         const commands = [
             { name: 'constitution', description: 'Validate constitutional compliance with memory integration', usage: './gsc constitution [feature-description]', params: ['feature-description'], notes: ['Integrates memory patterns for validation'], examples: ['./gsc constitution "New inventory feature"'] },
             { name: 'specify', description: 'Create feature specification using Avalonia UI patterns', usage: './gsc specify [feature-description]', params: ['feature-description'], notes: ['Applies Avalonia UI memory patterns'], examples: ['./gsc specify "Add real-time inventory status panel"'] },
@@ -154,8 +192,10 @@
             { name: 'help', description: 'Show help with memory-aware guidance', usage: './gsc help [topic] [--format html|console|browser]', params: ['topic', '--format'], notes: ['Opens this interactive help when format=browser'], examples: ['./gsc help', './gsc help commands --format console'] },
             { name: 'update', description: 'Update spec sections with backups and validation', usage: './gsc update --file <spec> --section <name> --operation insert|append|replace|remove|suggest [--content <text>|--contentPath <file>] [--validate] [--force]', params: ['--file', '--section', '--operation', '--content', '--contentPath', '--validate', '--force'], notes: ['Creates section if missing', 'Backs up before modifying', 'Respects collaboration locks'], examples: ['./gsc update --file specs/master/spec.md --section "Requirements" --operation insert --content "- New requirement" --validate', './gsc update --file specs/master/spec.md --section "Clarifications" --operation replace --contentPath updates.md --force'] }
         ];
-        const container = document.getElementById('commands');
+
+        const container = document.getElementById('commandsList');
         const search = document.getElementById('search');
+
         function render(list) {
             container.innerHTML = '';
             list.forEach(c => {
@@ -169,10 +209,12 @@
                 container.appendChild(el);
             });
         }
+
         render(commands);
+
         search.addEventListener('input', (e) => {
-            const q = e.target.value.toLowerCase();
-            const filtered = commands.filter(c => c.name.includes(q) || c.description.toLowerCase().includes(q));
+            const q = (e.target.value || '').toLowerCase();
+            const filtered = commands.filter(c => c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q));
             render(filtered);
         });
     </script>

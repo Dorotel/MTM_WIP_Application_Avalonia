@@ -4,15 +4,16 @@
 
 Describe "GSC Team Collaboration Workflow (Scenario 2)" {
     BeforeAll {
+        $script:modulesAvailable = $false
         try {
-            Import-Module ".specify/scripts/powershell/common-gsc.ps1" -Force
-            Import-Module ".specify/scripts/powershell/memory-integration.ps1" -Force
-            Import-Module ".specify/scripts/powershell/cross-platform-utils.ps1" -Force
-            $modulesAvailable = $true
+            if (Test-Path ".specify/scripts/powershell/common-gsc.ps1") { . ".specify/scripts/powershell/common-gsc.ps1" }
+            if (Test-Path ".specify/scripts/powershell/memory-integration.ps1") { . ".specify/scripts/powershell/memory-integration.ps1" }
+            if (Test-Path ".specify/scripts/powershell/cross-platform-utils.ps1") { . ".specify/scripts/powershell/cross-platform-utils.ps1" }
+            $script:modulesAvailable = $true
         }
         catch {
-            $modulesAvailable = $false
-            Write-Warning "GSC modules not available yet - expected for initial TDD run"
+            $script:modulesAvailable = $false
+            Write-Warning "GSC scripts not available yet - expected for initial TDD run"
         }
     }
 
@@ -31,7 +32,7 @@ Describe "GSC Team Collaboration Workflow (Scenario 2)" {
         if ($modulesAvailable) {
             $validate = & .specify/scripts/gsc/gsc-validate.ps1 2>$null
             $validate | Should -Not -BeNullOrEmpty
-            $validate.overallStatus | Should -BeIn @("passed","warning","failed")
+            $validate.overallStatus | Should -BeIn @("passed", "warning", "failed")
         }
         else {
             $false | Should -Be $true -Because "Validate command not implemented yet (TDD)"

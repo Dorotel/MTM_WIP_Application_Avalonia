@@ -26,12 +26,12 @@ Describe "GSC Memory Pattern Extraction Tests" {
 
         # Import GSC modules for testing (will fail initially)
         try {
-            Import-Module ".specify/scripts/powershell/memory-integration.ps1" -Force
+            if (Test-Path ".specify/scripts/powershell/memory-integration.ps1") { . ".specify/scripts/powershell/memory-integration.ps1" }
             $modulesAvailable = $true
         }
         catch {
             $modulesAvailable = $false
-            Write-Warning "GSC memory integration module not available - expected for TDD"
+            Write-Warning "GSC memory integration script not available - expected for TDD"
         }
     }
 

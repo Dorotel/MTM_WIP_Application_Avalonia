@@ -178,7 +178,9 @@ function Initialize-WorkflowState {
     # Load existing state or create new
     if (Test-Path $stateFilePath) {
         try {
-            $workflowState = Get-Content $stateFilePath | ConvertFrom-Json
+            # Load existing state and convert to hashtable to allow dynamic updates
+            $loaded = Get-Content $stateFilePath -Raw | ConvertFrom-Json -AsHashtable
+            if ($null -eq $loaded) { $workflowState = New-WorkflowState } else { $workflowState = $loaded }
         }
         catch {
             Write-Warning "Corrupted workflow state file. Creating new state."

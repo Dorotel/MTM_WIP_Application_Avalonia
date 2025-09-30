@@ -4,14 +4,15 @@
 
 Describe "GSC New Feature Development Workflow (Scenario 1)" {
     BeforeAll {
+        $script:modulesAvailable = $false
         try {
-            Import-Module ".specify/scripts/powershell/common-gsc.ps1" -Force
-            Import-Module ".specify/scripts/powershell/memory-integration.ps1" -Force
-            $modulesAvailable = $true
+            if (Test-Path ".specify/scripts/powershell/common-gsc.ps1") { . ".specify/scripts/powershell/common-gsc.ps1" }
+            if (Test-Path ".specify/scripts/powershell/memory-integration.ps1") { . ".specify/scripts/powershell/memory-integration.ps1" }
+            $script:modulesAvailable = $true
         }
         catch {
             $script:modulesAvailable = $false
-            Write-Warning "GSC modules not available yet - expected for TDD"
+            Write-Warning "GSC scripts not available yet - expected for TDD"
         }
     }
 

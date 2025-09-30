@@ -4,13 +4,14 @@
 
 Describe "GSC Error Recovery and Rollback (Scenario 4)" {
     BeforeAll {
+        $script:modulesAvailable = $false
         try {
-            Import-Module ".specify/scripts/powershell/common-gsc.ps1" -Force
-            $modulesAvailable = $true
+            if (Test-Path ".specify/scripts/powershell/common-gsc.ps1") { . ".specify/scripts/powershell/common-gsc.ps1" }
+            $script:modulesAvailable = $true
         }
         catch {
             $script:modulesAvailable = $false
-            Write-Warning "GSC modules not available yet - expected for TDD"
+            Write-Warning "GSC scripts not available yet - expected for TDD"
         }
     }
 
