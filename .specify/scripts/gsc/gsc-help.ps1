@@ -14,7 +14,7 @@ try { if (Test-Path $commonModule) { Import-Module $commonModule -Force -ErrorAc
 try { if (Test-Path $memoryModule) { Import-Module $memoryModule -Force -ErrorAction Stop } } catch { if (Test-Path $memoryModule) { . $memoryModule } }
 
 function Get-CommandList {
-    $cmds = @("constitution","specify","clarify","plan","task","analyze","implement","memory","validate","status","update","rollback","help")
+    $cmds = @("constitution", "specify", "clarify", "plan", "task", "analyze", "implement", "memory", "validate", "status", "update", "rollback", "help")
     return $cmds
 }
 
@@ -22,19 +22,19 @@ function Build-HelpEntry {
     param([string]$Name, [hashtable]$Patterns)
     $desc = switch ($Name) {
         'constitution' { 'Validate constitutional compliance with memory integration' }
-        'specify'      { 'Create feature specification using Avalonia UI patterns' }
-        'clarify'      { 'Clarify requirements with debugging workflows' }
-        'plan'         { 'Generate technical plan with universal patterns' }
-        'task'         { 'Create tasks.md following MTM patterns' }
-        'analyze'      { 'Analyze repository and specs with systematic debugging' }
-        'implement'    { 'Execute implementation with all memory patterns' }
-        'memory'       { 'Manage memory files (GET/POST) and integrity' }
-        'validate'     { 'Run validation quality gates and checks' }
-        'status'       { 'Show workflow progress and performance' }
-        'update'       { 'Safely update spec files (backups, locks, optional validation)' }
-        'rollback'     { 'Reset workflow to safe checkpoint or full reset' }
-        'help'         { 'Show this help with memory-aware guidance' }
-        default        { 'GSC command' }
+        'specify' { 'Create feature specification using Avalonia UI patterns' }
+        'clarify' { 'Clarify requirements with debugging workflows' }
+        'plan' { 'Generate technical plan with universal patterns' }
+        'task' { 'Create tasks.md following MTM patterns' }
+        'analyze' { 'Analyze repository and specs with systematic debugging' }
+        'implement' { 'Execute implementation with all memory patterns' }
+        'memory' { 'Manage memory files (GET/POST) and integrity' }
+        'validate' { 'Run validation quality gates and checks' }
+        'status' { 'Show workflow progress and performance' }
+        'update' { 'Safely update spec files (backups, locks, optional validation)' }
+        'rollback' { 'Reset workflow to safe checkpoint or full reset' }
+        'help' { 'Show this help with memory-aware guidance' }
+        default { 'GSC command' }
     }
     $related = @()
     if ($Patterns -and $Patterns.Success) {
@@ -65,6 +65,20 @@ try {
     }
     if ($Json) { $result | ConvertTo-Json -Depth 10 | Write-Output } else { $result | Write-Output }
     exit 0
+}
+catch {
+    $fail = [ordered]@{ Success = $false; Command = 'help'; Message = "Help failed: $($_.Exception.Message)" }
+    [pscustomobject]$fail | Write-Output
+    exit 1
+}
+$result = Complete-GSCExecution -Environment $envInfo -Success $true -Message $msg -MemoryPatternsApplied @()
+$result.help = [ordered]@{
+    commands      = $entries
+    totalCommands = $entries.Count
+    memoryContext = @{ totalPatterns = ($patterns.TotalPatterns ?? 0); filesProcessed = ($patterns.FilesProcessed ?? 0) }
+}
+if ($Json) { $result | ConvertTo-Json -Depth 10 | Write-Output } else { $result | Write-Output }
+exit 0
 }
 catch {
     $fail = [ordered]@{ Success = $false; Command = 'help'; Message = "Help failed: $($_.Exception.Message)" }

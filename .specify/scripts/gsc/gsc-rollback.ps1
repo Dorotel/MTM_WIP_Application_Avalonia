@@ -103,3 +103,28 @@ catch {
     [pscustomobject]$fail | Write-Output
     exit 1
 }
+"Workflow rolled back to the beginning of phase '$afterPhase'. Memory preserved."
+}
+
+$result = Complete-GSCExecution -Environment $envInfo -Success $true -Message $msg -MemoryPatternsApplied @()
+$result.rollback = [ordered]@{
+    beforePhase   = $beforePhase
+    afterPhase    = $afterPhase
+    fullReset     = [bool]$FullReset
+    memorySummary = $memSummary
+    timestamp     = (Get-Date).ToString("o")
+}
+
+if ($Json) { $result | ConvertTo-Json -Depth 10 | Write-Output } else { $result | Write-Output }
+exit 0
+}
+catch {
+    $fail = [ordered]@{
+        Success   = $false
+        Command   = "rollback"
+        Message   = "Rollback failed: $($_.Exception.Message)"
+        timestamp = (Get-Date).ToString("o")
+    }
+    [pscustomobject]$fail | Write-Output
+    exit 1
+}

@@ -26,9 +26,9 @@ $script:MTMIntegrationEnabled = $true
 
 # Performance targets from constitutional requirements
 $script:PerformanceTargets = @{
-    CommandExecutionLimit = 30    # seconds
-    MemoryFileReadingLimit = 5    # seconds
-    StatePersistenceLimit = 2     # seconds
+    CommandExecutionLimit        = 30    # seconds
+    MemoryFileReadingLimit       = 5    # seconds
+    StatePersistenceLimit        = 2     # seconds
     CrossPlatformValidationLimit = 60  # seconds
 }
 
@@ -63,7 +63,7 @@ function Initialize-GSCEnvironment {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
-    [ValidateSet("constitution", "specify", "clarify", "plan", "task", "analyze", "implement", "memory", "validate", "status", "rollback", "help", "update")]
+        [ValidateSet("constitution", "specify", "clarify", "plan", "task", "analyze", "implement", "memory", "validate", "status", "rollback", "help", "update")]
         [string]$CommandName,
 
         [Parameter(Mandatory = $false)]
@@ -96,20 +96,20 @@ function Initialize-GSCEnvironment {
         $performanceMonitor = Start-PerformanceMonitoring -CommandName $CommandName
 
         return @{
-            Success = $true
-            Platform = $platform
-            WorkflowState = $workflowState
+            Success            = $true
+            Platform           = $platform
+            WorkflowState      = $workflowState
             PerformanceMonitor = $performanceMonitor
-            ExecutionStart = $executionStart
-            CommandName = $CommandName
-            Arguments = $Arguments
+            ExecutionStart     = $executionStart
+            CommandName        = $CommandName
+            Arguments          = $Arguments
         }
     }
     catch {
         Write-Error "GSC Environment initialization failed: $($_.Exception.Message)"
         return @{
-            Success = $false
-            Error = $_.Exception.Message
+            Success        = $false
+            Error          = $_.Exception.Message
             ExecutionStart = $executionStart
         }
     }
@@ -132,21 +132,24 @@ function Get-CrossPlatformInfo {
 
     $platform = if ($IsWindows -or ($env:OS -eq "Windows_NT")) {
         "windows"
-    } elseif ($IsMacOS -or ($env:HOME -and (Test-Path "/System/Library/CoreServices/SystemVersion.plist"))) {
+    }
+    elseif ($IsMacOS -or ($env:HOME -and (Test-Path "/System/Library/CoreServices/SystemVersion.plist"))) {
         "macos"
-    } elseif ($IsLinux -or ($env:HOME -and -not (Test-Path "/System/Library/CoreServices/SystemVersion.plist"))) {
+    }
+    elseif ($IsLinux -or ($env:HOME -and -not (Test-Path "/System/Library/CoreServices/SystemVersion.plist"))) {
         "linux"
-    } else {
+    }
+    else {
         "unknown"
     }
 
     return @{
-        Platform = $platform
+        Platform          = $platform
         PowerShellVersion = $PSVersionTable.PSVersion.ToString()
-        HomeDirectory = $env:HOME ?? $env:USERPROFILE
-        UserName = $env:USER ?? $env:USERNAME
-        WorkingDirectory = Get-Location
-        PathSeparator = [System.IO.Path]::DirectorySeparatorChar
+        HomeDirectory     = $env:HOME ?? $env:USERPROFILE
+        UserName          = $env:USER ?? $env:USERNAME
+        WorkingDirectory  = Get-Location
+        PathSeparator     = [System.IO.Path]::DirectorySeparatorChar
     }
 }
 
@@ -208,22 +211,22 @@ function New-WorkflowState {
     param()
 
     return @{
-        workflowId = [System.Guid]::NewGuid().ToString()
-        currentPhase = "not_started"
-        phaseHistory = @()
-        validationStatus = @{}
-        memoryIntegrationPoints = @()
+        workflowId                     = [System.Guid]::NewGuid().ToString()
+        currentPhase                   = "not_started"
+        phaseHistory                   = @()
+        validationStatus               = @{}
+        memoryIntegrationPoints        = @()
         constitutionalComplianceStatus = @{}
-        checkpointData = @{}
-        teamCollaborationLock = @{
-            isLocked = $false
-            lockOwner = $null
+        checkpointData                 = @{}
+        teamCollaborationLock          = @{
+            isLocked       = $false
+            lockOwner      = $null
             lockExpiration = $null
         }
-        performanceDegradationMode = $false
-        lastCommand = $null
-        lastExecutionTime = $null
-        version = "1.0.0"
+        performanceDegradationMode     = $false
+        lastCommand                    = $null
+        lastExecutionTime              = $null
+        version                        = "1.0.0"
     }
 }
 
@@ -248,11 +251,11 @@ function Start-PerformanceMonitoring {
     )
 
     return @{
-        CommandName = $CommandName
-        StartTime = Get-Date
-        MemoryUsageStart = [System.GC]::GetTotalMemory($false)
+        CommandName        = $CommandName
+        StartTime          = Get-Date
+        MemoryUsageStart   = [System.GC]::GetTotalMemory($false)
         PerformanceTargets = $script:PerformanceTargets
-        Milestones = @()
+        Milestones         = @()
     }
 }
 
@@ -286,10 +289,10 @@ function Add-PerformanceMilestone {
     )
 
     $milestone = @{
-        Name = $MilestoneName
-        Timestamp = Get-Date
+        Name           = $MilestoneName
+        Timestamp      = Get-Date
         ElapsedSeconds = ((Get-Date) - $PerformanceMonitor.StartTime).TotalSeconds
-        Details = $Details
+        Details        = $Details
     }
 
     $PerformanceMonitor.Milestones += $milestone
@@ -349,11 +352,11 @@ function Complete-GSCExecution {
 
     # Update workflow state
     $Environment.WorkflowState.lastExecutionResult = @{
-        Success = $Success
-        Message = $Message
-        ExecutionTime = $totalExecutionTime
+        Success               = $Success
+        Message               = $Message
+        ExecutionTime         = $totalExecutionTime
         MemoryPatternsApplied = $MemoryPatternsApplied
-        Timestamp = $executionEnd.ToString("yyyy-MM-ddTHH:mm:ssZ")
+        Timestamp             = $executionEnd.ToString("yyyy-MM-ddTHH:mm:ssZ")
     }
 
     # Persist state
@@ -371,12 +374,12 @@ function Complete-GSCExecution {
     }
 
     return @{
-        Success = $Success
-        Command = $Environment.CommandName
-        ExecutionTime = $totalExecutionTime
-        Message = $Message
-        MemoryPatternsApplied = $MemoryPatternsApplied
-        WorkflowState = $Environment.WorkflowState
+        Success                  = $Success
+        Command                  = $Environment.CommandName
+        ExecutionTime            = $totalExecutionTime
+        Message                  = $Message
+        MemoryPatternsApplied    = $MemoryPatternsApplied
+        WorkflowState            = $Environment.WorkflowState
         PerformanceWithinTargets = $totalExecutionTime -le $script:PerformanceTargets.CommandExecutionLimit
     }
 }
@@ -402,9 +405,9 @@ function Test-ConstitutionalCompliance {
     )
 
     $complianceChecks = @{
-        "MemoryIntegrationEnabled" = $WorkflowState.memoryIntegrationPoints.Count -gt 0
-        "PerformanceTargetsMet" = -not $WorkflowState.performanceDegradationMode
-        "CrossPlatformCompatible" = $true  # Verified by platform detection
+        "MemoryIntegrationEnabled"      = $WorkflowState.memoryIntegrationPoints.Count -gt 0
+        "PerformanceTargetsMet"         = -not $WorkflowState.performanceDegradationMode
+        "CrossPlatformCompatible"       = $true  # Verified by platform detection
         "ManufacturingGradeReliability" = $null -ne $WorkflowState.teamCollaborationLock
     }
 
@@ -412,8 +415,8 @@ function Test-ConstitutionalCompliance {
 
     return @{
         OverallCompliance = $overallCompliance
-        IndividualChecks = $complianceChecks
-        Timestamp = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssZ")
+        IndividualChecks  = $complianceChecks
+        Timestamp         = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssZ")
     }
 }
 

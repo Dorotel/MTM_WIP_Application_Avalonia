@@ -4,7 +4,7 @@ import { runGscCommand } from './state-bridge';
 
 // Canonical script-backed commands (PowerShell files exist for these)
 const canonicals = [
-    'constitution','specify','clarify','plan','task','analyze','implement','memory','validate','status','rollback','help','update'
+    'constitution', 'specify', 'clarify', 'plan', 'task', 'analyze', 'implement', 'memory', 'validate', 'status', 'rollback', 'help', 'update'
 ] as const;
 
 // Easy-to-read aliases mapped to canonical command names

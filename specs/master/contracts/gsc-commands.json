@@ -363,8 +363,7 @@
                     }
                 }
             }
-        }
-        ,
+        },
         "/gsc/update": {
             "post": {
                 "summary": "Safely update spec sections with backups, lock handling, and validation",
@@ -479,15 +478,39 @@
             },
             "UpdateRequest": {
                 "type": "object",
-                "required": ["file", "operation"],
+                "required": [
+                    "file",
+                    "operation"
+                ],
                 "properties": {
-                    "file": { "type": "string" },
-                    "section": { "type": "string" },
-                    "operation": { "type": "string", "enum": ["insert","append","replace","remove","suggest"] },
-                    "content": { "type": "string" },
-                    "contentPath": { "type": "string" },
-                    "validateAfter": { "type": "boolean" },
-                    "force": { "type": "boolean" }
+                    "file": {
+                        "type": "string"
+                    },
+                    "section": {
+                        "type": "string"
+                    },
+                    "operation": {
+                        "type": "string",
+                        "enum": [
+                            "insert",
+                            "append",
+                            "replace",
+                            "remove",
+                            "suggest"
+                        ]
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "contentPath": {
+                        "type": "string"
+                    },
+                    "validateAfter": {
+                        "type": "boolean"
+                    },
+                    "force": {
+                        "type": "boolean"
+                    }
                 }
             },
             "GSCCommandResponse": {

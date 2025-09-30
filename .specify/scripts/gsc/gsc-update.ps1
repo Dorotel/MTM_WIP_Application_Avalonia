@@ -5,7 +5,7 @@
 param(
     [string]$File = "specs/master/spec.md",
     [string]$Section = "",
-    [ValidateSet('insert','append','replace','remove','suggest','help')]
+    [ValidateSet('insert', 'append', 'replace', 'remove', 'suggest', 'help')]
     [string]$Operation = 'suggest',
     [string]$Content = "",
     [string]$ContentPath = "",
@@ -31,7 +31,7 @@ function Get-WorkflowStateInternal {
 }
 
 function Test-LockOrBypass {
-    param([pscustomobject]$State,[switch]$Force)
+    param([pscustomobject]$State, [switch]$Force)
     if ($null -ne $State.teamCollaborationLock -and $State.teamCollaborationLock.isLocked) {
         $owner = $State.teamCollaborationLock.lockOwner
         $exp = $State.teamCollaborationLock.lockExpiration
@@ -53,32 +53,32 @@ function Backup-File {
 }
 
 function New-SectionIfMissing {
-    param([string[]]$Lines,[string]$Section)
+    param([string[]]$Lines, [string]$Section)
     $h = "## $Section"
     $idx = $Lines | Select-String -Pattern "^##\s+\Q$Section\E\s*$" -SimpleMatch | Select-Object -First 1
-    if ($idx) { return [pscustomobject]@{ Exists=$true; Index=$idx.LineNumber-1 } }
+    if ($idx) { return [pscustomobject]@{ Exists = $true; Index = $idx.LineNumber - 1 } }
     # Append new section at end
     $newLines = @()
     $newLines += $Lines
     if ($newLines.Count -gt 0 -and $newLines[-1] -ne '') { $newLines += '' }
     $newLines += $h
     $newLines += ''
-    return [pscustomobject]@{ Exists=$false; Index=$newLines.Count-1; Lines=$newLines }
+    return [pscustomobject]@{ Exists = $false; Index = $newLines.Count - 1; Lines = $newLines }
 }
 
 function Set-SectionContent {
-    param([string[]]$Lines,[string]$Section,[string[]]$InsertLines,[ValidateSet('insert','append','replace')]$Mode)
+    param([string[]]$Lines, [string]$Section, [string[]]$InsertLines, [ValidateSet('insert', 'append', 'replace')]$Mode)
     $match = $Lines | Select-String -Pattern "^##\s+\Q$Section\E\s*$" -SimpleMatch | Select-Object -First 1
     if (-not $match) {
         # create section and append content
-    $ensure = New-SectionIfMissing -Lines $Lines -Section $Section
+        $ensure = New-SectionIfMissing -Lines $Lines -Section $Section
         $linesToUse = if ($ensure.Lines) { $ensure.Lines } else { $Lines }
         $startIdx = $ensure.Index + 1
         $prefix = $linesToUse[0..$ensure.Index]
-        $suffix = if ($startIdx -le ($linesToUse.Count-1)) { $linesToUse[$startIdx..($linesToUse.Count-1)] } else { @() }
+        $suffix = if ($startIdx -le ($linesToUse.Count - 1)) { $linesToUse[$startIdx..($linesToUse.Count - 1)] } else { @() }
         $result = @()
         $result += $prefix
-        if ($Mode -in @('insert','append','replace')) { $result += $InsertLines }
+        if ($Mode -in @('insert', 'append', 'replace')) { $result += $InsertLines }
         if ($suffix.Count -gt 0) { $result += $suffix }
         return $result
     }
@@ -86,8 +86,8 @@ function Set-SectionContent {
     # find next section or end
     $next = ($Lines | Select-String -Pattern '^##\s+' | Where-Object { $_.LineNumber -gt $start } | Select-Object -First 1)
     $endIdx = if ($next) { $next.LineNumber - 2 } else { $Lines.Count - 1 }
-    $before = if ($start -gt 1) { $Lines[0..($start-1)] } else { @() }
-    $after = if ($endIdx + 1 -le $Lines.Count - 1) { $Lines[($endIdx+1)..($Lines.Count-1)] } else { @() }
+    $before = if ($start -gt 1) { $Lines[0..($start - 1)] } else { @() }
+    $after = if ($endIdx + 1 -le $Lines.Count - 1) { $Lines[($endIdx + 1)..($Lines.Count - 1)] } else { @() }
     $body = if ($Mode -eq 'replace') { @() } else { $Lines[$start..$endIdx] }
     if ($Mode -eq 'insert' -or $Mode -eq 'append' -or $Mode -eq 'replace') {
         $body += $InsertLines
@@ -102,14 +102,14 @@ function Set-SectionContent {
 function Get-Suggestions {
     param([string[]]$Lines)
     $sugs = @()
-    for ($i=0; $i -lt $Lines.Count; $i++) {
+    for ($i = 0; $i -lt $Lines.Count; $i++) {
         $line = $Lines[$i]
         if ($line -match '^#(?!#)') { continue }
         if ($line -match '^\s*\-\s+\[NEEDS CLARIFICATION\]') {
-            $sugs += @{ line=$i+1; suggestion='Resolve [NEEDS CLARIFICATION] marker' }
+            $sugs += @{ line = $i + 1; suggestion = 'Resolve [NEEDS CLARIFICATION] marker' }
         }
     }
-    if (-not ($Lines -match '^##\s+Requirements')) { $sugs += @{ line=($Lines.Count); suggestion='Add "## Requirements" section' } }
+    if (-not ($Lines -match '^##\s+Requirements')) { $sugs += @{ line = ($Lines.Count); suggestion = 'Add "## Requirements" section' } }
     return $sugs
 }
 
@@ -149,7 +149,7 @@ Notes:
             CommandAlias  = 'update'
             Help          = $help
         }
-        if ($Json){ $res | ConvertTo-Json -Depth 5 | Write-Output } else { $res | Write-Output }
+        if ($Json) { $res | ConvertTo-Json -Depth 5 | Write-Output } else { $res | Write-Output }
         exit 0
     }
 
@@ -166,7 +166,7 @@ Notes:
     switch ($Operation) {
         'suggest' {
             $sugs = Get-Suggestions -Lines $lines
-            $changeSummary = @{ suggestions=$sugs }
+            $changeSummary = @{ suggestions = $sugs }
         }
         'remove' {
             if (-not $Section) { throw "-Section is required for remove" }
@@ -175,17 +175,19 @@ Notes:
                 $start = $match.LineNumber
                 $next = ($lines | Select-String -Pattern '^##\s+' | Where-Object { $_.LineNumber -gt $start } | Select-Object -First 1)
                 $endIdx = if ($next) { $next.LineNumber - 2 } else { $lines.Count - 1 }
-                $before = if ($start -gt 1) { $lines[0..($start-2)] } else { @() }
-                $after = if ($endIdx + 1 -le $lines.Count - 1) { $lines[($endIdx+1)..($lines.Count-1)] } else { @() }
-                $updated = @(); if ($before){$updated+=$before}; if ($after){$updated+=$after}
-                $changeSummary = @{ removedSection=$Section; removedLines=($endIdx-$start+2) }
-            } else { $changeSummary = @{ removedSection=$Section; removedLines=0; note='section not found' } }
+                $before = if ($start -gt 1) { $lines[0..($start - 2)] } else { @() }
+                $after = if ($endIdx + 1 -le $lines.Count - 1) { $lines[($endIdx + 1)..($lines.Count - 1)] } else { @() }
+                $updated = @(); if ($before) { $updated += $before }; if ($after) { $updated += $after }
+                $changeSummary = @{ removedSection = $Section; removedLines = ($endIdx - $start + 2) }
+            }
+            else { $changeSummary = @{ removedSection = $Section; removedLines = 0; note = 'section not found' } }
         }
-        default { # insert|append|replace
+        default {
+            # insert|append|replace
             if (-not $Section) { throw "-Section is required for $Operation" }
             if ($insertLines.Count -eq 0 -and $Operation -ne 'replace') { throw "-Content or -ContentPath is required for $Operation" }
             $updated = Set-SectionContent -Lines $lines -Section $Section -InsertLines $insertLines -Mode $Operation
-            $changeSummary = @{ operation=$Operation; section=$Section; linesAdded=$insertLines.Count }
+            $changeSummary = @{ operation = $Operation; section = $Section; linesAdded = $insertLines.Count }
         }
     }
 
@@ -210,7 +212,7 @@ Notes:
     if ($ValidateAfter) {
         $gscValidate = Join-Path $PSScriptRoot 'gsc-validate.ps1'
         if (Test-Path $gscValidate) {
-            try { $validation = (& $gscValidate -Json) | ConvertFrom-Json } catch { $validation = @{ Success=$false; Message=$_.Exception.Message } }
+            try { $validation = (& $gscValidate -Json) | ConvertFrom-Json } catch { $validation = @{ Success = $false; Message = $_.Exception.Message } }
         }
     }
 
@@ -238,11 +240,11 @@ Notes:
 catch {
     $fail = [ordered]@{
         # Contract-compliant fields
-        success      = $false
-        command      = 'update'
-        executionTime= 0
-        Message      = "Update failed: $($_.Exception.Message)"
-        timestamp    = (Get-Date).ToString('o')
+        success       = $false
+        command       = 'update'
+        executionTime = 0
+        Message       = "Update failed: $($_.Exception.Message)"
+        timestamp     = (Get-Date).ToString('o')
     }
     [pscustomobject]$fail | Write-Output
     exit 1
