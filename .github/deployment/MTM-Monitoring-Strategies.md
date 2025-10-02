@@ -78,6 +78,7 @@ graph TB
 ## 📊 **Application Performance Monitoring (APM)**
 
 ### **Health Check Endpoints**
+
 ```csharp
 // Health Check Implementation
 // Services/HealthChecks.cs
@@ -213,6 +214,7 @@ public class SystemHealthStatus
 ```
 
 ### **Custom Metrics Collection**
+
 ```csharp
 // Custom Metrics Implementation
 // Services/MetricsCollectionService.cs
@@ -318,6 +320,7 @@ public class InventoryService : IInventoryService
 ## 🖥️ **Infrastructure Monitoring**
 
 ### **System Performance Metrics**
+
 ```yaml
 CPU Metrics:
   - cpu_usage_percent: Current CPU utilization
@@ -350,6 +353,7 @@ Network Metrics:
 ```
 
 ### **Database Monitoring**
+
 ```sql
 -- MySQL Performance Monitoring Queries
 -- Create monitoring stored procedure
@@ -400,6 +404,7 @@ DELIMITER ;
 ```
 
 ### **Application-Specific Metrics**
+
 ```csharp
 // Manufacturing-specific metrics
 public class ManufacturingMetrics
@@ -457,6 +462,7 @@ public async Task ProcessWorkOrderAsync(WorkOrder workOrder)
 ## 📈 **Grafana Dashboard Configuration**
 
 ### **Executive Dashboard**
+
 ```json
 {
   "dashboard": {
@@ -533,6 +539,7 @@ public async Task ProcessWorkOrderAsync(WorkOrder workOrder)
 ```
 
 ### **Technical Dashboard**
+
 ```json
 {
   "dashboard": {
@@ -596,6 +603,7 @@ public async Task ProcessWorkOrderAsync(WorkOrder workOrder)
 ## 🚨 **Alerting Configuration**
 
 ### **Alert Rules**
+
 ```yaml
 # prometheus-alerts.yml
 groups:
@@ -702,6 +710,7 @@ groups:
 ```
 
 ### **Notification Configuration**
+
 ```yaml
 # alertmanager.yml
 global:
@@ -782,6 +791,7 @@ time_intervals:
 ## 🔍 **Log Management Strategy**
 
 ### **Structured Logging Configuration**
+
 ```csharp
 // Structured logging setup
 public static class LoggingConfiguration
@@ -872,6 +882,7 @@ public class InventoryService : IInventoryService
 ```
 
 ### **Log Aggregation and Analysis**
+
 ```yaml
 # ELK Stack Configuration for Log Analysis
 elasticsearch:
