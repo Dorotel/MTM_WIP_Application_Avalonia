@@ -12,9 +12,11 @@ The CustomDataGrid integrates seamlessly with the MTM overlay system (Confirmati
 ## ConfirmationOverlayView Integration
 
 ### Enhanced Confirmation Scenarios for CustomDataGrid
+
 The existing `ConfirmationOverlayView.axaml` supports the CustomDataGrid scenarios with these enhancements:
 
 ### Delete Item Confirmation
+
 ```csharp
 // Parent ViewModel - Delete item confirmation
 private async Task ShowDeleteConfirmationAsync(InventoryItem item)
@@ -47,6 +49,7 @@ private async Task ShowDeleteConfirmationAsync(InventoryItem item)
 ```
 
 ### Bulk Delete Confirmation
+
 ```csharp
 // Parent ViewModel - Bulk delete confirmation
 private async Task ShowBulkDeleteConfirmationAsync(List<InventoryItem> selectedItems)
@@ -83,6 +86,7 @@ private async Task ShowBulkDeleteConfirmationAsync(List<InventoryItem> selectedI
 ```
 
 ### Column Management Confirmation (Phase 3)
+
 ```csharp
 // Column management reset confirmation
 private async Task ShowColumnResetConfirmationAsync()
@@ -115,9 +119,11 @@ private async Task ShowColumnResetConfirmationAsync()
 ## SuccessOverlayView Integration
 
 ### Enhanced Success Scenarios for CustomDataGrid
+
 The existing `SuccessOverlayView.axaml` supports CustomDataGrid operations with these patterns:
 
 ### Single Item Success
+
 ```csharp
 // Success notification for single item operations
 private async Task ShowItemOperationSuccessAsync(string operation, InventoryItem item)
@@ -146,6 +152,7 @@ private async Task ShowItemOperationSuccessAsync(string operation, InventoryItem
 ```
 
 ### Bulk Operation Success
+
 ```csharp
 // Success notification for bulk operations
 private async Task ShowBulkOperationSuccessAsync(string operation, int itemCount, TimeSpan duration)
@@ -168,6 +175,7 @@ private async Task ShowBulkOperationSuccessAsync(string operation, int itemCount
 ```
 
 ### Data Load Success
+
 ```csharp
 // Success notification for data loading operations
 private async Task ShowDataLoadSuccessAsync(int itemCount, TimeSpan loadTime)
@@ -191,6 +199,7 @@ private async Task ShowDataLoadSuccessAsync(int itemCount, TimeSpan loadTime)
 ## Service Integration Pattern
 
 ### Confirmation Service Interface Enhancement
+
 ```csharp
 // Enhanced confirmation service for CustomDataGrid scenarios
 public interface IConfirmationService
@@ -236,6 +245,7 @@ public enum ConfirmationOverlayType
 ```
 
 ### Success Service Interface Enhancement
+
 ```csharp
 // Enhanced success service for CustomDataGrid scenarios
 public interface ISuccessOverlayService
@@ -272,6 +282,7 @@ public enum SuccessAnimationType
 ## Command Integration Examples
 
 ### Complete Delete Command with Overlay Integration
+
 ```csharp
 [RelayCommand]
 private async Task DeleteItemAsync(object? parameter)
@@ -342,6 +353,7 @@ private async Task DeleteItemAsync(object? parameter)
 ```
 
 ### Bulk Operations with Progress Overlay
+
 ```csharp
 [RelayCommand]
 private async Task DeleteSelectedItemsAsync()
@@ -427,6 +439,7 @@ private async Task DeleteSelectedItemsAsync()
 ## Overlay Positioning and Parent Integration
 
 ### Parent View Integration Pattern
+
 ```xml
 <!-- Parent View with CustomDataGrid and Overlays -->
 <Grid>
@@ -455,6 +468,7 @@ private async Task DeleteSelectedItemsAsync()
 ```
 
 ### Parent ViewModel Overlay Management
+
 ```csharp
 // Parent ViewModel overlay state management
 [ObservableObject]
@@ -503,4 +517,4 @@ public partial class InventoryManagementViewModel : BaseViewModel
 
 ---
 
-**Next Implementation Phase**: [09-HTML-Integration-Guide.md](./09-HTML-Integration-Guide.md)
+**Next Implementation Phase**: [09-HTML-ThemeV2-Implementation-Guide.md](./09-HTML-ThemeV2-Implementation-Guide.md)

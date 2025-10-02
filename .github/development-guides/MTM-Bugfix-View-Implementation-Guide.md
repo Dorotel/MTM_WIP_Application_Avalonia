@@ -1,4 +1,5 @@
 # MTM Bugfix View Implementation Guide
+
 **Complete Guide for Fixing Issues in Existing Views in the MTM WIP Application**
 
 ---
@@ -12,6 +13,7 @@ This guide provides step-by-step instructions for fixing bugs, resolving issues,
 Before starting the bugfix, answer these critical questions to ensure proper diagnosis and resolution:
 
 ### Issue Identification
+
 1. **Which view is experiencing the issue?**
    - InventoryTabView
    - RemoveTabView
@@ -38,6 +40,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
    - Enhancement (improvement opportunity)
 
 ### Issue Analysis
+
 4. **When does the issue occur?**
    - On application startup
    - When loading the view
@@ -64,6 +67,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
    - Issue after dependency update
 
 ### Environment and Context
+
 7. **In what environment(s) does the issue occur?**
    - Development environment only
    - All environments
@@ -81,6 +85,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
    - No error information available
 
 ### Impact Assessment
+
 9. **Who is affected by this issue?**
    - All users
    - Specific user roles
@@ -98,6 +103,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
     - Minor inconvenience only
 
 ### Root Cause Analysis
+
 11. **What might be the root cause category?**
     - Code logic error
     - Data binding configuration
@@ -121,6 +127,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
 ## 🏗️ Implementation Steps
 
 ### Phase 1: Issue Investigation
+
 1. **Reproduce the issue**
    - Create reliable reproduction steps
    - Document exact conditions
@@ -143,6 +150,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
    - Network communication (if applicable)
 
 ### Phase 2: Root Cause Identification
+
 1. **Isolate the problem**
    - Narrow down to specific component
    - Identify exact failure point
@@ -158,6 +166,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
    - Configuration dependencies
 
 ### Phase 3: Solution Development
+
 1. **Design the fix**
    - Minimal change approach
    - Address root cause, not symptoms
@@ -180,6 +189,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
    - User feedback improvements
 
 ### Phase 4: Testing and Validation
+
 1. **Verify the fix**
    - Test original reproduction steps
    - Test edge cases
@@ -199,6 +209,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
 ## 📋 Implementation Checklist
 
 ### Investigation Phase ✅
+
 - [ ] Issue reliably reproduced
 - [ ] Reproduction steps documented
 - [ ] Error logs and diagnostics collected
@@ -206,6 +217,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
 - [ ] Related code reviewed and analyzed
 
 ### Root Cause Analysis ✅
+
 - [ ] Problem isolated to specific component
 - [ ] Root cause identified and confirmed
 - [ ] Dependencies analyzed
@@ -213,6 +225,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
 - [ ] Potential side effects considered
 
 ### Implementation Phase ✅
+
 - [ ] Fix implemented with minimal changes
 - [ ] Existing code patterns followed
 - [ ] Error handling improved (if applicable)
@@ -220,6 +233,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
 - [ ] Defensive measures added (if needed)
 
 ### Testing and Validation ✅
+
 - [ ] Original issue resolved
 - [ ] Edge cases tested
 - [ ] No regression issues introduced
@@ -232,6 +246,7 @@ Before starting the bugfix, answer these critical questions to ensure proper dia
 ## 🎨 Bugfix Implementation Patterns
 
 ### Defensive Programming
+
 ```csharp
 // BEFORE: Potential null reference
 public async Task SaveAsync()
@@ -266,6 +281,7 @@ public async Task SaveAsync()
 ```
 
 ### Data Binding Fix Pattern
+
 ```xml
 <!-- BEFORE: Binding issue -->
 <TextBox Text="{Binding PartId}" />
@@ -277,6 +293,7 @@ public async Task SaveAsync()
 ```
 
 ### Performance Issue Fix
+
 ```csharp
 // BEFORE: Performance issue
 [ObservableProperty]
@@ -325,14 +342,17 @@ private async Task PerformSearchAsync(string searchText)
 ## 🚨 Common Bug Categories and Solutions
 
 ### UI Binding Issues
+
 **Symptoms**: Controls not updating, data not displaying
-**Common Causes**: 
+**Common Causes**:
+
 - Incorrect binding paths
 - Missing PropertyChanged notifications
 - DataContext issues
 - Type conversion problems
 
 **Solution Pattern**:
+
 ```csharp
 // Ensure proper property implementation
 [ObservableProperty]
@@ -346,14 +366,17 @@ partial void OnDisplayValueChanged(string value)
 ```
 
 ### Database Operation Failures
+
 **Symptoms**: Data not saving, connection timeouts, SQL errors
 **Common Causes**:
+
 - Stored procedure parameter mismatches
 - Connection string issues
 - Transaction handling problems
 - Data type mismatches
 
 **Solution Pattern**:
+
 ```csharp
 // Add proper error handling and validation
 var parameters = new MySqlParameter[]
@@ -384,14 +407,17 @@ catch (MySqlException ex)
 ```
 
 ### Performance Issues
+
 **Symptoms**: Slow loading, UI freezing, high memory usage
 **Common Causes**:
+
 - Blocking UI thread
 - Inefficient data operations
 - Memory leaks
 - Excessive UI updates
 
 **Solution Pattern**:
+
 ```csharp
 // Use async operations and progress indication
 [RelayCommand]
@@ -423,13 +449,16 @@ private async Task LoadDataAsync()
 ```
 
 ### Validation Issues
+
 **Symptoms**: Invalid data accepted, validation not triggering
 **Common Causes**:
+
 - Missing validation attributes
 - Incorrect validation logic
 - Validation not properly bound to UI
 
 **Solution Pattern**:
+
 ```csharp
 [ObservableProperty]
 [NotifyDataErrorInfo]
@@ -463,24 +492,28 @@ private async Task ValidateAsync()
 ## 📊 Bugfix Priority Matrix
 
 ### Critical Issues (Fix Immediately)
+
 - Application crashes
 - Data corruption
 - Security vulnerabilities
 - Complete functionality failure
 
 ### High Priority Issues (Fix within 24-48 hours)
+
 - Major feature not working
 - Performance significantly degraded
 - Multiple users affected
 - Workaround difficult/impossible
 
 ### Medium Priority Issues (Fix within 1 week)
+
 - Minor feature issues
 - Usability problems
 - Single user affected
 - Workaround available
 
 ### Low Priority Issues (Fix in next release cycle)
+
 - Cosmetic issues
 - Minor performance improvements
 - Enhancement requests
@@ -488,7 +521,8 @@ private async Task ValidateAsync()
 
 ---
 
-**Reference Files**: 
+**Reference Files**:
+
 - Main Implementation Guide: `docs/development/view-management-md-files/MTM-View-Implementation-Guide.md`
 - New View Guide: `docs/development/view-management-md-files/MTM-New-View-Implementation-Guide.md`
 - Update View Guide: `docs/development/view-management-md-files/MTM-Update-View-Implementation-Guide.md`
@@ -497,18 +531,19 @@ private async Task ValidateAsync()
 - Patterns: `.github/copilot/patterns/`
 - Instructions: `.github/instructions/`
 
-
 ## 🚀 Joyride Development Enhancement
 
 **Priority Directive**: Leverage Joyride automation for enhanced MTM development workflows.
 
 ### Core Joyride Tools
+
 - **`joyride_evaluate_code`**: Execute ClojureScript in VS Code Extension Host
 - **`joyride_request_human_input`**: Interactive decision-making workflows
 - **`joyride_basics_for_agents`**: Access automation patterns and capabilities
 - **`joyride_assisting_users_guide`**: User assistance automation
 
 ### MTM-Optimized Automation
+
 - **Pattern Enforcement**: Automated MVVM Community Toolkit validation
 - **Domain Validation**: Manufacturing operation codes and business rules
 - **UI Consistency**: Avalonia theme system and component standards
